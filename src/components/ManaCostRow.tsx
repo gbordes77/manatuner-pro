@@ -11,7 +11,7 @@ import {
   Fade
 } from '@mui/material'
 import { searchCardByName } from '../services/scryfall'
-import { Card as MTGCard } from '../types'
+import type { Card as MTGCard } from '../types'
 import { manaCalculator } from '../services/manaCalculator'
 
 interface ManaCostRowProps {
@@ -205,7 +205,6 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
   const calculateProbabilities = () => {
     if (!cardData?.mana_cost) return { p1: 85, p2: 65 }
     
-    // Utiliser le nouveau calculateur de mana avec la méthodologie Frank Karsten
     try {
       // Parser le coût de mana pour extraire les symboles colorés
       const manaCostSymbols = cardData.mana_cost.match(/\{[WUBRG]\}/g) || []
@@ -216,47 +215,133 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
         colorCounts[color] = (colorCounts[color] || 0) + 1
       })
       
-      // Simuler une manabase basique pour les calculs
-      // Dans une vraie implémentation, cela viendrait de l'analyse du deck
+      // Si pas de symboles colorés, retourner des probabilités élevées
+      if (Object.keys(colorCounts).length === 0) {
+        return { p1: 95, p2: 90 }
+      }
+      
       const deckSize = 60
-      const sourcesPerColor = 14 // Estimation basique selon Karsten
       const cmc = cardData.cmc || 1
       
-      let totalProbability = 1
+      // Calculer les probabilités selon Frank Karsten
+      let worstCaseProbability = 1
       
-      // Calculer la probabilité pour chaque couleur requise
-      for (const [color, count] of Object.entries(colorCounts)) {
-        const result = manaCalculator.calculateManaProbability(
+      for (const [color, symbolCount] of Object.entries(colorCounts)) {
+        // Utiliser les tables de Karsten pour déterminer les sources nécessaires
+        const sourcesNeeded = manaCalculator.calculateManaProbability(
           deckSize,
-          sourcesPerColor,
-          cmc,
-          count,
+          20, // Sources de base pour le calcul
+          Math.min(cmc, 6), // Limiter à tour 6
+          symbolCount,
           true
-        )
-        totalProbability *= result.probability
+        ).sourcesNeeded
+        
+        // Simuler différents scénarios de manabase
+        let probability = 0
+        
+        if (symbolCount === 1) {
+          // Pour 1 symbole : 14 sources donnent ~90.4% au T1
+          const optimalSources = Math.max(14, sourcesNeeded)
+          probability = manaCalculator.calculateManaProbability(
+            deckSize,
+            optimalSources,
+            Math.min(cmc, 6),
+            symbolCount,
+            true
+          ).probability
+        } else if (symbolCount === 2) {
+          // Pour 2 symboles : 20 sources donnent ~90% au T2
+          const optimalSources = Math.max(20, sourcesNeeded)
+          probability = manaCalculator.calculateManaProbability(
+            deckSize,
+            optimalSources,
+            Math.min(cmc, 6),
+            symbolCount,
+            true
+          ).probability
+        } else {
+          // Pour 3+ symboles : ajuster selon la complexité
+          const optimalSources = Math.max(22, sourcesNeeded)
+          probability = manaCalculator.calculateManaProbability(
+            deckSize,
+            optimalSources,
+            Math.min(cmc, 6),
+            symbolCount,
+            true
+          ).probability
+        }
+        
+        // Prendre le pire cas pour les cartes multicolores
+        worstCaseProbability = Math.min(worstCaseProbability, probability)
       }
       
-      // Convertir en pourcentage et ajuster pour P1/P2
-      const p2Percentage = Math.round(totalProbability * 100)
-      const p1Percentage = Math.min(p2Percentage + 10, 95) // P1 légèrement optimiste
+      // Ajustements pour P1 (Perfect) vs P2 (Realistic)
+      const baseProbability = worstCaseProbability
+      
+      // P1 : Scénario optimal (manabase parfaite)
+      const p1Percentage = Math.round(Math.min(baseProbability * 100, 95))
+      
+      // P2 : Scénario réaliste (manabase moyenne, pénalités)
+      let p2Percentage = Math.round(baseProbability * 85) // 15% de pénalité pour réalisme
+      
+      // Ajustements selon la complexité du coût
+      const totalSymbols = Object.values(colorCounts).reduce((sum, count) => sum + count, 0)
+      const colorCount = Object.keys(colorCounts).length
+      
+      if (colorCount > 1) {
+        // Pénalité pour cartes multicolores
+        p2Percentage -= (colorCount - 1) * 5
+      }
+      
+      if (totalSymbols > 2) {
+        // Pénalité pour coûts intensifs
+        p2Percentage -= (totalSymbols - 2) * 3
+      }
+      
+      // Ajustement selon le CMC
+      if (cmc <= 2) {
+        p2Percentage -= 5 // Plus difficile de cast tôt
+      }
       
       return {
-        p1: Math.max(p1Percentage, 30),
-        p2: Math.max(p2Percentage, 15)
+        p1: Math.max(Math.min(p1Percentage, 95), 25),
+        p2: Math.max(Math.min(p2Percentage, 85), 15)
       }
+      
     } catch (error) {
       console.error('Error calculating probabilities:', error)
-      // Fallback vers l'ancien calcul simplifié
+      
+      // Fallback amélioré basé sur l'analyse du coût de mana
+      if (!cardData?.mana_cost) return { p1: 85, p2: 65 }
+      
       const symbols = cardData.mana_cost.match(/\{[^}]+\}/g) || []
       const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
+      const hybridSymbols = symbols.filter((s: string) => /\{[WUBRG]\/[WUBRG]\}/.test(s))
       const genericCost = symbols.filter((s: string) => /\{\d+\}/.test(s)).length
       
-      let p1 = 90 - (coloredSymbols.length * 5) - (genericCost * 2)
-      let p2 = p1 - 20 - (coloredSymbols.length * 3)
+      // Calcul basé sur la complexité
+      let baseP1 = 90
+      let baseP2 = 75
+      
+      // Pénalités
+      baseP1 -= coloredSymbols.length * 4
+      baseP2 -= coloredSymbols.length * 6
+      
+      baseP1 -= hybridSymbols.length * 2 // Hybride plus facile
+      baseP2 -= hybridSymbols.length * 3
+      
+      baseP1 -= genericCost * 2
+      baseP2 -= genericCost * 3
+      
+      // Bonus pour CMC élevé (plus de temps pour développer)
+      if (cardData.cmc && cardData.cmc >= 4) {
+        baseP1 += 5
+        baseP2 += 8
+      }
       
       return {
-        p1: Math.max(Math.min(p1, 95), 30),
-        p2: Math.max(Math.min(p2, 80), 15)
+        p1: Math.max(Math.min(baseP1, 95), 25),
+        p2: Math.max(Math.min(baseP2, 85), 15)
       }
     }
   }

@@ -13,6 +13,7 @@ import {
   Tabs,
   Tab,
   Alert,
+  Snackbar,
   LinearProgress,
   Divider,
   List,
@@ -38,6 +39,7 @@ import ManaCostRow from '../components/ManaCostRow'
 import EnhancedCharts from '../components/EnhancedCharts'
 import EnhancedRecommendations from '../components/EnhancedRecommendations'
 import EnhancedSpellAnalysis from '../components/EnhancedSpellAnalysis'
+import { ManaCalculator } from '../services/manaCalculator'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -183,6 +185,7 @@ export const AnalyzerPage: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isDeckMinimized, setIsDeckMinimized] = useState(false)
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
   
   // Charger l'état depuis localStorage au montage
   useEffect(() => {
@@ -247,6 +250,79 @@ export const AnalyzerPage: React.FC = () => {
       }
       setIsAnalyzing(false)
     }, 1500)
+  }
+
+  // Fonction de test des probabilités
+  const runProbabilityValidation = () => {
+    const calculator = new ManaCalculator()
+    
+    const tests = [
+      {
+        name: "Thoughtseize T1 (1B)",
+        deckSize: 60,
+        sources: 14,
+        turn: 1,
+        symbols: 1,
+        expected: 0.904
+      },
+      {
+        name: "Counterspell T2 (UU)",
+        deckSize: 60,
+        sources: 20,
+        turn: 2,
+        symbols: 2,
+        expected: 0.90
+      },
+      {
+        name: "Lightning Bolt T1 (R)",
+        deckSize: 60,
+        sources: 14,
+        turn: 1,
+        symbols: 1,
+        expected: 0.904
+      }
+    ]
+    
+    console.log("🧪 VALIDATION DES CALCULS DE PROBABILITÉ")
+    console.log("=" .repeat(50))
+    
+    let passed = 0
+    tests.forEach(test => {
+      const result = calculator.calculateManaProbability(
+        test.deckSize,
+        test.sources,
+        test.turn,
+        test.symbols,
+        true
+      )
+      
+      const actual = result.probability
+      const tolerance = 0.02
+      const isValid = Math.abs(actual - test.expected) <= tolerance
+      
+      console.log(`${isValid ? '✅' : '❌'} ${test.name}`)
+      console.log(`   Attendu: ${(test.expected * 100).toFixed(1)}%`)
+      console.log(`   Calculé: ${(actual * 100).toFixed(1)}%`)
+      console.log(`   Écart: ${Math.abs((actual - test.expected) * 100).toFixed(1)}%`)
+      
+      if (isValid) passed++
+    })
+    
+    console.log(`\n📈 RÉSULTATS: ${passed}/${tests.length} tests réussis`)
+    
+    if (passed === tests.length) {
+      setSnackbar({
+        open: true,
+        message: `✅ Validation réussie ! ${passed}/${tests.length} tests passés. Calculs conformes aux standards Frank Karsten.`,
+        severity: 'success'
+      })
+    } else {
+      setSnackbar({
+        open: true,
+        message: `⚠️ Validation partielle : ${passed}/${tests.length} tests passés. Vérifiez la console pour les détails.`,
+        severity: 'warning'
+      })
+    }
   }
 
   const sampleDeck = `4 Light-Paws, Emperor's Voice (NEO) 25
@@ -340,6 +416,21 @@ export const AnalyzerPage: React.FC = () => {
                   startIcon={<AddIcon />}
                 >
                   Example
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  onClick={runProbabilityValidation}
+                  sx={{ 
+                    color: 'var(--mtg-blue)',
+                    borderColor: 'var(--mtg-blue)',
+                    '&:hover': {
+                      borderColor: 'var(--mtg-blue)',
+                      backgroundColor: 'rgba(0, 123, 255, 0.1)'
+                    }
+                  }}
+                >
+                  Test Probabilities
                 </Button>
               </Box>
 
@@ -1034,6 +1125,22 @@ export const AnalyzerPage: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+      
+      {/* Snackbar pour les notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity as 'success' | 'warning' | 'error' | 'info'}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   )
 } 
