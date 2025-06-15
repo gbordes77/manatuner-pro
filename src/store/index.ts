@@ -1,15 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { deckSlice } from './slices/deckSlice'
-import { analysisSlice } from './slices/analysisSlice'
-import { uiSlice } from './slices/uiSlice'
-import { authSlice } from './slices/authSlice'
+import deckReducer from './slices/deckSlice'
+import analysisReducer from './slices/analysisSlice'
+import uiReducer from './slices/uiSlice'
+import authReducer from './slices/authSlice'
 
 export const store = configureStore({
   reducer: {
-    deck: deckSlice.reducer,
-    analysis: analysisSlice.reducer,
-    ui: uiSlice.reducer,
-    auth: authSlice.reducer,
+    deck: deckReducer,
+    analysis: analysisReducer,
+    ui: uiReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'Project Manabase',
-        short_name: 'Manabase',
-        description: 'Advanced MTG Manabase Analysis Tool',
+        name: 'ManaTuner Pro',
+        short_name: 'ManaTuner',
+        description: 'ManaTuner Pro - Advanced MTG Manabase Analysis Tool',
         theme_color: '#1976d2',
         background_color: '#ffffff',
         display: 'standalone',

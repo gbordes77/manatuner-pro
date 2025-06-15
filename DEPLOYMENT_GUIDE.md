@@ -1,6 +1,6 @@
-# Project Manabase - Deployment Guide
+# ManaTuner Pro - Deployment Guide
 
-This guide provides step-by-step instructions for deploying Project Manabase to production using Firebase.
+This guide provides step-by-step instructions for deploying ManaTuner Pro to production using Firebase.
 
 ## 📋 Prerequisites
 

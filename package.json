@@ -1,7 +1,8 @@
 {
-  "name": "project-manabase",
+  "name": "manatuner-pro",
   "version": "2.0.0",
-  "description": "Advanced MTG Manabase Analysis Tool",
+  "private": true,
+  "description": "ManaTuner Pro - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -66,6 +67,6 @@
     "url": "https://github.com/project-manabase/manabase-analyzer.git"
   },
   "keywords": ["mtg", "magic", "manabase", "analysis", "probability", "deck"],
-  "author": "Project Manabase Team",
+  "author": "ManaTuner Pro Team",
   "license": "MIT"
 } 

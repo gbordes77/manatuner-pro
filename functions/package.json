@@ -1,7 +1,7 @@
 {
-  "name": "project-manabase-functions",
+  "name": "functions",
   "version": "1.0.0",
-  "description": "Cloud Functions for Project Manabase",
+  "description": "Cloud Functions for ManaTuner Pro",
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",

@@ -1,26 +1,36 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { Box, CircularProgress } from '@mui/material'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
-import { ErrorBoundary } from '@/components/common/ErrorBoundary'
-import { NotificationProvider } from '@/components/common/NotificationProvider'
+import { Box, Typography, Container } from '@mui/material'
+import { Header } from './components/layout/Header'
+import { Footer } from './components/layout/Footer'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { NotificationProvider } from './components/common/NotificationProvider'
+import { HomePage } from './pages/HomePage'
+import { AnalyzerPage } from './pages/AnalyzerPage'
 
-// Lazy load components for better performance
-const Home = React.lazy(() => import('@/pages/Home'))
-const Analyzer = React.lazy(() => import('@/pages/Analyzer'))
-const About = React.lazy(() => import('@/pages/About'))
-const Privacy = React.lazy(() => import('@/pages/Privacy'))
+// Composants temporaires pour les autres pages
 
-const LoadingSpinner = () => (
-  <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    minHeight="50vh"
-  >
-    <CircularProgress />
-  </Box>
+const AboutPage = () => (
+  <Container sx={{ py: 4 }}>
+    <Typography variant="h3" gutterBottom>
+      About ManaTuner Pro
+    </Typography>
+    <Typography variant="body1">
+      ManaTuner Pro is a manabase analysis tool for Magic: The Gathering, 
+      based on Frank Karsten's research and inspired by Charles Wickham's work.
+    </Typography>
+  </Container>
+)
+
+const PrivacyPage = () => (
+  <Container sx={{ py: 4 }}>
+    <Typography variant="h3" gutterBottom>
+      Privacy Policy
+    </Typography>
+    <Typography variant="body1">
+      We respect your privacy. No personal data is collected.
+    </Typography>
+  </Container>
 )
 
 function App() {
@@ -44,15 +54,13 @@ function App() {
               flexDirection: 'column',
             }}
           >
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/analyzer" element={<Analyzer />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="*" element={<Home />} />
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/analyzer" element={<AnalyzerPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="*" element={<HomePage />} />
+            </Routes>
           </Box>
           
           <Footer />

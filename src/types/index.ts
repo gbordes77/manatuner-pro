@@ -1,67 +1,239 @@
 // MTG Card Types
-export interface ManaSymbol {
-  symbol: string
-  cmc: number
-  colors: string[]
-}
-
-export interface ManaCost {
-  cost: string
-  cmc: number
-  colors: string[]
-  symbols: ManaSymbol[]
-}
+export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G'
+export type ManaSymbol = ManaColor | 'C' | string
 
 export interface Card {
   id: string
   name: string
-  manaCost?: string
+  mana_cost?: string
   cmc: number
+  type_line: string
+  oracle_text?: string
   colors: string[]
-  colorIdentity: string[]
-  type: string
-  supertypes?: string[]
-  types: string[]
-  subtypes?: string[]
+  color_identity: string[]
+  set: string
+  set_name: string
   rarity: string
-  setCode: string
-  imageUris?: {
+  image_uris?: {
     small?: string
     normal?: string
     large?: string
   }
-  faces?: Card[] // For double-faced cards
+  prices?: {
+    usd?: string
+    eur?: string
+  }
+  legalities: Record<string, string>
   layout: string
-  isLand: boolean
-  producedMana?: string[]
+  card_faces?: CardFace[]
 }
 
+export interface CardFace {
+  name: string
+  mana_cost?: string
+  type_line: string
+  oracle_text?: string
+  colors: string[]
+  image_uris?: {
+    small?: string
+    normal?: string
+    large?: string
+  }
+}
+
+export interface ManaCost {
+  symbols: ManaSymbol[]
+  cmc: number
+  colors: string[]
+}
+
+// Deck Types
 export interface DeckCard {
   card: Card
   quantity: number
-  category: 'creature' | 'spell' | 'land' | 'artifact' | 'enchantment' | 'planeswalker' | 'other'
 }
 
 export interface Deck {
-  id?: string
+  id: string
   name: string
+  format: MTGFormat
+  cards: DeckCard[]
+  createdAt: string
+  updatedAt: string
   description?: string
-  format: string
-  mainboard: DeckCard[]
-  sideboard: DeckCard[]
-  commander?: DeckCard
-  totalCards: number
-  createdAt?: Date
-  updatedAt?: Date
+  tags?: string[]
+}
+
+// MTG Formats
+export type MTGFormat = 
+  | 'standard'
+  | 'modern'
+  | 'legacy'
+  | 'vintage'
+  | 'commander'
+  | 'pioneer'
+  | 'historic'
+  | 'pauper'
+  | 'limited'
+
+// Manabase Analysis Types
+export interface ManabaseAnalysis {
+  id: string
+  deckId: string
+  format: MTGFormat
+  totalLands: number
+  colorRequirements: ColorRequirement[]
+  recommendations: LandRecommendation[]
+  probabilities: ManabaseProbabilities
+  createdAt: string
+}
+
+export interface ColorRequirement {
+  color: ManaColor
+  turn: number
+  sources: number
+  probability: number
+  isOptimal: boolean
+}
+
+export interface LandRecommendation {
+  cardName: string
+  quantity: number
+  reason: string
+  priority: 'high' | 'medium' | 'low'
+  colors: ManaColor[]
+}
+
+export interface ManabaseProbabilities {
+  turn1: TurnProbabilities
+  turn2: TurnProbabilities
+  turn3: TurnProbabilities
+  turn4: TurnProbabilities
+  overall: OverallProbabilities
+}
+
+export interface TurnProbabilities {
+  anyColor: number
+  specificColors: Record<ManaColor, number>
+  multipleColors: Record<string, number>
+}
+
+export interface OverallProbabilities {
+  consistency: number
+  colorScrew: number
+  manaFlood: number
+  manaScrew: number
+}
+
+// Search and Filter Types
+export interface SearchFilters {
+  name?: string
+  colors?: ManaColor[]
+  type?: string
+  set?: string
+  rarity?: string
+  cmc?: number | [number, number]
+  format?: MTGFormat
+}
+
+export interface SearchResult {
+  cards: Card[]
+  totalCount: number
+  hasMore: boolean
+}
+
+// UI State Types
+export interface UIState {
+  theme: 'light' | 'dark'
+  sidebarOpen: boolean
+  loading: boolean
+  error: string | null
+}
+
+// API Response Types
+export interface ScryfallResponse<T> {
+  object: string
+  data: T[]
+  has_more: boolean
+  next_page?: string
+  total_cards?: number
+}
+
+export interface ApiError {
+  message: string
+  code?: string
+  details?: any
+}
+
+export interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: ApiError
+  metadata?: {
+    timestamp: string
+    requestId: string
+    cached?: boolean
+  }
+}
+
+// Utility Types
+export interface PaginationParams {
+  page: number
+  limit: number
+}
+
+export interface SortParams {
+  field: string
+  direction: 'asc' | 'desc'
+}
+
+// Constants
+export const MTG_FORMATS: MTGFormat[] = [
+  'standard',
+  'modern',
+  'legacy',
+  'vintage',
+  'commander',
+  'pioneer',
+  'historic',
+  'pauper',
+  'limited'
+]
+
+export const MANA_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G']
+
+export const COLOR_NAMES: Record<ManaColor, string> = {
+  W: 'White',
+  U: 'Blue',
+  B: 'Black',
+  R: 'Red',
+  G: 'Green'
+}
+
+// Simulation Types
+export interface SimulationParams {
+  iterations: number
+  mulliganStrategy: 'none' | 'aggressive' | 'conservative'
+  playFirst: boolean
+  maxMulligans: number
+}
+
+export interface SimulationResult {
+  params: SimulationParams
+  results: {
+    turn: number
+    castRate: number
+    averageDelay: number
+    keepRate: number
+  }[]
+  statistics: {
+    totalGames: number
+    averageKeepRate: number
+    averageFirstSpellTurn: number
+  }
 }
 
 // Analysis Types
-export interface ColorRequirement {
-  color: string
-  sources: number
-  percentage: number
-}
-
 export interface TurnAnalysis {
   turn: number
   castProbability: number
@@ -75,17 +247,6 @@ export interface CardAnalysis {
   turnAnalysis: TurnAnalysis[]
   reliability: 'excellent' | 'good' | 'marginal' | 'poor'
   recommendedSources: ColorRequirement[]
-}
-
-export interface ManabaseAnalysis {
-  id: string
-  deckId: string
-  totalLands: number
-  colorDistribution: Record<string, number>
-  cardAnalyses: CardAnalysis[]
-  recommendations: Recommendation[]
-  overallRating: number
-  createdAt: Date
 }
 
 export interface Recommendation {
@@ -123,53 +284,6 @@ export interface SimulationResult {
   }
 }
 
-// UI State Types
-export interface NotificationState {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  message: string
-  autoHideDuration?: number
-}
-
-export interface LoadingState {
-  isLoading: boolean
-  operation?: string
-  progress?: number
-}
-
-export interface ErrorState {
-  hasError: boolean
-  message?: string
-  code?: string
-  details?: any
-}
-
-// API Types
-export interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: {
-    code: string
-    message: string
-    details?: any
-  }
-  metadata?: {
-    timestamp: string
-    requestId: string
-    cached?: boolean
-  }
-}
-
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-}
-
 // Firebase Types
 export interface FirebaseConfig {
   apiKey: string
@@ -196,7 +310,6 @@ export interface User {
   }
 }
 
-// Utility Types
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
 }
