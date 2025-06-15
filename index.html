@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="description" content="Advanced MTG Manabase Analysis Tool - Calculate optimal mana bases for Magic: The Gathering decks" />
+    <title>Project Manabase - MTG Manabase Analyzer</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    
+    <!-- DNS prefetch for external APIs -->
+    <link rel="dns-prefetch" href="https://api.scryfall.com" />
+    
+    <style>
+      /* Critical CSS - Loading state */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .loading {
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+      
+      .loading::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+      }
+      
+      @keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60% { content: '...'; }
+        80%, 100% { content: ''; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading">Loading Project Manabase</div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html> 
