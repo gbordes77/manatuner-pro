@@ -80,24 +80,21 @@ export const HomePage: React.FC = () => {
             🚀 Start Analyzing
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             size="large"
             onClick={() => navigate('/about')}
             sx={{ 
               px: 4, 
               py: 2,
               fontSize: '1rem',
+              fontWeight: 'bold',
               borderRadius: 3,
-              borderWidth: 2,
-              borderColor: 'primary.main',
-              color: 'primary.main',
+              boxShadow: 4,
+              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
               '&:hover': {
-                borderWidth: 2,
-                borderColor: 'primary.dark',
-                backgroundColor: 'primary.main',
-                color: 'white',
-                transform: 'translateY(-1px)',
-                boxShadow: 2
+                boxShadow: 6,
+                transform: 'translateY(-2px)',
+                background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)'
               },
               transition: 'all 0.3s ease-in-out'
             }}

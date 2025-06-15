@@ -1,0 +1,1 @@
+export { detectLand, type LandInfo } from './landDetection' 

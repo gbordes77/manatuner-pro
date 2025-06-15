@@ -1,5 +1,20 @@
 import { ManaColor, MANA_COLORS } from '../types'
 
+// Interface pour les données Scryfall
+interface ScryfallCard {
+  id: string
+  name: string
+  type_line: string
+  mana_cost?: string
+  cmc: number
+  colors: string[]
+  produced_mana?: string[]
+  layout: string
+}
+
+// Cache pour éviter les appels répétés à Scryfall
+const scryfallCache = new Map<string, ScryfallCard>()
+
 export interface DeckCard {
   name: string
   quantity: number
@@ -9,7 +24,7 @@ export interface DeckCard {
   producedMana?: ManaColor[]
   cmc: number
   // Enhanced land properties from reference project
-  etbTapped?: (lands: DeckCard[], cmc?: number) => boolean
+  etbTapped?: (lands: DeckCard[], cmc?: number, turn?: number) => boolean
   fetchland?: string[]
   checkland?: boolean
   ravland?: boolean
@@ -39,6 +54,71 @@ export interface AnalysisResult {
 }
 
 export class DeckAnalyzer {
+  // Fonction pour interroger l'API Scryfall
+  private static async fetchCardFromScryfall(cardName: string): Promise<ScryfallCard | null> {
+    // Vérifier le cache d'abord
+    if (scryfallCache.has(cardName)) {
+      return scryfallCache.get(cardName)!
+    }
+
+    try {
+      const encodedName = encodeURIComponent(cardName)
+      const response = await fetch(`https://api.scryfall.com/cards/named?exact=${encodedName}`)
+      
+      if (!response.ok) {
+        console.warn(`Scryfall API error for "${cardName}": ${response.status}`)
+        return null
+      }
+
+      const data: ScryfallCard = await response.json()
+      
+      // Mettre en cache le résultat
+      scryfallCache.set(cardName, data)
+      return data
+    } catch (error) {
+      console.error(`Error fetching card "${cardName}" from Scryfall:`, error)
+      return null
+    }
+  }
+
+  // Fonction améliorée pour détecter les terrains via Scryfall
+  private static async isLandCardScryfall(name: string): Promise<boolean> {
+    const scryfallData = await this.fetchCardFromScryfall(name)
+    
+    if (scryfallData) {
+      // Vérification précise via Scryfall
+      return scryfallData.type_line.toLowerCase().includes('land')
+    }
+    
+    // Fallback vers la détection par mots-clés si Scryfall échoue
+    return this.isLandCardFallback(name)
+  }
+
+  // Fonction de fallback pour la détection des terrains (ancienne méthode)
+  private static isLandCardFallback(name: string): boolean {
+    const landKeywords = [
+      // Basic lands
+      'island', 'mountain', 'forest', 'plains', 'swamp',
+      // Land types
+      'land', 'terrain',
+      // Fetchlands
+      'strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire', 'catacombs', 'flats',
+      // Other land indicators
+      'temple', 'sanctuary', 'grove', 'cavern', 'spire', 'foundry',
+      'confluence', 'command tower', 'city of brass', 'mana confluence',
+      // Additional land types
+      'courtyard', 'vantage', 'tower', 'town', 'shrine', 'crypt',
+      'heath', 'rainforest', 'garden', 'pool', 'ground', 'fountain',
+      // French translations
+      'île', 'montagne', 'forêt', 'plaine', 'marais'
+    ]
+    
+    const lowerName = name.toLowerCase()
+    return landKeywords.some(keyword => lowerName.includes(keyword)) ||
+           lowerName.includes('terrain') ||
+           lowerName.endsWith('land') ||
+           lowerName.endsWith('lands')
+  }
   private static parseManaCost(manaCost: string): { colors: ManaColor[], cmc: number, cost: Record<string, number> } {
     const colors: ManaColor[] = []
     const cost: Record<string, number> = {}
@@ -87,30 +167,9 @@ export class DeckAnalyzer {
     return { colors, cmc, cost }
   }
 
-  // Enhanced land detection from reference project
+  // Enhanced land detection from reference project (kept for sync compatibility)
   private static isLandCard(name: string): boolean {
-    const landKeywords = [
-      // Basic lands
-      'island', 'mountain', 'forest', 'plains', 'swamp',
-      // Land types
-      'land', 'terrain',
-      // Fetchlands
-      'strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire', 'catacombs', 'flats',
-      // Other land indicators
-      'temple', 'sanctuary', 'grove', 'cavern', 'spire', 'foundry',
-      'confluence', 'command tower', 'city of brass', 'mana confluence',
-      // Additional land types
-      'courtyard', 'vantage', 'tower', 'town', 'shrine', 'crypt',
-      'heath', 'rainforest', 'garden', 'pool', 'ground', 'fountain',
-      // French translations
-      'île', 'montagne', 'forêt', 'plaine', 'marais'
-    ]
-    
-    const lowerName = name.toLowerCase()
-    return landKeywords.some(keyword => lowerName.includes(keyword)) ||
-           lowerName.includes('terrain') ||
-           lowerName.endsWith('land') ||
-           lowerName.endsWith('lands')
+    return this.isLandCardFallback(name)
   }
 
   // Enhanced land logic from reference project
@@ -119,6 +178,18 @@ export class DeckAnalyzer {
     const properties: Partial<DeckCard> = {
       etbTapped: () => false,
       producesMana: true
+    }
+
+    // Starting Town et lands similaires (condition temporelle)
+    if (lowerName.includes('starting town')) {
+      properties.etbTapped = (lands: DeckCard[], cmc?: number, turn?: number) => {
+        // Entre non-engagé seulement aux tours 1, 2, ou 3
+        return (turn || 4) > 3
+      }
+      // Note: Starting Town a des propriétés spéciales :
+      // - {T}: Add {C} (gratuit)
+      // - {T}, Pay 1 life: Add one mana of any color
+      return properties
     }
 
     // Fetchlands
@@ -199,7 +270,7 @@ export class DeckAnalyzer {
   }
 
   // Enhanced card parsing with better mana cost handling
-  private static parseDeckList(deckList: string): DeckCard[] {
+  private static async parseDeckList(deckList: string): Promise<DeckCard[]> {
     const lines = deckList.split('\n').filter(line => line.trim())
     const cards: DeckCard[] = []
 
@@ -232,10 +303,11 @@ export class DeckAnalyzer {
         // Clean card name by removing MTGA set codes like "(TDM) 33" or "(RNA) 245"
         name = this.cleanCardName(name)
         
-        const isLand = this.isLandCard(name)
+        // Utiliser Scryfall pour une détection précise des terrains
+        const isLand = await this.isLandCardScryfall(name)
         const manaCost = this.getSimulatedManaCost(name)
         const { colors, cmc, cost } = this.parseManaCost(manaCost)
-        const producedMana = isLand ? this.getProducedMana(name) : undefined
+        const producedMana = isLand ? await this.getProducedManaScryfall(name) : undefined
         const landProperties = isLand ? this.evaluateLandProperties(name) : {}
 
         cards.push({
@@ -323,7 +395,7 @@ export class DeckAnalyzer {
       'Sensei\'s Divining Top': '{1}',
       'Goblin Bombardment': '{1}{R}',
       'Phyrexian Tower': '{0}',
-      'Starting Town': '{0}'
+      // Starting Town n'a pas de coût de mana (c'est un land)
     }
     
     // If we don't have the exact card, try to guess based on name patterns
@@ -341,6 +413,18 @@ export class DeckAnalyzer {
     
     // Default to 2 generic mana
     return '{2}'
+  }
+
+  // Fonction améliorée pour obtenir le mana produit via Scryfall
+  private static async getProducedManaScryfall(name: string): Promise<ManaColor[]> {
+    const scryfallData = await this.fetchCardFromScryfall(name)
+    
+    if (scryfallData && scryfallData.produced_mana) {
+      return scryfallData.produced_mana as ManaColor[]
+    }
+    
+    // Fallback vers la méthode existante
+    return this.getProducedMana(name)
   }
 
   private static getProducedMana(name: string): ManaColor[] {
@@ -400,7 +484,7 @@ export class DeckAnalyzer {
       
       // Special lands
       'Phyrexian Tower': [], // Colorless but sacrifices creatures
-      'Starting Town': [] // Colorless utility land
+      'Starting Town': ['W', 'U', 'B', 'R', 'G'] // Peut produire n'importe quelle couleur (+ incolore gratuit)
     }
     
     if (landProduction[name]) {
@@ -502,64 +586,64 @@ export class DeckAnalyzer {
     analysis: Partial<AnalysisResult>
   ): string[] {
     const recommendations: string[] = []
-    const totalCards = analysis.totalCards || 0
-    const totalLands = analysis.totalLands || 0
-    const landRatio = analysis.landRatio || 0
-    const averageCMC = analysis.averageCMC || 0
-
-    // Dynamic land ratio recommendations based on average CMC
-    const idealLandRatio = this.calculateIdealLandRatio(averageCMC)
+    const lands = cards.filter(card => card.isLand)
+    const nonLands = cards.filter(card => !card.isLand)
     
-    if (landRatio < idealLandRatio - 0.05) {
-      const suggestedLands = Math.ceil(totalCards * idealLandRatio) - totalLands
-      recommendations.push(`Your manabase seems light for an average CMC of ${averageCMC.toFixed(1)}. Consider adding ${suggestedLands} more land(s).`)
+    // Analyse des mécaniques complexes
+    const complexAnalysis = this.analyzeComplexLandMechanics(cards);
+
+    // Land ratio recommendations
+    if (analysis.landRatio && analysis.landRatio < 0.35) {
+      recommendations.push(`🏔️ Consider adding more lands (current: ${Math.round(analysis.landRatio * 100)}%, recommended: 35-40%)`)
+    } else if (analysis.landRatio && analysis.landRatio > 0.45) {
+      recommendations.push(`🎯 Consider reducing lands (current: ${Math.round(analysis.landRatio * 100)}%, recommended: 35-40%)`)
     }
 
-    if (landRatio > idealLandRatio + 0.05) {
-      const excessLands = totalLands - Math.floor(totalCards * idealLandRatio)
-      recommendations.push(`Your manabase seems heavy for an average CMC of ${averageCMC.toFixed(1)}. You could reduce by ${excessLands} land(s).`)
-    }
-
-    // Color distribution analysis
-    const activeColors = Object.values(analysis.colorDistribution || {}).filter(count => count > 0).length
-    const colorDistribution = analysis.colorDistribution || {}
-    
-    if (activeColors >= 3) {
-      recommendations.push('Multicolor deck detected. Prioritize dual lands and fixing sources like fetchlands.')
-    }
-
-    // Check for color imbalance
-    const colorCounts = Object.entries(colorDistribution).filter(([_, count]) => (count as number) > 0)
-    if (colorCounts.length >= 2) {
-      const maxColor = Math.max(...colorCounts.map(([_, count]) => count as number))
-      const minColor = Math.min(...colorCounts.map(([_, count]) => count as number))
+    // Color distribution recommendations
+    if (analysis.colorDistribution) {
+      const colors = Object.keys(analysis.colorDistribution) as ManaColor[]
+      const activeColors = colors.filter(color => (analysis.colorDistribution![color] || 0) > 0)
       
-      if (maxColor > minColor * 2) {
-        recommendations.push('Color imbalance detected. Adjust land proportions to better match your mana needs.')
+      if (activeColors.length >= 3) {
+        recommendations.push(`🌈 Multi-color deck detected (${activeColors.length} colors). Consider more dual lands and mana fixing.`)
+        
+        // Starting Town specific recommendation for multicolor decks
+        if (complexAnalysis.flexibleManaLands < activeColors.length * 2) {
+          recommendations.push(`✨ Starting Town would be excellent here - provides any color early game and remains useful late game.`)
+        }
       }
     }
 
-    // CMC-based recommendations
-    if (averageCMC < 2) {
-      recommendations.push('Very aggressive deck detected. Prioritize fast lands and avoid those that enter tapped.')
-    } else if (averageCMC > 4) {
-      recommendations.push('High curve deck. You can afford some utility lands that enter tapped.')
+    // Mana curve recommendations
+    if (analysis.averageCMC && analysis.averageCMC > 3.5) {
+      recommendations.push(`⚡ High mana curve (${analysis.averageCMC.toFixed(1)}). Consider more ramp or lower-cost spells.`)
+    } else if (analysis.averageCMC && analysis.averageCMC < 2.0) {
+      recommendations.push(`🏃 Very aggressive curve (${analysis.averageCMC.toFixed(1)}). Ensure sufficient early mana sources.`)
+    }
+
+    // Complex land mechanics recommendations
+    if (complexAnalysis.timingDependentLands.length > 0) {
+      recommendations.push(`⏰ Timing-dependent lands detected: ${complexAnalysis.timingDependentLands.join(', ')}`)
+    }
+    
+    if (complexAnalysis.lifeCostLands > 8) {
+      recommendations.push(`❤️ High life cost from lands (${complexAnalysis.lifeCostLands} sources). Consider life gain or aggressive strategy.`)
+    }
+    
+    if (complexAnalysis.flexibleManaLands >= 8) {
+      recommendations.push(`🎨 Excellent mana flexibility (${complexAnalysis.flexibleManaLands} flexible sources). Great for multicolor strategies.`)
+    }
+
+    // Specific Starting Town analysis
+    const startingTowns = cards.find(card => card.name.toLowerCase().includes('starting town'));
+    if (startingTowns && startingTowns.quantity >= 4) {
+      recommendations.push(`🏘️ Starting Town (${startingTowns.quantity}x): Excellent early game mana base. Optimal in aggressive multicolor decks.`)
+      recommendations.push(`💡 Starting Town tip: Prioritize playing it turns 1-3 for maximum value (enters untapped).`)
     }
 
     // Consistency recommendations
-    if ((analysis.consistency || 0) < 0.7) {
-      recommendations.push('Consistency can be improved. Increase the number of sources for your main colors.')
-    }
-
-    // Deck size recommendations
-    if (totalCards < 60) {
-      recommendations.push(`Your deck contains ${totalCards} cards. Consider optimizing to 60 cards for better consistency.`)
-    } else if (totalCards > 100) {
-      recommendations.push(`${totalCards}-card deck detected. Make sure you have enough mana sources for each color.`)
-    }
-
-    if (recommendations.length === 0) {
-      recommendations.push('Your manabase looks well balanced! Keep it up.')
+    if (analysis.consistency && analysis.consistency < 0.7) {
+      recommendations.push(`🎲 Low mana consistency (${Math.round(analysis.consistency * 100)}%). Add more dual lands or mana fixing.`)
     }
 
     return recommendations
@@ -577,8 +661,8 @@ export class DeckAnalyzer {
     return 0.45                             // Control/Ramp (27/60)
   }
 
-  public static analyzeDeck(deckList: string): AnalysisResult {
-    const cards = this.parseDeckList(deckList)
+  public static async analyzeDeck(deckList: string): Promise<AnalysisResult> {
+    const cards = await this.parseDeckList(deckList)
     
     const totalCards = cards.reduce((sum, card) => sum + card.quantity, 0)
     const lands = cards.filter(card => card.isLand)
@@ -682,5 +766,64 @@ export class DeckAnalyzer {
     
     // Default: produces colorless
     return []
+  }
+
+  // Analyse des implications stratégiques des lands complexes
+  private static analyzeComplexLandMechanics(cards: DeckCard[]): {
+    earlyGameLands: number;
+    lateGameLands: number;
+    lifeCostLands: number;
+    flexibleManaLands: number;
+    timingDependentLands: string[];
+  } {
+    let earlyGameLands = 0;
+    let lateGameLands = 0;
+    let lifeCostLands = 0;
+    let flexibleManaLands = 0;
+    const timingDependentLands: string[] = [];
+
+    cards.filter(card => card.isLand).forEach(land => {
+      const lowerName = land.name.toLowerCase();
+      
+      // Starting Town analysis
+      if (lowerName.includes('starting town')) {
+        earlyGameLands += land.quantity; // Excellent early game
+        lateGameLands += land.quantity;  // Still useful late game
+        lifeCostLands += land.quantity;  // Coût en vie pour mana coloré
+        flexibleManaLands += land.quantity; // Peut produire toutes les couleurs
+        timingDependentLands.push(`${land.quantity}x ${land.name} (optimal turns 1-3)`);
+      }
+      
+      // Shocklands analysis
+      else if (['temple garden', 'sacred foundry', 'steam vents', 'overgrown tomb',
+                'watery grave', 'godless shrine', 'stomping ground', 'breeding pool',
+                'blood crypt', 'hallowed fountain'].some(shock => lowerName.includes(shock))) {
+        earlyGameLands += land.quantity;
+        lifeCostLands += land.quantity; // 2 life pour entrer non-engagé
+        flexibleManaLands += land.quantity;
+      }
+      
+      // Fastlands analysis
+      else if (['seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge',
+                'razorverge thicket', 'inspiring vantage', 'concealed courtyard', 'spirebluff canal',
+                'blooming marsh', 'botanical sanctum'].some(fast => lowerName.includes(fast))) {
+        earlyGameLands += land.quantity; // Excellent early game
+        timingDependentLands.push(`${land.quantity}x ${land.name} (optimal with ≤2 other lands)`);
+      }
+      
+      // Mana Confluence analysis
+      else if (lowerName.includes('mana confluence')) {
+        flexibleManaLands += land.quantity;
+        lifeCostLands += land.quantity; // 1 life par activation
+      }
+    });
+
+    return {
+      earlyGameLands,
+      lateGameLands,
+      lifeCostLands,
+      flexibleManaLands,
+      timingDependentLands
+    };
   }
 } 
