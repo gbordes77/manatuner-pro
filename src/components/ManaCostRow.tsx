@@ -117,32 +117,88 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
     fetchCardData()
   }, [cardName])
 
+  const getSimulatedManaCost = (cardName: string): string => {
+    // Base de données étendue des coûts de mana
+    const costs: Record<string, string> = {
+      // Auras et enchantements
+      'Light-Paws, Emperor\'s Voice': '{1}{W}',
+      'Ethereal Armor': '{W}',
+      'Sentinel\'s Eyes': '{1}{W}',
+      'Shardmage\'s Rescue': '{W}',
+      'Combat Research': '{U}',
+      'Kaya\'s Ghostform': '{1}{B}',
+      'Cartouche of Zeal': '{R}',
+      'Sticky Fingers': '{R}',
+      'Sheltered by Ghosts': '{1}{W}',
+      'Demonic Ruckus': '{1}{R}',
+      'Surge of Salvation': '{W}',
+      'Wingspan Stride': '{1}{W}',
+      
+      // Créatures
+      'Esper Sentinel': '{W}',
+      'Giver of Runes': '{W}',
+      'Kor Spiritdancer': '{1}{W}',
+      
+      // Sorts classiques
+      'Lightning Bolt': '{R}',
+      'Counterspell': '{U}{U}',
+      'Swords to Plowshares': '{W}',
+      'Path to Exile': '{W}',
+      'Dark Ritual': '{B}',
+      'Thoughtseize': '{B}',
+      'Fatal Push': '{B}',
+      'Brainstorm': '{U}',
+      'Ponder': '{U}',
+      
+      // Multicolores
+      'Lightning Helix': '{R}{W}',
+      'Terminate': '{B}{R}',
+      'Abrupt Decay': '{B}{G}',
+      
+      // Artefacts
+      'Sol Ring': '{1}',
+      'Sensei\'s Divining Top': '{1}',
+      'Mox Ruby': '{0}',
+      'Black Lotus': '{0}',
+    }
+    
+    if (costs[cardName]) {
+      return costs[cardName]
+    }
+    
+    // Heuristiques basées sur le nom
+    const lowerName = cardName.toLowerCase()
+    if (lowerName.includes('bolt') || lowerName.includes('shock')) return '{R}'
+    if (lowerName.includes('counter')) return '{U}{U}'
+    if (lowerName.includes('swords') || lowerName.includes('path')) return '{W}'
+    if (lowerName.includes('ritual') || lowerName.includes('dark')) return '{B}'
+    if (lowerName.includes('elf') || lowerName.includes('birds')) return '{G}'
+    if (lowerName.includes('armor') || lowerName.includes('aura')) return '{W}'
+    if (lowerName.includes('rescue') || lowerName.includes('protection')) return '{W}'
+    
+    // Coût par défaut basé sur la complexité du nom
+    if (cardName.length > 20) return '{2}{W}'
+    if (cardName.includes('\'')) return '{1}{W}' // Noms avec apostrophe souvent légendaires
+    
+    return '{2}' // Défaut générique
+  }
+
   const renderManaSymbols = (manaCost: string) => {
-    if (!manaCost) return <span className="mana-symbol generic">2</span>
+    // Si pas de mana cost de Scryfall, utiliser la simulation
+    const actualManaCost = manaCost || getSimulatedManaCost(cardName)
+    
+    if (!actualManaCost) return <ManaSymbol symbol="2" />
     
     // Parse mana cost symbols like {W}{U}{B}{R}{G}{1}{2}{3}...
-    const symbols = manaCost.match(/\{[^}]+\}/g) || []
+    const symbols = actualManaCost.match(/\{[^}]+\}/g) || []
     
-    return symbols.map((symbol, index) => {
-      const cleanSymbol = symbol.replace(/[{}]/g, '')
-      let className = 'mana-symbol '
-      
-      // Determine color class
-      if (cleanSymbol === 'W') className += 'white'
-      else if (cleanSymbol === 'U') className += 'blue'
-      else if (cleanSymbol === 'B') className += 'black'
-      else if (cleanSymbol === 'R') className += 'red'
-      else if (cleanSymbol === 'G') className += 'green'
-      else className += 'generic'
-      
-      return (
-        <Tooltip key={index} title={`${cleanSymbol} mana`} arrow>
-          <span className={className}>
-            {cleanSymbol}
-          </span>
-        </Tooltip>
-      )
-    })
+    if (symbols.length === 0) {
+      return <ManaSymbol symbol="2" />
+    }
+    
+    return symbols.map((symbol, index) => (
+      <ManaSymbol key={index} symbol={symbol} />
+    ))
   }
 
   const calculateProbabilities = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Container,
   Grid,
@@ -60,13 +60,109 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
+// Fonction de détection complète utilisant notre base de données
+function isLandCardComplete(name: string): boolean {
+  const lowerName = name.toLowerCase();
+  
+  // Liste complète des lands connus
+  const knownLands = new Set([
+    // Basic Lands
+    'plains', 'island', 'swamp', 'mountain', 'forest', 'wastes',
+    'snow-covered plains', 'snow-covered island', 'snow-covered swamp', 
+    'snow-covered mountain', 'snow-covered forest',
+    
+    // Fetchlands
+    'flooded strand', 'polluted delta', 'bloodstained mire', 'wooded foothills', 'windswept heath',
+    'scalding tarn', 'verdant catacombs', 'arid mesa', 'misty rainforest', 'marsh flats',
+    'prismatic vista', 'fabled passage', 'evolving wilds', 'terramorphic expanse',
+    
+    // Shocklands
+    'hallowed fountain', 'watery grave', 'blood crypt', 'stomping ground', 'temple garden',
+    'sacred foundry', 'godless shrine', 'steam vents', 'overgrown tomb', 'breeding pool',
+    
+    // Fastlands
+    'seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge', 'razorverge thicket',
+    'inspiring vantage', 'concealed courtyard', 'spirebluff canal', 'blooming marsh', 'botanical sanctum',
+    
+    // Horizon Lands
+    'sunbaked canyon', 'waterlogged grove', 'nurturing peatland', 'silent clearing', 'fiery islet',
+    'horizon canopy', 'grove of the burnwillows',
+    
+    // Utility Lands
+    'mana confluence', 'city of brass', 'gemstone mine', 'grand coliseum', 'pillar of the paruns',
+    'unclaimed territory', 'ancient ziggurat', 'cavern of souls', 'mutavault',
+    
+    // Recent Lands
+    'starting town', 'elegant parlor', 'lush portico', 'meticulous archive', 'raucous theater',
+    'undercity sewers', 'blazemire verge', 'foreboding landscape', 'hedge maze', 'promising vein'
+  ]);
+  
+  // Vérification directe
+  if (knownLands.has(lowerName)) {
+    return true;
+  }
+  
+  // Mots-clés étendus pour les lands non listés
+  const landKeywords = [
+    'plains', 'island', 'swamp', 'mountain', 'forest',
+    'land', 'strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire',
+    'catacombs', 'flats', 'temple', 'sanctuary', 'grove', 'cavern',
+    'confluence', 'pool', 'garden', 'vents', 'foundry', 'tomb',
+    'grave', 'shrine', 'ground', 'crypt', 'sanctum', 'shores',
+    'marsh', 'tower', 'coast', 'cliffs', 'gorge', 'thicket',
+    'vantage', 'courtyard', 'canal', 'town', 'parlor', 'portico',
+    'archive', 'theater', 'sewers', 'verge', 'landscape', 'maze',
+    'canyon', 'clearing', 'peatland', 'islet', 'citadel', 'monastery',
+    'outpost', 'bivouac', 'palace', 'headquarters', 'lounge'
+  ];
+  
+  return landKeywords.some(keyword => lowerName.includes(keyword));
+}
+
 export const AnalyzerPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   const [deckList, setDeckList] = useState('')
-
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isDeckMinimized, setIsDeckMinimized] = useState(false)
+  
+  // Charger l'état depuis localStorage au montage
+  useEffect(() => {
+    const savedDeckList = localStorage.getItem('manatuner-decklist')
+    const savedAnalysis = localStorage.getItem('manatuner-analysis')
+    const savedMinimized = localStorage.getItem('manatuner-minimized')
+    
+    if (savedDeckList) {
+      setDeckList(savedDeckList)
+    }
+    if (savedAnalysis) {
+      try {
+        setAnalysisResult(JSON.parse(savedAnalysis))
+      } catch (e) {
+        console.warn('Failed to parse saved analysis')
+      }
+    }
+    if (savedMinimized) {
+      setIsDeckMinimized(savedMinimized === 'true')
+    }
+  }, [])
+  
+  // Sauvegarder l'état dans localStorage
+  useEffect(() => {
+    localStorage.setItem('manatuner-decklist', deckList)
+  }, [deckList])
+  
+  useEffect(() => {
+    if (analysisResult) {
+      localStorage.setItem('manatuner-analysis', JSON.stringify(analysisResult))
+    } else {
+      localStorage.removeItem('manatuner-analysis')
+    }
+  }, [analysisResult])
+  
+  useEffect(() => {
+    localStorage.setItem('manatuner-minimized', isDeckMinimized.toString())
+  }, [isDeckMinimized])
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -470,6 +566,10 @@ export const AnalyzerPage: React.FC = () => {
                         const quantity = parseInt(match[1]);
                         const cardName = match[2].replace(/^A-/, '').trim();
                         
+                        // Filtrer les terrains - ne montrer que les sorts
+                        const isLand = isLandCardComplete(cardName);
+                        if (isLand) return null;
+                        
                         return (
                           <ManaCostRow
                             key={index}
@@ -477,7 +577,7 @@ export const AnalyzerPage: React.FC = () => {
                             quantity={quantity}
                           />
                         );
-                      })}
+                      }).filter(Boolean)}
                     </Box>
                   ) : (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -629,64 +729,7 @@ export const AnalyzerPage: React.FC = () => {
                             }
                           });
                           
-                          // Fonction de détection complète utilisant notre base de données
-                          function isLandCardComplete(name: string): boolean {
-                            const lowerName = name.toLowerCase();
-                            
-                            // Liste complète des lands connus
-                            const knownLands = new Set([
-                              // Basic Lands
-                              'plains', 'island', 'swamp', 'mountain', 'forest', 'wastes',
-                              'snow-covered plains', 'snow-covered island', 'snow-covered swamp', 
-                              'snow-covered mountain', 'snow-covered forest',
-                              
-                              // Fetchlands
-                              'flooded strand', 'polluted delta', 'bloodstained mire', 'wooded foothills', 'windswept heath',
-                              'scalding tarn', 'verdant catacombs', 'arid mesa', 'misty rainforest', 'marsh flats',
-                              'prismatic vista', 'fabled passage', 'evolving wilds', 'terramorphic expanse',
-                              
-                              // Shocklands
-                              'hallowed fountain', 'watery grave', 'blood crypt', 'stomping ground', 'temple garden',
-                              'sacred foundry', 'godless shrine', 'steam vents', 'overgrown tomb', 'breeding pool',
-                              
-                              // Fastlands
-                              'seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge', 'razorverge thicket',
-                              'inspiring vantage', 'concealed courtyard', 'spirebluff canal', 'blooming marsh', 'botanical sanctum',
-                              
-                              // Horizon Lands
-                              'sunbaked canyon', 'waterlogged grove', 'nurturing peatland', 'silent clearing', 'fiery islet',
-                              'horizon canopy', 'grove of the burnwillows',
-                              
-                              // Utility Lands
-                              'mana confluence', 'city of brass', 'gemstone mine', 'grand coliseum', 'pillar of the paruns',
-                              'unclaimed territory', 'ancient ziggurat', 'cavern of souls', 'mutavault',
-                              
-                              // Recent Lands
-                              'starting town', 'elegant parlor', 'lush portico', 'meticulous archive', 'raucous theater',
-                              'undercity sewers', 'blazemire verge', 'foreboding landscape', 'hedge maze', 'promising vein'
-                            ]);
-                            
-                            // Vérification directe
-                            if (knownLands.has(lowerName)) {
-                              return true;
-                            }
-                            
-                            // Mots-clés étendus pour les lands non listés
-                            const landKeywords = [
-                              'plains', 'island', 'swamp', 'mountain', 'forest',
-                              'land', 'strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire',
-                              'catacombs', 'flats', 'temple', 'sanctuary', 'grove', 'cavern',
-                              'confluence', 'pool', 'garden', 'vents', 'foundry', 'tomb',
-                              'grave', 'shrine', 'ground', 'crypt', 'sanctum', 'shores',
-                              'marsh', 'tower', 'coast', 'cliffs', 'gorge', 'thicket',
-                              'vantage', 'courtyard', 'canal', 'town', 'parlor', 'portico',
-                              'archive', 'theater', 'sewers', 'verge', 'landscape', 'maze',
-                              'canyon', 'clearing', 'peatland', 'islet', 'citadel', 'monastery',
-                              'outpost', 'bivouac', 'palace', 'headquarters', 'lounge'
-                            ];
-                            
-                            return landKeywords.some(keyword => lowerName.includes(keyword));
-                          }
+
                           
                           // Fonction de catégorisation complète
                           function categorizeLandComplete(name: string): string {
