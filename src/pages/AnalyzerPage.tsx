@@ -26,13 +26,18 @@ import {
   Speed as SpeedIcon,
   Assessment as AssessmentIcon,
   Terrain as TerrainIcon,
-  ViewList as ViewListIcon
+  ViewList as ViewListIcon,
+  AttachMoney as AttachMoneyIcon
 } from '@mui/icons-material'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 import { MANA_COLORS, COLOR_NAMES } from '../types'
 import { DeckAnalyzer, AnalysisResult } from '../services/deckAnalyzer'
 import { CardImageTooltip } from '../components/CardImageTooltip'
 import { detectLandHybrid } from '../utils/hybridLandDetection'
+import ManaCostRow from '../components/ManaCostRow'
+import EnhancedCharts from '../components/EnhancedCharts'
+import EnhancedRecommendations from '../components/EnhancedRecommendations'
+import EnhancedSpellAnalysis from '../components/EnhancedSpellAnalysis'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -90,27 +95,28 @@ export const AnalyzerPage: React.FC = () => {
     }, 1500)
   }
 
-  const sampleDeck = `4 Lightning Bolt
-4 Counterspell
-4 Swords to Plowshares
-4 Brainstorm
-2 Jace, the Mind Sculptor
-4 Delver of Secrets
-2 Young Pyromancer
-4 Ponder
-2 Force of Will
-3 Path to Exile
-2 Lightning Helix
-1 Wrath of God
-
-4 Flooded Strand
-4 Scalding Tarn
-2 Volcanic Island
-2 Tundra
-2 Island
-2 Mountain
-1 Plains
-1 Sacred Foundry`
+  const sampleDeck = `4 Light-Paws, Emperor's Voice (NEO) 25
+2 Inspiring Vantage (KLR) 283
+4 Esper Sentinel (MH2) 12
+4 Giver of Runes (MH1) 13
+4 Kor Spiritdancer (JMP) 116
+4 Ethereal Armor (DSK) 7
+1 Sentinel's Eyes (THB) 36
+4 Shardmage's Rescue (DSK) 29
+1 Combat Research (DMU) 44
+1 Sunbaked Canyon (MH1) 247
+1 Kaya's Ghostform (WAR) 94
+1 Plains (PIP) 317
+1 Cartouche of Zeal (AKR) 145
+3 Sticky Fingers (SNC) 124
+3 Sheltered by Ghosts (DSK) 30
+4 Demonic Ruckus (OTJ) 120
+1 Surge of Salvation (MOM) 41
+4 Sacred Foundry (GRN) 254
+4 Mana Confluence (JOU) 163
+4 Godless Shrine (RNA) 248
+1 Wingspan Stride (TDM) 66
+4 Starting Town (FIN) 289`
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -241,9 +247,10 @@ export const AnalyzerPage: React.FC = () => {
                 </Typography>
 
                 <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 3 }}>
-                  <Tab label="Overview" />
-                  <Tab label="Probabilities" />
-                  <Tab label="Recommendations" />
+                                  <Tab label="Overview" />
+                <Tab label="Probabilities" />
+                <Tab label="💰 Mana Cost" />
+                <Tab label="Recommendations" />
                   <Tab label="Spell Analysis" />
                   <Tab label="Deck List" />
                   <Tab label="Manabase" />
@@ -261,7 +268,7 @@ export const AnalyzerPage: React.FC = () => {
                             boxShadow: 3
                           }
                         }}
-                        onClick={() => setActiveTab(4)} // Onglet Deck List
+                        onClick={() => setActiveTab(5)} // Onglet Deck List
                       >
                         <CardContent>
                           <Typography variant="h4" color="primary">
@@ -284,7 +291,7 @@ export const AnalyzerPage: React.FC = () => {
                             boxShadow: 3
                           }
                         }}
-                        onClick={() => setActiveTab(5)} // Onglet Manabase
+                        onClick={() => setActiveTab(6)} // Onglet Manabase
                       >
                         <CardContent sx={{ position: 'relative' }}>
                           <Typography variant="h4" color="primary">
@@ -365,7 +372,7 @@ export const AnalyzerPage: React.FC = () => {
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Chip 
-                      label={analysisResult.rating.toUpperCase()} 
+                      label={(analysisResult.rating || 'unknown').toUpperCase()} 
                       color={
                         analysisResult.rating === 'excellent' ? 'success' :
                         analysisResult.rating === 'good' ? 'primary' :
@@ -380,120 +387,130 @@ export const AnalyzerPage: React.FC = () => {
                 </TabPanel>
 
                 <TabPanel value={activeTab} index={1}>
-                  <Typography variant="h6" gutterBottom>
-                    Probabilities by Turn
-                  </Typography>
-                  
-                  {[1, 2, 3, 4].map(turn => {
-                    const turnKey = `turn${turn}` as keyof typeof analysisResult.probabilities
-                    return (
-                      <Box key={turn} sx={{ mb: 3 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Turn {turn}
-                        </Typography>
-                        <Grid container spacing={2}>
-                          {MANA_COLORS.map(color => {
-                            const prob = analysisResult.probabilities[turnKey]?.specificColors[color] || 0
-                            return (
-                              <Grid item xs={12} sm={6} md={4} key={color}>
-                                <Box sx={{ mb: 1 }}>
-                                  <Typography variant="body2">
-                                    {COLOR_NAMES[color]}: {(prob * 100).toFixed(1)}%
-                                  </Typography>
-                                  <LinearProgress 
-                                    variant="determinate" 
-                                    value={prob * 100}
-                                    sx={{ height: 8, borderRadius: 4 }}
-                                  />
-                                </Box>
-                              </Grid>
-                            )
-                          })}
-                        </Grid>
-                      </Box>
-                    )
-                  })}
+                  <EnhancedCharts analysis={{
+                    id: 'current-analysis',
+                    deckId: 'current-deck',
+                    format: 'modern',
+                    totalCards: analysisResult.totalCards,
+                    totalLands: analysisResult.totalLands,
+                    colorDistribution: analysisResult.colorDistribution,
+                    manaCurve: {
+                      '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7+': 0
+                    }, // Placeholder - would need to be calculated from deck
+                    overallScore: Math.round(analysisResult.consistency * 100),
+                    consistency: Math.round(analysisResult.consistency * 100),
+                    colorScrew: Math.round((1 - analysisResult.consistency) * 20), // Estimate
+                    avgCMC: analysisResult.averageCMC,
+                    recommendations: [],
+                    probabilities: {
+                      turn1: {
+                        anyColor: analysisResult.probabilities.turn1.anyColor,
+                        specificColors: analysisResult.probabilities.turn1.specificColors,
+                        multipleColors: {}
+                      },
+                      turn2: {
+                        anyColor: analysisResult.probabilities.turn2.anyColor,
+                        specificColors: analysisResult.probabilities.turn2.specificColors,
+                        multipleColors: {}
+                      },
+                      turn3: {
+                        anyColor: analysisResult.probabilities.turn3.anyColor,
+                        specificColors: analysisResult.probabilities.turn3.specificColors,
+                        multipleColors: {}
+                      },
+                      turn4: {
+                        anyColor: analysisResult.probabilities.turn4.anyColor,
+                        specificColors: analysisResult.probabilities.turn4.specificColors,
+                        multipleColors: {}
+                      },
+                      overall: {
+                        consistency: analysisResult.consistency,
+                        colorScrew: (1 - analysisResult.consistency) * 0.2,
+                        manaFlood: 0.1,
+                        manaScrew: 0.15
+                      }
+                    },
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  }} />
                 </TabPanel>
 
                 <TabPanel value={activeTab} index={2}>
                   <Typography variant="h6" gutterBottom>
-                    Recommendations
+                    💰 Mana Cost Analysis
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Real-time mana costs from Scryfall with probability calculations
                   </Typography>
                   
-                  {analysisResult.recommendations.map((rec: string, index: number) => (
-                    <Alert key={index} severity="info" sx={{ mb: 2 }}>
-                      {rec}
-                    </Alert>
-                  ))}
+                  {deckList.trim() ? (
+                    <Box>
+                      <Grid container spacing={1} sx={{ mb: 2 }}>
+                        <Grid item xs={4}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Card
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Mana Cost
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Probabilities
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      
+                      {deckList.split('\n').filter(line => line.trim()).map((line, index) => {
+                        const match = line.match(/^(\d+)\s+(.+?)(?:\s*\([A-Z0-9]+\)\s*\d*)?$/);
+                        if (!match) return null;
+                        
+                        const quantity = parseInt(match[1]);
+                        const cardName = match[2].replace(/^A-/, '').trim();
+                        
+                        return (
+                          <ManaCostRow
+                            key={index}
+                            cardName={cardName}
+                            quantity={quantity}
+                          />
+                        );
+                      })}
+                    </Box>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        No deck list available. Please enter a deck list and analyze it first.
+                      </Typography>
+                    </Box>
+                  )}
 
                   <Box sx={{ mt: 3 }}>
                     <Typography variant="body2" color="text.secondary">
-                      💡 These recommendations are based on Frank Karsten's research and hypergeometric distribution calculations.
+                      💡 P1 = Perfect scenario (all lands on curve) | P2 = Realistic probability (accounts for mana screw)
                     </Typography>
                   </Box>
                 </TabPanel>
 
                 <TabPanel value={activeTab} index={3}>
-                  <Typography variant="h6" gutterBottom>
-                    Spell Analysis
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Probability of being able to play each spell with your current manabase
-                  </Typography>
-                  
-                  <Grid container spacing={2}>
-                    {Object.entries(analysisResult.spellAnalysis).map(([spellName, analysis]) => (
-                      <Grid item xs={12} sm={6} md={4} key={spellName}>
-                        <Card variant="outlined">
-                          <CardContent>
-                            <Typography variant="subtitle1" gutterBottom>
-                              {spellName}
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                              <Typography variant="h4" color="primary">
-                                {analysis.percentage}%
-                              </Typography>
-                              <Chip 
-                                label={
-                                  analysis.percentage >= 90 ? 'Excellent' :
-                                  analysis.percentage >= 80 ? 'Good' :
-                                  analysis.percentage >= 70 ? 'Average' : 'Weak'
-                                }
-                                color={
-                                  analysis.percentage >= 90 ? 'success' :
-                                  analysis.percentage >= 80 ? 'primary' :
-                                  analysis.percentage >= 70 ? 'warning' : 'error'
-                                }
-                                size="small"
-                              />
-                            </Box>
-                            <Typography variant="body2" color="text.secondary">
-                              {analysis.castable}/{analysis.total} playable copies
-                            </Typography>
-                            <LinearProgress 
-                              variant="determinate" 
-                              value={analysis.percentage}
-                              sx={{ mt: 1, height: 6, borderRadius: 3 }}
-                              color={
-                                analysis.percentage >= 90 ? 'success' :
-                                analysis.percentage >= 80 ? 'primary' :
-                                analysis.percentage >= 70 ? 'warning' : 'error'
-                              }
-                            />
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      📈 This analysis is inspired by Charles Wickham's project algorithms and uses combination calculations to evaluate the playability of each spell.
-                    </Typography>
-                  </Box>
+                  <EnhancedRecommendations 
+                    recommendations={analysisResult.recommendations}
+                    analysis={{
+                      consistency: analysisResult.consistency,
+                      colorScrew: (1 - analysisResult.consistency) * 0.2,
+                      landRatio: analysisResult.landRatio,
+                      avgCMC: analysisResult.averageCMC
+                    }}
+                  />
                 </TabPanel>
 
                 <TabPanel value={activeTab} index={4}>
+                  <EnhancedSpellAnalysis spellAnalysis={analysisResult.spellAnalysis} />
+                </TabPanel>
+
+                <TabPanel value={activeTab} index={5}>
                   <Typography variant="h6" gutterBottom>
                     📋 Deck List
                   </Typography>
@@ -569,7 +586,7 @@ export const AnalyzerPage: React.FC = () => {
                   </Box>
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={5}>
+                <TabPanel value={activeTab} index={6}>
                   <Typography variant="h6" gutterBottom>
                     🏔️ Manabase Analysis
                   </Typography>
@@ -840,7 +857,7 @@ export const AnalyzerPage: React.FC = () => {
                           return (
                             <Box>
                               {colorData.length > 0 ? (
-                                <>
+                                <Box>
                                   <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
                                       <Pie
@@ -893,7 +910,7 @@ export const AnalyzerPage: React.FC = () => {
                                       </Box>
                                     ))}
                                   </Box>
-                                </>
+                                </Box>
                               ) : (
                                 <Box sx={{ textAlign: 'center', py: 4 }}>
                                   <Typography variant="body2" color="text.secondary">

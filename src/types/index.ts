@@ -316,4 +316,22 @@ export type DeepPartial<T> = {
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
 
-export type OptionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>> 
+export type OptionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+export interface DeckAnalysis {
+  id: string;
+  deckId: string;
+  format: MTGFormat;
+  totalCards: number;
+  totalLands: number;
+  colorDistribution?: Record<string, number>;
+  manaCurve?: Record<string, number>;
+  overallScore?: number;
+  consistency?: number;
+  colorScrew?: number;
+  avgCMC?: number;
+  recommendations: LandRecommendation[];
+  probabilities: ManabaseProbabilities;
+  createdAt: string;
+  updatedAt: string;
+} 

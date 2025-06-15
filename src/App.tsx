@@ -1,6 +1,9 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { Box, Typography, Container } from '@mui/material'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
+import { Box, Typography, Container, CircularProgress } from '@mui/material'
+import { store, persistor } from './store'
 import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
@@ -172,34 +175,38 @@ function App() {
   return (
     <ErrorBoundary>
       <NotificationProvider>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-          }}
-        >
-          <Header />
-          
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/analyzer" element={<AnalyzerPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="*" element={<HomePage />} />
-            </Routes>
-          </Box>
-          
-          <Footer />
-        </Box>
+        <Provider store={store}>
+          <PersistGate loading={<CircularProgress />} persistor={persistor}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100vh',
+              }}
+            >
+              <Header />
+              
+              <Box
+                component="main"
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/analyzer" element={<AnalyzerPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
+              </Box>
+              
+              <Footer />
+            </Box>
+          </PersistGate>
+        </Provider>
       </NotificationProvider>
     </ErrorBoundary>
   )
