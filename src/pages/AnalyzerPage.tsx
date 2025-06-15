@@ -119,6 +119,64 @@ function isLandCardComplete(name: string): boolean {
   return landKeywords.some(keyword => lowerName.includes(keyword));
 }
 
+// Fonction de catégorisation des terrains
+function categorizeLandComplete(name: string): string {
+  const lowerName = name.toLowerCase();
+  
+  // Basic Lands
+  if (['plains', 'island', 'swamp', 'mountain', 'forest', 'wastes'].includes(lowerName) ||
+      lowerName.includes('snow-covered')) {
+    return 'Basic Land';
+  }
+  
+  // Fetchlands
+  if (['flooded strand', 'polluted delta', 'bloodstained mire', 'wooded foothills', 'windswept heath',
+       'scalding tarn', 'verdant catacombs', 'arid mesa', 'misty rainforest', 'marsh flats',
+       'prismatic vista', 'fabled passage', 'evolving wilds', 'terramorphic expanse'].includes(lowerName)) {
+    return 'Fetchland';
+  }
+  
+  // Shocklands
+  if (['hallowed fountain', 'watery grave', 'blood crypt', 'stomping ground', 'temple garden',
+       'sacred foundry', 'godless shrine', 'steam vents', 'overgrown tomb', 'breeding pool'].includes(lowerName)) {
+    return 'Shockland';
+  }
+  
+  // Fastlands
+  if (['seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge', 'razorverge thicket',
+       'inspiring vantage', 'concealed courtyard', 'spirebluff canal', 'blooming marsh', 'botanical sanctum'].includes(lowerName)) {
+    return 'Fastland';
+  }
+  
+  // Horizon Lands
+  if (['sunbaked canyon', 'waterlogged grove', 'nurturing peatland', 'silent clearing', 'fiery islet',
+       'horizon canopy', 'grove of the burnwillows'].includes(lowerName)) {
+    return 'Horizon Land';
+  }
+  
+  // Utility Lands avec mécaniques spéciales
+  if (['starting town', 'mana confluence', 'city of brass', 'gemstone mine', 'grand coliseum', 
+       'pillar of the paruns', 'unclaimed territory', 'ancient ziggurat', 'cavern of souls'].includes(lowerName)) {
+    return 'Utility Land';
+  }
+  
+  // Fallback par mots-clés
+  if (['strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire', 'catacombs', 'flats'].some(fetch => lowerName.includes(fetch))) {
+    return 'Fetchland';
+  }
+  if (['fountain', 'grave', 'crypt', 'ground', 'garden', 'foundry', 'shrine', 'vents', 'tomb', 'pool'].some(shock => lowerName.includes(shock))) {
+    return 'Shockland';
+  }
+  if (['coast', 'shores', 'cliffs', 'gorge', 'thicket', 'vantage', 'courtyard', 'canal', 'marsh'].some(fast => lowerName.includes(fast))) {
+    return 'Fastland';
+  }
+  if (['canyon', 'grove', 'peatland', 'clearing', 'islet'].some(horizon => lowerName.includes(horizon))) {
+    return 'Horizon Land';
+  }
+  
+  return 'Other Land';
+}
+
 export const AnalyzerPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   const [deckList, setDeckList] = useState('')
@@ -732,62 +790,7 @@ export const AnalyzerPage: React.FC = () => {
 
                           
                           // Fonction de catégorisation complète
-                          function categorizeLandComplete(name: string): string {
-                            const lowerName = name.toLowerCase();
-                            
-                            // Basic Lands
-                            if (['plains', 'island', 'swamp', 'mountain', 'forest', 'wastes'].includes(lowerName) ||
-                                lowerName.includes('snow-covered')) {
-                              return 'Basic Land';
-                            }
-                            
-                            // Fetchlands
-                            if (['flooded strand', 'polluted delta', 'bloodstained mire', 'wooded foothills', 'windswept heath',
-                                 'scalding tarn', 'verdant catacombs', 'arid mesa', 'misty rainforest', 'marsh flats',
-                                 'prismatic vista', 'fabled passage', 'evolving wilds', 'terramorphic expanse'].includes(lowerName)) {
-                              return 'Fetchland';
-                            }
-                            
-                            // Shocklands
-                            if (['hallowed fountain', 'watery grave', 'blood crypt', 'stomping ground', 'temple garden',
-                                 'sacred foundry', 'godless shrine', 'steam vents', 'overgrown tomb', 'breeding pool'].includes(lowerName)) {
-                              return 'Shockland';
-                            }
-                            
-                            // Fastlands
-                            if (['seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge', 'razorverge thicket',
-                                 'inspiring vantage', 'concealed courtyard', 'spirebluff canal', 'blooming marsh', 'botanical sanctum'].includes(lowerName)) {
-                              return 'Fastland';
-                            }
-                            
-                            // Horizon Lands
-                            if (['sunbaked canyon', 'waterlogged grove', 'nurturing peatland', 'silent clearing', 'fiery islet',
-                                 'horizon canopy', 'grove of the burnwillows'].includes(lowerName)) {
-                              return 'Horizon Land';
-                            }
-                            
-                            // Utility Lands avec mécaniques spéciales
-                            if (['starting town', 'mana confluence', 'city of brass', 'gemstone mine', 'grand coliseum', 
-                                 'pillar of the paruns', 'unclaimed territory', 'ancient ziggurat', 'cavern of souls'].includes(lowerName)) {
-                              return 'Utility Land';
-                            }
-                            
-                            // Fallback par mots-clés
-                            if (['strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire', 'catacombs', 'flats'].some(fetch => lowerName.includes(fetch))) {
-                              return 'Fetchland';
-                            }
-                            if (['fountain', 'grave', 'crypt', 'ground', 'garden', 'foundry', 'shrine', 'vents', 'tomb', 'pool'].some(shock => lowerName.includes(shock))) {
-                              return 'Shockland';
-                            }
-                            if (['coast', 'shores', 'cliffs', 'gorge', 'thicket', 'vantage', 'courtyard', 'canal', 'marsh'].some(fast => lowerName.includes(fast))) {
-                              return 'Fastland';
-                            }
-                            if (['canyon', 'grove', 'peatland', 'clearing', 'islet'].some(horizon => lowerName.includes(horizon))) {
-                              return 'Horizon Land';
-                            }
-                            
-                            return 'Other Land';
-                          }
+
                           
                           return (
                             <List>

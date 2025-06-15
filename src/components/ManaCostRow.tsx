@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import { searchCardByName } from '../services/scryfall'
 import { Card as MTGCard } from '../types'
+import { manaCalculator } from '../services/manaCalculator'
 
 interface ManaCostRowProps {
   cardName: string
@@ -204,20 +205,59 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
   const calculateProbabilities = () => {
     if (!cardData?.mana_cost) return { p1: 85, p2: 65 }
     
-    // Simple probability calculation based on mana cost complexity
-    const symbols = cardData.mana_cost.match(/\{[^}]+\}/g) || []
-    const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
-    const genericCost = symbols.filter((s: string) => /\{\d+\}/.test(s)).length
-    
-    // P1: Perfect scenario (good manabase)
-    let p1 = 90 - (coloredSymbols.length * 5) - (genericCost * 2)
-    
-    // P2: Realistic scenario (accounting for mana screw)
-    let p2 = p1 - 20 - (coloredSymbols.length * 3)
-    
-    return {
-      p1: Math.max(Math.min(p1, 95), 30),
-      p2: Math.max(Math.min(p2, 80), 15)
+    // Utiliser le nouveau calculateur de mana avec la méthodologie Frank Karsten
+    try {
+      // Parser le coût de mana pour extraire les symboles colorés
+      const manaCostSymbols = cardData.mana_cost.match(/\{[WUBRG]\}/g) || []
+      const colorCounts: { [color: string]: number } = {}
+      
+      manaCostSymbols.forEach(symbol => {
+        const color = symbol.replace(/[{}]/g, '')
+        colorCounts[color] = (colorCounts[color] || 0) + 1
+      })
+      
+      // Simuler une manabase basique pour les calculs
+      // Dans une vraie implémentation, cela viendrait de l'analyse du deck
+      const deckSize = 60
+      const sourcesPerColor = 14 // Estimation basique selon Karsten
+      const cmc = cardData.cmc || 1
+      
+      let totalProbability = 1
+      
+      // Calculer la probabilité pour chaque couleur requise
+      for (const [color, count] of Object.entries(colorCounts)) {
+        const result = manaCalculator.calculateManaProbability(
+          deckSize,
+          sourcesPerColor,
+          cmc,
+          count,
+          true
+        )
+        totalProbability *= result.probability
+      }
+      
+      // Convertir en pourcentage et ajuster pour P1/P2
+      const p2Percentage = Math.round(totalProbability * 100)
+      const p1Percentage = Math.min(p2Percentage + 10, 95) // P1 légèrement optimiste
+      
+      return {
+        p1: Math.max(p1Percentage, 30),
+        p2: Math.max(p2Percentage, 15)
+      }
+    } catch (error) {
+      console.error('Error calculating probabilities:', error)
+      // Fallback vers l'ancien calcul simplifié
+      const symbols = cardData.mana_cost.match(/\{[^}]+\}/g) || []
+      const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
+      const genericCost = symbols.filter((s: string) => /\{\d+\}/.test(s)).length
+      
+      let p1 = 90 - (coloredSymbols.length * 5) - (genericCost * 2)
+      let p2 = p1 - 20 - (coloredSymbols.length * 3)
+      
+      return {
+        p1: Math.max(Math.min(p1, 95), 30),
+        p2: Math.max(Math.min(p2, 80), 15)
+      }
     }
   }
 
