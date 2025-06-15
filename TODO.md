@@ -30,9 +30,9 @@
 ## 🔧 **Bugs Connus à Corriger**
 
 - [ ] **X amounts in cycling** - Problème avec les coûts de cycling variables
-- [ ] **Duplicate key "Lightning Helix"** - Erreur dans deckAnalyzer.ts
-- [ ] **Missing semicolon** - Erreur de syntaxe dans AnalyzerPage.tsx
-- [ ] **Failed to resolve import** - Problèmes avec deckSlice et analysisSlice
+- [x] ✅ **Duplicate key "Lightning Helix"** - RÉSOLU - Doublon supprimé
+- [x] ✅ **Missing semicolon** - RÉSOLU - Erreur de syntaxe corrigée
+- [x] ✅ **Failed to resolve import** - RÉSOLU - Cache Vite nettoyé, imports fonctionnels
 
 ## 🎨 **Fonctionnalités Frontend Avancées**
 
