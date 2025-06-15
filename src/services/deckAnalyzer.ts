@@ -99,6 +99,9 @@ export class DeckAnalyzer {
       // Other land indicators
       'temple', 'sanctuary', 'grove', 'cavern', 'spire', 'foundry',
       'confluence', 'command tower', 'city of brass', 'mana confluence',
+      // Additional land types
+      'courtyard', 'vantage', 'tower', 'town', 'shrine', 'crypt',
+      'heath', 'rainforest', 'garden', 'pool', 'ground', 'fountain',
       // French translations
       'île', 'montagne', 'forêt', 'plaine', 'marais'
     ]
@@ -226,6 +229,9 @@ export class DeckAnalyzer {
       }
       
       if (match && quantity > 0) {
+        // Clean card name by removing MTGA set codes like "(TDM) 33" or "(RNA) 245"
+        name = this.cleanCardName(name)
+        
         const isLand = this.isLandCard(name)
         const manaCost = this.getSimulatedManaCost(name)
         const { colors, cmc, cost } = this.parseManaCost(manaCost)
@@ -248,6 +254,15 @@ export class DeckAnalyzer {
     return cards
   }
 
+  private static cleanCardName(name: string): string {
+    // Remove MTGA set codes and collector numbers
+    // Patterns: "(SET) 123", "(SET) 123a", "A-CardName", etc.
+    return name
+      .replace(/\s*\([A-Z0-9]{2,4}\)\s*\d+[a-z]?$/i, '') // Remove "(SET) 123" at end
+      .replace(/^A-/, '') // Remove "A-" prefix for Arena rebalanced cards
+      .trim()
+  }
+
   private static getSimulatedManaCost(name: string): string {
     // Enhanced simulation with more cards
     const costs: Record<string, string> = {
@@ -258,6 +273,11 @@ export class DeckAnalyzer {
       'Lava Spike': '{R}',
       'Young Pyromancer': '{1}{R}',
       'Pyroclasm': '{1}{R}',
+      'Claim the Firstborn': '{R}',
+      'Unlucky Witness': '{R}',
+      'Amped Raptor': '{1}{R}',
+      'Stadium Headliner': '{1}{R}',
+      'Goblin Trapfinder': '{R}',
       
       // Blue spells
       'Counterspell': '{U}{U}',
@@ -271,12 +291,17 @@ export class DeckAnalyzer {
       'Swords to Plowshares': '{W}',
       'Path to Exile': '{W}',
       'Wrath of God': '{2}{W}{W}',
+      'Guide of Souls': '{W}',
+      'Voice of Victory': '{1}{W}',
       
       // Black spells
       'Dark Ritual': '{B}',
       'Thoughtseize': '{B}',
       'Fatal Push': '{B}',
       'Liliana of the Veil': '{1}{B}{B}',
+      'Village Rites': '{B}',
+      'Corrupted Conviction': '{B}',
+      'Marionette Apprentice': '{1}{B}',
       
       // Green spells
       'Llanowar Elves': '{G}',
@@ -288,12 +313,17 @@ export class DeckAnalyzer {
       'Lightning Helix': '{R}{W}',
       'Terminate': '{B}{R}',
       'Abrupt Decay': '{B}{G}',
+      'Ajani, Nacatl Pariah': '{1}{W}',
+      'Sephiroth, Fabled SOLDIER': '{1}{W}{B}',
       
-      // Artifacts
+      // Artifacts and Colorless
       'Sol Ring': '{1}',
       'Mox Ruby': '{0}',
       'Black Lotus': '{0}',
-      'Sensei\'s Divining Top': '{1}'
+      'Sensei\'s Divining Top': '{1}',
+      'Goblin Bombardment': '{1}{R}',
+      'Phyrexian Tower': '{0}',
+      'Starting Town': '{0}'
     }
     
     // If we don't have the exact card, try to guess based on name patterns
@@ -362,7 +392,15 @@ export class DeckAnalyzer {
       // Utility lands
       'Command Tower': ['W', 'U', 'B', 'R', 'G'],
       'City of Brass': ['W', 'U', 'B', 'R', 'G'],
-      'Mana Confluence': ['W', 'U', 'B', 'R', 'G']
+      'Mana Confluence': ['W', 'U', 'B', 'R', 'G'],
+      
+      // Fastlands
+      'Concealed Courtyard': ['W', 'B'],
+      'Inspiring Vantage': ['R', 'W'],
+      
+      // Special lands
+      'Phyrexian Tower': [], // Colorless but sacrifices creatures
+      'Starting Town': [] // Colorless utility land
     }
     
     if (landProduction[name]) {
@@ -600,7 +638,9 @@ export class DeckAnalyzer {
 
     const recommendations = this.generateRecommendations(cards, partialAnalysis)
 
-    const averageCMC = cards.reduce((sum, card) => sum + card.cmc, 0) / totalCards
+    const averageCMC = totalNonLands > 0 
+      ? nonLands.reduce((sum, card) => sum + (card.cmc * card.quantity), 0) / totalNonLands
+      : 0
     const landRatio = totalLands / totalCards
 
     // Calculate spell analysis (simplified version inspired by reference project)
