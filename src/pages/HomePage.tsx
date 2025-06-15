@@ -55,22 +55,54 @@ export const HomePage: React.FC = () => {
           Professional MTG manabase analysis tool. Get precise probabilities and optimal land counts 
           for competitive play.
         </Typography>
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 4, display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Button
             variant="contained"
             size="large"
             onClick={() => navigate('/analyzer')}
-            sx={{ mr: 2, px: 4, py: 1.5 }}
+            startIcon={<AnalyticsIcon />}
+            sx={{ 
+              px: 6, 
+              py: 2, 
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              borderRadius: 3,
+              boxShadow: 4,
+              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+              '&:hover': {
+                boxShadow: 6,
+                transform: 'translateY(-2px)',
+                background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)'
+              },
+              transition: 'all 0.3s ease-in-out'
+            }}
           >
-            Start Analyzing
+            🚀 Start Analyzing
           </Button>
           <Button
             variant="outlined"
             size="large"
             onClick={() => navigate('/about')}
-            sx={{ px: 4, py: 1.5 }}
+            sx={{ 
+              px: 4, 
+              py: 2,
+              fontSize: '1rem',
+              borderRadius: 3,
+              borderWidth: 2,
+              borderColor: 'primary.main',
+              color: 'primary.main',
+              '&:hover': {
+                borderWidth: 2,
+                borderColor: 'primary.dark',
+                backgroundColor: 'primary.main',
+                color: 'white',
+                transform: 'translateY(-1px)',
+                boxShadow: 2
+              },
+              transition: 'all 0.3s ease-in-out'
+            }}
           >
-            Learn More
+            📚 Learn More
           </Button>
         </Box>
       </Box>
@@ -127,13 +159,24 @@ export const HomePage: React.FC = () => {
           variant="contained"
           size="large"
           onClick={() => navigate('/analyzer')}
+          startIcon={<AnalyticsIcon />}
           sx={{ 
             mt: 2, 
+            px: 5,
+            py: 1.5,
+            fontSize: '1.1rem',
+            fontWeight: 'bold',
             bgcolor: 'rgba(255,255,255,0.2)', 
-            '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+            borderRadius: 3,
+            '&:hover': { 
+              bgcolor: 'rgba(255,255,255,0.3)',
+              transform: 'translateY(-2px)',
+              boxShadow: 6
+            },
+            transition: 'all 0.3s ease-in-out'
           }}
         >
-          Try It Now - It's Free
+          🎯 Try It Now - It's Free
         </Button>
       </Paper>
     </Container>

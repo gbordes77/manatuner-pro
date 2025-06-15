@@ -52,6 +52,7 @@ export const AnalyzerPage: React.FC = () => {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [isDeckMinimized, setIsDeckMinimized] = useState(false)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -69,6 +70,8 @@ export const AnalyzerPage: React.FC = () => {
       try {
         const result = DeckAnalyzer.analyzeDeck(deckList)
         setAnalysisResult(result)
+        // Minimiser automatiquement "Your Deck" quand les résultats s'affichent
+        setIsDeckMinimized(true)
       } catch (error) {
         console.error('Erreur lors de l\'analyse:', error)
         // Fallback en cas d'erreur
@@ -115,23 +118,40 @@ export const AnalyzerPage: React.FC = () => {
 
       <Grid container spacing={4}>
         {/* Input Section */}
-        <Grid item xs={12} lg={6}>
-          <Paper sx={{ p: 3, height: 'fit-content' }}>
+        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 2 : 6}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              height: 'fit-content',
+              cursor: analysisResult && isDeckMinimized ? 'pointer' : 'default',
+              transition: 'all 0.3s ease-in-out',
+              '&:hover': analysisResult && isDeckMinimized ? {
+                transform: 'scale(1.02)',
+                boxShadow: 3
+              } : {}
+            }}
+            onClick={() => {
+              if (analysisResult && isDeckMinimized) {
+                setIsDeckMinimized(false)
+              }
+            }}
+          >
             <Typography variant="h5" gutterBottom>
-              📝 Your Deck
+              📝 Your Deck {analysisResult && isDeckMinimized && '(Click to expand)'}
             </Typography>
             
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={12}
-                label="List of deck"
-                placeholder="Paste your decklist here...&#10;Format: 4 Lightning Bolt&#10;3 Counterspell&#10;..."
-                value={deckList}
-                onChange={(e) => setDeckList(e.target.value)}
-                sx={{ mb: 2 }}
-              />
+            {!isDeckMinimized && (
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={12}
+                  label="List of deck"
+                  placeholder="Paste your decklist here...&#10;Format: 4 Lightning Bolt&#10;3 Counterspell&#10;..."
+                  value={deckList}
+                  onChange={(e) => setDeckList(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
 
               <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                 <Button
@@ -154,21 +174,50 @@ export const AnalyzerPage: React.FC = () => {
                 </Button>
               </Box>
 
-              {isAnalyzing && (
-                <Box sx={{ mb: 2 }}>
-                  <LinearProgress />
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    Calculating hypergeometric probabilities...
-                  </Typography>
-                </Box>
-              )}
-            </Box>
+                {isAnalyzing && (
+                  <Box sx={{ mb: 2 }}>
+                    <LinearProgress />
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Calculating hypergeometric probabilities...
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+            
+            {/* Version minimisée - affichage du résumé */}
+            {isDeckMinimized && analysisResult && (
+              <Box sx={{ textAlign: 'center', py: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {analysisResult.totalCards} cards • {analysisResult.totalLands} lands
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Click to expand deck editor
+                </Typography>
+              </Box>
+            )}
           </Paper>
         </Grid>
 
         {/* Results Section */}
-        <Grid item xs={12} lg={6}>
-          <Paper sx={{ p: 3, minHeight: 600 }}>
+        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 10 : 6}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              minHeight: 600,
+              cursor: analysisResult && !isDeckMinimized ? 'pointer' : 'default',
+              transition: 'all 0.3s ease-in-out',
+              '&:hover': analysisResult && !isDeckMinimized ? {
+                transform: 'scale(1.01)',
+                boxShadow: 2
+              } : {}
+            }}
+            onClick={() => {
+              if (analysisResult && !isDeckMinimized) {
+                setIsDeckMinimized(true)
+              }
+            }}
+          >
             {!analysisResult ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <AssessmentIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
@@ -179,7 +228,7 @@ export const AnalyzerPage: React.FC = () => {
             ) : (
               <>
                 <Typography variant="h5" gutterBottom>
-                  📊 Analysis Results
+                  📊 Analysis Results {analysisResult && !isDeckMinimized && '(Click to minimize deck)'}
                 </Typography>
 
                 <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 3 }}>
@@ -187,6 +236,7 @@ export const AnalyzerPage: React.FC = () => {
                   <Tab label="Probabilities" />
                   <Tab label="Recommendations" />
                   <Tab label="Spell Analysis" />
+                  <Tab label="Deck List" />
                 </Tabs>
 
                 <TabPanel value={activeTab} index={0}>
@@ -388,6 +438,80 @@ export const AnalyzerPage: React.FC = () => {
                   <Box sx={{ mt: 3 }}>
                     <Typography variant="body2" color="text.secondary">
                       📈 This analysis is inspired by Charles Wickham's project algorithms and uses combination calculations to evaluate the playability of each spell.
+                    </Typography>
+                  </Box>
+                </TabPanel>
+
+                <TabPanel value={activeTab} index={4}>
+                  <Typography variant="h6" gutterBottom>
+                    📋 Deck List
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Click on any card name to view it on Scryfall
+                  </Typography>
+                  
+                  {deckList.trim() ? (
+                    <Grid container spacing={2}>
+                      {deckList.split('\n').filter(line => line.trim()).map((line, index) => {
+                        const match = line.match(/^(\d+)\s+(.+?)(?:\s*\([A-Z0-9]+\)\s*\d*)?$/);
+                        if (!match) return null;
+                        
+                        const quantity = match[1];
+                        const cardName = match[2].replace(/^A-/, '').trim();
+                        const scryfallUrl = `https://scryfall.com/search?q=${encodeURIComponent(cardName)}`;
+                        
+                        return (
+                          <Grid item xs={12} sm={6} md={4} key={index}>
+                            <Card 
+                              variant="outlined" 
+                              sx={{ 
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                  boxShadow: 2,
+                                  transform: 'translateY(-2px)'
+                                }
+                              }}
+                              onClick={() => window.open(scryfallUrl, '_blank')}
+                            >
+                              <CardContent sx={{ p: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Chip 
+                                    label={quantity}
+                                    size="small"
+                                    color="primary"
+                                    sx={{ minWidth: 32 }}
+                                  />
+                                  <Typography 
+                                    variant="body1" 
+                                    sx={{ 
+                                      flexGrow: 1,
+                                      '&:hover': { color: 'primary.main' }
+                                    }}
+                                  >
+                                    {cardName}
+                                  </Typography>
+                                  <Typography variant="caption" color="text.secondary">
+                                    🔗
+                                  </Typography>
+                                </Box>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        No deck list available. Please enter a deck list and analyze it first.
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      🔍 Cards are automatically linked to Scryfall for detailed information and pricing.
                     </Typography>
                   </Box>
                 </TabPanel>
