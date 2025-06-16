@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, memo } from 'react'
 import {
   Box,
   Typography,
@@ -95,154 +95,93 @@ const ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
   )
 }
 
-const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
-  const [cardData, setCardData] = useState<MTGCard | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// Memoized mana symbols renderer
+const ManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
+  const symbols = useMemo(() => {
+    if (!manaCost) return []
+    
+    const matches = manaCost.match(/\{[^}]+\}/g) || []
+    return matches.map((symbol, index) => {
+      const cleanSymbol = symbol.replace(/[{}]/g, '')
+      let color = '#999'
+      let bgColor = '#f0f0f0'
+      let textContent = cleanSymbol
 
-  useEffect(() => {
-    const fetchCardData = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        const data = await searchCardByName(cardName)
-        setCardData(data)
-      } catch (err) {
-        console.error(`Error fetching card data for ${cardName}:`, err)
-        setError('Failed to fetch card data')
-      } finally {
-        setLoading(false)
+      if (/^\d+$/.test(cleanSymbol)) {
+        color = '#666'
+        bgColor = '#e0e0e0'
+      } else if (cleanSymbol === 'W') {
+        color = '#333'
+        bgColor = '#fffbd5'
+        textContent = '☀'
+      } else if (cleanSymbol === 'U') {
+        color = '#fff'
+        bgColor = '#0e68ab'
+        textContent = '💧'
+      } else if (cleanSymbol === 'B') {
+        color = '#fff'
+        bgColor = '#150b00'
+        textContent = '💀'
+      } else if (cleanSymbol === 'R') {
+        color = '#fff'
+        bgColor = '#d3202a'
+        textContent = '🔥'
+      } else if (cleanSymbol === 'G') {
+        color = '#fff'
+        bgColor = '#00733e'
+        textContent = '🌿'
+      } else if (cleanSymbol === 'X') {
+        color = '#666'
+        bgColor = '#e0e0e0'
+        textContent = 'X'
       }
+
+      return {
+        key: index,
+        symbol: cleanSymbol,
+        color,
+        bgColor,
+        textContent
+      }
+    })
+  }, [manaCost])
+
+  return (
+    <>
+      {symbols.map(({ key, color, bgColor, textContent }) => (
+        <Box
+          key={key}
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 20,
+            height: 20,
+            borderRadius: '50%',
+            fontSize: '10px',
+            fontWeight: 'bold',
+            border: '1px solid #ccc',
+            color,
+            backgroundColor: bgColor,
+            flexShrink: 0
+          }}
+        >
+          {textContent}
+        </Box>
+      ))}
+    </>
+  )
+})
+
+ManaSymbols.displayName = 'ManaSymbols'
+
+// Memoized probability calculator
+const useProbabilityCalculation = (cardData: MTGCard | null, cardName: string) => {
+  return useMemo(() => {
+    if (!cardData?.mana_cost && !cardName) {
+      return { p1: 85, p2: 65 }
     }
 
-    fetchCardData()
-  }, [cardName])
-
-  const getSimulatedManaCost = (cardName: string): string => {
-    // Base de données des coûts de mana connus (SANS LES TERRAINS)
-    const costs: { [key: string]: string } = {
-      // Cartes du deck de test Boros
-      'Goblin Bombardment': '{1}{R}',
-      'Ajani Nacatl Pariah': '{1}{W}',
-      'Phlage, Titan of Fire\'s Fury': '{1}{R}{R}{W}{W}',
-      'A-Galvanic Discharge': '{R}',
-      'A-Guide of Souls': '{W}',
-      'Sephiroth, Fabled SOLDIER': '{2}{W}{W}',
-      'Lightning Helix': '{R}{W}',
-      'Boros Charm': '{R}{W}',
-      'Monastery Swiftspear': '{R}',
-      'Ragavan, Nimble Pilferer': '{R}',
-      'Dragon\'s Rage Channeler': '{R}',
-      'Orcish Bowmasters': '{1}{B}',
-      'Unholy Heat': '{R}',
-      'Prismatic Ending': '{X}{W}',
-      'Solitude': '{3}{W}{W}',
-      'Fury': '{3}{R}{R}',
-      'Grief': '{2}{B}{B}',
-      'Subtlety': '{2}{U}{U}',
-      'Endurance': '{1}{G}{G}',
-      'Force of Negation': '{1}{U}{U}',
-      'Teferi, Time Raveler': '{1}{W}{U}',
-      'Wrenn and Six': '{R}{G}',
-      'Oko, Thief of Crowns': '{1}{G}{U}',
-      'Jace, the Mind Sculptor': '{2}{U}{U}',
-      'Liliana of the Veil': '{1}{B}{B}',
-      'Karn Liberated': '{7}',
-      'Ugin, the Spirit Dragon': '{8}',
-      'Emrakul, the Aeons Torn': '{15}',
-      'Griselbrand': '{8}',
-      'Iona, Shield of Emeria': '{9}',
-      'Jin-Gitaxias, Core Augur': '{7}{U}{U}{U}',
-      'Elesh Norn, Grand Cenobite': '{5}{W}{W}',
-      'Sheoldred, Whispering One': '{7}',
-      'Vorinclex, Voice of Hunger': '{6}{G}{G}',
-      'Urabrask the Hidden': '{3}{R}{R}',
-      
-      // TERRAINS SUPPRIMÉS - ils ne doivent pas apparaître dans l'onglet Mana Cost
-      
-      // Auras et enchantements
-      'Light-Paws, Emperor\'s Voice': '{1}{W}',
-      'Ethereal Armor': '{W}',
-      'Sentinel\'s Eyes': '{1}{W}',
-      'Shardmage\'s Rescue': '{W}',
-      'Combat Research': '{U}',
-      'Kaya\'s Ghostform': '{1}{B}',
-      'Cartouche of Zeal': '{R}',
-      'Sticky Fingers': '{R}',
-      'Sheltered by Ghosts': '{1}{W}',
-      'Demonic Ruckus': '{1}{R}',
-      'Surge of Salvation': '{W}',
-      'Wingspan Stride': '{1}{W}',
-      
-      // Créatures
-      'Esper Sentinel': '{W}',
-      'Giver of Runes': '{W}',
-      'Kor Spiritdancer': '{1}{W}',
-      
-      // Sorts classiques
-      'Lightning Bolt': '{R}',
-      'Counterspell': '{U}{U}',
-      'Swords to Plowshares': '{W}',
-      'Path to Exile': '{W}',
-      'Dark Ritual': '{B}',
-      'Thoughtseize': '{B}',
-      'Fatal Push': '{B}',
-      'Brainstorm': '{U}',
-      'Ponder': '{U}',
-      
-      // Multicolores
-      'Terminate': '{B}{R}',
-      'Abrupt Decay': '{B}{G}',
-      
-      // Artefacts
-      'Sol Ring': '{1}',
-      'Sensei\'s Divining Top': '{1}',
-      'Mox Ruby': '{0}',
-      'Black Lotus': '{0}',
-    }
-    
-    if (costs[cardName]) {
-      return costs[cardName]
-    }
-    
-    // Heuristiques basées sur le nom
-    const lowerName = cardName.toLowerCase()
-    if (lowerName.includes('bolt') || lowerName.includes('shock')) return '{R}'
-    if (lowerName.includes('counter')) return '{U}{U}'
-    if (lowerName.includes('swords') || lowerName.includes('path')) return '{W}'
-    if (lowerName.includes('ritual') || lowerName.includes('dark')) return '{B}'
-    if (lowerName.includes('elf') || lowerName.includes('birds')) return '{G}'
-    if (lowerName.includes('armor') || lowerName.includes('aura')) return '{W}'
-    if (lowerName.includes('rescue') || lowerName.includes('protection')) return '{W}'
-    
-    // Coût par défaut basé sur la complexité du nom
-    if (cardName.length > 20) return '{2}{W}'
-    if (lowerName.includes('\'')) return '{1}{W}' // Noms avec apostrophe souvent légendaires
-    
-    return '{2}' // Défaut générique
-  }
-
-  const renderManaSymbols = (manaCost: string) => {
-    // Si pas de mana cost de Scryfall, utiliser la simulation
-    const actualManaCost = manaCost || getSimulatedManaCost(cardName)
-    
-    if (!actualManaCost) return <ManaSymbol symbol="2" />
-    
-    // Parse mana cost symbols like {W}{U}{B}{R}{G}{1}{2}{3}...
-    const symbols = actualManaCost.match(/\{[^}]+\}/g) || []
-    
-    if (symbols.length === 0) {
-      return <ManaSymbol symbol="2" />
-    }
-    
-    return symbols.map((symbol, index) => (
-      <ManaSymbol key={index} symbol={symbol} />
-    ))
-  }
-
-  const calculateProbabilities = () => {
-    // Obtenir la vraie manabase depuis le contexte ou les props
-    // Pour l'instant, utilisons une approche basée sur le coût de mana réel
     const actualManaCost = cardData?.mana_cost || getSimulatedManaCost(cardName)
     
     if (!actualManaCost) return { p1: 85, p2: 65 }
@@ -352,18 +291,122 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
         p2: Math.max(Math.min(baseP2, 85), 15)
       }
     }
-  }
+  }, [cardData, cardName])
+}
 
-  const getQualityChip = (probability: number) => {
+// Fonction helper pour simuler les coûts de mana
+const getSimulatedManaCost = (cardName: string): string => {
+  const commonCosts: { [key: string]: string } = {
+    'Lightning Bolt': '{R}',
+    'Counterspell': '{U}{U}',
+    'Dark Ritual': '{B}',
+    'Swords to Plowshares': '{W}',
+    'Giant Growth': '{G}',
+    'Shock': '{R}',
+    'Duress': '{B}',
+    'Brainstorm': '{U}',
+    'Path to Exile': '{W}',
+    'Llanowar Elves': '{G}',
+    'Lightning Strike': '{1}{R}',
+    'Cancel': '{1}{U}{U}',
+    'Murder': '{1}{B}{B}',
+    'Pacifism': '{1}{W}',
+    'Rampant Growth': '{1}{G}',
+    'Mana Leak': '{1}{U}',
+    'Doom Blade': '{1}{B}',
+    'Disenchant': '{1}{W}',
+    'Naturalize': '{1}{G}',
+    'Lightning Helix': '{R}{W}',
+    'Terminate': '{B}{R}',
+    'Abrupt Decay': '{B}{G}',
+    'Boros Charm': '{R}{W}',
+    'Dreadbore': '{B}{R}',
+    'Supreme Verdict': '{1}{W}{W}{U}',
+    'Cryptic Command': '{1}{U}{U}{U}',
+    'Force of Will': '{3}{U}{U}',
+    'Tarmogoyf': '{1}{G}',
+    'Snapcaster Mage': '{1}{U}',
+    'Dark Confidant': '{1}{B}',
+    'Noble Hierarch': '{G}',
+    'Deathrite Shaman': '{B/G}',
+    'Thoughtseize': '{B}',
+    'Inquisition of Kozilek': '{B}',
+    'Spell Pierce': '{U}',
+    'Fatal Push': '{B}',
+    'Opt': '{U}',
+    'Serum Visions': '{U}',
+    'Preordain': '{U}',
+    'Ponder': '{U}',
+    'Mishra\'s Bauble': '{0}',
+    'Ornithopter': '{0}',
+    'Mox Opal': '{0}',
+    'Chrome Mox': '{0}',
+    'Lotus Petal': '{0}',
+    'Ancestral Recall': '{U}',
+    'Black Lotus': '{0}',
+    'Time Walk': '{1}{U}',
+    'Mox Pearl': '{0}',
+    'Mox Ruby': '{0}',
+    'Mox Sapphire': '{0}',
+    'Mox Jet': '{0}',
+    'Mox Emerald': '{0}',
+    'Sol Ring': '{1}',
+    'Mana Crypt': '{0}',
+    'Birds of Paradise': '{G}',
+    'Elvish Mystic': '{G}'
+  }
+  
+  return commonCosts[cardName] || '{2}'
+}
+
+// Memoized quality chip component
+const QualityChip = memo(({ probability }: { probability: number }) => {
+  const chipData = useMemo(() => {
     if (probability >= 80) return { label: 'Excellent', class: 'excellent' }
     if (probability >= 65) return { label: 'Good', class: 'good' }
     if (probability >= 45) return { label: 'Average', class: 'average' }
     return { label: 'Poor', class: 'poor' }
-  }
+  }, [probability])
 
-  const probabilities = calculateProbabilities()
-  const p1Quality = getQualityChip(probabilities.p1)
-  const p2Quality = getQualityChip(probabilities.p2)
+  return (
+    <Chip 
+      label={`${probability}%`}
+      size="small"
+      className={`mtg-chip ${chipData.class}`}
+    />
+  )
+})
+
+QualityChip.displayName = 'QualityChip'
+
+const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) => {
+  const [cardData, setCardData] = useState<MTGCard | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Memoized probability calculation
+  const probabilities = useProbabilityCalculation(cardData, cardName)
+
+  useEffect(() => {
+    if (!cardName) return
+
+    const fetchCardData = async () => {
+      setLoading(true)
+      setError(null)
+      
+      try {
+        const data = await searchCardByName(cardName)
+        setCardData(data)
+      } catch (err) {
+        setError('Failed to fetch card data')
+        console.error('Erreur lors de la récupération des données de carte:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCardData()
+  }, [cardName])
 
   if (loading) {
     return (
@@ -462,7 +505,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
           {/* Mana Cost */}
           <Grid item xs={12} sm={3}>
             <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap">
-              {renderManaSymbols(cardData?.mana_cost || '')}
+              <ManaSymbols manaCost={cardData?.mana_cost || ''} />
               <Typography variant="caption" color="text.secondary" ml={1}>
                 CMC: {cardData?.cmc || 2}
               </Typography>
@@ -476,18 +519,14 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
                 <Typography variant="caption" fontWeight="600">
                   P1 (Perfect):
                 </Typography>
-                <Chip 
-                  label={`${probabilities.p1}%`}
-                  size="small"
-                  className={`mtg-chip ${p1Quality.class}`}
-                />
+                <QualityChip probability={probabilities.p1} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>
                 <Box 
                   className="mtg-progress-bar" 
                   sx={{ 
                     width: `${probabilities.p1}%`,
-                    background: `linear-gradient(90deg, var(--mtg-${p1Quality.class === 'excellent' ? 'green' : p1Quality.class === 'good' ? 'blue' : p1Quality.class === 'average' ? 'gold' : 'red'}), var(--mtg-${p1Quality.class === 'excellent' ? 'green' : p1Quality.class === 'good' ? 'blue' : p1Quality.class === 'average' ? 'gold' : 'red'}-light))`
+                    background: `linear-gradient(90deg, var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}-light))`
                   }} 
                 />
               </Box>
@@ -501,18 +540,14 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
                 <Typography variant="caption" fontWeight="600">
                   P2 (Realistic):
                 </Typography>
-                <Chip 
-                  label={`${probabilities.p2}%`}
-                  size="small"
-                  className={`mtg-chip ${p2Quality.class}`}
-                />
+                <QualityChip probability={probabilities.p2} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>
                 <Box 
                   className="mtg-progress-bar" 
                   sx={{ 
                     width: `${probabilities.p2}%`,
-                    background: `linear-gradient(90deg, var(--mtg-${p2Quality.class === 'excellent' ? 'green' : p2Quality.class === 'good' ? 'blue' : p2Quality.class === 'average' ? 'gold' : 'red'}), var(--mtg-${p2Quality.class === 'excellent' ? 'green' : p2Quality.class === 'good' ? 'blue' : p2Quality.class === 'average' ? 'gold' : 'red'}-light))`
+                    background: `linear-gradient(90deg, var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}-light))`
                   }} 
                 />
               </Box>
@@ -540,6 +575,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
       </Paper>
     </Fade>
   )
-}
+})
+
+ManaCostRow.displayName = 'ManaCostRow'
 
 export default ManaCostRow 
