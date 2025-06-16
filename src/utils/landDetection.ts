@@ -36,7 +36,7 @@ const KNOWN_LANDS = new Set([
   'Spara\'s Headquarters', 'Raffine\'s Tower', 'Xander\'s Lounge', 'Ziatora\'s Proving Ground', 'Jetmir\'s Garden',
   
   // Utility Lands
-  'Mana Confluence', 'City of Brass', 'Reflecting Pool', 'Exotic Orchard', 'Forbidden Orchard',
+  'Mana Confluence',
   'Gemstone Mine', 'Grand Coliseum', 'Pillar of the Paruns', 'Unclaimed Territory', 'Ancient Ziggurat',
   'Cavern of Souls', 'Mutavault', 'Boseiju, Who Endures', 'Otawara, Soaring City', 'Takenuma, Abandoned Mire',
   'Sokenzan, Crucible of Defiance', 'Eiganjo, Seat of the Empire', 'Urza\'s Saga', 'The Tabernacle at Pendrell Vale',
@@ -56,11 +56,19 @@ const KNOWN_LANDS = new Set([
   'Rishadan Port', 'Maze of Ith', 'Bazaar of Baghdad', 'Library of Alexandria', 'Mishra\'s Workshop',
   'The Tabernacle at Pendrell Vale', 'Diamond Valley', 'Glacial Chasm', 'Lake of the Dead',
   
-  // Recent Lands
+  // Recent Lands (Murders at Karlov Manor et autres extensions récentes)
   'Starting Town', 'Elegant Parlor', 'Lush Portico', 'Meticulous Archive', 'Raucous Theater',
   'Undercity Sewers', 'Blazemire Verge', 'Foreboding Landscape', 'Hedge Maze', 'Promising Vein',
   'Restless Anchorage', 'Restless Bivouac', 'Restless Cottage', 'Restless Fortress', 'Restless Prairie',
-  'Restless Reef', 'Restless Ridgeline', 'Restless Spire', 'Restless Vinestalk', 'Restless Vents'
+  'Restless Reef', 'Restless Ridgeline', 'Restless Spire', 'Restless Vinestalk', 'Restless Vents',
+  
+  // Murders at Karlov Manor Dual Lands
+  'Shadowy Backstreet', 'Underground Mortuary', 'Elegant Parlor', 'Lush Portico', 'Meticulous Archive',
+  'Raucous Theater', 'Commercial District', 'Thundering Falls', 'Hedge Maze', 'Undercity Sewers',
+  
+  // Arena of Glory et autres terrains récents
+  'Arena of Glory', 'City of Brass', 'Reflecting Pool', 'Exotic Orchard', 'Command Tower',
+  'Opal Palace', 'Path of Ancestry', 'Unclaimed Territory', 'Secluded Courtyard'
 ])
 
 // Mots-clés pour détecter les terrains par pattern
@@ -84,7 +92,13 @@ const LAND_KEYWORDS = [
   'clearing', 'peatland', 'town', 'parlor', 'portico',
   'archive', 'theater', 'sewers', 'verge', 'landscape',
   'maze', 'vein', 'anchorage', 'cottage', 'fortress',
-  'prairie', 'reef', 'ridgeline', 'spire', 'vinestalk'
+  'prairie', 'reef', 'ridgeline', 'spire', 'vinestalk',
+  // Nouveaux mots-clés pour les terrains récents
+  'backstreet', 'mortuary', 'district', 'arena', 'command',
+  'opal', 'path', 'ancestry', 'secluded', 'commercial',
+  'thundering', 'underground', 'restless', 'promising',
+  'foreboding', 'blazemire', 'undercity', 'elegant',
+  'lush', 'meticulous', 'raucous', 'hedge'
 ]
 
 export interface LandInfo {

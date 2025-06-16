@@ -119,8 +119,47 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
   }, [cardName])
 
   const getSimulatedManaCost = (cardName: string): string => {
-    // Base de données étendue des coûts de mana
-    const costs: Record<string, string> = {
+    // Base de données des coûts de mana connus (SANS LES TERRAINS)
+    const costs: { [key: string]: string } = {
+      // Cartes du deck de test Boros
+      'Goblin Bombardment': '{1}{R}',
+      'Ajani Nacatl Pariah': '{1}{W}',
+      'Phlage, Titan of Fire\'s Fury': '{1}{R}{R}{W}{W}',
+      'A-Galvanic Discharge': '{R}',
+      'A-Guide of Souls': '{W}',
+      'Sephiroth, Fabled SOLDIER': '{2}{W}{W}',
+      'Lightning Helix': '{R}{W}',
+      'Boros Charm': '{R}{W}',
+      'Monastery Swiftspear': '{R}',
+      'Ragavan, Nimble Pilferer': '{R}',
+      'Dragon\'s Rage Channeler': '{R}',
+      'Orcish Bowmasters': '{1}{B}',
+      'Unholy Heat': '{R}',
+      'Prismatic Ending': '{X}{W}',
+      'Solitude': '{3}{W}{W}',
+      'Fury': '{3}{R}{R}',
+      'Grief': '{2}{B}{B}',
+      'Subtlety': '{2}{U}{U}',
+      'Endurance': '{1}{G}{G}',
+      'Force of Negation': '{1}{U}{U}',
+      'Teferi, Time Raveler': '{1}{W}{U}',
+      'Wrenn and Six': '{R}{G}',
+      'Oko, Thief of Crowns': '{1}{G}{U}',
+      'Jace, the Mind Sculptor': '{2}{U}{U}',
+      'Liliana of the Veil': '{1}{B}{B}',
+      'Karn Liberated': '{7}',
+      'Ugin, the Spirit Dragon': '{8}',
+      'Emrakul, the Aeons Torn': '{15}',
+      'Griselbrand': '{8}',
+      'Iona, Shield of Emeria': '{9}',
+      'Jin-Gitaxias, Core Augur': '{7}{U}{U}{U}',
+      'Elesh Norn, Grand Cenobite': '{5}{W}{W}',
+      'Sheoldred, Whispering One': '{7}',
+      'Vorinclex, Voice of Hunger': '{6}{G}{G}',
+      'Urabrask the Hidden': '{3}{R}{R}',
+      
+      // TERRAINS SUPPRIMÉS - ils ne doivent pas apparaître dans l'onglet Mana Cost
+      
       // Auras et enchantements
       'Light-Paws, Emperor\'s Voice': '{1}{W}',
       'Ethereal Armor': '{W}',
@@ -152,7 +191,6 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
       'Ponder': '{U}',
       
       // Multicolores
-      'Lightning Helix': '{R}{W}',
       'Terminate': '{B}{R}',
       'Abrupt Decay': '{B}{G}',
       
@@ -179,7 +217,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
     
     // Coût par défaut basé sur la complexité du nom
     if (cardName.length > 20) return '{2}{W}'
-    if (cardName.includes('\'')) return '{1}{W}' // Noms avec apostrophe souvent légendaires
+    if (lowerName.includes('\'')) return '{1}{W}' // Noms avec apostrophe souvent légendaires
     
     return '{2}' // Défaut générique
   }
@@ -203,11 +241,15 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
   }
 
   const calculateProbabilities = () => {
-    if (!cardData?.mana_cost) return { p1: 85, p2: 65 }
+    // Obtenir la vraie manabase depuis le contexte ou les props
+    // Pour l'instant, utilisons une approche basée sur le coût de mana réel
+    const actualManaCost = cardData?.mana_cost || getSimulatedManaCost(cardName)
+    
+    if (!actualManaCost) return { p1: 85, p2: 65 }
     
     try {
       // Parser le coût de mana pour extraire les symboles colorés
-      const manaCostSymbols = cardData.mana_cost.match(/\{[WUBRG]\}/g) || []
+      const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
       const colorCounts: { [color: string]: number } = {}
       
       manaCostSymbols.forEach(symbol => {
@@ -221,87 +263,74 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
       }
       
       const deckSize = 60
-      const cmc = cardData.cmc || 1
+      const cmc = cardData?.cmc || actualManaCost.match(/\{(\d+)\}/)?.[1] ? parseInt(actualManaCost.match(/\{(\d+)\}/)?.[1] || '1') : 1
+      
+      // Fonction hypergeométrique selon Frank Karsten
+      const hypergeometric = (N: number, K: number, n: number, k: number): number => {
+        const combination = (n: number, r: number): number => {
+          if (r > n || r < 0) return 0
+          if (r === 0 || r === n) return 1
+          
+          let result = 1
+          for (let i = 0; i < r; i++) {
+            result = result * (n - i) / (i + 1)
+          }
+          return result
+        }
+        
+        let probability = 0
+        for (let i = k; i <= Math.min(n, K); i++) {
+          probability += combination(K, i) * combination(N - K, n - i) / combination(N, n)
+        }
+        return probability
+      }
       
       // Calculer les probabilités selon Frank Karsten
       let worstCaseProbability = 1
       
       for (const [color, symbolCount] of Object.entries(colorCounts)) {
-        // Utiliser les tables de Karsten pour déterminer les sources nécessaires
-        const sourcesNeeded = manaCalculator.calculateManaProbability(
-          deckSize,
-          20, // Sources de base pour le calcul
-          Math.min(cmc, 6), // Limiter à tour 6
-          symbolCount,
-          true
-        ).sourcesNeeded
-        
-        // Simuler différents scénarios de manabase
-        let probability = 0
-        
+        // Tables de Frank Karsten pour les sources nécessaires
+        let sourcesNeeded: number
         if (symbolCount === 1) {
-          // Pour 1 symbole : 14 sources donnent ~90.4% au T1
-          const optimalSources = Math.max(14, sourcesNeeded)
-          probability = manaCalculator.calculateManaProbability(
-            deckSize,
-            optimalSources,
-            Math.min(cmc, 6),
-            symbolCount,
-            true
-          ).probability
+          sourcesNeeded = 14  // 1 symbole = 14 sources pour 90.4%
         } else if (symbolCount === 2) {
-          // Pour 2 symboles : 20 sources donnent ~90% au T2
-          const optimalSources = Math.max(20, sourcesNeeded)
-          probability = manaCalculator.calculateManaProbability(
-            deckSize,
-            optimalSources,
-            Math.min(cmc, 6),
-            symbolCount,
-            true
-          ).probability
+          sourcesNeeded = 20  // 2 symboles = 20 sources pour 90%
+        } else if (symbolCount === 3) {
+          sourcesNeeded = 23  // 3 symboles = 23 sources pour 90%
         } else {
-          // Pour 3+ symboles : ajuster selon la complexité
-          const optimalSources = Math.max(22, sourcesNeeded)
-          probability = manaCalculator.calculateManaProbability(
-            deckSize,
-            optimalSources,
-            Math.min(cmc, 6),
-            symbolCount,
-            true
-          ).probability
+          sourcesNeeded = Math.min(25, 14 + (symbolCount - 1) * 3)
         }
+        
+        // Cartes vues au tour où on veut jouer la carte
+        const turn = Math.max(1, Math.min(cmc, 6))
+        const cardsSeen = 7 + (turn - 1) // Main de départ + pioches
+        
+        // Calcul hypergeométrique
+        const probability = hypergeometric(deckSize, sourcesNeeded, cardsSeen, symbolCount)
         
         // Prendre le pire cas pour les cartes multicolores
         worstCaseProbability = Math.min(worstCaseProbability, probability)
       }
       
-      // Ajustements pour P1 (Perfect) vs P2 (Realistic)
-      const baseProbability = worstCaseProbability
+      // P1 : Scénario optimal (manabase parfaite selon Karsten)
+      const p1Percentage = Math.round(worstCaseProbability * 100)
       
-      // P1 : Scénario optimal (manabase parfaite)
-      const p1Percentage = Math.round(Math.min(baseProbability * 100, 95))
-      
-      // P2 : Scénario réaliste (manabase moyenne, pénalités)
-      let p2Percentage = Math.round(baseProbability * 85) // 15% de pénalité pour réalisme
-      
-      // Ajustements selon la complexité du coût
+      // P2 : Scénario réaliste (manabase sous-optimale)
+      // Réduction de 10-15% pour tenir compte des manabases imparfaites
       const totalSymbols = Object.values(colorCounts).reduce((sum, count) => sum + count, 0)
       const colorCount = Object.keys(colorCounts).length
       
+      let realisticPenalty = 0.10 // 10% de base
+      
       if (colorCount > 1) {
-        // Pénalité pour cartes multicolores
-        p2Percentage -= (colorCount - 1) * 5
+        realisticPenalty += (colorCount - 1) * 0.05 // +5% par couleur supplémentaire
       }
       
       if (totalSymbols > 2) {
-        // Pénalité pour coûts intensifs
-        p2Percentage -= (totalSymbols - 2) * 3
+        realisticPenalty += (totalSymbols - 2) * 0.03 // +3% par symbole intensif
       }
       
-      // Ajustement selon le CMC
-      if (cmc <= 2) {
-        p2Percentage -= 5 // Plus difficile de cast tôt
-      }
+      const p2Percentage = Math.round(worstCaseProbability * (1 - realisticPenalty) * 100)
       
       return {
         p1: Math.max(Math.min(p1Percentage, 95), 25),
@@ -311,33 +340,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = ({ cardName, quantity }) => {
     } catch (error) {
       console.error('Error calculating probabilities:', error)
       
-      // Fallback amélioré basé sur l'analyse du coût de mana
-      if (!cardData?.mana_cost) return { p1: 85, p2: 65 }
-      
-      const symbols = cardData.mana_cost.match(/\{[^}]+\}/g) || []
+      // Fallback simple basé sur la complexité du coût
+      const symbols = actualManaCost.match(/\{[^}]+\}/g) || []
       const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
-      const hybridSymbols = symbols.filter((s: string) => /\{[WUBRG]\/[WUBRG]\}/.test(s))
-      const genericCost = symbols.filter((s: string) => /\{\d+\}/.test(s)).length
       
-      // Calcul basé sur la complexité
-      let baseP1 = 90
-      let baseP2 = 75
-      
-      // Pénalités
-      baseP1 -= coloredSymbols.length * 4
-      baseP2 -= coloredSymbols.length * 6
-      
-      baseP1 -= hybridSymbols.length * 2 // Hybride plus facile
-      baseP2 -= hybridSymbols.length * 3
-      
-      baseP1 -= genericCost * 2
-      baseP2 -= genericCost * 3
-      
-      // Bonus pour CMC élevé (plus de temps pour développer)
-      if (cardData.cmc && cardData.cmc >= 4) {
-        baseP1 += 5
-        baseP2 += 8
-      }
+      let baseP1 = 90 - (coloredSymbols.length * 8)
+      let baseP2 = 75 - (coloredSymbols.length * 10)
       
       return {
         p1: Math.max(Math.min(baseP1, 95), 25),

@@ -66,7 +66,7 @@ function TabPanel(props: TabPanelProps) {
 function isLandCardComplete(name: string): boolean {
   const lowerName = name.toLowerCase();
   
-  // Liste complète des lands connus
+  // Liste complète des lands connus (synchronisée avec landDetection.ts)
   const knownLands = new Set([
     // Basic Lands
     'plains', 'island', 'swamp', 'mountain', 'forest', 'wastes',
@@ -86,6 +86,10 @@ function isLandCardComplete(name: string): boolean {
     'seachrome coast', 'darkslick shores', 'blackcleave cliffs', 'copperline gorge', 'razorverge thicket',
     'inspiring vantage', 'concealed courtyard', 'spirebluff canal', 'blooming marsh', 'botanical sanctum',
     
+    // Checklands
+    'glacial fortress', 'drowned catacomb', 'dragonskull summit', 'rootbound crag', 'sunpetal grove',
+    'clifftop retreat', 'isolated chapel', 'sulfur falls', 'woodland cemetery', 'hinterland harbor',
+    
     // Horizon Lands
     'sunbaked canyon', 'waterlogged grove', 'nurturing peatland', 'silent clearing', 'fiery islet',
     'horizon canopy', 'grove of the burnwillows',
@@ -94,9 +98,11 @@ function isLandCardComplete(name: string): boolean {
     'mana confluence', 'city of brass', 'gemstone mine', 'grand coliseum', 'pillar of the paruns',
     'unclaimed territory', 'ancient ziggurat', 'cavern of souls', 'mutavault',
     
-    // Recent Lands
+    // Recent Lands (Murders at Karlov Manor et autres)
     'starting town', 'elegant parlor', 'lush portico', 'meticulous archive', 'raucous theater',
-    'undercity sewers', 'blazemire verge', 'foreboding landscape', 'hedge maze', 'promising vein'
+    'undercity sewers', 'blazemire verge', 'foreboding landscape', 'hedge maze', 'promising vein',
+    'shadowy backstreet', 'underground mortuary', 'commercial district', 'thundering falls',
+    'arena of glory', 'command tower', 'reflecting pool', 'exotic orchard'
   ]);
   
   // Vérification directe
@@ -104,7 +110,7 @@ function isLandCardComplete(name: string): boolean {
     return true;
   }
   
-  // Mots-clés étendus pour les lands non listés
+  // Mots-clés étendus pour les lands non listés (synchronisé avec landDetection.ts)
   const landKeywords = [
     'plains', 'island', 'swamp', 'mountain', 'forest',
     'land', 'strand', 'tarn', 'mesa', 'foothills', 'delta', 'mire',
@@ -115,7 +121,13 @@ function isLandCardComplete(name: string): boolean {
     'vantage', 'courtyard', 'canal', 'town', 'parlor', 'portico',
     'archive', 'theater', 'sewers', 'verge', 'landscape', 'maze',
     'canyon', 'clearing', 'peatland', 'islet', 'citadel', 'monastery',
-    'outpost', 'bivouac', 'palace', 'headquarters', 'lounge'
+    'outpost', 'bivouac', 'palace', 'headquarters', 'lounge',
+    // Nouveaux mots-clés pour les terrains récents
+    'backstreet', 'mortuary', 'district', 'arena', 'command',
+    'opal', 'path', 'ancestry', 'secluded', 'commercial',
+    'thundering', 'underground', 'restless', 'promising',
+    'foreboding', 'blazemire', 'undercity', 'elegant',
+    'lush', 'meticulous', 'raucous', 'hedge'
   ];
   
   return landKeywords.some(keyword => lowerName.includes(keyword));
