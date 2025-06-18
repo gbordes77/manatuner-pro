@@ -410,14 +410,14 @@ export const AnalyzerPage: React.FC = () => {
                   sx={{ mb: 2 }}
                 />
 
-              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
                 <Button
                   variant="contained"
                   size="large"
                   onClick={handleAnalyze}
                   disabled={!deckList.trim() || isAnalyzing}
                   startIcon={isAnalyzing ? <SpeedIcon /> : <AnalyticsIcon />}
-                  sx={{ flexGrow: 1 }}
+                  sx={{ flexGrow: 1, minWidth: '200px' }}
                 >
                   {isAnalyzing ? 'Analyzing...' : 'Analyze Manabase'}
                 </Button>
@@ -426,8 +426,37 @@ export const AnalyzerPage: React.FC = () => {
                   variant="outlined"
                   onClick={() => setDeckList(sampleDeck)}
                   startIcon={<AddIcon />}
+                  sx={{ minWidth: '100px' }}
                 >
                   Example
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setDeckList('')
+                    setAnalysisResult(null)
+                    setIsDeckMinimized(false)
+                    localStorage.removeItem('manatuner-decklist')
+                    localStorage.removeItem('manatuner-analysis')
+                    localStorage.removeItem('manatuner-minimized')
+                    setSnackbar({
+                      open: true,
+                      message: '🗑️ Interface cleared! Ready for new deck analysis.',
+                      severity: 'info'
+                    })
+                  }}
+                  sx={{ 
+                    color: 'var(--mtg-red)',
+                    borderColor: 'var(--mtg-red)',
+                    minWidth: '80px',
+                    '&:hover': {
+                      borderColor: 'var(--mtg-red)',
+                      backgroundColor: 'rgba(220, 53, 69, 0.1)'
+                    }
+                  }}
+                >
+                  🗑️ Clear
                 </Button>
                 
                 <Button
@@ -436,6 +465,7 @@ export const AnalyzerPage: React.FC = () => {
                   sx={{ 
                     color: 'var(--mtg-blue)',
                     borderColor: 'var(--mtg-blue)',
+                    minWidth: '140px',
                     '&:hover': {
                       borderColor: 'var(--mtg-blue)',
                       backgroundColor: 'rgba(0, 123, 255, 0.1)'
