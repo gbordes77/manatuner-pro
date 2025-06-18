@@ -8,15 +8,19 @@ import {
   Paper,
   Card,
   CardContent,
-  CardActions
+  Badge,
+  Chip
 } from '@mui/material'
 import {
   Analytics as AnalyticsIcon,
   Speed as SpeedIcon,
   Security as SecurityIcon,
-  Widgets as WidgetsIcon
+  Widgets as WidgetsIcon,
+  Star as StarIcon,
+  TrendingUp as TrendingUpIcon
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { AnimatedContainer, AnimatedList } from '../components/common/AnimatedContainer'
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate()
@@ -47,62 +51,93 @@ export const HomePage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', py: 8 }}>
-        <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Perfect Your Manabase
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph sx={{ maxWidth: 600, mx: 'auto' }}>
-          Professional MTG manabase analysis tool. Get precise probabilities and optimal land counts 
-          for competitive play.
-        </Typography>
-        <Box sx={{ mt: 4, display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/analyzer')}
-            startIcon={<AnalyticsIcon />}
+      <AnimatedContainer animation="fadeInUp">
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Badge
+            badgeContent="v2.0"
+            color="primary"
             sx={{ 
-              px: 6, 
-              py: 2, 
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              borderRadius: 3,
-              boxShadow: 4,
-              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
-              '&:hover': {
-                boxShadow: 6,
-                transform: 'translateY(-2px)',
-                background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)'
-              },
-              transition: 'all 0.3s ease-in-out'
+              '& .MuiBadge-badge': { 
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+              }
             }}
           >
-            🚀 Start Analyzing
-          </Button>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/about')}
-            sx={{ 
-              px: 4, 
-              py: 2,
-              fontSize: '1rem',
+            <Typography variant="h2" component="h1" gutterBottom sx={{ 
               fontWeight: 'bold',
-              borderRadius: 3,
-              boxShadow: 4,
-              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
-              '&:hover': {
-                boxShadow: 6,
-                transform: 'translateY(-2px)',
-                background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)'
-              },
-              transition: 'all 0.3s ease-in-out'
-            }}
-          >
-            📚 Learn More
-          </Button>
+              background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              Perfect Your Manabase
+            </Typography>
+          </Badge>
+          
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mb: 3, flexWrap: 'wrap' }}>
+            <Chip icon={<StarIcon />} label="Frank Karsten Research" color="primary" />
+            <Chip icon={<TrendingUpIcon />} label="Hypergeometric Analysis" color="secondary" />
+            <Chip label="Free & Open Source" variant="outlined" />
+          </Box>
+
+          <Typography variant="h5" color="text.secondary" paragraph sx={{ maxWidth: 600, mx: 'auto' }}>
+            Professional MTG manabase analysis tool. Get precise probabilities and optimal land counts 
+            for competitive play.
+          </Typography>
+          
+          <Box sx={{ mt: 4, display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <AnimatedContainer animation="scaleIn" delay={0.3}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/analyzer')}
+                startIcon={<AnalyticsIcon />}
+                sx={{ 
+                  px: 6, 
+                  py: 2, 
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  borderRadius: 3,
+                  boxShadow: 4,
+                  background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+                  '&:hover': {
+                    boxShadow: 6,
+                    transform: 'translateY(-2px)',
+                    background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)'
+                  },
+                  transition: 'all 0.3s ease-in-out'
+                }}
+              >
+                🚀 Start Analyzing
+              </Button>
+            </AnimatedContainer>
+            
+            <AnimatedContainer animation="scaleIn" delay={0.5}>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => navigate('/about')}
+                sx={{ 
+                  px: 4, 
+                  py: 2,
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  borderRadius: 3,
+                  borderWidth: 2,
+                  '&:hover': {
+                    borderWidth: 2,
+                    transform: 'translateY(-2px)',
+                    boxShadow: 2
+                  },
+                  transition: 'all 0.3s ease-in-out'
+                }}
+              >
+                📚 Learn More
+              </Button>
+            </AnimatedContainer>
+          </Box>
         </Box>
-      </Box>
+      </AnimatedContainer>
 
       {/* Features Grid */}
       <Grid container spacing={4} sx={{ py: 6 }}>

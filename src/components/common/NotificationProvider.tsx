@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
-import { Alert, Snackbar } from '@mui/material'
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import { ThemeProvider } from '@mui/material/styles'
+import { CssBaseline } from '@mui/material'
+import { Snackbar, Alert, AlertColor } from '@mui/material'
+import { lightTheme, darkTheme } from '../../theme'
 
 interface Notification {
   id: string
@@ -9,56 +12,125 @@ interface Notification {
 }
 
 interface NotificationContextType {
-  showNotification: (notification: Omit<Notification, 'id'>) => void
+  showNotification: (message: string, severity?: AlertColor) => void
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
+interface ThemeContextType {
+  isDark: boolean
+  toggleTheme: () => void
+}
+
+interface CombinedContextType extends NotificationContextType, ThemeContextType {}
+
+const CombinedContext = createContext<CombinedContextType | undefined>(undefined)
 
 export const useNotification = () => {
-  const context = useContext(NotificationContext)
+  const context = useContext(CombinedContext)
   if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider')
+    throw new Error('useNotification must be used within NotificationProvider')
   }
-  return context
+  return {
+    showNotification: context.showNotification
+  }
 }
 
-interface Props {
+export const useTheme = () => {
+  const context = useContext(CombinedContext)
+  if (!context) {
+    throw new Error('useTheme must be used within NotificationProvider')
+  }
+  return {
+    isDark: context.isDark,
+    toggleTheme: context.toggleTheme
+  }
+}
+
+interface NotificationProviderProps {
   children: ReactNode
 }
 
-export const NotificationProvider: React.FC<Props> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
+  const [notification, setNotification] = useState<{
+    open: boolean
+    message: string
+    severity: AlertColor
+  }>({
+    open: false,
+    message: '',
+    severity: 'info',
+  })
 
-  const showNotification = (notification: Omit<Notification, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9)
-    const newNotification = { ...notification, id }
-    setNotifications(prev => [...prev, newNotification])
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('manatuner-theme')
+    if (saved) return saved === 'dark'
+    
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
+
+  useEffect(() => {
+    localStorage.setItem('manatuner-theme', isDark ? 'dark' : 'light')
+  }, [isDark])
+
+  const showNotification = (message: string, severity: AlertColor = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity,
+    })
   }
 
-  const handleClose = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
+  const toggleTheme = () => {
+    setIsDark(prev => !prev)
+    showNotification(
+      `Thème ${!isDark ? 'sombre' : 'clair'} activé`, 
+      'success'
+    )
+  }
+
+  const handleClose = () => {
+    setNotification(prev => ({ ...prev, open: false }))
+  }
+
+  const contextValue: CombinedContextType = {
+    showNotification,
+    isDark,
+    toggleTheme,
   }
 
   return (
-    <NotificationContext.Provider value={{ showNotification }}>
-      {children}
-      {notifications.map(notification => (
+    <CombinedContext.Provider value={contextValue}>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <CssBaseline />
+        {children}
+        
         <Snackbar
-          key={notification.id}
-          open={true}
-          autoHideDuration={notification.autoHideDuration || 6000}
-          onClose={() => handleClose(notification.id)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          open={notification.open}
+          autoHideDuration={4000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          sx={{
+            '& .MuiSnackbarContent-root': {
+              borderRadius: 2,
+              backdropFilter: 'blur(10px)',
+            }
+          }}
         >
           <Alert 
-            onClose={() => handleClose(notification.id)} 
-            severity={notification.type}
-            sx={{ width: '100%' }}
+            onClose={handleClose} 
+            severity={notification.severity}
+            variant="filled"
+            sx={{
+              borderRadius: 2,
+              fontWeight: 500,
+              '& .MuiAlert-icon': {
+                fontSize: '1.2rem',
+              }
+            }}
           >
             {notification.message}
           </Alert>
         </Snackbar>
-      ))}
-    </NotificationContext.Provider>
+      </ThemeProvider>
+    </CombinedContext.Provider>
   )
 } 

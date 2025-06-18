@@ -163,7 +163,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Live Demo**: [Coming Soon]
+- **Live Demo**: [🚀 https://manatuner-pro.vercel.app](https://manatuner-pro.vercel.app)
 - **Documentation**: [Wiki](https://github.com/your-username/manatuner-pro/wiki)
 - **Issues**: [GitHub Issues](https://github.com/your-username/manatuner-pro/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-username/manatuner-pro/discussions)

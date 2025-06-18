@@ -7,18 +7,23 @@ import {
   Box,
   IconButton,
   useMediaQuery,
-  useTheme
+  useTheme as useMuiTheme,
+  Tooltip
 } from '@mui/material'
 import {
   Menu as MenuIcon,
   Analytics as AnalyticsIcon,
-  GitHub as GitHubIcon
+  GitHub as GitHubIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon
 } from '@mui/icons-material'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { useTheme } from '../common/NotificationProvider'
 
 export const Header: React.FC = () => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const muiTheme = useMuiTheme()
+  const { isDark, toggleTheme } = useTheme()
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
   const location = useLocation()
 
   const navItems = [
@@ -66,6 +71,23 @@ export const Header: React.FC = () => {
             ))}
           </Box>
         )}
+
+        {/* Theme Toggle */}
+        <Tooltip title={`Basculer vers le thème ${isDark ? 'clair' : 'sombre'}`}>
+          <IconButton
+            color="inherit"
+            onClick={toggleTheme}
+            sx={{ 
+              ml: 1,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'rotate(180deg)',
+              }
+            }}
+          >
+            {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Tooltip>
 
         {/* GitHub link */}
         <IconButton
