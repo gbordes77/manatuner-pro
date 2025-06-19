@@ -10,11 +10,11 @@ import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { NotificationProvider } from './components/common/NotificationProvider'
 import { BetaBanner } from './components'
 
-// Lazy-loaded components for code splitting
-const HomePage = React.lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })))
-const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage'))
-const GuidePage = React.lazy(() => import('./pages/GuidePage').then(m => ({ default: m.GuidePage })))
-const MyAnalysesPage = React.lazy(() => import('./pages/MyAnalysesPage'))
+// Direct imports for core pages (avoiding lazy loading issues)
+import { HomePage } from './pages/HomePage'
+import AnalyzerPage from './pages/AnalyzerPage'
+import { GuidePage } from './pages/GuidePage'
+import MyAnalysesPage from './pages/MyAnalysesPage'
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -71,17 +71,23 @@ function App() {
                   flexDirection: 'column',
                 }}
               >
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/analyzer" element={<AnalyzerPage />} />
-                    <Route path="/guide" element={<GuidePage />} />
-                    <Route path="/my-analyses" element={<MyAnalysesPage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="*" element={<HomePage />} />
-                  </Routes>
-                </Suspense>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/analyzer" element={<AnalyzerPage />} />
+                  <Route path="/guide" element={<GuidePage />} />
+                  <Route path="/mes-analyses" element={<MyAnalysesPage />} />
+                  <Route path="/about" element={
+                    <Suspense fallback={<PageLoader />}>
+                      <AboutPage />
+                    </Suspense>
+                  } />
+                  <Route path="/privacy" element={
+                    <Suspense fallback={<PageLoader />}>
+                      <PrivacyPage />
+                    </Suspense>
+                  } />
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
               </Box>
               
               <Footer />
