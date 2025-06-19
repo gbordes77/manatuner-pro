@@ -12,8 +12,9 @@ import { BetaBanner } from './components'
 
 // Lazy-loaded components for code splitting
 const HomePage = React.lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })))
-const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage').then(m => ({ default: m.AnalyzerPage })))
+const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage'))
 const GuidePage = React.lazy(() => import('./pages/GuidePage').then(m => ({ default: m.GuidePage })))
+const MyAnalysesPage = React.lazy(() => import('./pages/MyAnalysesPage'))
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -75,6 +76,7 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/analyzer" element={<AnalyzerPage />} />
                     <Route path="/guide" element={<GuidePage />} />
+                    <Route path="/my-analyses" element={<MyAnalysesPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="*" element={<HomePage />} />

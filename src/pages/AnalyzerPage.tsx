@@ -43,6 +43,7 @@ import EnhancedRecommendations from '../components/EnhancedRecommendations'
 import EnhancedSpellAnalysis from '../components/EnhancedSpellAnalysis'
 import { ResponsiveTable } from '../components/ResponsiveTable'
 import AnalysisActions from '../components/AnalysisActions'
+import PrivacySettings from '../components/PrivacySettings'
 import { ManaCalculator } from '../services/manaCalculator'
 
 interface TabPanelProps {
@@ -409,6 +410,14 @@ const AnalyzerPage: React.FC = () => {
           Analyze your manabase with the precision of Frank Karsten's mathematics
         </Typography>
       </Box>
+
+      {/* Privacy Settings */}
+      <PrivacySettings 
+        currentMode="private"
+        onPrivacyModeChange={(isPrivate) => {
+          console.log('Privacy mode changed:', isPrivate ? 'private' : 'public')
+        }}
+      />
 
       {/* Analysis Actions - Save, Share, History */}
       {analysisResult && (

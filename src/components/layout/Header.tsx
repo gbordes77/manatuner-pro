@@ -16,7 +16,8 @@ import {
   GitHub as GitHubIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
-  MenuBook as GuideIcon
+  MenuBook as GuideIcon,
+  History as HistoryIcon
 } from '@mui/icons-material'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { useTheme } from '../common/NotificationProvider'
@@ -31,6 +32,7 @@ export const Header: React.FC = () => {
     { label: 'Home', path: '/' },
     { label: 'Analyzer', path: '/analyzer' },
     { label: 'Guide', path: '/guide' },
+    { label: 'Mes Analyses', path: '/my-analyses', icon: HistoryIcon },
     { label: 'About', path: '/about' }
   ]
 
@@ -64,7 +66,11 @@ export const Header: React.FC = () => {
                 to={item.path}
                 color="inherit"
                 variant={location.pathname === item.path ? 'outlined' : 'text'}
-                startIcon={item.path === '/guide' ? <GuideIcon /> : undefined}
+                startIcon={
+                  item.path === '/guide' ? <GuideIcon /> :
+                  item.path === '/my-analyses' ? <HistoryIcon /> :
+                  undefined
+                }
                 sx={{
                   borderColor: location.pathname === item.path ? 'rgba(255,255,255,0.5)' : 'transparent',
                   // Style spécial pour le bouton Guide
