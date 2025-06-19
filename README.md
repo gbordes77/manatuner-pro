@@ -1,5 +1,11 @@
 # 🎯 ManaTuner Pro
 
+[![CI/CD Pipeline](https://github.com/gbordes77/manatuner-pro/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/gbordes77/manatuner-pro/actions/workflows/ci-cd.yml)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/gbordes77/manatuner-pro)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+
 ## Advanced MTG Manabase Analysis Tool
 
 A modern web application for analyzing and optimizing Magic: The Gathering manabases, inspired by the pioneering work of [Charles Wickham](https://github.com/WickedFridge/magic-project-manabase) and based on Frank Karsten's mathematical research.
