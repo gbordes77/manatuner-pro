@@ -1,11 +1,37 @@
 // Mock Supabase service for privacy-first mode
 // This avoids the "supabaseUrl is required" error while keeping the app functional
 
-export const supabase = {
-  auth: {
-    getUser: () => Promise.resolve({ data: { user: null }, error: null })
-  }
-}
+import { createClient } from '@supabase/supabase-js'
+
+// Environment variables with fallbacks for development
+const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || ''
+const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || ''
+
+// Create Supabase client only if credentials are available
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce'
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'manatuner-pro@1.0.0'
+        }
+      }
+    })
+  : {
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null })
+      }
+    }
 
 // Mock helpers that return empty data or false
 export const supabaseHelpers = {

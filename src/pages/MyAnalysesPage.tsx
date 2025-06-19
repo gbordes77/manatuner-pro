@@ -12,6 +12,7 @@ import {
   Code as CodeIcon
 } from '@mui/icons-material'
 import { getUserCode, getMyAnalyses, exportAnalyses, clearAllLocalData } from '../lib/privacy'
+import CloudSyncSettings from '../components/CloudSyncSettings'
 
 const MyAnalysesPage: React.FC = () => {
   const [userCode] = useState(() => getUserCode())
@@ -27,6 +28,14 @@ const MyAnalysesPage: React.FC = () => {
       <Typography variant="h3" component="h1" gutterBottom align="center">
         📊 My Analyses
       </Typography>
+
+      {/* Cloud Sync Settings */}
+      <CloudSyncSettings 
+        onSyncModeChange={(enabled) => {
+          console.log('Cloud sync mode changed:', enabled)
+          // You can add additional logic here if needed
+        }}
+      />
 
       {/* Code Personnel */}
       <Card sx={{ mb: 4, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
