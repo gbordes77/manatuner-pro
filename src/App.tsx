@@ -8,10 +8,12 @@ import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { NotificationProvider } from './components/common/NotificationProvider'
+import { BetaBanner } from './components'
 
 // Lazy-loaded components for code splitting
 const HomePage = React.lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })))
 const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage').then(m => ({ default: m.AnalyzerPage })))
+const GuidePage = React.lazy(() => import('./pages/GuidePage').then(m => ({ default: m.GuidePage })))
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -58,6 +60,7 @@ function App() {
               }}
             >
               <Header />
+              <BetaBanner />
               
               <Box
                 component="main"
@@ -71,6 +74,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/analyzer" element={<AnalyzerPage />} />
+                    <Route path="/guide" element={<GuidePage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="*" element={<HomePage />} />

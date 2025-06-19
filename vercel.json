@@ -1,16 +1,10 @@
 {
   "version": 2,
   "name": "manatuner-pro",
-  "build": {
-    "env": {
-      "NODE_VERSION": "18"
-    }
-  },
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm ci",
   "framework": "vite",
-  "devCommand": "npm run dev",
   "rewrites": [
     {
       "source": "/(.*)",

@@ -17,7 +17,8 @@ import {
   Security as SecurityIcon,
   Widgets as WidgetsIcon,
   Star as StarIcon,
-  TrendingUp as TrendingUpIcon
+  TrendingUp as TrendingUpIcon,
+  MenuBook as MenuBookIcon
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer, AnimatedList } from '../components/common/AnimatedContainer'
@@ -86,7 +87,33 @@ export const HomePage: React.FC = () => {
           </Typography>
           
           <Box sx={{ mt: 4, display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <AnimatedContainer animation="scaleIn" delay={0.3}>
+            <AnimatedContainer animation="slideInLeft" delay={0.2}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/guide')}
+                startIcon={<MenuBookIcon />}
+                sx={{ 
+                  px: 5, 
+                  py: 2, 
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  borderRadius: 3,
+                  boxShadow: 3,
+                  background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+                  '&:hover': {
+                    boxShadow: 5,
+                    transform: 'translateY(-2px)',
+                    background: 'linear-gradient(45deg, #388e3c 30%, #4caf50 90%)'
+                  },
+                  transition: 'all 0.3s ease-in-out'
+                }}
+              >
+                📖 Read Guide First
+              </Button>
+            </AnimatedContainer>
+
+            <AnimatedContainer animation="scaleIn" delay={0.4}>
               <Button
                 variant="contained"
                 size="large"
@@ -112,22 +139,24 @@ export const HomePage: React.FC = () => {
               </Button>
             </AnimatedContainer>
             
-            <AnimatedContainer animation="scaleIn" delay={0.5}>
+            <AnimatedContainer animation="slideInLeft" delay={0.6}>
               <Button
-                variant="outlined"
+                variant="contained"
                 size="large"
                 onClick={() => navigate('/about')}
+                color="secondary"
                 sx={{ 
-                  px: 4, 
+                  px: 5, 
                   py: 2,
-                  fontSize: '1rem',
+                  fontSize: '1.1rem',
                   fontWeight: 'bold',
                   borderRadius: 3,
-                  borderWidth: 2,
+                  boxShadow: 3,
+                  background: 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)',
                   '&:hover': {
-                    borderWidth: 2,
+                    boxShadow: 5,
                     transform: 'translateY(-2px)',
-                    boxShadow: 2
+                    background: 'linear-gradient(45deg, #7b1fa2 30%, #9c27b0 90%)'
                   },
                   transition: 'all 0.3s ease-in-out'
                 }}

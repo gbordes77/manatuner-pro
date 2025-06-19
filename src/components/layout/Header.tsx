@@ -15,7 +15,8 @@ import {
   Analytics as AnalyticsIcon,
   GitHub as GitHubIcon,
   DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon
+  LightMode as LightModeIcon,
+  MenuBook as GuideIcon
 } from '@mui/icons-material'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { useTheme } from '../common/NotificationProvider'
@@ -29,6 +30,7 @@ export const Header: React.FC = () => {
   const navItems = [
     { label: 'Home', path: '/' },
     { label: 'Analyzer', path: '/analyzer' },
+    { label: 'Guide', path: '/guide' },
     { label: 'About', path: '/about' }
   ]
 
@@ -62,8 +64,18 @@ export const Header: React.FC = () => {
                 to={item.path}
                 color="inherit"
                 variant={location.pathname === item.path ? 'outlined' : 'text'}
+                startIcon={item.path === '/guide' ? <GuideIcon /> : undefined}
                 sx={{
-                  borderColor: location.pathname === item.path ? 'rgba(255,255,255,0.5)' : 'transparent'
+                  borderColor: location.pathname === item.path ? 'rgba(255,255,255,0.5)' : 'transparent',
+                  // Style spécial pour le bouton Guide
+                  ...(item.path === '/guide' && {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    fontWeight: 'bold',
+                    textTransform: 'none'
+                  })
                 }}
               >
                 {item.label}
