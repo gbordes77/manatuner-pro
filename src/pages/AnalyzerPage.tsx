@@ -193,7 +193,7 @@ function categorizeLandComplete(name: string): string {
   return 'Other Land';
 }
 
-export const AnalyzerPage: React.FC = () => {
+const AnalyzerPage: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
@@ -1408,4 +1408,6 @@ export const AnalyzerPage: React.FC = () => {
       </Snackbar>
     </Container>
   )
-} 
+}
+
+export default AnalyzerPage 
