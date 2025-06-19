@@ -42,6 +42,7 @@ import EnhancedCharts from '../components/EnhancedCharts'
 import EnhancedRecommendations from '../components/EnhancedRecommendations'
 import EnhancedSpellAnalysis from '../components/EnhancedSpellAnalysis'
 import { ResponsiveTable } from '../components/ResponsiveTable'
+import AnalysisActions from '../components/AnalysisActions'
 import { ManaCalculator } from '../services/manaCalculator'
 
 interface TabPanelProps {
@@ -408,6 +409,20 @@ const AnalyzerPage: React.FC = () => {
           Analyze your manabase with the precision of Frank Karsten's mathematics
         </Typography>
       </Box>
+
+      {/* Analysis Actions - Save, Share, History */}
+      {analysisResult && (
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
+          <AnalysisActions
+            deckList={deckList}
+            analysisResult={analysisResult}
+            onLoadAnalysis={(loadedDeckList, loadedResult) => {
+              setDeckList(loadedDeckList)
+              setAnalysisResult(loadedResult)
+            }}
+          />
+        </Box>
+      )}
 
       <Grid 
         container 
