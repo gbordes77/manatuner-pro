@@ -297,38 +297,52 @@ export const HomePage: React.FC = () => {
                 </Grid>
               </Grid>
 
-              <Box sx={{ mt: 4 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() => navigate('/analyzer')}
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    color: 'white',
-                    mr: 2,
-                    '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.3)',
-                    },
-                  }}
-                >
-                  🔍 Tester l'Analyseur
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  onClick={() => navigate('/mes-analyses')}
-                  sx={{
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    color: 'white',
-                    '&:hover': {
-                      borderColor: 'white',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                    },
-                  }}
-                >
-                  📊 View My Analyses
-                </Button>
-              </Box>
+                              <Box sx={{ mt: 4, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => navigate('/analyzer')}
+                    sx={{
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      color: 'white',
+                      '&:hover': {
+                        bgcolor: 'rgba(255,255,255,0.3)',
+                      },
+                    }}
+                  >
+                    🔍 Try Analyzer
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/privacy-first')}
+                    sx={{
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  >
+                    🔒 Privacy-First Info
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/mes-analyses')}
+                    sx={{
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  >
+                    📊 View My Analyses
+                  </Button>
+                </Box>
             </CardContent>
           </Card>
         </Grid>
