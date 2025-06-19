@@ -90,7 +90,7 @@ export default defineConfig({
           },
           // App shell caching
           {
-            urlPattern: ({ request }) => request.mode === 'navigate',
+            urlPattern: ({ request }: { request: any }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'app-shell',
