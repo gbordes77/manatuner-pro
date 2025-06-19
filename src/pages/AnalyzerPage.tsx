@@ -41,6 +41,7 @@ import ManaCostRow from '../components/ManaCostRow'
 import EnhancedCharts from '../components/EnhancedCharts'
 import EnhancedRecommendations from '../components/EnhancedRecommendations'
 import EnhancedSpellAnalysis from '../components/EnhancedSpellAnalysis'
+import { ResponsiveTable } from '../components/ResponsiveTable'
 import { ManaCalculator } from '../services/manaCalculator'
 
 interface TabPanelProps {
@@ -195,8 +196,10 @@ function categorizeLandComplete(name: string): string {
 
 const AnalyzerPage: React.FC = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
+  // Mobile-first breakpoints plus précis
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')) // < 600px
+  const isTablet = useMediaQuery(theme.breakpoints.down('md')) // < 960px
+  const isSmallMobile = useMediaQuery('(max-width:375px)') // iPhone SE et plus petits
 
   const [activeTab, setActiveTab] = useState(0)
   const [deckList, setDeckList] = useState('')
@@ -370,8 +373,10 @@ const AnalyzerPage: React.FC = () => {
     <Container 
       maxWidth="xl" 
       sx={{ 
-        py: isMobile ? 2 : 4,
-        px: isMobile ? 1 : 3
+        py: isSmallMobile ? 1 : isMobile ? 2 : 4,
+        px: isSmallMobile ? 0.5 : isMobile ? 1 : 3,
+        width: '100%',
+        overflowX: 'hidden'
       }}
     >
       {/* Header */}
@@ -404,7 +409,18 @@ const AnalyzerPage: React.FC = () => {
         </Typography>
       </Box>
 
-      <Grid container spacing={isMobile ? 2 : 4}>
+      <Grid 
+        container 
+        spacing={isSmallMobile ? 1 : isMobile ? 2 : 4}
+        sx={{ 
+          width: '100%',
+          margin: 0,
+          '& .MuiGrid-item': {
+            paddingLeft: isSmallMobile ? '4px !important' : undefined,
+            paddingTop: isSmallMobile ? '4px !important' : undefined
+          }
+        }}
+      >
         {/* Input Section */}
         <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 2 : (isMobile ? 12 : 6)}>
           <Paper 
@@ -619,15 +635,24 @@ const AnalyzerPage: React.FC = () => {
                 <Tabs 
                   value={activeTab} 
                   onChange={handleTabChange} 
-                  variant={isMobile ? "scrollable" : "standard"}
-                  scrollButtons={isMobile ? "auto" : false}
-                  allowScrollButtonsMobile={isMobile}
+                  variant={isTablet ? "scrollable" : "standard"}
+                  scrollButtons={isTablet ? "auto" : false}
+                  allowScrollButtonsMobile
                   sx={{ 
-                    mb: 3,
+                    mb: isMobile ? 2 : 3,
                     '& .MuiTab-root': {
-                      fontSize: isMobile ? '0.75rem' : undefined,
-                      minWidth: isMobile ? 'auto' : undefined,
-                      padding: isMobile ? '6px 8px' : undefined
+                      fontSize: isSmallMobile ? '0.7rem' : isMobile ? '0.75rem' : undefined,
+                      minWidth: isSmallMobile ? '60px' : isMobile ? 'auto' : undefined,
+                      padding: isSmallMobile ? '4px 6px' : isMobile ? '6px 8px' : undefined,
+                      textTransform: 'none'
+                    },
+                    '& .MuiTabs-scrollButtons': {
+                      '&.Mui-disabled': {
+                        opacity: 0.3,
+                      },
+                    },
+                    '& .MuiTabs-indicator': {
+                      height: isMobile ? 2 : 3
                     }
                   }}
                 >
@@ -1204,27 +1229,53 @@ const AnalyzerPage: React.FC = () => {
                             <Box>
                               {colorData.length > 0 ? (
                                 <Box>
-                                  <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
-                                    <PieChart>
-                                      <Pie
-                                        data={colorData}
-                                        cx="50%"
-                                        cy="50%"
-                                        labelLine={false}
-                                        label={isMobile ? false : ({ name, value, percent }) => 
-                                          `${name}: ${value} (${(percent * 100).toFixed(1)}%)`
-                                        }
-                                        outerRadius={isMobile ? 60 : 80}
-                                        fill="#8884d8"
-                                        dataKey="value"
-                                      >
-                                        {colorData.map((entry, index) => (
-                                          <Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={2} />
-                                        ))}
-                                      </Pie>
-                                      <Tooltip />
-                                    </PieChart>
-                                  </ResponsiveContainer>
+                                  <Box sx={{ 
+                                    width: '100%', 
+                                    overflowX: 'hidden',
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                  }}>
+                                    <ResponsiveContainer 
+                                      width="100%" 
+                                      height={isSmallMobile ? 150 : isMobile ? 200 : 300}
+                                      minWidth={250}
+                                    >
+                                      <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                                        <Pie
+                                          data={colorData}
+                                          cx="50%"
+                                          cy="50%"
+                                          labelLine={false}
+                                          label={isMobile ? false : ({ name, value, percent }) => 
+                                            `${name}: ${value} (${(percent * 100).toFixed(1)}%)`
+                                          }
+                                          outerRadius={isSmallMobile ? 45 : isMobile ? 60 : 80}
+                                          innerRadius={isSmallMobile ? 15 : isMobile ? 20 : 25}
+                                          fill="#8884d8"
+                                          dataKey="value"
+                                          stroke="#fff"
+                                          strokeWidth={isMobile ? 1 : 2}
+                                        >
+                                          {colorData.map((entry, index) => (
+                                            <Cell 
+                                              key={`cell-${index}`} 
+                                              fill={entry.color} 
+                                              stroke="#fff" 
+                                              strokeWidth={isMobile ? 1 : 2} 
+                                            />
+                                          ))}
+                                        </Pie>
+                                        <Tooltip 
+                                          formatter={(value, name) => [`${value} sources`, name]}
+                                          labelStyle={{ fontSize: isMobile ? '12px' : '14px' }}
+                                          contentStyle={{ 
+                                            fontSize: isMobile ? '12px' : '14px',
+                                            padding: isMobile ? '4px 8px' : '8px 12px'
+                                          }}
+                                        />
+                                      </PieChart>
+                                    </ResponsiveContainer>
+                                  </Box>
                                   
                                   <Box sx={{ mt: 2 }}>
                                     <Typography 
