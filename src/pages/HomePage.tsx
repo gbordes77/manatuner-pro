@@ -9,7 +9,9 @@ import {
   Card,
   CardContent,
   Badge,
-  Chip
+  Chip,
+  Avatar,
+  CardActions
 } from '@mui/material'
 import {
   Analytics as AnalyticsIcon,
@@ -18,7 +20,8 @@ import {
   Widgets as WidgetsIcon,
   Star as StarIcon,
   TrendingUp as TrendingUpIcon,
-  MenuBook as MenuBookIcon
+  MenuBook as MenuBookIcon,
+  Book as BookIcon
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer, AnimatedList } from '../components/common/AnimatedContainer'
@@ -198,6 +201,137 @@ export const HomePage: React.FC = () => {
             </Card>
           </Grid>
         ))}
+
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'all 0.3s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: 4,
+              },
+            }}
+          >
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Box display="flex" alignItems="center" mb={2}>
+                <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
+                  <BookIcon />
+                </Avatar>
+                <Typography variant="h6" component="h3">
+                  Guide Complet
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                Apprenez les bases des manabases avec notre guide détaillé basé sur les recherches de Frank Karsten.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button 
+                size="small" 
+                onClick={() => navigate('/guide')}
+                variant="outlined"
+              >
+                Lire le Guide
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+
+        {/* Privacy-First Feature - NEW */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              textAlign: 'center',
+              py: 4
+            }}
+          >
+            <CardContent>
+              <Typography variant="h4" component="h2" gutterBottom>
+                🔐 Premier Analyseur MTG Privacy-First
+              </Typography>
+              <Typography variant="h6" sx={{ mb: 3, opacity: 0.9 }}>
+                Vos decks restent privés. Même nous, les développeurs, ne pouvons pas les voir !
+              </Typography>
+              
+              <Grid container spacing={3} sx={{ mt: 2 }}>
+                <Grid item xs={12} md={3}>
+                  <Box>
+                    <Typography variant="h3" sx={{ mb: 1 }}>🔒</Typography>
+                    <Typography variant="h6">Zero-Knowledge</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                      Chiffrement côté client
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Box>
+                    <Typography variant="h3" sx={{ mb: 1 }}>📱</Typography>
+                    <Typography variant="h6">100% Local</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                      Fonctionne hors ligne
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Box>
+                    <Typography variant="h3" sx={{ mb: 1 }}>🔑</Typography>
+                    <Typography variant="h6">Code Personnel</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                      Retrouvez vos analyses
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Box>
+                    <Typography variant="h3" sx={{ mb: 1 }}>🚀</Typography>
+                    <Typography variant="h6">Ultra Rapide</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                      Pas de serveur = vitesse
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate('/analyzer')}
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    mr: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.3)',
+                    },
+                  }}
+                >
+                  🔍 Tester l'Analyseur
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => navigate('/mes-analyses')}
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    color: 'white',
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    },
+                  }}
+                >
+                  📊 Voir mes Analyses
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       {/* Call to Action */}
