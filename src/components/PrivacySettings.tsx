@@ -145,7 +145,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           <Box display="flex" alignItems="center" gap={2} mb={2}>
             {isPrivate ? <LockIcon /> : <PublicIcon />}
             <Typography variant="h6" component="h2">
-              🔐 Paramètres de Confidentialité
+              🔐 Privacy Settings
             </Typography>
           </Box>
 
@@ -168,10 +168,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             label={
               <Box display="flex" alignItems="center" gap={1}>
                 <Typography variant="body1" fontWeight="bold">
-                  {isPrivate ? "Mode Privé Activé" : "Mode Public"}
+                  {isPrivate ? "Private Mode Active" : "Public Mode"}
                 </Typography>
                 <Chip
-                  label={isPrivate ? "SÉCURISÉ" : "PARTAGÉ"}
+                  label={isPrivate ? "SECURE" : "SHARED"}
                   size="small"
                   sx={{
                     backgroundColor: isPrivate ? '#10b981' : '#f59e0b',
@@ -195,7 +195,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             {isPrivate ? (
               <>
                 <Typography variant="body2" fontWeight="bold" gutterBottom>
-                  ✅ Vos decks sont protégés
+                  ✅ Your decks are protected
                 </Typography>
                 <List dense sx={{ mt: 1 }}>
                   <ListItem sx={{ py: 0 }}>
@@ -203,7 +203,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                       <ShieldIcon sx={{ color: 'white', fontSize: 16 }} />
                     </ListItemIcon>
                     <ListItemText 
-                      primary="Stockage local chiffré uniquement"
+                      primary="Encrypted local storage only"
                       primaryTypographyProps={{ variant: 'body2' }}
                     />
                   </ListItem>
@@ -212,7 +212,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                       <VerifiedIcon sx={{ color: 'white', fontSize: 16 }} />
                     </ListItemIcon>
                     <ListItemText 
-                      primary="Aucune donnée sensible envoyée au serveur"
+                      primary="No sensitive data sent to server"
                       primaryTypographyProps={{ variant: 'body2' }}
                     />
                   </ListItem>
@@ -221,7 +221,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                       <SecurityIcon sx={{ color: 'white', fontSize: 16 }} />
                     </ListItemIcon>
                     <ListItemText 
-                      primary="Architecture Zero-Knowledge"
+                      primary="Zero-Knowledge Architecture"
                       primaryTypographyProps={{ variant: 'body2' }}
                     />
                   </ListItem>
@@ -251,9 +251,9 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           >
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
               <Typography variant="body2" fontWeight="bold">
-                🎫 Votre Code Personnel
+                🎫 Your Personal Code
               </Typography>
-              <Tooltip title={showUserCode ? "Masquer le code" : "Afficher le code"}>
+              <Tooltip title={showUserCode ? "Hide code" : "Show code"}>
                 <IconButton
                   size="small"
                   onClick={() => setShowUserCode(!showUserCode)}
@@ -279,7 +279,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 {showUserCode ? userCode : '•••••-••••-••'}
               </Typography>
               
-              <Tooltip title="Copier le code">
+              <Tooltip title="Copy code">
                 <IconButton
                   size="small"
                   onClick={copyUserCode}
@@ -291,7 +291,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             </Box>
             
             <Typography variant="caption" sx={{ opacity: 0.8, mt: 1, display: 'block' }}>
-              💡 Notez ce code pour retrouver vos analyses sur n'importe quel appareil
+              💡 Note this code to retrieve your analyses on any device
             </Typography>
           </Box>
 
@@ -314,7 +314,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               }}
               fullWidth={isMobile}
             >
-              En savoir plus
+              Learn More
             </Button>
             
             <Button
@@ -328,7 +328,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               }}
               fullWidth={isMobile}
             >
-              Exporter
+              Export
             </Button>
             
             <Button
@@ -342,7 +342,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               }}
               fullWidth={isMobile}
             >
-              Importer
+              Import
             </Button>
             
             <Button
@@ -356,7 +356,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               }}
               fullWidth={isMobile}
             >
-              Réinitialiser
+              Reset
             </Button>
           </Box>
         </CardContent>
