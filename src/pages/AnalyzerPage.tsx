@@ -19,7 +19,9 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  useTheme,
+  useMediaQuery
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -192,6 +194,10 @@ function categorizeLandComplete(name: string): string {
 }
 
 export const AnalyzerPage: React.FC = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
+
   const [activeTab, setActiveTab] = useState(0)
   const [deckList, setDeckList] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -361,29 +367,54 @@ export const AnalyzerPage: React.FC = () => {
 4 Starting Town (FIN) 289`
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container 
+      maxWidth="xl" 
+      sx={{ 
+        py: isMobile ? 2 : 4,
+        px: isMobile ? 1 : 3
+      }}
+    >
       {/* Header */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          <AnalyticsIcon sx={{ fontSize: 40, mr: 2, verticalAlign: 'middle' }} />
+      <Box sx={{ mb: isMobile ? 2 : 4, textAlign: 'center' }}>
+        <Typography 
+          variant={isMobile ? "h4" : "h3"} 
+          component="h1" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 'bold',
+            fontSize: isMobile ? '1.5rem' : undefined
+          }}
+        >
+          <AnalyticsIcon sx={{ 
+            fontSize: isMobile ? 30 : 40, 
+            mr: 1, 
+            verticalAlign: 'middle' 
+          }} />
           ManaTuner Pro
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography 
+          variant={isMobile ? "body1" : "h6"} 
+          color="text.secondary"
+          sx={{
+            fontSize: isMobile ? '0.9rem' : undefined,
+            px: isMobile ? 1 : 0
+          }}
+        >
           Analyze your manabase with the precision of Frank Karsten's mathematics
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={isMobile ? 2 : 4}>
         {/* Input Section */}
-        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 2 : 6}>
+        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 2 : (isMobile ? 12 : 6)}>
           <Paper 
             sx={{ 
-              p: 3, 
+              p: isMobile ? 2 : 3, 
               height: 'fit-content',
               cursor: analysisResult && isDeckMinimized ? 'pointer' : 'default',
               transition: 'all 0.3s ease-in-out',
               '&:hover': analysisResult && isDeckMinimized ? {
-                transform: 'scale(1.02)',
+                transform: isMobile ? 'none' : 'scale(1.02)',
                 boxShadow: 3
               } : {}
             }}
@@ -393,7 +424,11 @@ export const AnalyzerPage: React.FC = () => {
               }
             }}
           >
-            <Typography variant="h5" gutterBottom>
+            <Typography 
+              variant={isMobile ? "h6" : "h5"} 
+              gutterBottom
+              sx={{ fontSize: isMobile ? '1.1rem' : undefined }}
+            >
               📝 Your Deck {analysisResult && isDeckMinimized && '(Click to expand)'}
             </Typography>
             
@@ -402,84 +437,120 @@ export const AnalyzerPage: React.FC = () => {
                 <TextField
                   fullWidth
                   multiline
-                  rows={12}
+                  rows={isMobile ? 8 : 12}
                   label="List of deck"
                   placeholder="Paste your decklist here...&#10;Format: 4 Lightning Bolt&#10;3 Counterspell&#10;..."
                   value={deckList}
                   onChange={(e) => setDeckList(e.target.value)}
-                  sx={{ mb: 2 }}
+                  sx={{ 
+                    mb: 2,
+                    '& .MuiInputBase-root': {
+                      fontSize: isMobile ? '0.875rem' : undefined
+                    }
+                  }}
                 />
 
-              <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleAnalyze}
-                  disabled={!deckList.trim() || isAnalyzing}
-                  startIcon={isAnalyzing ? <SpeedIcon /> : <AnalyticsIcon />}
-                  sx={{ flexGrow: 1, minWidth: '200px' }}
-                >
-                  {isAnalyzing ? 'Analyzing...' : 'Analyze Manabase'}
-                </Button>
-                
-                <Button
-                  variant="outlined"
-                  onClick={() => setDeckList(sampleDeck)}
-                  startIcon={<AddIcon />}
-                  sx={{ minWidth: '100px' }}
-                >
-                  Example
-                </Button>
-                
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setDeckList('')
-                    setAnalysisResult(null)
-                    setIsDeckMinimized(false)
-                    localStorage.removeItem('manatuner-decklist')
-                    localStorage.removeItem('manatuner-analysis')
-                    localStorage.removeItem('manatuner-minimized')
-                    setSnackbar({
-                      open: true,
-                      message: '🗑️ Interface cleared! Ready for new deck analysis.',
-                      severity: 'info'
-                    })
-                  }}
-                  sx={{ 
-                    color: 'var(--mtg-red)',
-                    borderColor: 'var(--mtg-red)',
-                    minWidth: '80px',
-                    '&:hover': {
-                      borderColor: 'var(--mtg-red)',
-                      backgroundColor: 'rgba(220, 53, 69, 0.1)'
-                    }
-                  }}
-                >
-                  🗑️ Clear
-                </Button>
-                
-                <Button
-                  variant="outlined"
-                  onClick={runProbabilityValidation}
-                  sx={{ 
-                    color: 'var(--mtg-blue)',
-                    borderColor: 'var(--mtg-blue)',
-                    minWidth: '140px',
-                    '&:hover': {
-                      borderColor: 'var(--mtg-blue)',
-                      backgroundColor: 'rgba(0, 123, 255, 0.1)'
-                    }
-                  }}
-                >
-                  Test Probabilities
-                </Button>
-              </Box>
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: isMobile ? 1 : 2, 
+                  mb: 2, 
+                  flexWrap: 'wrap',
+                  flexDirection: isMobile ? 'column' : 'row'
+                }}>
+                  <Button
+                    variant="contained"
+                    size={isMobile ? "medium" : "large"}
+                    onClick={handleAnalyze}
+                    disabled={!deckList.trim() || isAnalyzing}
+                    startIcon={isAnalyzing ? <SpeedIcon /> : <AnalyticsIcon />}
+                    sx={{ 
+                      flexGrow: 1, 
+                      minWidth: isMobile ? 'auto' : '200px',
+                      fontSize: isMobile ? '0.875rem' : undefined
+                    }}
+                  >
+                    {isAnalyzing ? 'Analyzing...' : 'Analyze Manabase'}
+                  </Button>
+                  
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: isMobile ? 1 : 2,
+                    flexWrap: 'wrap'
+                  }}>
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? "small" : "medium"}
+                      onClick={() => setDeckList(sampleDeck)}
+                      startIcon={<AddIcon />}
+                      sx={{ 
+                        minWidth: isMobile ? 'auto' : '100px',
+                        fontSize: isMobile ? '0.75rem' : undefined
+                      }}
+                    >
+                      Example
+                    </Button>
+                    
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? "small" : "medium"}
+                      onClick={() => {
+                        setDeckList('')
+                        setAnalysisResult(null)
+                        setIsDeckMinimized(false)
+                        localStorage.removeItem('manatuner-decklist')
+                        localStorage.removeItem('manatuner-analysis')
+                        localStorage.removeItem('manatuner-minimized')
+                        setSnackbar({
+                          open: true,
+                          message: '🗑️ Interface cleared! Ready for new deck analysis.',
+                          severity: 'info'
+                        })
+                      }}
+                      sx={{ 
+                        color: 'var(--mtg-red)',
+                        borderColor: 'var(--mtg-red)',
+                        minWidth: isMobile ? 'auto' : '80px',
+                        fontSize: isMobile ? '0.75rem' : undefined,
+                        '&:hover': {
+                          borderColor: 'var(--mtg-red)',
+                          backgroundColor: 'rgba(220, 53, 69, 0.1)'
+                        }
+                      }}
+                    >
+                      🗑️ Clear
+                    </Button>
+                    
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? "small" : "medium"}
+                      onClick={runProbabilityValidation}
+                      sx={{ 
+                        color: 'var(--mtg-blue)',
+                        borderColor: 'var(--mtg-blue)',
+                        minWidth: isMobile ? 'auto' : '140px',
+                        fontSize: isMobile ? '0.75rem' : undefined,
+                        '&:hover': {
+                          borderColor: 'var(--mtg-blue)',
+                          backgroundColor: 'rgba(0, 123, 255, 0.1)'
+                        }
+                      }}
+                    >
+                      Test Probabilities
+                    </Button>
+                  </Box>
+                </Box>
 
                 {isAnalyzing && (
                   <Box sx={{ mb: 2 }}>
                     <LinearProgress />
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        mt: 1,
+                        fontSize: isMobile ? '0.75rem' : undefined
+                      }}
+                    >
                       Calculating hypergeometric probabilities...
                     </Typography>
                   </Box>
@@ -502,114 +573,190 @@ export const AnalyzerPage: React.FC = () => {
         </Grid>
 
         {/* Results Section */}
-        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 10 : 6}>
+        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 10 : (isMobile ? 12 : 6)}>
           <Paper 
             sx={{ 
-              p: 3, 
-              minHeight: 600,
+              p: isMobile ? 2 : 3, 
+              minHeight: isMobile ? 400 : 600,
               cursor: analysisResult && !isDeckMinimized ? 'pointer' : 'default',
               transition: 'all 0.3s ease-in-out',
               '&:hover': analysisResult && !isDeckMinimized ? {
-                transform: 'scale(1.01)',
+                transform: isMobile ? 'none' : 'scale(1.01)',
                 boxShadow: 2
               } : {}
             }}
             onClick={() => {
-              if (analysisResult && !isDeckMinimized) {
+              if (analysisResult && !isDeckMinimized && !isMobile) {
                 setIsDeckMinimized(true)
               }
             }}
           >
             {!analysisResult ? (
-              <Box sx={{ textAlign: 'center', py: 8 }}>
-                <AssessmentIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary">
+              <Box sx={{ textAlign: 'center', py: isMobile ? 4 : 8 }}>
+                <AssessmentIcon sx={{ 
+                  fontSize: isMobile ? 60 : 80, 
+                  color: 'text.secondary', 
+                  mb: 2 
+                }} />
+                <Typography 
+                  variant={isMobile ? "body1" : "h6"} 
+                  color="text.secondary"
+                  sx={{ fontSize: isMobile ? '0.9rem' : undefined }}
+                >
                   Enter your deck and click "Analyze" to see results
                 </Typography>
               </Box>
             ) : (
               <>
-                <Typography variant="h5" gutterBottom>
-                  📊 Analysis Results {analysisResult && !isDeckMinimized && '(Click to minimize deck)'}
+                <Typography 
+                  variant={isMobile ? "h6" : "h5"} 
+                  gutterBottom
+                  sx={{ fontSize: isMobile ? '1.1rem' : undefined }}
+                >
+                  📊 Analysis Results {analysisResult && !isDeckMinimized && !isMobile && '(Click to minimize deck)'}
                 </Typography>
 
-                <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 3 }}>
-                                  <Tab label="Overview" />
-                <Tab label="Probabilities" />
-                <Tab label="💰 Mana Cost" />
-                <Tab label="Recommendations" />
+                <Tabs 
+                  value={activeTab} 
+                  onChange={handleTabChange} 
+                  variant={isMobile ? "scrollable" : "standard"}
+                  scrollButtons={isMobile ? "auto" : false}
+                  allowScrollButtonsMobile={isMobile}
+                  sx={{ 
+                    mb: 3,
+                    '& .MuiTab-root': {
+                      fontSize: isMobile ? '0.75rem' : undefined,
+                      minWidth: isMobile ? 'auto' : undefined,
+                      padding: isMobile ? '6px 8px' : undefined
+                    }
+                  }}
+                >
+                  <Tab label="Overview" />
+                  <Tab label="Probabilities" />
+                  <Tab label="💰 Mana Cost" />
+                  <Tab label="Recommendations" />
                   <Tab label="Spell Analysis" />
                   <Tab label="Deck List" />
                   <Tab label="Manabase" />
                 </Tabs>
 
                 <TabPanel value={activeTab} index={0}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} md={3}>
+                  <Grid container spacing={isMobile ? 1 : 2}>
+                    <Grid item xs={6} sm={6} md={3}>
                       <Card 
                         sx={{ 
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: 3
-                          }
+                          textAlign: 'center', 
+                          p: isMobile ? 1 : 2,
+                          minHeight: isMobile ? 80 : 100,
+                          position: 'relative'
                         }}
-                        onClick={() => setActiveTab(5)} // Onglet Deck List
                       >
-                        <CardContent>
-                          <Typography variant="h4" color="primary">
+                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
+                          <Typography 
+                            variant={isMobile ? "h5" : "h4"} 
+                            color="primary"
+                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                          >
                             {analysisResult.totalCards}
                           </Typography>
-                          <Typography color="text.secondary">
+                          <Typography 
+                            variant={isMobile ? "caption" : "body2"} 
+                            color="text.secondary"
+                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                          >
                             Total Cards
                           </Typography>
-                          <ViewListIcon sx={{ position: 'absolute', top: 8, right: 8, opacity: 0.3 }} />
+                          <ViewListIcon sx={{ 
+                            position: 'absolute', 
+                            top: isMobile ? 4 : 8, 
+                            right: isMobile ? 4 : 8, 
+                            opacity: 0.3,
+                            fontSize: isMobile ? '1rem' : undefined
+                          }} />
                         </CardContent>
                       </Card>
                     </Grid>
-                    <Grid item xs={6} md={3}>
+                    <Grid item xs={6} sm={6} md={3}>
                       <Card 
                         sx={{ 
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: 3
-                          }
+                          textAlign: 'center', 
+                          p: isMobile ? 1 : 2,
+                          minHeight: isMobile ? 80 : 100,
+                          position: 'relative'
                         }}
-                        onClick={() => setActiveTab(6)} // Onglet Manabase
                       >
-                        <CardContent sx={{ position: 'relative' }}>
-                          <Typography variant="h4" color="primary">
+                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
+                          <Typography 
+                            variant={isMobile ? "h5" : "h4"} 
+                            color="primary"
+                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                          >
                             {analysisResult.totalLands}
                           </Typography>
-                          <Typography color="text.secondary">
+                          <Typography 
+                            variant={isMobile ? "caption" : "body2"} 
+                            color="text.secondary"
+                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                          >
                             Lands
                           </Typography>
-                          <TerrainIcon sx={{ position: 'absolute', top: 8, right: 8, opacity: 0.3 }} />
+                          <TerrainIcon sx={{ 
+                            position: 'absolute', 
+                            top: isMobile ? 4 : 8, 
+                            right: isMobile ? 4 : 8, 
+                            opacity: 0.3,
+                            fontSize: isMobile ? '1rem' : undefined
+                          }} />
                         </CardContent>
                       </Card>
                     </Grid>
-                    <Grid item xs={6} md={3}>
-                      <Card>
-                        <CardContent>
-                          <Typography variant="h4" color="primary">
+                    <Grid item xs={6} sm={6} md={3}>
+                      <Card
+                        sx={{ 
+                          textAlign: 'center', 
+                          p: isMobile ? 1 : 2,
+                          minHeight: isMobile ? 80 : 100
+                        }}
+                      >
+                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
+                          <Typography 
+                            variant={isMobile ? "h5" : "h4"} 
+                            color="primary"
+                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                          >
                             {analysisResult.averageCMC.toFixed(1)}
                           </Typography>
-                          <Typography color="text.secondary">
+                          <Typography 
+                            variant={isMobile ? "caption" : "body2"} 
+                            color="text.secondary"
+                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                          >
                             Average CMC
                           </Typography>
                         </CardContent>
                       </Card>
                     </Grid>
-                    <Grid item xs={6} md={3}>
-                      <Card>
-                        <CardContent>
-                          <Typography variant="h4" color="primary">
+                    <Grid item xs={6} sm={6} md={3}>
+                      <Card
+                        sx={{ 
+                          textAlign: 'center', 
+                          p: isMobile ? 1 : 2,
+                          minHeight: isMobile ? 80 : 100
+                        }}
+                      >
+                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
+                          <Typography 
+                            variant={isMobile ? "h5" : "h4"} 
+                            color="primary"
+                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                          >
                             {(analysisResult.landRatio * 100).toFixed(1)}%
                           </Typography>
-                          <Typography color="text.secondary">
+                          <Typography 
+                            variant={isMobile ? "caption" : "body2"} 
+                            color="text.secondary"
+                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                          >
                             Land Ratio
                           </Typography>
                         </CardContent>
@@ -617,12 +764,21 @@ export const AnalyzerPage: React.FC = () => {
                     </Grid>
                   </Grid>
 
-                  <Divider sx={{ my: 3 }} />
+                  <Divider sx={{ my: isMobile ? 2 : 3 }} />
 
-                  <Typography variant="h6" gutterBottom>
+                  <Typography 
+                    variant={isMobile ? "body1" : "h6"} 
+                    gutterBottom
+                    sx={{ fontSize: isMobile ? '1rem' : undefined, fontWeight: 'bold' }}
+                  >
                     Color Distribution
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: isMobile ? 0.5 : 1, 
+                    flexWrap: 'wrap',
+                    justifyContent: isMobile ? 'center' : 'flex-start'
+                  }}>
                     {MANA_COLORS.map(color => {
                       const count = analysisResult.colorDistribution[color] || 0;
                       if (count === 0) return null;
@@ -639,12 +795,15 @@ export const AnalyzerPage: React.FC = () => {
                         <Chip
                           key={color}
                           label={`${COLOR_NAMES[color]}: ${count}`}
+                          size={isMobile ? "small" : "medium"}
                           sx={{
                             backgroundColor: colorMap[color]?.bg || '#95A5A6',
                             color: colorMap[color]?.text || '#2C3E50',
                             fontWeight: 'bold',
+                            fontSize: isMobile ? '0.7rem' : undefined,
                             '& .MuiChip-label': {
-                              color: colorMap[color]?.text || '#2C3E50'
+                              color: colorMap[color]?.text || '#2C3E50',
+                              fontSize: isMobile ? '0.7rem' : undefined
                             }
                           }}
                         />
@@ -888,8 +1047,12 @@ export const AnalyzerPage: React.FC = () => {
                   <Grid container spacing={4}>
                     {/* Liste des terrains */}
                     <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" gutterBottom>
+                      <Paper sx={{ p: isMobile ? 2 : 3 }}>
+                        <Typography 
+                          variant={isMobile ? "body1" : "h6"} 
+                          gutterBottom
+                          sx={{ fontSize: isMobile ? '1rem' : undefined, fontWeight: 'bold' }}
+                        >
                           📋 Land Breakdown
                         </Typography>
                         
@@ -1005,8 +1168,12 @@ export const AnalyzerPage: React.FC = () => {
 
                     {/* Graphiques */}
                     <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" gutterBottom>
+                      <Paper sx={{ p: isMobile ? 2 : 3 }}>
+                        <Typography 
+                          variant={isMobile ? "body1" : "h6"} 
+                          gutterBottom
+                          sx={{ fontSize: isMobile ? '1rem' : undefined, fontWeight: 'bold' }}
+                        >
                           📊 Mana Production Distribution
                         </Typography>
                         
@@ -1037,17 +1204,17 @@ export const AnalyzerPage: React.FC = () => {
                             <Box>
                               {colorData.length > 0 ? (
                                 <Box>
-                                  <ResponsiveContainer width="100%" height={300}>
+                                  <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
                                     <PieChart>
                                       <Pie
                                         data={colorData}
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={({ name, value, percent }) => 
+                                        label={isMobile ? false : ({ name, value, percent }) => 
                                           `${name}: ${value} (${(percent * 100).toFixed(1)}%)`
                                         }
-                                        outerRadius={80}
+                                        outerRadius={isMobile ? 60 : 80}
                                         fill="#8884d8"
                                         dataKey="value"
                                       >
@@ -1060,30 +1227,43 @@ export const AnalyzerPage: React.FC = () => {
                                   </ResponsiveContainer>
                                   
                                   <Box sx={{ mt: 2 }}>
-                                    <Typography variant="subtitle2" gutterBottom>
+                                    <Typography 
+                                      variant={isMobile ? "caption" : "subtitle2"} 
+                                      gutterBottom
+                                      sx={{ fontSize: isMobile ? '0.8rem' : undefined, fontWeight: 'bold' }}
+                                    >
                                       Color Requirements Summary:
                                     </Typography>
                                     {colorData.map((item, index) => (
-                                      <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                      <Box key={index} sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        mb: isMobile ? 0.5 : 1,
+                                        flexWrap: isMobile ? 'wrap' : 'nowrap'
+                                      }}>
                                         <Box 
                                           sx={{ 
-                                            width: 20, 
-                                            height: 20, 
+                                            width: isMobile ? 16 : 20, 
+                                            height: isMobile ? 16 : 20, 
                                             backgroundColor: item.color,
                                             border: '1px solid #ddd',
                                             borderRadius: 1,
-                                            mr: 1.5,
+                                            mr: isMobile ? 1 : 1.5,
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: '0.75rem',
+                                            fontSize: isMobile ? '0.6rem' : '0.75rem',
                                             fontWeight: 'bold',
-                                            color: item.textColor
+                                            color: item.textColor,
+                                            flexShrink: 0
                                           }} 
                                         >
                                           {MANA_COLORS.find(c => COLOR_NAMES[c] === item.name)}
                                         </Box>
-                                        <Typography variant="body2">
+                                        <Typography 
+                                          variant={isMobile ? "caption" : "body2"}
+                                          sx={{ fontSize: isMobile ? '0.75rem' : undefined }}
+                                        >
                                           {item.name}: {item.value} sources ({((item.value / totalMana) * 100).toFixed(1)}%)
                                         </Typography>
                                       </Box>
@@ -1105,48 +1285,84 @@ export const AnalyzerPage: React.FC = () => {
 
                     {/* Statistiques de la manabase */}
                     <Grid item xs={12}>
-                      <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" gutterBottom>
+                      <Paper sx={{ p: isMobile ? 2 : 3 }}>
+                        <Typography 
+                          variant={isMobile ? "body1" : "h6"} 
+                          gutterBottom
+                          sx={{ fontSize: isMobile ? '1rem' : undefined, fontWeight: 'bold' }}
+                        >
                           📈 Manabase Statistics
                         </Typography>
                         
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} sm={6} md={3}>
+                        <Grid container spacing={isMobile ? 2 : 3}>
+                          <Grid item xs={6} sm={6} md={3}>
                             <Box sx={{ textAlign: 'center' }}>
-                              <Typography variant="h4" color="primary">
+                              <Typography 
+                                variant={isMobile ? "h5" : "h4"} 
+                                color="primary"
+                                sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                              >
                                 {analysisResult.totalLands}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography 
+                                variant={isMobile ? "caption" : "body2"} 
+                                color="text.secondary"
+                                sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                              >
                                 Total Lands
                               </Typography>
                             </Box>
                           </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
+                          <Grid item xs={6} sm={6} md={3}>
                             <Box sx={{ textAlign: 'center' }}>
-                              <Typography variant="h4" color="primary">
+                              <Typography 
+                                variant={isMobile ? "h5" : "h4"} 
+                                color="primary"
+                                sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                              >
                                 {(analysisResult.landRatio * 100).toFixed(1)}%
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography 
+                                variant={isMobile ? "caption" : "body2"} 
+                                color="text.secondary"
+                                sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                              >
                                 Land Ratio
                               </Typography>
                             </Box>
                           </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
+                          <Grid item xs={6} sm={6} md={3}>
                             <Box sx={{ textAlign: 'center' }}>
-                              <Typography variant="h4" color="primary">
+                              <Typography 
+                                variant={isMobile ? "h5" : "h4"} 
+                                color="primary"
+                                sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                              >
                                 {Object.values(analysisResult.colorDistribution).filter(v => v > 0).length}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography 
+                                variant={isMobile ? "caption" : "body2"} 
+                                color="text.secondary"
+                                sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                              >
                                 Colors Used
                               </Typography>
                             </Box>
                           </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
+                          <Grid item xs={6} sm={6} md={3}>
                             <Box sx={{ textAlign: 'center' }}>
-                              <Typography variant="h4" color="primary">
+                              <Typography 
+                                variant={isMobile ? "h5" : "h4"} 
+                                color="primary"
+                                sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
+                              >
                                 {analysisResult.averageCMC.toFixed(1)}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography 
+                                variant={isMobile ? "caption" : "body2"} 
+                                color="text.secondary"
+                                sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
+                              >
                                 Average CMC
                               </Typography>
                             </Box>
@@ -1156,8 +1372,15 @@ export const AnalyzerPage: React.FC = () => {
                     </Grid>
                   </Grid>
 
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="body2" color="text.secondary">
+                  <Box sx={{ mt: isMobile ? 2 : 3, px: isMobile ? 1 : 0 }}>
+                    <Typography 
+                      variant={isMobile ? "caption" : "body2"} 
+                      color="text.secondary"
+                      sx={{ 
+                        fontSize: isMobile ? '0.75rem' : undefined,
+                        textAlign: isMobile ? 'center' : 'left'
+                      }}
+                    >
                       🏔️ This manabase analysis helps you understand your land distribution and mana production capabilities for optimal deck performance.
                     </Typography>
                   </Box>
