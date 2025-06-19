@@ -1,131 +1,153 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ManaCalculator } from '../services/manaCalculator';
+import type { DeckAnalysis } from '../types';
 
-// ⚡ HOOK OPTIMISÉ - Performance Boost
-export const useManaCalculations = (
-  deckSize: number,
-  manabase: Record<string, number>,
-  cards: Array<{ name: string; manaCost: any; cmc: number; quantity: number }>
-) => {
-  // 🎯 Memoized Calculator Instance
-  const calculator = useMemo(() => new ManaCalculator(), []);
+interface UseManaCalculationsProps {
+  deckList: string;
+  enabled?: boolean;
+}
+
+interface UseManaCalculationsReturn {
+  analysisResult: AnalysisResult | null;
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => void;
+}
+
+// Create a stable hash for the deck list to use as cache key
+const createDeckHash = (deckList: string): string => {
+  // Normalize the deck list by sorting and trimming
+  const normalized = deckList
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .sort()
+    .join('\n');
   
-  // 🎯 Memoized Deck Analysis
-  const deckAnalysis = useMemo(() => {
-    if (!cards.length) return null;
-    
-    const lands = Object.entries(manabase).map(([color, count]) => ({
-      name: `${color} Source`,
-      produces: [color],
-      quantity: count
-    }));
-    
-    return calculator.analyzeDeck({
-      cards: cards.filter(card => Object.keys(card.manaCost.symbols || {}).length > 0),
-      lands
-    });
-  }, [calculator, cards, manabase]);
+  // Simple hash function
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    const char = normalized.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash.toString();
+};
+
+export const useManaCalculations = ({ 
+  deckList, 
+  enabled = true 
+}: UseManaCalculationsProps): UseManaCalculationsReturn => {
+  // Memoize the deck hash to avoid recalculation
+  const deckHash = useMemo(() => createDeckHash(deckList), [deckList]);
   
-  // 🎯 Memoized Probability Cache pour Lightning Fast calculs
-  const probabilityCache = useMemo(() => {
-    const cache = new Map<string, number>();
-    
-    // Pre-calculate common scenarios
-    const commonTurns = [1, 2, 3, 4, 5];
-    const commonSources = [8, 10, 12, 14, 16, 18, 20, 22, 24];
-    const commonSymbols = [1, 2, 3];
-    
-    commonTurns.forEach(turn => {
-      commonSources.forEach(sources => {
-        commonSymbols.forEach(symbols => {
-          const key = `${deckSize}-${sources}-${turn}-${symbols}`;
-          try {
-            const result = calculator.calculateManaProbability(deckSize, sources, turn, symbols, true);
-            cache.set(key, result.probability);
-          } catch (e) {
-            // Skip invalid combinations
-          }
-        });
-      });
-    });
-    
-    return cache;
-  }, [calculator, deckSize]);
-  
-  // 🎯 Fast Lookup Function
-  const getQuickProbability = useMemo(() => {
-    return (sources: number, turn: number, symbols: number): number => {
-      const key = `${deckSize}-${sources}-${turn}-${symbols}`;
-      
-      if (probabilityCache.has(key)) {
-        return probabilityCache.get(key)!;
+  const {
+    data: analysisResult,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['manaCalculations', deckHash],
+    queryFn: async (): Promise<AnalysisResult> => {
+      if (!deckList.trim()) {
+        throw new Error('Empty deck list');
       }
-      
-      // Calculate and cache if not found
+
       try {
-        const result = calculator.calculateManaProbability(deckSize, sources, turn, symbols, true);
-        probabilityCache.set(key, result.probability);
-        return result.probability;
-      } catch (e) {
-        return 0;
+        // Use the ManaCalculator service
+        const calculator = new ManaCalculator();
+        const result = await calculator.analyzeDeck(deckList);
+        
+        if (!result) {
+          throw new Error('Failed to analyze deck');
+        }
+        
+        return result;
+      } catch (error) {
+        console.error('Mana calculation error:', error);
+        throw new Error(error instanceof Error ? error.message : 'Unknown calculation error');
       }
-    };
-  }, [calculator, deckSize, probabilityCache]);
-  
-  // 🎯 Optimized Card Analysis
-  const cardAnalysis = useMemo(() => {
-    if (!cards.length) return [];
-    
-    return cards
-      .filter(card => card.manaCost?.symbols)
-      .map(card => {
-        const analysis: Record<string, any> = {};
-        
-        Object.entries(card.manaCost.symbols).forEach(([color, count]) => {
-          const symbolCount = Number(count);
-          if (symbolCount > 0 && manabase[color]) {
-            const sources = manabase[color] || 0;
-            const probability = getQuickProbability(sources, card.cmc, symbolCount);
-            
-            analysis[color] = {
-              probability,
-              sources,
-              turn: card.cmc,
-              symbols: symbolCount,
-              meetsThreshold: probability >= 0.90
-            };
-          }
-        });
-        
-        return {
-          card: card.name,
-          cmc: card.cmc,
-          analysis
-        };
-      });
-  }, [cards, manabase, getQuickProbability]);
-  
-  // 🎯 Performance Metrics
-  const performanceMetrics = useMemo(() => {
-    const start = performance.now();
-    const sampleCalc = calculator.calculateManaProbability(60, 14, 1, 1, true);
-    const calcTime = performance.now() - start;
-    
-    return {
-      cacheSize: probabilityCache.size,
-      avgCalculationTime: calcTime,
-      totalCards: cards.length,
-      analyzedCards: cardAnalysis.length
-    };
-  }, [calculator, probabilityCache.size, cards.length, cardAnalysis.length]);
-  
+    },
+    enabled: enabled && deckList.trim().length > 0,
+    // Cache calculations for 10 minutes
+    staleTime: 10 * 60 * 1000,
+    // Keep in memory for 30 minutes
+    gcTime: 30 * 60 * 1000,
+    // Don't refetch on window focus
+    refetchOnWindowFocus: false,
+    // Retry once on failure
+    retry: 1,
+    // Don't refetch on mount if we have data
+    refetchOnMount: false
+  });
+
   return {
-    calculator,
-    deckAnalysis,
-    cardAnalysis,
-    getQuickProbability,
-    performanceMetrics,
-    probabilityCache: probabilityCache.size
+    analysisResult: analysisResult || null,
+    isLoading,
+    error: error ? (error as Error).message : null,
+    refetch
+  };
+};
+
+// Hook for background calculations with Web Worker
+export const useManaCalculationsWithWorker = ({ 
+  deckList, 
+  enabled = true 
+}: UseManaCalculationsProps): UseManaCalculationsReturn => {
+  const deckHash = useMemo(() => createDeckHash(deckList), [deckList]);
+  
+  const {
+    data: analysisResult,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['manaCalculationsWorker', deckHash],
+    queryFn: async (): Promise<AnalysisResult> => {
+      return new Promise((resolve, reject) => {
+        // Create Web Worker for heavy calculations
+        const worker = new Worker('/workers/manaCalculator.worker.js');
+        
+        worker.postMessage({ deckList });
+        
+        worker.onmessage = (event) => {
+          const { result, error } = event.data;
+          worker.terminate();
+          
+          if (error) {
+            reject(new Error(error));
+          } else {
+            resolve(result);
+          }
+        };
+        
+        worker.onerror = (error) => {
+          worker.terminate();
+          reject(new Error('Worker calculation failed'));
+        };
+        
+        // Timeout after 30 seconds
+        setTimeout(() => {
+          worker.terminate();
+          reject(new Error('Calculation timeout'));
+        }, 30000);
+      });
+    },
+    enabled: enabled && deckList.trim().length > 0,
+    // Cache worker calculations for 15 minutes
+    staleTime: 15 * 60 * 1000,
+    gcTime: 45 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    refetchOnMount: false
+  });
+
+  return {
+    analysisResult: analysisResult || null,
+    isLoading,
+    error: error ? (error as Error).message : null,
+    refetch
   };
 };
 
