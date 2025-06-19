@@ -32,7 +32,7 @@ export const Header: React.FC = () => {
     { label: 'Home', path: '/' },
     { label: 'Analyzer', path: '/analyzer' },
     { label: 'Guide', path: '/guide' },
-    { label: 'Mes Analyses', path: '/my-analyses', icon: HistoryIcon },
+    { label: 'My Analyses', path: '/mes-analyses', icon: HistoryIcon },
     { label: 'About', path: '/about' }
   ]
 

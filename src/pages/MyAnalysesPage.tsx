@@ -25,7 +25,7 @@ const MyAnalysesPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
-        📊 Mes Analyses
+        📊 My Analyses
       </Typography>
 
       {/* Code Personnel */}
@@ -34,14 +34,14 @@ const MyAnalysesPage: React.FC = () => {
           <Box display="flex" alignItems="center" gap={2}>
             <CodeIcon sx={{ color: 'white' }} />
             <Typography variant="h6" sx={{ color: 'white' }}>
-              Votre Code Personnel
+              Your Personal Code
             </Typography>
           </Box>
           <Typography variant="h4" sx={{ color: 'white', fontFamily: 'monospace', mt: 1 }}>
             {userCode}
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mt: 1 }}>
-            Notez ce code pour retrouver vos analyses sur n'importe quel appareil
+            Note this code to retrieve your analyses on any device
           </Typography>
         </CardContent>
       </Card>
@@ -50,17 +50,17 @@ const MyAnalysesPage: React.FC = () => {
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            📈 Vos Analyses ({analyses.length})
+            📈 Your Analyses ({analyses.length})
           </Typography>
 
           {analyses.length === 0 ? (
             <Alert severity="info">
-              Aucune analyse sauvegardée. Commencez par analyser un deck !
+              No saved analyses. Start by analyzing a deck!
             </Alert>
           ) : (
             <Box>
               <Typography variant="body1" color="text.secondary">
-                {analyses.length} analyse(s) trouvée(s) dans le stockage local.
+                {analyses.length} analysis(es) found in local storage.
               </Typography>
               
               <Box mt={2} display="flex" gap={2} flexWrap="wrap">
@@ -69,7 +69,7 @@ const MyAnalysesPage: React.FC = () => {
                   onClick={exportAnalyses}
                   size="small"
                 >
-                  📤 Exporter
+                  📤 Export
                 </Button>
                 <Button
                   variant="outlined"
@@ -77,7 +77,7 @@ const MyAnalysesPage: React.FC = () => {
                   onClick={clearAllLocalData}
                   size="small"
                 >
-                  🗑️ Effacer toutes les données
+                  🗑️ Clear All Data
                 </Button>
               </Box>
             </Box>
@@ -92,10 +92,10 @@ const MyAnalysesPage: React.FC = () => {
             🔐 Privacy-First Architecture
           </Typography>
           <Typography variant="body2">
-            ✅ Vos données restent sur votre appareil<br/>
-            ✅ Aucune transmission vers des serveurs<br/>
-            ✅ Contrôle total de vos informations<br/>
-            ✅ Code personnel pour retrouver vos analyses
+            ✅ Your data stays on your device<br/>
+            ✅ No transmission to servers<br/>
+            ✅ Full control of your information<br/>
+            ✅ Personal code to retrieve your analyses
           </Typography>
         </CardContent>
       </Card>

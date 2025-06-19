@@ -326,7 +326,7 @@ export const HomePage: React.FC = () => {
                     },
                   }}
                 >
-                  📊 Voir mes Analyses
+                  📊 View My Analyses
                 </Button>
               </Box>
             </CardContent>
