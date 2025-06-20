@@ -1,9 +1,6 @@
 import React, { Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
 import { Box, Typography, Container, CircularProgress } from '@mui/material'
-import { store, persistor } from './store'
 import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
@@ -52,50 +49,46 @@ function App() {
   return (
     <ErrorBoundary>
       <NotificationProvider>
-        <Provider store={store}>
-          <PersistGate loading={<PageLoader />} persistor={persistor}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '100vh',
-              }}
-            >
-              <Header />
-              <BetaBanner />
-              
-              <Box
-                component="main"
-                sx={{
-                  flexGrow: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/analyzer" element={<AnalyzerPage />} />
-                  <Route path="/guide" element={<GuidePage />} />
-                  <Route path="/mes-analyses" element={<MyAnalysesPage />} />
-                  <Route path="/privacy-first" element={<PrivacyFirstPage />} />
-                  <Route path="/about" element={
-                    <Suspense fallback={<PageLoader />}>
-                      <AboutPage />
-                    </Suspense>
-                  } />
-                  <Route path="/privacy" element={
-                    <Suspense fallback={<PageLoader />}>
-                      <PrivacyPage />
-                    </Suspense>
-                  } />
-                  <Route path="*" element={<HomePage />} />
-                </Routes>
-              </Box>
-              
-              <Footer />
-            </Box>
-          </PersistGate>
-        </Provider>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+          }}
+        >
+          <Header />
+          <BetaBanner />
+          
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/analyzer" element={<AnalyzerPage />} />
+              <Route path="/guide" element={<GuidePage />} />
+              <Route path="/mes-analyses" element={<MyAnalysesPage />} />
+              <Route path="/privacy-first" element={<PrivacyFirstPage />} />
+              <Route path="/about" element={
+                <Suspense fallback={<PageLoader />}>
+                  <AboutPage />
+                </Suspense>
+              } />
+              <Route path="/privacy" element={
+                <Suspense fallback={<PageLoader />}>
+                  <PrivacyPage />
+                </Suspense>
+              } />
+              <Route path="*" element={<HomePage />} />
+            </Routes>
+          </Box>
+          
+          <Footer />
+        </Box>
       </NotificationProvider>
     </ErrorBoundary>
   )

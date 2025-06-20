@@ -149,3 +149,4 @@ auto-generated/
 *.zip
 *.tar.gz
 *.rar 
+.vercel

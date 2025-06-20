@@ -1,36 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import * as Sentry from '@sentry/react'
 import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { store } from './store'
+import { CircularProgress, Box } from '@mui/material'
+import { store, persistor } from './store'
 import App from './App'
 import './styles/index.css'
-
-// Initialize Sentry for error monitoring and performance tracking
-Sentry.init({
-  dsn: (import.meta as any).env?.VITE_SENTRY_DSN || '',
-  environment: (import.meta as any).env?.MODE || 'development',
-  // Performance monitoring
-  tracesSampleRate: 1.0,
-  // Release tracking
-  release: 'manatuner-pro@1.0.0',
-  beforeSend(event) {
-    // Filter out known non-critical errors
-    if (event.exception) {
-      const error = event.exception.values?.[0]?.value
-      if (error?.includes('ResizeObserver loop limit exceeded')) {
-        return null
-      }
-      if (error?.includes('Non-Error promise rejection captured')) {
-        return null
-      }
-    }
-    return event
-  }
-})
 
 // Configure React Query client with optimized settings
 const queryClient = new QueryClient({
@@ -54,20 +32,74 @@ const queryClient = new QueryClient({
   }
 })
 
-// Firebase sera initialisé plus tard
+// Loading component for PersistGate
+const PersistLoader = () => (
+  <Box sx={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  }}>
+    <CircularProgress size={48} sx={{ color: 'white' }} />
+  </Box>
+)
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-          {/* React Query DevTools - only in development */}
-          {(import.meta as any).env?.MODE === 'development' && (
-            <ReactQueryDevtools initialIsOpen={false} />
-          )}
-        </BrowserRouter>
-      </Provider>
-    </QueryClientProvider>
-  </React.StrictMode>
-) 
+// Error boundary for production
+const ErrorFallback = ({ error }: { error: Error }) => (
+  <div style={{ 
+    padding: '20px', 
+    textAlign: 'center',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+    <h1>🎯 ManaTuner Pro</h1>
+    <p>Something went wrong loading the application.</p>
+    <button 
+      onClick={() => window.location.reload()}
+      style={{
+        padding: '10px 20px',
+        background: 'white',
+        color: '#667eea',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        marginTop: '10px'
+      }}
+    >
+      Reload Page
+    </button>
+  </div>
+)
+
+const isDevelopment = import.meta.env.DEV
+
+try {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <PersistGate loading={<PersistLoader />} persistor={persistor}>
+            <BrowserRouter>
+              <App />
+              {/* React Query DevTools - only in development */}
+              {isDevelopment && (
+                <ReactQueryDevtools initialIsOpen={false} />
+              )}
+            </BrowserRouter>
+          </PersistGate>
+        </Provider>
+      </QueryClientProvider>
+    </React.StrictMode>
+  )
+} catch (error) {
+  console.error('Failed to render app:', error)
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <ErrorFallback error={error as Error} />
+  )
+} 
