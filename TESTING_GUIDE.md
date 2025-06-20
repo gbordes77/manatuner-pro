@@ -46,6 +46,16 @@ npm run test:performance   # Tests de performance et vitesse
 npm run test:core-flows    # Flux utilisateur principaux
 ```
 
+### 🎴 Tests Spécifiques MTG
+```bash
+npm run test:mtg-logic      # Tests des algorithmes MTG
+npm run test:mana-calc      # Calculs hypergéométriques (Frank Karsten)
+npm run test:deck-parser    # Import de decklists (Arena, MTGO, etc.)
+npm run test:edge-cases     # Cartes problématiques (MDFC, Phyrexian, etc.)
+npm run test:competitive    # Validation avec decklists compétitives
+npm run test:formats        # Tests spécifiques par format (Standard, Modern, Commander)
+```
+
 ### 4. Tests par Navigateur
 ```bash
 npm run test:chromium      # Chrome/Chromium

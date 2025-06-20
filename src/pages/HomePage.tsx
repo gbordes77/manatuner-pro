@@ -8,7 +8,6 @@ import {
   Paper,
   Card,
   CardContent,
-  Badge,
   Chip,
   Avatar,
   CardActions
@@ -56,27 +55,16 @@ export const HomePage: React.FC = () => {
     <Container maxWidth="lg">
       {/* Hero Section */}
       <AnimatedContainer animation="fadeInUp">
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Badge
-            badgeContent="v2.0"
-            color="primary"
-            sx={{ 
-              '& .MuiBadge-badge': { 
-                fontSize: '0.8rem',
-                fontWeight: 'bold',
-              }
-            }}
-          >
-            <Typography variant="h2" component="h1" gutterBottom sx={{ 
-              fontWeight: 'bold',
-              background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              Perfect Your Manabase
-            </Typography>
-          </Badge>
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h2" component="h1" gutterBottom sx={{ 
+            fontWeight: 'bold',
+            background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            Perfect Your Manabase
+          </Typography>
           
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mb: 3, flexWrap: 'wrap' }}>
             <Chip icon={<StarIcon />} label="Frank Karsten Research" color="primary" />
