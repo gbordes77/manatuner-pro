@@ -1,18 +1,45 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --production=false",
+  "framework": "vite",
+  "regions": ["cdg1"],
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "VITE_NODE_ENV": "production"
+    }
+  },
+  "headers": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
+  ],
+  "ignore": [
+    "node_modules/**",
+    ".git/**",
+    "tests/**",
+    "test-results/**",
+    "playwright-report/**",
+    ".env.local",
+    ".env.*.local"
   ]
 } 

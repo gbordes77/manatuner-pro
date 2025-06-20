@@ -5,6 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "allowJs": true,
 
     /* Bundler mode */
     "moduleResolution": "node",
@@ -15,37 +16,41 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 
-    /* Linting - Relaxed for deployment */
+    /* Linting */
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
 
-    /* Path aliases */
+    /* Path mapping */
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@/components/*": ["src/components/*"],
-      "@/hooks/*": ["src/hooks/*"],
+      "@/pages/*": ["src/pages/*"],
       "@/services/*": ["src/services/*"],
       "@/utils/*": ["src/utils/*"],
       "@/types/*": ["src/types/*"],
-      "@/store/*": ["src/store/*"]
+      "@/hooks/*": ["src/hooks/*"]
     }
   },
   "include": [
-    "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "src",
+    "vite.config.js",
     "vite.config.ts"
   ],
   "exclude": [
     "node_modules",
-    "functions",
-    "dist"
+    "dist",
+    "build",
+    "tests",
+    "test-results",
+    "playwright-report",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ],
-  "references": [
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.node.json" }]
 } 
