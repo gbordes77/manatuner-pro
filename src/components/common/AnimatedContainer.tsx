@@ -1,172 +1,81 @@
 import React from 'react'
-import { motion, HTMLMotionProps, Variants } from 'framer-motion'
-import { Box } from '@mui/material'
+import { Box, BoxProps } from '@mui/material'
 
-// Animations prédéfinies
-export const fadeInUp: Variants = {
-  initial: {
-    opacity: 0,
-    y: 40,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -40,
-    transition: {
-      duration: 0.3,
-    },
-  },
-}
-
-export const slideInLeft: Variants = {
-  initial: {
-    opacity: 0,
-    x: -50,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-}
-
-export const scaleIn: Variants = {
-  initial: {
-    opacity: 0,
-    scale: 0.8,
-  },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.4,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-}
-
-export const staggerContainer: Variants = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-}
-
-export const cardHover: Variants = {
-  initial: {
-    scale: 1,
-    y: 0,
-  },
-  hover: {
-    scale: 1.02,
-    y: -4,
-    transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-  tap: {
-    scale: 0.98,
-  },
-}
+// Types d'animations disponibles
+type AnimationType = 'fadeInUp' | 'slideInLeft' | 'scaleIn' | 'stagger' | 'cardHover'
 
 // Props du composant
-interface AnimatedContainerProps extends HTMLMotionProps<'div'> {
+interface AnimatedContainerProps extends Omit<BoxProps, 'animation'> {
   children: React.ReactNode
-  animation?: 'fadeInUp' | 'slideInLeft' | 'scaleIn' | 'stagger' | 'cardHover'
+  animation?: AnimationType
   delay?: number
   duration?: number
-  sx?: any
 }
 
-// Composant principal
+// Composant principal avec animations CSS
 export const AnimatedContainer: React.FC<AnimatedContainerProps> = ({
   children,
   animation = 'fadeInUp',
   delay = 0,
-  duration,
+  duration = 0.6,
   sx,
-  ...motionProps
+  ...boxProps
 }) => {
-  // Sélection de l'animation
-  const getVariants = (): Variants => {
-    const baseVariants = {
-      fadeInUp,
-      slideInLeft,
-      scaleIn,
-      stagger: staggerContainer,
-      cardHover,
-    }[animation]
-
-    // Personnalisation du délai et de la durée
-    if (delay || duration) {
-      const variants = { ...baseVariants }
-      if (variants.animate && typeof variants.animate === 'object') {
-        variants.animate = {
-          ...variants.animate,
-          transition: {
-            ...variants.animate.transition,
-            ...(delay && { delay }),
-            ...(duration && { duration }),
-          },
-        }
-      }
-      return variants
+  // Styles d'animation CSS
+  const getAnimationStyles = () => {
+    const baseStyles = {
+      animationDuration: `${duration}s`,
+      animationDelay: `${delay}s`,
+      animationFillMode: 'both',
+      animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     }
 
-    return baseVariants
+    const animationMap = {
+      fadeInUp: {
+        ...baseStyles,
+        animationName: 'fadeInUp',
+      },
+      slideInLeft: {
+        ...baseStyles,
+        animationName: 'slideInLeft',
+      },
+      scaleIn: {
+        ...baseStyles,
+        animationName: 'scaleIn',
+      },
+      stagger: {
+        ...baseStyles,
+        animationName: 'fadeInUp',
+      },
+      cardHover: {
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          transform: 'translateY(-4px) scale(1.02)',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
+        },
+        '&:active': {
+          transform: 'scale(0.98)',
+        },
+      },
+    }
+
+    return animationMap[animation] || animationMap.fadeInUp
   }
 
   return (
-    <motion.div
-      variants={getVariants()}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      whileHover={animation === 'cardHover' ? 'hover' : undefined}
-      whileTap={animation === 'cardHover' ? 'tap' : undefined}
-      style={sx}
-      {...motionProps}
+    <Box
+      sx={{
+        ...getAnimationStyles(),
+        ...sx,
+      }}
+      {...boxProps}
     >
       {children}
-    </motion.div>
+    </Box>
   )
 }
 
-// Hook pour animations en scroll
-export const useScrollAnimation = () => {
-  const scrollVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 50,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1],
-      },
-    },
-  }
-
-  return { scrollVariants }
-}
-
-// Composant pour listes animées
+// Composant AnimatedList simplifié
 interface AnimatedListProps {
   children: React.ReactNode[]
   className?: string
@@ -174,22 +83,21 @@ interface AnimatedListProps {
 
 export const AnimatedList: React.FC<AnimatedListProps> = ({ children, className }) => {
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="initial"
-      animate="animate"
-      className={className}
-    >
+    <Box className={className}>
       {children.map((child, index) => (
-        <motion.div key={index} variants={fadeInUp}>
+        <AnimatedContainer 
+          key={index} 
+          animation="fadeInUp" 
+          delay={index * 0.1}
+        >
           {child}
-        </motion.div>
+        </AnimatedContainer>
       ))}
-    </motion.div>
+    </Box>
   )
 }
 
-// Composant pour boutons avec effet de press
+// Composant AnimatedButton simplifié
 interface AnimatedButtonProps {
   children: React.ReactNode
   onClick?: () => void
@@ -205,18 +113,38 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 }) => {
   return (
     <Box
-      component={motion.div}
-      whileHover={!disabled ? { scale: 1.05 } : {}}
-      whileTap={!disabled ? { scale: 0.95 } : {}}
-      transition={{ duration: 0.2 }}
       onClick={onClick}
       sx={{
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
+        transition: 'all 0.2s ease',
+        '&:hover': !disabled ? {
+          transform: 'scale(1.05)',
+        } : {},
+        '&:active': !disabled ? {
+          transform: 'scale(0.95)',
+        } : {},
         ...sx,
       }}
     >
       {children}
     </Box>
   )
+}
+
+// Hook pour animations en scroll (simplifié)
+export const useScrollAnimation = () => {
+  const scrollVariants = {
+    hidden: {
+      opacity: 0,
+      transform: 'translateY(50px)',
+    },
+    visible: {
+      opacity: 1,
+      transform: 'translateY(0)',
+      transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+    },
+  }
+
+  return { scrollVariants }
 } 

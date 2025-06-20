@@ -4,15 +4,18 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
+    exclude: [
+      'playwright',
+      'playwright-core',
+      '@playwright/test',
+      'chromium-bidi',
+      'framer-motion'
+    ],
     include: [
       'react',
       'react-dom',
       '@mui/material',
-      '@mui/icons-material',
-      '@reduxjs/toolkit',
-      'react-redux',
-      'react-router-dom',
-      '@tanstack/react-query'
+      '@mui/icons-material'
     ]
   },
   ssr: {
@@ -33,9 +36,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           mui: ['@mui/material', '@mui/icons-material'],
-          redux: ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
-          router: ['react-router-dom'],
-          query: ['@tanstack/react-query']
+          redux: ['@reduxjs/toolkit', 'react-redux']
         }
       }
     },
@@ -49,11 +50,11 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'dist/',
         'tests/',
-        '**/*.d.ts',
-        'playwright.config.js',
-        'vite.config.js'
+        'dist/',
+        'public/',
+        'playwright-report/',
+        'test-results/'
       ]
     }
   },

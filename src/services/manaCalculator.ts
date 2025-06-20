@@ -195,7 +195,7 @@ export const calculateOptimalLandCount = (
     current: 0, // Serait calculé depuis le deck réel
     reasoning: `Based on average CMC of ${avgCMC.toFixed(1)}`
   };
-};;
+};
 
 export class ManaCalculator {
   private memoCache: Map<string, number> = new Map();
