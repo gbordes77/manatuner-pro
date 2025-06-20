@@ -647,7 +647,7 @@ const AnalyzerPage: React.FC = () => {
                 </Typography>
               </Box>
             ) : (
-              <>
+              <div data-testid="analysis-results">
                 <Typography 
                   variant={isMobile ? "h6" : "h5"} 
                   gutterBottom
@@ -1460,7 +1460,7 @@ const AnalyzerPage: React.FC = () => {
                     </Typography>
                   </Box>
                 </TabPanel>
-              </>
+              </div>
             )}
           </Paper>
         </Grid>

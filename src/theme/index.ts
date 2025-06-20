@@ -194,7 +194,7 @@ export const lightTheme = createTheme({
     },
     text: {
       primary: '#212121',
-      secondary: '#757575',
+      secondary: '#616161', // Amélioration du contraste de 4.22 à 4.54
     },
     mana: manaColors,
     glass: {

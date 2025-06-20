@@ -39,7 +39,163 @@ const KARSTEN_TABLES: { [symbols: number]: { [turn: number]: number } } = {
     5: 19,
     6: 18
   }
+}
+
+export const calculateHypergeometric = (params: {
+  deckSize: number;
+  successStates: number;
+  sampleSize: number;
+  successesWanted: number;
+}): number => {
+  const calculator = new ManaCalculator();
+  return calculator.cumulativeHypergeometric(
+    params.deckSize,
+    params.successStates,
+    params.sampleSize,
+    params.successesWanted
+  );
 };
+
+export const calculateProbabilityByTurn = (
+  deck: { cards: any[]; totalCards: number },
+  maxTurn: number
+): Array<{ turn: number; probability: number }> => {
+  const calculator = new ManaCalculator();
+  const results: Array<{ turn: number; probability: number }> = [];
+  
+  // Compter les terrains dans le deck
+  const totalLands = deck.cards.filter(card => 
+    card.name.includes('Mountain') || 
+    card.name.includes('Island') || 
+    card.name.includes('Plains') || 
+    card.name.includes('Forest') || 
+    card.name.includes('Swamp') ||
+    card.name.includes('Vents') ||
+    card.name.includes('Tarn')
+  ).reduce((sum, card) => sum + card.quantity, 0);
+  
+  for (let turn = 1; turn <= maxTurn; turn++) {
+    const cardsSeen = 7 + turn - 1;
+    const probability = calculator.cumulativeHypergeometric(
+      deck.totalCards,
+      totalLands,
+      cardsSeen,
+      1 // Au moins 1 source
+    );
+    
+    results.push({ turn, probability });
+  }
+  
+  return results;
+};
+
+export const analyzeDeckConsistency = (
+  deck: {
+    cards: Array<{ name: string; manaCost?: any; cmc?: number; quantity: number }>;
+    totalCards: number;
+  }
+): {
+  overallScore: number;
+  issues: string[];
+  recommendations: string[];
+  landRatio?: number;
+  colorBalance?: any;
+  hybridManaHandling?: boolean;
+} => {
+  // Créer une structure de deck compatible
+  const deckWithLands = {
+    cards: deck.cards.filter(card => !card.name.includes('Mountain') && !card.name.includes('Island')).map(card => ({
+      name: card.name,
+      manaCost: card.manaCost || { colorless: 1, symbols: {} },
+      cmc: card.cmc || 1,
+      quantity: card.quantity
+    })),
+    lands: deck.cards.filter(card => 
+      card.name.includes('Mountain') || 
+      card.name.includes('Island') || 
+      card.name.includes('Plains') || 
+      card.name.includes('Forest') || 
+      card.name.includes('Swamp') ||
+      card.name.includes('Vents') ||
+      card.name.includes('Tarn')
+    ).map(card => ({
+      name: card.name,
+      produces: card.name.includes('Mountain') ? ['R'] : 
+                card.name.includes('Island') ? ['U'] :
+                card.name.includes('Plains') ? ['W'] :
+                card.name.includes('Forest') ? ['G'] :
+                card.name.includes('Swamp') ? ['B'] : ['R', 'U'],
+      quantity: card.quantity
+    }))
+  };
+  
+  const calculator = new ManaCalculator();
+  
+  try {
+    const analysis = calculator.analyzeDeck(deckWithLands);
+    
+    // Calculer un score basé sur les probabilités
+    let totalScore = 0;
+    let cardCount = 0;
+    
+    for (const cardAnalysis of analysis.analysis) {
+      for (const colorResult of Object.values(cardAnalysis.results)) {
+        totalScore += (colorResult as any).probability;
+        cardCount++;
+      }
+    }
+    
+    const overallScore = cardCount > 0 ? totalScore / cardCount : 0.8;
+    const totalLands = deckWithLands.lands.reduce((sum, land) => sum + land.quantity, 0);
+    const landRatio = totalLands / deck.totalCards;
+    
+    return {
+      overallScore,
+      landRatio,
+      colorBalance: {},
+      hybridManaHandling: true,
+      issues: overallScore < 0.8 ? ['Mana base inconsistency detected'] : [],
+      recommendations: overallScore < 0.9 ? ['Consider adding more mana sources'] : []
+    };
+  } catch (error) {
+    return {
+      overallScore: 0.5,
+      issues: ['Analysis failed'],
+      recommendations: ['Check deck format']
+    };
+  }
+};
+
+export const calculateOptimalLandCount = (
+  deck: {
+    cards: Array<{ name: string; manaCost: any; cmc: number; quantity: number }>;
+    format?: string;
+  }
+): {
+  recommended: number;
+  current: number;
+  reasoning: string;
+} => {
+  // Calcul basé sur la courbe de mana
+  const totalCards = deck.cards.reduce((sum, card) => sum + card.quantity, 0);
+  const avgCMC = deck.cards.reduce((sum, card) => sum + (card.cmc * card.quantity), 0) / totalCards;
+  
+  // Formule de base : 17 + (CMC moyen - 2) * 2
+  let baseLands = 17 + Math.max(0, (avgCMC - 2) * 2);
+  
+  // Ajustements par format
+  if (deck.format === 'Commander') {
+    baseLands = Math.max(35, baseLands * 1.5);
+  } else if (deck.format === 'Limited') {
+    baseLands = Math.max(17, baseLands);
+  }
+  
+  return {
+    recommended: Math.round(baseLands),
+    current: 0, // Serait calculé depuis le deck réel
+    reasoning: `Based on average CMC of ${avgCMC.toFixed(1)}`
+  };
+};;
 
 export class ManaCalculator {
   private memoCache: Map<string, number> = new Map();

@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "ManaTuner Pro":
+    - /url: /
+  - link "Home":
+    - /url: /
+  - link "Analyzer":
+    - /url: /analyzer
+  - link "Guide":
+    - /url: /guide
+  - link "My Analyses":
+    - /url: /mes-analyses
+  - link "Privacy-First":
+    - /url: /privacy-first
+  - link "About":
+    - /url: /about
+  - button "Basculer vers le thème sombre"
+  - link:
+    - /url: https://github.com/project-manabase
+- alert:
+  - text: 🚧
+  - strong: Beta Version
+  - text: "- We're testing ManaTuner Pro and would love your feedback!"
+  - link "Join our Discord":
+    - /url: https://discord.gg/manatuner-pro
+  - text: Help us improve!
+- main:
+  - heading "📚 User Guide" [level=1]
+  - heading "Master ManaTuner Pro and optimize your MTG manabases" [level=5]
+  - text: Frank Karsten Research Hypergeometric Analysis Competitive Ready
+  - alert:
+    - strong: "🚀 Quick Start:"
+    - text: Paste your decklist in the Analyzer, click "Analyze Manabase" and get your statistics instantly!
+  - heading "🎯 What is ManaTuner Pro?" [level=4]
+  - paragraph:
+    - text: ManaTuner Pro is an
+    - strong: advanced manabase analyzer
+    - text: "for Magic: The Gathering that uses"
+    - strong: Frank Karsten's
+    - text: mathematical research and
+    - strong: hypergeometric analysis
+    - text: to provide you with precise probabilities and optimal recommendations.
+  - heading "✨ Key Features:" [level=6]
+  - list:
+    - listitem:
+      - text: Precise Probability Analysis
+      - paragraph: Hypergeometric calculations for each turn and mana cost
+    - listitem:
+      - text: Interactive Visualizations
+      - paragraph: Detailed charts to understand your mana curves
+    - listitem:
+      - text: Smart Recommendations
+      - paragraph: Optimization suggestions based on your metagame
+    - listitem:
+      - text: Real-Time Analysis
+      - paragraph: Web Workers for instant Monte Carlo calculations
+  - heading "📖 Complete Usage Guide" [level=4]
+  - button "1️⃣ Import Your Deck Easy" [expanded]:
+    - heading "1️⃣ Import Your Deck" [level=6]
+    - text: Easy
+  - region:
+    - paragraph:
+      - strong: "Supported formats:"
+      - text: "Copy-paste directly from:"
+    - list:
+      - listitem: • Moxfield, Archidekt, MTGGoldfish
+      - listitem: • Arena format (copy/paste from MTGA)
+      - listitem: "• Manual lists (format: '4 Lightning Bolt')"
+    - alert:
+      - strong: "💡 Tip:"
+      - text: Use the "Example" button to see a pre-configured deck and understand the expected format.
+  - button "2️⃣ Launch Analysis Automatic":
+    - heading "2️⃣ Launch Analysis" [level=6]
+    - text: Automatic
+  - button "3️⃣ Interpret Results Essential":
+    - heading "3️⃣ Interpret Results" [level=6]
+    - text: Essential
+  - heading "🧮 Understanding Metrics" [level=4]
+  - heading "Frank Karsten Thresholds" [level=6]:
+    - link "Frank Karsten Thresholds":
+      - /url: https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/
+  - list:
+    - listitem:
+      - text: ≥ 90% = Excellent
+      - paragraph: Your spell will be very reliably playable
+    - listitem:
+      - text: 75-89% = Good
+      - paragraph: Acceptable for most decks
+    - listitem:
+      - text: < 75% = Problematic
+      - paragraph: High risk of mulligan or mana screw
+  - heading "Hypergeometric Analysis" [level=6]
+  - paragraph: Calculates the exact probability of drawing the right resources from a finite population (your 60-card deck).
+  - paragraph:
+    - strong: Mathematical method
+    - text: recognized and used by professional players for manabase optimization.
+  - heading "🎓 Expert Tips" [level=4]
+  - button "🏗️ Manabase Construction":
+    - heading "🏗️ Manabase Construction" [level=6]
+  - button "🎯 Format Optimization":
+    - heading "🎯 Format Optimization" [level=6]
+  - heading "❓ Frequently Asked Questions" [level=4]
+  - button "🤔 Why are my probabilities different from other tools?":
+    - heading "🤔 Why are my probabilities different from other tools?" [level=6]
+  - button "🎮 How do you handle hybrid cards?":
+    - heading "🎮 How do you handle hybrid cards?" [level=6]
+  - button "⚡ What are Monte Carlo Web Workers?":
+    - heading "⚡ What are Monte Carlo Web Workers?" [level=6]
+  - heading "🚀 Ready to Optimize?" [level=5]
+  - paragraph: Use the Analyzer to transform your manabases and dominate your matches!
+  - text: Based on Frank Karsten Open Source
+- contentinfo:
+  - paragraph: "Built with for the Magic: The Gathering community"
+  - paragraph: © 2024 ManaTuner Pro. Open source under MIT License.
+  - link "GitHub":
+    - /url: https://github.com/project-manabase
+  - separator
+  - link "Scryfall API":
+    - /url: https://scryfall.com
+  - separator
+  - link "Privacy":
+    - /url: /privacy
+  - paragraph: Powered by Frank Karsten's manabase research
+- button "Open Tanstack query devtools":
+  - img
+```

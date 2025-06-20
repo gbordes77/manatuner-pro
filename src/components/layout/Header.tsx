@@ -111,16 +111,19 @@ export const Header: React.FC = () => {
         </Tooltip>
 
         {/* GitHub link */}
-        <IconButton
-          color="inherit"
-          component="a"
-          href="https://github.com/project-manabase"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ ml: 1 }}
-        >
-          <GitHubIcon />
-        </IconButton>
+        <Tooltip title="Voir le code source sur GitHub">
+          <IconButton
+            color="inherit"
+            component="a"
+            href="https://github.com/project-manabase"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Voir le code source sur GitHub"
+            sx={{ ml: 1 }}
+          >
+            <GitHubIcon />
+          </IconButton>
+        </Tooltip>
 
         {/* Mobile menu */}
         {isMobile && (

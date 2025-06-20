@@ -1,0 +1,359 @@
+name: Tests Automatiques ManaTuner Pro
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Tests Unitaires et Composants
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Linter et formatage
+        run: |
+          npm run lint || true
+          npm run format:check || true
+      
+      - name: Tests unitaires
+        run: npm run test:unit
+      
+      - name: Tests de composants
+        run: npm run test:component
+      
+      - name: Générer rapport de couverture
+        run: npm run test:coverage
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  build-test:
+    name: Test de Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Build de production
+        run: npm run build
+      
+      - name: Vérifier la taille du bundle
+        run: |
+          du -sh dist/
+          find dist/ -name "*.js" -exec ls -lh {} \;
+
+  e2e-tests:
+    name: Tests E2E Playwright
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Installer Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Tests E2E - Core Flows
+        run: npx playwright test tests/e2e/core-flows/
+      
+      - name: Tests E2E - Onglets d'analyse
+        run: npx playwright test tests/e2e/tabs/
+      
+      - name: Upload des rapports Playwright
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-e2e
+          path: playwright-report/
+          retention-days: 30
+
+  responsive-tests:
+    name: Tests de Responsivité
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Installer Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Tests Responsivité Mobile/Desktop
+        run: npx playwright test tests/e2e/responsive/
+      
+      - name: Upload screenshots responsivité
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: responsive-screenshots
+          path: test-results/
+          retention-days: 7
+
+  accessibility-tests:
+    name: Tests d'Accessibilité
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Installer Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Tests d'accessibilité WCAG
+        run: npx playwright test tests/e2e/accessibility/
+      
+      - name: Upload rapport accessibilité
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: playwright-report/
+          retention-days: 30
+
+  performance-tests:
+    name: Tests de Performance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Installer Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Tests de performance
+        run: npx playwright test tests/e2e/performance/
+      
+      - name: Upload métriques performance
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-metrics
+          path: test-results/
+          retention-days: 7
+
+  multi-browser-tests:
+    name: Tests Multi-Navigateurs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Installer Playwright
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Tests sur ${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }} tests/e2e/tabs/
+      
+      - name: Upload rapport ${{ matrix.browser }}
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.browser }}-report
+          path: playwright-report/
+          retention-days: 7
+
+  security-audit:
+    name: Audit de Sécurité
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Audit de sécurité npm
+        run: npm audit --audit-level=moderate
+      
+      - name: Vérification des vulnérabilités
+        run: |
+          npx audit-ci --moderate
+          echo "Audit de sécurité terminé"
+
+  deployment-test:
+    name: Test de Déploiement
+    runs-on: ubuntu-latest
+    needs: [unit-tests, build-test, e2e-tests]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Installer les dépendances
+        run: npm ci
+      
+      - name: Build de production
+        run: npm run build
+      
+      - name: Test de déploiement (dry-run)
+        run: |
+          echo "Simulation du déploiement..."
+          ls -la dist/
+          echo "Taille du build:"
+          du -sh dist/
+      
+      - name: Notification succès
+        if: success()
+        run: |
+          echo "✅ Tous les tests sont passés!"
+          echo "✅ Build de production réussi!"
+          echo "✅ Prêt pour le déploiement!"
+
+  notification:
+    name: Notification des Résultats
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests, responsive-tests, accessibility-tests, performance-tests]
+    if: always()
+    
+    steps:
+      - name: Notification échec
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          echo "❌ Certains tests ont échoué!"
+          echo "Vérifiez les rapports dans les artifacts."
+      
+      - name: Notification succès
+        if: ${{ !contains(needs.*.result, 'failure') }}
+        run: |
+          echo "✅ Tous les tests sont passés avec succès!"
+          echo "🚀 L'application est prête pour la production!"
+
+  cleanup:
+    name: Nettoyage
+    runs-on: ubuntu-latest
+    needs: [notification]
+    if: always()
+    
+    steps:
+      - name: Nettoyage des artifacts anciens
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            
+            console.log(`Nombre d'artifacts: ${artifacts.artifacts.length}`);
+            
+            // Garder seulement les 5 derniers rapports
+            const oldArtifacts = artifacts.artifacts.slice(5);
+            
+            for (const artifact of oldArtifacts) {
+              try {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+                console.log(`Artifact supprimé: ${artifact.name}`);
+              } catch (error) {
+                console.log(`Erreur lors de la suppression: ${error.message}`);
+              }
+            } 

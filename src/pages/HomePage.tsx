@@ -191,7 +191,7 @@ export const HomePage: React.FC = () => {
                 <Box sx={{ mb: 2 }}>
                   {feature.icon}
                 </Box>
-                <Typography variant="h6" component="h3" gutterBottom>
+                <Typography variant="h6" component="h2" gutterBottom>
                   {feature.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
