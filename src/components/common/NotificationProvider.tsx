@@ -64,7 +64,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const saved = localStorage.getItem('manatuner-theme')
     if (saved) return saved === 'dark'
     
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    // Force light theme by default for all users
+    return false
   })
 
   useEffect(() => {
