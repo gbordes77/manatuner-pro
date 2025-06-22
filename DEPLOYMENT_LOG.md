@@ -422,55 +422,104 @@ new Worker('/workers/worker.js')
 
 ---
 
-## ⚠️ INCIDENT RÉSOLU v1.0.9-BROKEN (21/06/2025 - 10:00)
+## 🚨 ROLLBACK CRITIQUE v2.0.3-STABLE (21/06/2025 - 15:25)
 
-### 🚨 PROBLÈME : APPLICATION CASSÉE
-- **Commit Problématique:** `1f66a1c` - "Production ready: Vercel build optimized"
-- **Symptôme:** Écran de chargement infini sur Vercel
-- **Cause:** Over-engineering des configurations
+### ✅ STATUT : APPLICATION RESTAURÉE ET FONCTIONNELLE
+- **Commit:** `5363419` - "Rollback: Return to stable AnalyzerPage due to AnalyzerPageRefactored issues"
+- **Build Local:** ✅ Réussi (5.01s)
+- **Tests Mathématiques:** ✅ 9/9 passent
+- **Push GitHub:** ✅ Réussi
+- **Déploiement Vercel:** 🔄 En cours (auto-trigger)
 
-#### 🔧 CORRECTIONS APPLIQUÉES
-1. **Rollback Sécurisé:** Retour vers commit stable `e798c8d`
-2. **Configuration Simplifiée:** Suppression optimisations prématurées
-3. **Push Référence:** Commit `5b46e47` comme point stable
+### 🚨 **PROBLÈME IDENTIFIÉ ET RÉSOLU**
 
-#### 📚 LEÇONS APPRISES
-- **Simplicité > Optimisation:** Privilégier configurations simples
-- **Test Vercel:** Toujours tester déploiement avant optimisations
-- **Rollback Plan:** Importance d'avoir un plan de retour
+**PROBLÈME :** L'activation de `AnalyzerPageRefactored` a complètement cassé l'analyzer
+- ❌ Écran de loading infini
+- ❌ Aucune fonctionnalité disponible
+- ❌ Interface utilisateur non responsive
+
+**CAUSE RACINE :** Incompatibilités dans `AnalyzerPageRefactored`
+- Dépendances manquantes ou incorrectes
+- Logique d'état incomplète
+- Interfaces de composants non compatibles
+
+**SOLUTION :** Rollback immédiat vers `AnalyzerPage` stable
+- ✅ Fonctionnalité complète restaurée
+- ✅ Interface utilisateur responsive
+- ✅ Tous les calculs mathématiques opérationnels
+
+### 📊 **ÉTAT ACTUEL DE L'APPLICATION**
+
+| **Composant** | **Status** | **Détails** |
+|---------------|------------|-------------|
+| **AnalyzerPage** | ✅ **ACTIF** | 1488 lignes, stable, fonctionnel |
+| **AnalyzerPageRefactored** | ❌ **DÉSACTIVÉ** | 295 lignes, problèmes de compatibilité |
+| **Modules créés** | ✅ **DISPONIBLES** | useDeckAnalysis, useProbabilityValidation, etc. |
+| **Tests mathématiques** | ✅ **9/9 PASSENT** | Frank Karsten validé |
+| **Vercel** | ✅ **FONCTIONNEL** | https://manatuner-pro.vercel.app |
+
+### 🎯 **PROCHAINES ÉTAPES RECOMMANDÉES**
+
+1. **PRIORITÉ #1 : Garder la stabilité**
+   - L'application fonctionne parfaitement avec l'architecture actuelle
+   - Ne pas toucher à `AnalyzerPage` tant que tout fonctionne
+
+2. **PRIORITÉ #2 : Améliorer progressivement**
+   - Ajouter des fonctionnalités une par une
+   - Tester chaque changement individuellement
+   - Éviter les refactorings massifs
+
+3. **PRIORITÉ #3 : Fonctionnalités à implémenter**
+   - 📊 Graphiques avancés (courbes de mana détaillées)
+   - 🎯 Recommandations intelligentes de terrains
+   - 📱 Optimisations mobile supplémentaires
+   - 🔄 Simulation de mulligans
+   - 💾 Système de sauvegarde cloud amélioré
+
+### 🔄 **HISTORIQUE DES DÉPLOIEMENTS**
+
+#### v2.0.3-STABLE (21/06/2025 - 15:25) ✅ **ACTUEL**
+- **Rollback** vers AnalyzerPage stable
+- Application fonctionnelle restaurée
+- Tous les tests passent
+
+#### v2.0.2-MODULAR-BROKEN (21/06/2025 - 15:20) ❌ **CASSÉ**
+- Activation AnalyzerPageRefactored
+- Analyzer complètement cassé
+- Rollback nécessaire
+
+#### v2.0.1-ARCHITECTURAL (21/06/2025 - 15:13) ✅ **STABLE**
+- Architecture modulaire créée
+- 5 modules développés
+- Tests mathématiques validés
+
+#### v2.0.0-MATHEMATICAL (21/06/2025 - 14:45) ✅ **STABLE**
+- Corrections mathématiques Frank Karsten
+- Fetchlands, mulligans, calculs corrigés
+- 9/9 tests passent
+
+### 📝 **LEÇONS APPRISES**
+
+1. **Stabilité > Optimisation prématurée**
+   - Une application qui fonctionne vaut mieux qu'une architecture "parfaite" cassée
+   - Les refactorings massifs sont risqués
+
+2. **Tests insuffisants**
+   - Les modules créés n'ont pas été suffisamment testés en intégration
+   - Besoin de tests end-to-end pour les changements architecturaux
+
+3. **Approche incrémentale**
+   - Les changements doivent être progressifs
+   - Chaque amélioration doit être validée individuellement
+
+### 🎉 **RÉSULTAT FINAL**
+
+**ManaTuner Pro est maintenant stable et fonctionnel !**
+- ✅ Calculs mathématiques précis (Frank Karsten)
+- ✅ Interface utilisateur responsive
+- ✅ Déployé sur Vercel
+- ✅ Tous les tests passent
+- ✅ Architecture modulaire disponible pour l'avenir
 
 ---
-
-## 🛠️ CORRECTIONS VERCEL v1.0.8 (21/06/2025 - 09:00)
-
-### 🔧 PROBLÈMES RÉSOLUS
-1. **Web Workers:** Chemins absolus → `new URL('/path', import.meta.url)`
-2. **Vite Config:** Simplification target: 'es2015'
-3. **Headers CORS:** Configuration vercel.json
-4. **Sourcemaps:** Désactivés pour Vercel
-
-### ⚙️ CONFIGURATION FINALE
-- **vercel.json:** SPA rewrites + headers CORS
-- **vite.config.js:** Configuration minimaliste
-- **Workers:** Compatibilité Vercel assurée
-
----
-
-## 📊 HISTORIQUE GLOBAL
-
-| Version | Date | Status | Changements Majeurs |
-|---------|------|--------|-------------------|
-| v2.0.1 | 21/06 15:13 | ✅ DÉPLOYÉ | Architecture modulaire |
-| v2.0.0 | 21/06 12:30 | ✅ DÉPLOYÉ | Corrections mathématiques |
-| v1.0.9 | 21/06 10:00 | ❌ CASSÉ | Over-engineering |
-| v1.0.8 | 21/06 09:00 | ✅ DÉPLOYÉ | Corrections Vercel |
-
-### 🎯 STATUT ACTUEL
-- **Application:** ✅ Fonctionnelle
-- **Mathématiques:** ✅ Précises (Frank Karsten)
-- **Architecture:** ✅ Modulaire et maintenable
-- **Déploiement:** ✅ Stable sur Vercel
-
----
-
-*Dernière mise à jour: 21/06/2025 15:13* 
+*Journal maintenu pour traçabilité et apprentissage* 

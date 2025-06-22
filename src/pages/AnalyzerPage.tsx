@@ -690,195 +690,147 @@ const AnalyzerPage: React.FC = () => {
                 </Tabs>
 
                 <TabPanel value={activeTab} index={0}>
-                  <Grid container spacing={isMobile ? 1 : 2}>
-                    <Grid item xs={6} sm={6} md={3}>
-                      <Card 
-                        sx={{ 
-                          textAlign: 'center', 
-                          p: isMobile ? 1 : 2,
-                          minHeight: isMobile ? 80 : 100,
-                          position: 'relative'
-                        }}
-                      >
-                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
-                          <Typography 
-                            variant={isMobile ? "h5" : "h4"} 
-                            color="primary"
-                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
-                          >
-                            {analysisResult.totalCards}
-                          </Typography>
-                          <Typography 
-                            variant={isMobile ? "caption" : "body2"} 
-                            color="text.secondary"
-                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
-                          >
-                            Total Cards
-                          </Typography>
-                          <ViewListIcon sx={{ 
-                            position: 'absolute', 
-                            top: isMobile ? 4 : 8, 
-                            right: isMobile ? 4 : 8, 
-                            opacity: 0.3,
-                            fontSize: isMobile ? '1rem' : undefined
-                          }} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6} sm={6} md={3}>
-                      <Card 
-                        sx={{ 
-                          textAlign: 'center', 
-                          p: isMobile ? 1 : 2,
-                          minHeight: isMobile ? 80 : 100,
-                          position: 'relative'
-                        }}
-                      >
-                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
-                          <Typography 
-                            variant={isMobile ? "h5" : "h4"} 
-                            color="primary"
-                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
-                          >
-                            {analysisResult.totalLands}
-                          </Typography>
-                          <Typography 
-                            variant={isMobile ? "caption" : "body2"} 
-                            color="text.secondary"
-                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
-                          >
-                            Lands
-                          </Typography>
-                          <TerrainIcon sx={{ 
-                            position: 'absolute', 
-                            top: isMobile ? 4 : 8, 
-                            right: isMobile ? 4 : 8, 
-                            opacity: 0.3,
-                            fontSize: isMobile ? '1rem' : undefined
-                          }} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6} sm={6} md={3}>
-                      <Card
-                        sx={{ 
-                          textAlign: 'center', 
-                          p: isMobile ? 1 : 2,
-                          minHeight: isMobile ? 80 : 100
-                        }}
-                      >
-                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
-                          <Typography 
-                            variant={isMobile ? "h5" : "h4"} 
-                            color="primary"
-                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
-                          >
-                            {analysisResult.averageCMC.toFixed(1)}
-                          </Typography>
-                          <Typography 
-                            variant={isMobile ? "caption" : "body2"} 
-                            color="text.secondary"
-                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
-                          >
-                            Average CMC
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6} sm={6} md={3}>
-                      <Card
-                        sx={{ 
-                          textAlign: 'center', 
-                          p: isMobile ? 1 : 2,
-                          minHeight: isMobile ? 80 : 100
-                        }}
-                      >
-                        <CardContent sx={{ p: isMobile ? 1 : undefined, '&:last-child': { pb: isMobile ? 1 : undefined } }}>
-                          <Typography 
-                            variant={isMobile ? "h5" : "h4"} 
-                            color="primary"
-                            sx={{ fontSize: isMobile ? '1.2rem' : undefined }}
-                          >
-                            {(analysisResult.landRatio * 100).toFixed(1)}%
-                          </Typography>
-                          <Typography 
-                            variant={isMobile ? "caption" : "body2"} 
-                            color="text.secondary"
-                            sx={{ fontSize: isMobile ? '0.7rem' : undefined }}
-                          >
-                            Land Ratio
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  </Grid>
-
-                  <Divider sx={{ my: isMobile ? 2 : 3 }} />
-
-                  <Typography 
-                    variant={isMobile ? "body1" : "h6"} 
-                    gutterBottom
-                    sx={{ fontSize: isMobile ? '1rem' : undefined, fontWeight: 'bold' }}
+                  {/* Statistiques principales en disposition horizontale compacte */}
+                  <Paper 
+                    elevation={1} 
+                    sx={{ 
+                      p: isMobile ? 1.5 : 2, 
+                      mb: 2,
+                      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+                    }}
                   >
-                    Color Distribution
-                  </Typography>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: isMobile ? 0.5 : 1, 
-                    flexWrap: 'wrap',
-                    justifyContent: isMobile ? 'center' : 'flex-start'
-                  }}>
-                    {MANA_COLORS.map(color => {
-                      const count = analysisResult.colorDistribution[color] || 0;
-                      if (count === 0) return null;
-                      
-                      const colorMap = {
-                        'W': { bg: '#FFF8DC', text: '#2C3E50' },
-                        'U': { bg: '#4A90E2', text: '#FFFFFF' },
-                        'B': { bg: '#2C2C2C', text: '#FFFFFF' },
-                        'R': { bg: '#E74C3C', text: '#FFFFFF' },
-                        'G': { bg: '#27AE60', text: '#FFFFFF' }
-                      };
-                      
-                      return (
-                        <Chip
-                          key={color}
-                          label={`${COLOR_NAMES[color]}: ${count}`}
-                          size={isMobile ? "small" : "medium"}
-                          sx={{
-                            backgroundColor: colorMap[color]?.bg || '#95A5A6',
-                            color: colorMap[color]?.text || '#2C3E50',
-                            fontWeight: 'bold',
-                            fontSize: isMobile ? '0.7rem' : undefined,
-                            '& .MuiChip-label': {
-                              color: colorMap[color]?.text || '#2C3E50',
-                              fontSize: isMobile ? '0.7rem' : undefined
-                            }
-                          }}
-                        />
-                      );
-                    })}
-                  </Box>
-
-                  <Divider sx={{ my: 3 }} />
-
-                  <Typography variant="h6" gutterBottom>
-                    Overall Rating
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Chip 
-                      label={(analysisResult.rating || 'unknown').toUpperCase()} 
-                      color={
-                        analysisResult.rating === 'excellent' ? 'success' :
-                        analysisResult.rating === 'good' ? 'primary' :
-                        analysisResult.rating === 'average' ? 'warning' : 'error'
-                      }
-                      size="medium"
-                    />
-                    <Typography variant="body1">
-                      Consistency: {(analysisResult.consistency * 100).toFixed(1)}%
+                    <Typography 
+                      variant="subtitle1" 
+                      gutterBottom 
+                      sx={{ fontWeight: 'bold', color: 'primary.main', mb: 1.5 }}
+                    >
+                      📊 Deck Overview
                     </Typography>
-                  </Box>
+                    <Grid container spacing={isMobile ? 1 : 2}>
+                      <Grid item xs={6} sm={3}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <ViewListIcon color="primary" sx={{ fontSize: 20 }} />
+                          <Box>
+                            <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
+                              {analysisResult.totalCards}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Total Cards
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <TerrainIcon color="primary" sx={{ fontSize: 20 }} />
+                          <Box>
+                            <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
+                              {analysisResult.totalLands}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Lands
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <SpeedIcon color="primary" sx={{ fontSize: 20 }} />
+                          <Box>
+                            <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
+                              {analysisResult.averageCMC.toFixed(1)}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Avg. CMC
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <AssessmentIcon color="primary" sx={{ fontSize: 20 }} />
+                          <Box>
+                            <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
+                              {(analysisResult.landRatio * 100).toFixed(1)}%
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Land Ratio
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+
+                  {/* Rating et couleurs en disposition horizontale */}
+                  <Paper elevation={1} sx={{ p: isMobile ? 1.5 : 2, mb: 2 }}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                          🎯 Overall Rating
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Chip 
+                            label={(analysisResult.rating || 'unknown').toUpperCase()} 
+                            color={
+                              analysisResult.rating === 'excellent' ? 'success' :
+                              analysisResult.rating === 'good' ? 'primary' :
+                              analysisResult.rating === 'average' ? 'warning' : 'error'
+                            }
+                            size="small"
+                            sx={{ fontWeight: 'bold' }}
+                          />
+                          <Typography variant="body2" color="text.secondary">
+                            Consistency: {(analysisResult.consistency * 100).toFixed(1)}%
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                          🌈 Color Distribution
+                        </Typography>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          gap: 0.5, 
+                          flexWrap: 'wrap',
+                          alignItems: 'center'
+                        }}>
+                          {MANA_COLORS.map(color => {
+                            const count = analysisResult.colorDistribution[color] || 0;
+                            if (count === 0) return null;
+                            
+                            const colorMap = {
+                              'W': { bg: '#FFF8DC', text: '#2C3E50' },
+                              'U': { bg: '#4A90E2', text: '#FFFFFF' },
+                              'B': { bg: '#2C2C2C', text: '#FFFFFF' },
+                              'R': { bg: '#E74C3C', text: '#FFFFFF' },
+                              'G': { bg: '#27AE60', text: '#FFFFFF' }
+                            };
+                            
+                            return (
+                              <Chip
+                                key={color}
+                                label={`${COLOR_NAMES[color]}: ${count}`}
+                                size="small"
+                                sx={{
+                                  backgroundColor: colorMap[color]?.bg || '#95A5A6',
+                                  color: colorMap[color]?.text || '#2C3E50',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.75rem',
+                                  height: 24,
+                                  '& .MuiChip-label': {
+                                    color: colorMap[color]?.text || '#2C3E50',
+                                    fontSize: '0.75rem',
+                                    px: 1
+                                  }
+                                }}
+                              />
+                            );
+                          })}
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Paper>
                 </TabPanel>
 
                 <TabPanel value={activeTab} index={1}>
