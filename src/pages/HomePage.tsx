@@ -67,7 +67,24 @@ export const HomePage: React.FC = () => {
           </Typography>
           
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mb: 3, flexWrap: 'wrap' }}>
-            <Chip icon={<StarIcon />} label="Frank Karsten Research" color="primary" />
+            <Chip 
+              icon={<StarIcon />} 
+              label="Frank Karsten Research" 
+              color="primary" 
+              component="a"
+              href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
+              target="_blank"
+              rel="noopener noreferrer"
+              clickable
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: 2
+                },
+                transition: 'all 0.2s ease-in-out'
+              }}
+            />
             <Chip icon={<TrendingUpIcon />} label="Hypergeometric Analysis" color="secondary" />
             <Chip label="Free & Open Source" variant="outlined" />
           </Box>

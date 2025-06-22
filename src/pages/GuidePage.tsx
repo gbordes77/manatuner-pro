@@ -48,7 +48,24 @@ export const GuidePage: React.FC = () => {
             Master ManaTuner Pro and optimize your MTG manabases
           </Typography>
           <Box display="flex" gap={1} justifyContent="center" flexWrap="wrap">
-            <Chip icon={<ScienceIcon />} label="Frank Karsten Research" color="primary" />
+            <Chip 
+              icon={<ScienceIcon />} 
+              label="Frank Karsten Research" 
+              color="primary" 
+              component="a"
+              href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
+              target="_blank"
+              rel="noopener noreferrer"
+              clickable
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: 2
+                },
+                transition: 'all 0.2s ease-in-out'
+              }}
+            />
             <Chip icon={<CalculateIcon />} label="Hypergeometric Analysis" color="secondary" />
             <Chip icon={<TrendingUpIcon />} label="Competitive Ready" color="success" />
           </Box>
