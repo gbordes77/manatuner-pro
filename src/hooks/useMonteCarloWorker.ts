@@ -37,7 +37,7 @@ export const useMonteCarloWorker = () => {
   useEffect(() => {
     if (typeof Worker !== 'undefined') {
       try {
-        workerRef.current = new Worker('/workers/monteCarlo.worker.js');
+        workerRef.current = new Worker(new URL('/workers/monteCarlo.worker.js', import.meta.url));
         
         workerRef.current.onmessage = (e: MessageEvent<WorkerMessage>) => {
           const { type, data, error, success } = e.data;
@@ -231,7 +231,7 @@ export const useMonteCarloWorker = () => {
       // Recreate worker
       setTimeout(() => {
         if (typeof Worker !== 'undefined') {
-          workerRef.current = new Worker('/workers/monteCarlo.worker.js');
+          workerRef.current = new Worker(new URL('/workers/monteCarlo.worker.js', import.meta.url));
         }
       }, 100);
       
