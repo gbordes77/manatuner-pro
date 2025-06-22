@@ -3,8 +3,11 @@
 [![CI/CD Pipeline](https://github.com/gbordes77/manatuner-pro/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/gbordes77/manatuner-pro/actions/workflows/ci-cd.yml)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/gbordes77/manatuner-pro)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
+[![Material-UI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)](https://mui.com/)
+[![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 
 ## Advanced MTG Manabase Analysis Tool
 
@@ -39,7 +42,7 @@ A modern web application for analyzing and optimizing Magic: The Gathering manab
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner-pro.git
 cd manatuner-pro
 
 # Install dependencies
@@ -90,9 +93,9 @@ npm run dev
 - **Vite** for build tooling
 
 ### Backend
-- **Firebase Functions** with Express.js
-- **Firestore** for data persistence
-- **Firebase Hosting** for deployment
+- **Vercel** for deployment and hosting
+- **Supabase** for optional data persistence
+- **Privacy-First** mode with offline functionality
 
 ### Algorithms
 - **Hypergeometric distribution** for probability calculations
@@ -126,20 +129,26 @@ npm run test:watch
 
 ## 🚀 Deployment
 
-### Firebase Deployment
+### Vercel Deployment
 ```bash
 # Build for production
 npm run build
 
-# Deploy to Firebase
-firebase deploy
+# Preview build locally
+npm run preview
+
+# Deploy to Vercel (via GitHub integration)
+git push origin main
 ```
 
 ### Environment Variables
 ```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
+# Supabase (optional - for data persistence)
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Analytics (optional)
+VITE_GA_TRACKING_ID=your_analytics_id
 ```
 
 ## 🤝 Contributing
@@ -170,9 +179,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - **Live Demo**: [🚀 https://manatuner-pro.vercel.app](https://manatuner-pro.vercel.app) ✅ **LIVE**
-- **Documentation**: [Wiki](https://github.com/your-username/manatuner-pro/wiki)
-- **Issues**: [GitHub Issues](https://github.com/your-username/manatuner-pro/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/manatuner-pro/discussions)
+- **Documentation**: [Wiki](https://github.com/gbordes77/manatuner-pro/wiki)
+- **Issues**: [GitHub Issues](https://github.com/gbordes77/manatuner-pro/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/gbordes77/manatuner-pro/discussions)
 
 ---
 
