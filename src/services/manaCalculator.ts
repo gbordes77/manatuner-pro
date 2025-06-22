@@ -202,18 +202,26 @@ export class ManaCalculator {
 
   // Coefficient binomial avec mémoïsation
   private binomial(n: number, k: number): number {
-    if (k > n) return 0;
+    // Handle edge cases
+    if (k > n || k < 0 || n < 0) return 0;
     if (k === 0 || k === n) return 1;
+    if (n === 0) return k === 0 ? 1 : 0;
     
     const key = `${n},${k}`;
     if (this.memoCache.has(key)) {
       return this.memoCache.get(key)!;
     }
     
+    // Use symmetry property: C(n,k) = C(n,n-k)
+    k = Math.min(k, n - k);
+    
     let result = 1;
     for (let i = 0; i < k; i++) {
       result = result * (n - i) / (i + 1);
     }
+    
+    // Ensure we return an integer for exact calculations
+    result = Math.round(result);
     
     this.memoCache.set(key, result);
     return result;
@@ -221,11 +229,28 @@ export class ManaCalculator {
 
   // Distribution hypergeométrique
   hypergeometric(N: number, K: number, n: number, k: number): number {
-    return (
-      this.binomial(K, k) * 
-      this.binomial(N - K, n - k) / 
-      this.binomial(N, n)
-    );
+    // Handle edge cases first
+    if (k > K || k > n || n > N || k < 0 || n < 0 || K < 0 || N < 0) {
+      return 0;
+    }
+    
+    if (k === 0 && K === 0) {
+      return 1;
+    }
+    
+    if (n === 0) {
+      return k === 0 ? 1 : 0;
+    }
+    
+    if (K === N) {
+      return k === n ? 1 : 0;
+    }
+    
+    // Standard hypergeometric calculation
+    const numerator = this.binomial(K, k) * this.binomial(N - K, n - k);
+    const denominator = this.binomial(N, n);
+    
+    return denominator === 0 ? 0 : numerator / denominator;
   }
 
   // Probabilité cumulative (au moins k succès)

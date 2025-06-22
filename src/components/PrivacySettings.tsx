@@ -197,35 +197,9 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 <Typography variant="body2" fontWeight="bold" gutterBottom>
                   ✅ Your decks are protected
                 </Typography>
-                <List dense sx={{ mt: 1 }}>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <ShieldIcon sx={{ color: 'white', fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Encrypted local storage only"
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <VerifiedIcon sx={{ color: 'white', fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="No sensitive data sent to server"
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <SecurityIcon sx={{ color: 'white', fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Zero-Knowledge Architecture"
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                </List>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  🔒 Encrypted local storage only | ✅ No sensitive data sent to server | 🔐 Zero-Knowledge Architecture
+                </Typography>
               </>
             ) : (
               <>
@@ -249,9 +223,12 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               border: '1px solid rgba(255,255,255,0.2)'
             }}
           >
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1} flexWrap="wrap" gap={1}>
               <Typography variant="body2" fontWeight="bold">
                 🎫 Your Personal Code
+              </Typography>
+              <Typography variant="caption" sx={{ opacity: 0.8, flex: 1, textAlign: 'center' }}>
+                💡 Note this code to retrieve your analyses on any device
               </Typography>
               <Tooltip title={showUserCode ? "Hide code" : "Show code"}>
                 <IconButton
@@ -290,9 +267,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               </Tooltip>
             </Box>
             
-            <Typography variant="caption" sx={{ opacity: 0.8, mt: 1, display: 'block' }}>
-              💡 Note this code to retrieve your analyses on any device
-            </Typography>
+
           </Box>
 
           {/* Action Buttons */}
@@ -307,10 +282,13 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               variant="outlined"
               startIcon={<InfoIcon />}
               onClick={() => setShowPrivacyDialog(true)}
+              size="small"
               sx={{ 
                 color: 'white', 
                 borderColor: 'rgba(255,255,255,0.5)',
-                '&:hover': { borderColor: 'white' }
+                '&:hover': { borderColor: 'white' },
+                px: 1.5,
+                py: 0.5
               }}
               fullWidth={isMobile}
             >
@@ -321,10 +299,13 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={exportData}
+              size="small"
               sx={{ 
                 color: 'white', 
                 borderColor: 'rgba(255,255,255,0.5)',
-                '&:hover': { borderColor: 'white' }
+                '&:hover': { borderColor: 'white' },
+                px: 1.5,
+                py: 0.5
               }}
               fullWidth={isMobile}
             >
@@ -335,10 +316,13 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               variant="outlined"
               startIcon={<UploadIcon />}
               onClick={importData}
+              size="small"
               sx={{ 
                 color: 'white', 
                 borderColor: 'rgba(255,255,255,0.5)',
-                '&:hover': { borderColor: 'white' }
+                '&:hover': { borderColor: 'white' },
+                px: 1.5,
+                py: 0.5
               }}
               fullWidth={isMobile}
             >
@@ -349,10 +333,13 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               variant="outlined"
               startIcon={<DeleteIcon />}
               onClick={() => setShowDataDialog(true)}
+              size="small"
               sx={{ 
                 color: '#ff6b6b', 
                 borderColor: '#ff6b6b',
-                '&:hover': { borderColor: '#ff5252', backgroundColor: 'rgba(255,107,107,0.1)' }
+                '&:hover': { borderColor: '#ff5252', backgroundColor: 'rgba(255,107,107,0.1)' },
+                px: 1.5,
+                py: 0.5
               }}
               fullWidth={isMobile}
             >
