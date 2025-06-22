@@ -9,7 +9,7 @@ import { BetaBanner } from './components'
 
 // Direct imports for core pages (avoiding lazy loading issues)
 import { HomePage } from './pages/HomePage'
-import AnalyzerPage from './pages/AnalyzerPage'
+import AnalyzerPageRefactored from './pages/AnalyzerPageRefactored'
 import { GuidePage } from './pages/GuidePage'
 import MyAnalysesPage from './pages/MyAnalysesPage'
 import PrivacyFirstPage from './pages/PrivacyFirstPage'
@@ -69,7 +69,7 @@ function App() {
           >
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/analyzer" element={<AnalyzerPage />} />
+              <Route path="/analyzer" element={<AnalyzerPageRefactored />} />
               <Route path="/guide" element={<GuidePage />} />
               <Route path="/mes-analyses" element={<MyAnalysesPage />} />
               <Route path="/privacy-first" element={<PrivacyFirstPage />} />
