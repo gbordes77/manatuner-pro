@@ -561,10 +561,37 @@ export class AdvancedMathEngine {
    * Get performance metrics
    */
   getMetrics(): CalculationMetrics {
+    this.metrics.endTime = performance.now()
+    this.metrics.duration = this.metrics.endTime - this.metrics.startTime
     this.cache.hitRate = this.metrics.cacheHits / (this.metrics.cacheHits + this.metrics.cacheMisses)
+    
     return { ...this.metrics }
   }
 }
 
-// Export singleton instance
-export const advancedMathEngine = new AdvancedMathEngine() 
+// Export default instance for compatibility
+export const advancedMathEngine = new AdvancedMathEngine()
+
+// Export compatibility methods for existing tests
+export const calculateHypergeometric = (params: HypergeometricParams) => 
+  advancedMathEngine.cumulativeHypergeometric(params)
+
+export const calculateKarstenProbability = (
+  deckSize: number,
+  sourcesInDeck: number,
+  turn: number,
+  symbolsNeeded: number,
+  onThePlay: boolean = true,
+  handSize: number = 7
+) => advancedMathEngine.calculateKarstenProbability(deckSize, sourcesInDeck, turn, symbolsNeeded, onThePlay, handSize)
+
+export const runMonteCarloSimulation = (params: MonteCarloParams) => 
+  advancedMathEngine.runMonteCarloSimulation(params)
+
+export const analyzeMultivariateRequirements = (
+  deckConfig: DeckConfiguration,
+  colorRequirements: ColorRequirement[]
+) => advancedMathEngine.analyzeMultivariateRequirements(deckConfig, colorRequirements)
+
+// Export the class as default for new implementations
+export default AdvancedMathEngine 

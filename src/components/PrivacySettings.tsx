@@ -53,7 +53,6 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   
-  const [privacyStorage] = useState(() => new PrivacyStorage())
   const [userCode, setUserCode] = useState('')
   const [isPrivate, setIsPrivate] = useState(currentMode === 'private')
   const [showUserCode, setShowUserCode] = useState(false)
@@ -63,8 +62,8 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const [showSnackbar, setShowSnackbar] = useState(false)
 
   useEffect(() => {
-    setUserCode(privacyStorage.getUserCode())
-  }, [privacyStorage])
+    setUserCode(PrivacyStorage.getUserCode())
+  }, [])
 
   const handlePrivacyToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPrivateMode = event.target.checked
@@ -91,7 +90,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   }
 
   const exportData = () => {
-    const data = privacyStorage.exportUserData()
+    const data = PrivacyStorage.exportAnalyses()
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -115,10 +114,11 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         const reader = new FileReader()
         reader.onload = (e) => {
           const data = e.target?.result as string
-          if (privacyStorage.importUserData(data)) {
+          try {
+            PrivacyStorage.importAnalyses(data)
             setSnackbarMessage('Données importées avec succès !')
             setShowSnackbar(true)
-          } else {
+          } catch {
             setSnackbarMessage('Erreur lors de l\'importation')
             setShowSnackbar(true)
           }
@@ -475,8 +475,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           </Button>
           <Button 
             onClick={() => {
-              privacyStorage.resetUserData()
+              PrivacyStorage.clearAllLocalData()
               setShowDataDialog(false)
+              setSnackbarMessage('Toutes les données ont été supprimées')
+              setShowSnackbar(true)
             }}
             color="error"
             variant="contained"
