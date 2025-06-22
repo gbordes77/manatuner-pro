@@ -181,12 +181,41 @@ build: {
 2. **Chemins absolus** pour les Web Workers
 3. **Chunking manuel** complexe sans nécessité
 4. **Absence de configuration** plateforme-spécifique
+5. **Déploiement sans tests** de build production
 
 ### **✅ Bonnes Pratiques**
 1. **Simplicité** dans les configurations
 2. **new URL()** pour les Web Workers
 3. **Configuration automatique** de Vite
 4. **Tests local + build** avant déploiement
+
+### **🔧 Workflow de Déploiement Recommandé**
+
+#### **1. Tests Pré-Déploiement**
+```bash
+# Toujours tester le build de production localement
+npm run build
+npm run preview
+```
+
+#### **2. Variables d'Environnement**
+- Maintenir un fichier `.env.example` dans le repo
+- Documenter variables requises vs optionnelles
+- Tester en mode production sans variables optionnelles
+
+#### **3. Web Workers - Syntaxe Compatible**
+```javascript
+// ✅ Méthode compatible Vite/Vercel
+new Worker(new URL('./worker.js', import.meta.url), { type: 'module' })
+
+// ❌ Éviter les chemins absolus
+new Worker('/workers/worker.js')
+```
+
+#### **4. Monitoring et Alertes**
+- Activer notifications Vercel pour échecs de build
+- Utiliser previews de PR pour tests avant merge
+- Surveiller les métriques de performance post-déploiement
 
 ---
 
