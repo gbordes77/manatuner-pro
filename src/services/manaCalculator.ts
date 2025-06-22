@@ -246,11 +246,13 @@ export class ManaCalculator {
     sourcesInDeck: number,
     turn: number,
     symbolsNeeded: number,
-    onThePlay: boolean = true
+    onThePlay: boolean = true,
+    handSize: number = 7  // Support pour mulligans
   ): ProbabilityResult {
-    // Cartes vues = main de départ + pioche (7 + tours - 1)
-    // -1 car on ne pioche pas au tour 1 si on joue en premier
-    const cardsSeen = 7 + turn - (onThePlay ? 1 : 0);
+    // CORRECTION CRITIQUE: Frank Karsten utilise toujours handSize + turn - 1
+    // Cartes vues = main de départ + pioche (handSize + tours - 1)
+    // Le -1 car on ne pioche pas au tour 1 (standard pour tous les calculs)
+    const cardsSeen = handSize + turn - 1;
     
     // Calcul de la probabilité
     const probability = this.cumulativeHypergeometric(
@@ -336,10 +338,15 @@ export class ManaCalculator {
     const deckSize = deck.cards.reduce((sum, card) => sum + card.quantity, 0) +
                      deck.lands.reduce((sum, land) => sum + land.quantity, 0);
     
-    // Calculer les sources de mana par couleur
+    // CORRECTION CRITIQUE: Méthode Frank Karsten pour compter les sources
+    // Selon l'article TCGPlayer : "I usually consider Verdant Catacombs, Flooded Strand 
+    // and the like as a full mana source for any color they might be able to fetch"
     const sources: { [color: string]: number } = {};
+    
     for (const land of deck.lands) {
       for (const color of land.produces) {
+        // Chaque terrain compte comme UNE source pour chaque couleur qu'il peut produire
+        // Un fetchland bicolore compte comme 1 source pour chaque couleur, pas 2 au total
         sources[color] = (sources[color] || 0) + land.quantity;
       }
     }
