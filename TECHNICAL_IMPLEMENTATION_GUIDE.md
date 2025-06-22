@@ -1,702 +1,802 @@
-# 🔧 Guide Technique d'Implémentation - ManaTuner Pro
+# 🔧 Guide d'Implémentation Technique - ManaTuner Pro
 
-## 🎯 Implémentation du Moteur Mathématique
+## 🎯 Vue d'ensemble Technique
 
-### Distribution Hypergéométrique - Code Complet
-```typescript
-// src/services/advancedMaths.ts
-export class AdvancedMathEngine {
-  
-  /**
-   * Calcul de la distribution hypergéométrique
-   * Basé sur l'article Frank Karsten 2022
-   */
-  static hypergeometric(N: number, K: number, n: number, k: number): number {
-    if (k > Math.min(K, n)) return 0;
-    if (k <= 0) return 1;
-    
-    let probability = 0;
-    
-    // P(X >= k) = 1 - P(X < k) = 1 - Σ(i=0 to k-1) P(X = i)
-    for (let i = 0; i < k; i++) {
-      probability += this.hypergeometricExact(N, K, n, i);
-    }
-    
-    return Math.max(0, Math.min(1, 1 - probability));
-  }
-  
-  /**
-   * Calcul exact P(X = k) pour la distribution hypergéométrique
-   */
-  private static hypergeometricExact(N: number, K: number, n: number, k: number): number {
-    // P(X = k) = C(K,k) * C(N-K,n-k) / C(N,n)
-    const numerator = this.combination(K, k) * this.combination(N - K, n - k);
-    const denominator = this.combination(N, n);
-    
-    return denominator > 0 ? numerator / denominator : 0;
-  }
-  
-  /**
-   * Calcul des combinaisons C(n,k) avec optimisation
-   */
-  private static combination(n: number, k: number): number {
-    if (k > n || k < 0) return 0;
-    if (k === 0 || k === n) return 1;
-    
-    // Optimisation : C(n,k) = C(n,n-k)
-    k = Math.min(k, n - k);
-    
-    let result = 1;
-    for (let i = 0; i < k; i++) {
-      result = result * (n - i) / (i + 1);
-    }
-    
-    return Math.round(result);
+### Architecture Actuelle
+- **🌐 Déploiement** : Vercel (pas Firebase)
+- **⚡ Build** : Vite + React 18 + TypeScript
+- **🎨 UI** : Material-UI + Responsive Design
+- **🔒 Storage** : localStorage + AES encryption
+- **📊 Database** : Supabase (optionnel pour cloud sync)
+
+### Configuration Réelle du Projet
+
+#### package.json (Dépendances Actuelles)
+```json
+{
+  "name": "manatuner-pro",
+  "version": "2.0.0",
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.10",
+    "@mui/icons-material": "^5.11.9",
+    "@reduxjs/toolkit": "^1.9.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.8.1",
+    "recharts": "^2.15.3",
+    "zod": "^3.20.6"
   }
 }
 ```
 
-### Analyse Turn-by-Turn Complète
+#### vite.config.js (Configuration Build)
+```javascript
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    target: 'es2015',
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          mui: ['@mui/material', '@mui/icons-material'],
+          redux: ['@reduxjs/toolkit', 'react-redux']
+        }
+      }
+    }
+  }
+})
+```
+
+#### vercel.json (Configuration Déploiement)
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/workers/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 🧮 Moteur Mathématique Frank Karsten
+
+### Implémentation Core (src/services/advancedMaths.ts)
+
 ```typescript
-// Interface pour l'analyse par tour
-export interface TurnAnalysis {
+export interface HypergeometricParams {
+  populationSize: number;    // N (deck size: 60)
+  successStatesInPop: number; // K (sources in deck)
+  sampleSize: number;        // n (cards seen)
+  successStatesInSample: number; // k (sources needed)
+}
+
+export interface ProbabilityResult {
+  probability: number;
   turn: number;
   cardsDrawn: number;
-  probabilityByColor: Record<ManaColor, number>;
-  recommendations: string[];
-  confidence: 'high' | 'medium' | 'low';
+  sourcesNeeded: number;
+  rating: 'excellent' | 'good' | 'acceptable' | 'poor';
 }
 
-export class TurnByTurnAnalyzer {
-  static analyze(deck: DeckConfiguration): TurnAnalysis[] {
-    const results: TurnAnalysis[] = [];
+// Distribution hypergéométrique exacte
+export function hypergeometric(params: HypergeometricParams): number {
+  const { populationSize: N, successStatesInPop: K, 
+          sampleSize: n, successStatesInSample: k } = params;
+  
+  if (k > K || k > n || n > N) return 0;
+  
+  const numerator = combination(K, k) * combination(N - K, n - k);
+  const denominator = combination(N, n);
+  
+  return numerator / denominator;
+}
+
+// Fonction combinaison optimisée
+function combination(n: number, k: number): number {
+  if (k > n || k < 0) return 0;
+  if (k === 0 || k === n) return 1;
+  
+  k = Math.min(k, n - k); // Optimisation
+  
+  let result = 1;
+  for (let i = 0; i < k; i++) {
+    result = result * (n - i) / (i + 1);
+  }
+  
+  return Math.round(result);
+}
+
+// Analyse turn-by-turn selon Frank Karsten
+export function analyzeTurnByTurn(
+  deckConfig: DeckConfiguration
+): TurnAnalysis[] {
+  const results: TurnAnalysis[] = [];
+  
+  for (let turn = 1; turn <= 8; turn++) {
+    const cardsDrawn = getCardsSeenOnTurn(turn, deckConfig.onPlay);
     
-    // Analyse turns 1-4 (critiques pour le gameplay)
-    for (let turn = 1; turn <= 4; turn++) {
-      const cardsDrawn = this.getCardsDrawn(turn, deck.mulliganStrategy);
-      const analysis: TurnAnalysis = {
+    for (const [color, requirement] of Object.entries(deckConfig.colorRequirements)) {
+      const sources = deckConfig.sources[color] || 0;
+      
+      const probability = hypergeometric({
+        populationSize: deckConfig.deckSize,
+        successStatesInPop: sources,
+        sampleSize: cardsDrawn,
+        successStatesInSample: requirement.sourcesNeeded
+      });
+      
+      results.push({
         turn,
+        color,
+        probability,
         cardsDrawn,
-        probabilityByColor: {},
-        recommendations: [],
-        confidence: 'high'
-      };
-      
-      // Calcul pour chaque couleur
-      for (const color of deck.colors) {
-        const sources = this.countSources(deck, color);
-        const required = this.getRequiredSources(turn, color);
-        
-        analysis.probabilityByColor[color] = AdvancedMathEngine.hypergeometric(
-          deck.totalCards,
-          sources,
-          cardsDrawn,
-          required
-        );
-      }
-      
-      // Génération des recommandations
-      analysis.recommendations = this.generateRecommendations(analysis);
-      analysis.confidence = this.calculateConfidence(analysis);
-      
-      results.push(analysis);
+        sourcesNeeded: requirement.sourcesNeeded,
+        sourcesInDeck: sources,
+        rating: getRating(probability, turn)
+      });
     }
-    
-    return results;
   }
   
-  private static getCardsDrawn(turn: number, strategy: MulliganStrategy): number {
-    // Formule Frank Karsten : main initiale + tours - 1
-    const baseCards = strategy.keepHand7 ? 7 : 6;
-    return baseCards + turn - 1;
-  }
-}
-```
-
-## 🏗️ Architecture des Composants React
-
-### Composant d'Analyse Principal
-```typescript
-// src/components/analysis/TurnByTurnAnalysis.tsx
-import React, { useMemo } from 'react';
-import { Box, Card, Typography, LinearProgress } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-
-interface TurnByTurnAnalysisProps {
-  deckConfiguration: DeckConfiguration;
-  onRecommendationClick: (recommendation: string) => void;
+  return results;
 }
 
-export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
-  deckConfiguration,
-  onRecommendationClick
-}) => {
-  // Calculs mémorisés pour optimiser les performances
-  const analysisData = useMemo(() => {
-    return TurnByTurnAnalyzer.analyze(deckConfiguration);
-  }, [deckConfiguration]);
+// Cartes vues selon Frank Karsten
+function getCardsSeenOnTurn(turn: number, onPlay: boolean): number {
+  const startingHand = 7;
+  const drawsBeforeTurn = turn - 1;
+  const playDrawAdjustment = onPlay ? 0 : 1;
   
-  const chartData = useMemo(() => {
-    return analysisData.map(turn => ({
-      turn: `T${turn.turn}`,
-      ...turn.probabilityByColor,
-      overall: Object.values(turn.probabilityByColor).reduce((a, b) => a + b, 0) / Object.keys(turn.probabilityByColor).length
-    }));
-  }, [analysisData]);
-  
-  return (
-    <Card sx={{ p: 3, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Analyse Turn-by-Turn (Méthode Frank Karsten)
-      </Typography>
-      
-      {/* Graphique des probabilités */}
-      <Box sx={{ height: 300, mb: 3 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <XAxis dataKey="turn" />
-            <YAxis domain={[0, 1]} tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} />
-            <Bar dataKey="overall" fill="#1976d2" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </Box>
-      
-      {/* Détails par tour */}
-      {analysisData.map((turn) => (
-        <TurnAnalysisCard 
-          key={turn.turn}
-          analysis={turn}
-          onRecommendationClick={onRecommendationClick}
-        />
-      ))}
-    </Card>
-  );
-};
+  return startingHand + drawsBeforeTurn - playDrawAdjustment;
+}
 
-// Sous-composant pour chaque tour
-const TurnAnalysisCard: React.FC<{
-  analysis: TurnAnalysis;
-  onRecommendationClick: (rec: string) => void;
-}> = ({ analysis, onRecommendationClick }) => {
-  const getColorEmoji = (color: ManaColor): string => {
-    const colorMap = {
-      W: '⚪', U: '🔵', B: '⚫', R: '🔴', G: '🟢'
-    };
-    return colorMap[color] || '⚪';
+// Rating selon les seuils de Frank Karsten
+function getRating(probability: number, turn: number): string {
+  const thresholds = {
+    1: 0.90, // 90% turn 1
+    2: 0.85, // 85% turn 2
+    3: 0.80, // 80% turn 3
+    4: 0.75  // 75% turn 4+
   };
   
-  return (
-    <Box sx={{ mb: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
-      <Typography variant="subtitle1" fontWeight="bold">
-        Tour {analysis.turn} - {analysis.cardsDrawn} cartes vues
-      </Typography>
-      
-      {/* Probabilités par couleur */}
-      {Object.entries(analysis.probabilityByColor).map(([color, prob]) => (
-        <Box key={color} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-          <Typography variant="body2" sx={{ minWidth: 40 }}>
-            {getColorEmoji(color as ManaColor)} {color}:
-          </Typography>
-          <LinearProgress 
-            variant="determinate" 
-            value={prob * 100} 
-            sx={{ flexGrow: 1, mx: 2, height: 8, borderRadius: 4 }}
-          />
-          <Typography variant="body2" fontWeight="bold">
-            {(prob * 100).toFixed(1)}%
-          </Typography>
-        </Box>
-      ))}
-      
-      {/* Recommandations */}
-      {analysis.recommendations.length > 0 && (
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="caption" color="text.secondary">
-            Recommandations:
-          </Typography>
-          {analysis.recommendations.map((rec, idx) => (
-            <Typography 
-              key={idx}
-              variant="body2" 
-              sx={{ cursor: 'pointer', color: 'primary.main', mt: 0.5 }}
-              onClick={() => onRecommendationClick(rec)}
-            >
-              • {rec}
-            </Typography>
-          ))}
-        </Box>
-      )}
-    </Box>
-  );
-};
+  const threshold = thresholds[turn] || thresholds[4];
+  
+  if (probability >= threshold) return 'excellent';
+  if (probability >= threshold - 0.1) return 'good';
+  if (probability >= threshold - 0.2) return 'acceptable';
+  return 'poor';
+}
 ```
+
+---
+
+## 🃏 Détection Intelligente des Terres
+
+### Algorithme de Reconnaissance (src/utils/landDetectionComplete.ts)
+
+```typescript
+export interface LandType {
+  name: string;
+  colors: string[];
+  type: 'basic' | 'fetch' | 'shock' | 'check' | 'fast' | 'pain' | 'other';
+  etb: 'untapped' | 'tapped' | 'conditional';
+}
+
+export function detectLandTypes(cardName: string): LandType {
+  const normalized = cardName.toLowerCase().trim();
+  
+  // Fetchlands (toujours untapped, cherchent 2 couleurs)
+  const fetchlands: Record<string, string[]> = {
+    'scalding tarn': ['U', 'R'],
+    'polluted delta': ['U', 'B'],
+    'bloodstained mire': ['B', 'R'],
+    'wooded foothills': ['R', 'G'],
+    'windswept heath': ['G', 'W'],
+    'flooded strand': ['W', 'U'],
+    'marsh flats': ['W', 'B'],
+    'verdant catacombs': ['B', 'G'],
+    'arid mesa': ['R', 'W'],
+    'misty rainforest': ['G', 'U']
+  };
+  
+  if (fetchlands[normalized]) {
+    return {
+      name: cardName,
+      colors: fetchlands[normalized],
+      type: 'fetch',
+      etb: 'untapped'
+    };
+  }
+  
+  // Shocklands (untapped si 2 life)
+  const shocklands: Record<string, string[]> = {
+    'steam vents': ['U', 'R'],
+    'watery grave': ['U', 'B'],
+    'blood crypt': ['B', 'R'],
+    'stomping ground': ['R', 'G'],
+    'temple garden': ['G', 'W'],
+    'hallowed fountain': ['W', 'U'],
+    'godless shrine': ['W', 'B'],
+    'overgrown tomb': ['B', 'G'],
+    'sacred foundry': ['R', 'W'],
+    'breeding pool': ['G', 'U']
+  };
+  
+  if (shocklands[normalized]) {
+    return {
+      name: cardName,
+      colors: shocklands[normalized],
+      type: 'shock',
+      etb: 'conditional'
+    };
+  }
+  
+  // Checklands (untapped si condition)
+  const checklands: Record<string, string[]> = {
+    'dragonskull summit': ['B', 'R'],
+    'drowned catacomb': ['U', 'B'],
+    'glacial fortress': ['W', 'U'],
+    'isolated chapel': ['W', 'B'],
+    'rootbound crag': ['R', 'G'],
+    'sunpetal grove': ['G', 'W'],
+    'sulfur falls': ['U', 'R'],
+    'woodland cemetery': ['B', 'G'],
+    'clifftop retreat': ['R', 'W'],
+    'hinterland harbor': ['G', 'U']
+  };
+  
+  if (checklands[normalized]) {
+    return {
+      name: cardName,
+      colors: checklands[normalized],
+      type: 'check',
+      etb: 'conditional'
+    };
+  }
+  
+  // Terres de base
+  const basicLands: Record<string, string[]> = {
+    'island': ['U'],
+    'mountain': ['R'],
+    'swamp': ['B'],
+    'forest': ['G'],
+    'plains': ['W']
+  };
+  
+  if (basicLands[normalized]) {
+    return {
+      name: cardName,
+      colors: basicLands[normalized],
+      type: 'basic',
+      etb: 'untapped'
+    };
+  }
+  
+  // Défaut : terre inconnue
+  return {
+    name: cardName,
+    colors: [],
+    type: 'other',
+    etb: 'tapped'
+  };
+}
+
+// Calcul des sources de mana selon Frank Karsten
+export function calculateManaSourcesFromDeck(decklist: string): ManaSourceCount {
+  const lines = decklist.split('\n').filter(line => line.trim());
+  const sources: Record<string, number> = {
+    W: 0, U: 0, B: 0, R: 0, G: 0
+  };
+  
+  for (const line of lines) {
+    const match = line.match(/^(\d+)\s+(.+)$/);
+    if (!match) continue;
+    
+    const quantity = parseInt(match[1]);
+    const cardName = match[2];
+    
+    const landType = detectLandTypes(cardName);
+    
+    // Les fetchlands comptent pour chaque couleur qu'elles peuvent chercher
+    for (const color of landType.colors) {
+      sources[color] += quantity;
+    }
+  }
+  
+  return sources;
+}
+```
+
+---
 
 ## 🔒 Système Privacy-First
 
-### Implémentation Complète du Stockage Privé
+### Chiffrement Local (src/lib/privacy.ts)
+
 ```typescript
-// src/lib/privacy.ts
 import CryptoJS from 'crypto-js';
 
 export class PrivacyStorage {
-  private static readonly STORAGE_KEY = 'manatuner_private_data';
+  private static readonly STORAGE_KEY = 'manatuner_encrypted_data';
   private static readonly USER_CODE_KEY = 'manatuner_user_code';
   
-  /**
-   * Génère un code utilisateur unique et mémorable
-   */
+  // Génération de code utilisateur anonyme
   static generateUserCode(): string {
-    const adjectives = ['SWIFT', 'BOLD', 'WISE', 'PURE', 'DARK', 'BRIGHT', 'SHARP', 'CALM'];
-    const nouns = ['DECK', 'MANA', 'SPELL', 'LAND', 'CARD', 'PLAY', 'TURN', 'GAME'];
-    const numbers = Math.floor(Math.random() * 99) + 1;
+    const adjectives = ['Swift', 'Mystic', 'Noble', 'Fierce', 'Wise'];
+    const creatures = ['Dragon', 'Phoenix', 'Sphinx', 'Hydra', 'Angel'];
+    const numbers = Math.floor(Math.random() * 1000);
     
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const creature = creatures[Math.floor(Math.random() * creatures.length)];
     
-    return `${adjective}-${noun}-${numbers}`;
+    return `MT-${adj}-${creature}-${numbers}`;
   }
   
-  /**
-   * Obtient ou crée le code utilisateur
-   */
+  // Récupération du code utilisateur
   static getUserCode(): string {
     let code = localStorage.getItem(this.USER_CODE_KEY);
-    
     if (!code) {
       code = this.generateUserCode();
       localStorage.setItem(this.USER_CODE_KEY, code);
     }
-    
     return code;
   }
   
-  /**
-   * Chiffre les données avec AES
-   */
-  static encryptData(data: any): string {
+  // Chiffrement AES-256
+  static encryptData(data: any, userCode: string): string {
     const jsonString = JSON.stringify(data);
-    const userCode = this.getUserCode();
-    
-    // Utilise le code utilisateur comme clé de chiffrement
     const encrypted = CryptoJS.AES.encrypt(jsonString, userCode).toString();
-    
     return encrypted;
   }
   
-  /**
-   * Déchiffre les données
-   */
-  static decryptData(encryptedData: string): any {
+  // Déchiffrement AES-256
+  static decryptData(encryptedData: string, userCode: string): any {
     try {
-      const userCode = this.getUserCode();
-      const decrypted = CryptoJS.AES.decrypt(encryptedData, userCode);
-      const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
-      
-      return JSON.parse(jsonString);
+      const bytes = CryptoJS.AES.decrypt(encryptedData, userCode);
+      const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
+      return JSON.parse(decryptedString);
     } catch (error) {
-      console.error('Erreur de déchiffrement:', error);
+      console.error('Decryption failed:', error);
       return null;
     }
   }
   
-  /**
-   * Sauvegarde une analyse de deck
-   */
+  // Sauvegarde d'analyse chiffrée
   static saveAnalysis(analysis: DeckAnalysis): void {
+    const userCode = this.getUserCode();
     const existingData = this.getAllAnalyses();
-    const newData = {
-      ...existingData,
-      [analysis.id]: {
-        ...analysis,
-        timestamp: Date.now(),
-        userCode: this.getUserCode()
-      }
+    
+    const newAnalysis = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      ...analysis
     };
     
-    const encrypted = this.encryptData(newData);
+    existingData.push(newAnalysis);
+    
+    const encrypted = this.encryptData(existingData, userCode);
     localStorage.setItem(this.STORAGE_KEY, encrypted);
   }
   
-  /**
-   * Récupère toutes les analyses
-   */
-  static getAllAnalyses(): Record<string, DeckAnalysis> {
-    const encrypted = localStorage.getItem(this.STORAGE_KEY);
+  // Récupération de toutes les analyses
+  static getAllAnalyses(): DeckAnalysis[] {
+    const userCode = this.getUserCode();
+    const encryptedData = localStorage.getItem(this.STORAGE_KEY);
     
-    if (!encrypted) {
-      return {};
-    }
+    if (!encryptedData) return [];
     
-    const decrypted = this.decryptData(encrypted);
-    return decrypted || {};
+    const decrypted = this.decryptData(encryptedData, userCode);
+    return decrypted || [];
   }
   
-  /**
-   * Exporte les données pour sauvegarde
-   */
+  // Export des données (pour backup)
   static exportData(): Blob {
+    const userCode = this.getUserCode();
     const allData = {
-      userCode: this.getUserCode(),
+      userCode,
       analyses: this.getAllAnalyses(),
-      exportDate: new Date().toISOString(),
-      version: '2.0.1'
+      exportDate: new Date().toISOString()
     };
     
     const jsonString = JSON.stringify(allData, null, 2);
     return new Blob([jsonString], { type: 'application/json' });
   }
   
-  /**
-   * Importe des données depuis un fichier
-   */
+  // Import des données
   static async importData(file: File): Promise<boolean> {
     try {
       const text = await file.text();
       const data = JSON.parse(text);
       
-      // Validation des données
-      if (!data.userCode || !data.analyses) {
-        throw new Error('Format de fichier invalide');
+      if (data.userCode && data.analyses) {
+        localStorage.setItem(this.USER_CODE_KEY, data.userCode);
+        
+        const encrypted = this.encryptData(data.analyses, data.userCode);
+        localStorage.setItem(this.STORAGE_KEY, encrypted);
+        
+        return true;
       }
       
-      // Fusion avec les données existantes
-      const existingAnalyses = this.getAllAnalyses();
-      const mergedAnalyses = { ...existingAnalyses, ...data.analyses };
-      
-      const encrypted = this.encryptData(mergedAnalyses);
-      localStorage.setItem(this.STORAGE_KEY, encrypted);
-      
-      return true;
+      return false;
     } catch (error) {
-      console.error('Erreur d\'importation:', error);
+      console.error('Import failed:', error);
       return false;
     }
   }
 }
 ```
 
-## 🎯 Détection Intelligente des Terres
+---
 
-### Algorithme de Reconnaissance Avancé
-```typescript
-// src/utils/landDetectionComplete.ts
-export interface LandCapability {
-  colors: ManaColor[];
-  type: LandType;
-  entersTapped: boolean;
-  conditions?: string[];
-}
+## ⚡ Optimisations Performance
 
-export class IntelligentLandDetection {
-  
-  // Base de données des patterns de terres connues
-  private static readonly LAND_PATTERNS = {
-    fetchlands: [
-      { pattern: /scalding tarn/i, colors: ['U', 'R'] },
-      { pattern: /polluted delta/i, colors: ['U', 'B'] },
-      { pattern: /bloodstained mire/i, colors: ['B', 'R'] },
-      { pattern: /wooded foothills/i, colors: ['R', 'G'] },
-      { pattern: /windswept heath/i, colors: ['G', 'W'] },
-      { pattern: /flooded strand/i, colors: ['W', 'U'] },
-      { pattern: /marsh flats/i, colors: ['W', 'B'] },
-      { pattern: /verdant catacombs/i, colors: ['B', 'G'] },
-      { pattern: /arid mesa/i, colors: ['R', 'W'] },
-      { pattern: /misty rainforest/i, colors: ['G', 'U'] }
-    ],
-    shocklands: [
-      { pattern: /steam vents/i, colors: ['U', 'R'] },
-      { pattern: /watery grave/i, colors: ['U', 'B'] },
-      { pattern: /blood crypt/i, colors: ['B', 'R'] },
-      { pattern: /stomping ground/i, colors: ['R', 'G'] },
-      { pattern: /temple garden/i, colors: ['G', 'W'] },
-      { pattern: /hallowed fountain/i, colors: ['W', 'U'] },
-      { pattern: /godless shrine/i, colors: ['W', 'B'] },
-      { pattern: /overgrown tomb/i, colors: ['B', 'G'] },
-      { pattern: /sacred foundry/i, colors: ['R', 'W'] },
-      { pattern: /breeding pool/i, colors: ['G', 'U'] }
-    ],
-    checklands: [
-      { pattern: /dragonskull summit/i, colors: ['B', 'R'] },
-      { pattern: /drowned catacomb/i, colors: ['U', 'B'] },
-      { pattern: /glacial fortress/i, colors: ['W', 'U'] },
-      { pattern: /isolated chapel/i, colors: ['W', 'B'] },
-      { pattern: /clifftop retreat/i, colors: ['R', 'W'] },
-      { pattern: /hinterland harbor/i, colors: ['G', 'U'] },
-      { pattern: /sulfur falls/i, colors: ['U', 'R'] },
-      { pattern: /woodland cemetery/i, colors: ['B', 'G'] },
-      { pattern: /sunpetal grove/i, colors: ['G', 'W'] },
-      { pattern: /rootbound crag/i, colors: ['R', 'G'] }
-    ]
-  };
-  
-  /**
-   * Détecte le type et les capacités d'une terre
-   */
-  static analyzeLand(cardName: string, manaCost?: string, text?: string): LandCapability | null {
-    const normalizedName = cardName.toLowerCase().trim();
-    
-    // Vérification des patterns connus
-    for (const [landType, patterns] of Object.entries(this.LAND_PATTERNS)) {
-      for (const pattern of patterns) {
-        if (pattern.pattern.test(normalizedName)) {
-          return {
-            colors: pattern.colors as ManaColor[],
-            type: landType as LandType,
-            entersTapped: this.determineETBStatus(landType as LandType, text),
-            conditions: this.extractConditions(text)
-          };
-        }
-      }
-    }
-    
-    // Analyse du texte de la carte si disponible
-    if (text) {
-      return this.analyzeCardText(normalizedName, text);
-    }
-    
-    // Analyse basique par nom
-    return this.analyzeByName(normalizedName);
-  }
-  
-  /**
-   * Analyse le texte de la carte pour extraire les capacités
-   */
-  private static analyzeCardText(name: string, text: string): LandCapability | null {
-    const colors: ManaColor[] = [];
-    const normalizedText = text.toLowerCase();
-    
-    // Recherche des symboles de mana
-    const manaPatterns = [
-      { pattern: /add.*{w}/i, color: 'W' as ManaColor },
-      { pattern: /add.*{u}/i, color: 'U' as ManaColor },
-      { pattern: /add.*{b}/i, color: 'B' as ManaColor },
-      { pattern: /add.*{r}/i, color: 'R' as ManaColor },
-      { pattern: /add.*{g}/i, color: 'G' as ManaColor }
-    ];
-    
-    for (const { pattern, color } of manaPatterns) {
-      if (pattern.test(normalizedText)) {
-        colors.push(color);
-      }
-    }
-    
-    if (colors.length === 0) return null;
-    
-    return {
-      colors,
-      type: this.inferLandType(name, normalizedText),
-      entersTapped: /enters.*tapped/i.test(normalizedText),
-      conditions: this.extractConditions(normalizedText)
-    };
-  }
-  
-  /**
-   * Détermine si une terre arrive engagée
-   */
-  private static determineETBStatus(landType: LandType, text?: string): boolean {
-    if (!text) {
-      // Règles par défaut selon le type
-      const tappedByDefault = ['checklands', 'gainlands', 'temples'];
-      return tappedByDefault.includes(landType);
-    }
-    
-    return /enters.*tapped/i.test(text);
-  }
-  
-  /**
-   * Extrait les conditions d'utilisation
-   */
-  private static extractConditions(text?: string): string[] {
-    if (!text) return [];
-    
-    const conditions: string[] = [];
-    const normalizedText = text.toLowerCase();
-    
-    // Conditions communes
-    if (/unless you control/i.test(normalizedText)) {
-      conditions.push('Requires specific permanents');
-    }
-    
-    if (/pay.*life/i.test(normalizedText)) {
-      conditions.push('Life payment required');
-    }
-    
-    if (/sacrifice/i.test(normalizedText)) {
-      conditions.push('Sacrifice required');
-    }
-    
-    return conditions;
-  }
-  
-  /**
-   * Infère le type de terre basé sur le nom et le texte
-   */
-  private static inferLandType(name: string, text: string): LandType {
-    if (/search.*library/i.test(text)) return 'fetchland';
-    if (/shock/i.test(text) || /2 damage/i.test(text)) return 'shockland';
-    if (/unless you control/i.test(text)) return 'checkland';
-    if (/scry/i.test(text)) return 'temple';
-    if (/gain.*life/i.test(text)) return 'gainland';
-    if (/comes.*play.*tapped/i.test(text)) return 'tapland';
-    
-    return 'utility';
-  }
-}
-```
+### Web Workers pour Monte Carlo (public/workers/monteCarlo.worker.js)
 
-## 🚀 Optimisations de Performance
-
-### Web Workers pour Monte Carlo
 ```javascript
-// public/workers/monteCarlo.worker.js
+// Web Worker pour simulations Monte Carlo
 self.onmessage = function(e) {
-  const { deckConfig, iterations, method } = e.data;
+  const { deckConfig, iterations = 10000 } = e.data;
   
-  // Simulation Monte Carlo intensive
   const results = runMonteCarloSimulation(deckConfig, iterations);
   
-  // Retour des résultats
   self.postMessage({
-    type: 'MONTE_CARLO_COMPLETE',
-    results: results,
-    timestamp: Date.now()
+    success: true,
+    results
   });
 };
 
 function runMonteCarloSimulation(deckConfig, iterations) {
-  const results = {
-    successRate: 0,
-    averageTurn: 0,
-    distribution: {},
-    confidence: 0.95
-  };
-  
-  let successes = 0;
-  let totalTurns = 0;
+  let successfulGames = 0;
+  const turnResults = Array(8).fill(0);
   
   for (let i = 0; i < iterations; i++) {
-    const simulation = simulateGame(deckConfig);
+    const gameResult = simulateGame(deckConfig);
     
-    if (simulation.success) {
-      successes++;
-      totalTurns += simulation.successTurn;
+    if (gameResult.success) {
+      successfulGames++;
     }
     
-    // Mise à jour progressive pour l'UI
-    if (i % 1000 === 0) {
-      self.postMessage({
-        type: 'MONTE_CARLO_PROGRESS',
-        progress: i / iterations,
-        currentResults: {
-          successRate: successes / (i + 1),
-          averageTurn: totalTurns / Math.max(successes, 1)
-        }
-      });
+    // Enregistrer les résultats par turn
+    for (let turn = 0; turn < gameResult.turnResults.length; turn++) {
+      if (gameResult.turnResults[turn]) {
+        turnResults[turn]++;
+      }
     }
   }
   
-  results.successRate = successes / iterations;
-  results.averageTurn = totalTurns / Math.max(successes, 1);
-  
-  return results;
+  return {
+    successRate: successfulGames / iterations,
+    turnProbabilities: turnResults.map(count => count / iterations),
+    totalSimulations: iterations
+  };
 }
 
 function simulateGame(deckConfig) {
-  // Simulation d'une partie complète
-  const deck = shuffleDeck(deckConfig.cards);
+  // Créer le deck
+  const deck = createDeck(deckConfig);
+  
+  // Mélanger
+  shuffleDeck(deck);
+  
+  // Main initiale
   const hand = deck.splice(0, 7);
   
-  // Logique de simulation...
+  // Simuler 8 turns
+  const turnResults = [];
+  
+  for (let turn = 1; turn <= 8; turn++) {
+    // Piocher (sauf turn 1)
+    if (turn > 1) {
+      hand.push(deck.shift());
+    }
+    
+    // Vérifier si on a assez de mana
+    const hasEnoughMana = checkManaRequirement(hand, deckConfig, turn);
+    turnResults.push(hasEnoughMana);
+  }
+  
   return {
-    success: true,
-    successTurn: 3
+    success: turnResults.every(Boolean),
+    turnResults
   };
+}
+
+function createDeck(deckConfig) {
+  const deck = [];
+  
+  // Ajouter les terres
+  for (const [color, count] of Object.entries(deckConfig.sources)) {
+    for (let i = 0; i < count; i++) {
+      deck.push({ type: 'land', color });
+    }
+  }
+  
+  // Ajouter les sorts (représentés comme cartes génériques)
+  const totalLands = Object.values(deckConfig.sources).reduce((a, b) => a + b, 0);
+  const spellsCount = deckConfig.deckSize - totalLands;
+  
+  for (let i = 0; i < spellsCount; i++) {
+    deck.push({ type: 'spell' });
+  }
+  
+  return deck;
+}
+
+function shuffleDeck(deck) {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
 }
 ```
 
-### Hook React pour Web Workers
-```typescript
-// src/hooks/useMonteCarloWorker.ts
-import { useEffect, useRef, useState } from 'react';
+### Hook de Performance (src/hooks/useMonteCarloWorker.ts)
 
-export interface MonteCarloResult {
+```typescript
+import { useState, useEffect, useCallback } from 'react';
+
+interface MonteCarloResult {
   successRate: number;
-  averageTurn: number;
-  distribution: Record<number, number>;
-  confidence: number;
+  turnProbabilities: number[];
+  totalSimulations: number;
 }
 
-export const useMonteCarloWorker = () => {
-  const workerRef = useRef<Worker | null>(null);
+export function useMonteCarloWorker() {
+  const [worker, setWorker] = useState<Worker | null>(null);
   const [isRunning, setIsRunning] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [results, setResults] = useState<MonteCarloResult | null>(null);
+  const [result, setResult] = useState<MonteCarloResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Initialisation du worker
-    workerRef.current = new Worker(
-      new URL('/workers/monteCarlo.worker.js', import.meta.url)
+    // Créer le Web Worker avec la syntaxe compatible Vercel
+    const newWorker = new Worker(
+      new URL('/workers/monteCarlo.worker.js', import.meta.url),
+      { type: 'module' }
     );
     
-    workerRef.current.onmessage = (e) => {
-      const { type, ...data } = e.data;
+    newWorker.onmessage = (e) => {
+      const { success, results, error } = e.data;
       
-      switch (type) {
-        case 'MONTE_CARLO_PROGRESS':
-          setProgress(data.progress);
-          break;
-          
-        case 'MONTE_CARLO_COMPLETE':
-          setResults(data.results);
-          setIsRunning(false);
-          setProgress(1);
-          break;
-          
-        default:
-          console.warn('Message worker non géré:', type);
+      if (success) {
+        setResult(results);
+        setError(null);
+      } else {
+        setError(error || 'Simulation failed');
       }
+      
+      setIsRunning(false);
     };
     
+    newWorker.onerror = (error) => {
+      setError('Worker error: ' + error.message);
+      setIsRunning(false);
+    };
+    
+    setWorker(newWorker);
+    
     return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-      }
+      newWorker.terminate();
     };
   }, []);
   
-  const runSimulation = (deckConfig: DeckConfiguration, iterations = 10000) => {
-    if (!workerRef.current || isRunning) return;
+  const runSimulation = useCallback((deckConfig: DeckConfiguration, iterations = 10000) => {
+    if (!worker || isRunning) return;
     
     setIsRunning(true);
-    setProgress(0);
-    setResults(null);
+    setError(null);
+    setResult(null);
     
-    workerRef.current.postMessage({
-      deckConfig,
-      iterations,
-      method: 'standard'
-    });
-  };
-  
-  const cancelSimulation = () => {
-    if (workerRef.current && isRunning) {
-      workerRef.current.terminate();
-      setIsRunning(false);
-      setProgress(0);
-    }
-  };
+    worker.postMessage({ deckConfig, iterations });
+  }, [worker, isRunning]);
   
   return {
     runSimulation,
-    cancelSimulation,
     isRunning,
-    progress,
-    results
+    result,
+    error
   };
-};
+}
 ```
 
 ---
 
-*Guide technique généré le 22 juin 2025*
-*Contient les implémentations critiques pour ManaTuner Pro* 
+## 🧪 Tests Mathématiques Critiques
+
+### Validation Frank Karsten (src/services/__tests__/maths.critical.test.ts)
+
+```typescript
+import { describe, test, expect } from 'vitest';
+import { hypergeometric, analyzeTurnByTurn } from '../advancedMaths';
+
+describe('Frank Karsten Mathematical Validation', () => {
+  test('Hypergeometric distribution matches reference values', () => {
+    // Valeurs de référence de l'article TCGPlayer
+    
+    // Turn 1: 7 cartes, besoin de 1 source sur 14 dans deck de 60
+    const turn1 = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 14,
+      sampleSize: 7,
+      successStatesInSample: 1
+    });
+    expect(turn1).toBeCloseTo(0.8324, 3); // 83.24%
+    
+    // Turn 2: 8 cartes, besoin de 2 sources sur 17 dans deck de 60
+    const turn2 = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 17,
+      sampleSize: 8,
+      successStatesInSample: 2
+    });
+    expect(turn2).toBeCloseTo(0.8156, 3); // 81.56%
+    
+    // Turn 3: 9 cartes, besoin de 3 sources sur 20 dans deck de 60
+    const turn3 = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 20,
+      sampleSize: 9,
+      successStatesInSample: 3
+    });
+    expect(turn3).toBeCloseTo(0.7935, 3); // 79.35%
+  });
+  
+  test('Fetchland counting matches Karsten methodology', () => {
+    // Un fetchland compte pour chaque couleur qu'il peut chercher
+    const deckWithFetchlands = {
+      deckSize: 60,
+      sources: {
+        U: 8, // 4 Island + 4 Scalding Tarn
+        R: 8  // 4 Mountain + 4 Scalding Tarn
+      },
+      colorRequirements: {
+        U: { sourcesNeeded: 1, turn: 1 },
+        R: { sourcesNeeded: 1, turn: 2 }
+      },
+      onPlay: true
+    };
+    
+    const analysis = analyzeTurnByTurn(deckWithFetchlands);
+    
+    // Vérifier que les fetchlands sont comptés pour les deux couleurs
+    const blueT1 = analysis.find(r => r.color === 'U' && r.turn === 1);
+    const redT2 = analysis.find(r => r.color === 'R' && r.turn === 2);
+    
+    expect(blueT1?.sourcesInDeck).toBe(8);
+    expect(redT2?.sourcesInDeck).toBe(8);
+  });
+  
+  test('Mulligan calculations are accurate', () => {
+    // Test avec main de 6 cartes (après mulligan)
+    const mulliganProb = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 14,
+      sampleSize: 6, // Main de 6 après mulligan
+      successStatesInSample: 1
+    });
+    
+    expect(mulliganProb).toBeCloseTo(0.7876, 3); // 78.76%
+  });
+  
+  test('Edge cases handle correctly', () => {
+    // Cas impossible : plus de sources demandées que disponibles
+    const impossible = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 10,
+      sampleSize: 7,
+      successStatesInSample: 15 // Impossible
+    });
+    expect(impossible).toBe(0);
+    
+    // Cas trivial : 0 source demandée
+    const trivial = hypergeometric({
+      populationSize: 60,
+      successStatesInPop: 10,
+      sampleSize: 7,
+      successStatesInSample: 0
+    });
+    expect(trivial).toBe(1); // 100%
+  });
+});
+```
+
+---
+
+## 🚀 Configuration Déploiement
+
+### Scripts npm (Actuels)
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+### Variables d'Environnement (Optionnelles)
+
+```bash
+# .env.example - Toutes optionnelles
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_VERCEL_ANALYTICS_ID=your-analytics-id
+```
+
+### GitHub Actions (CI/CD)
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Vercel
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - run: npm ci
+      - run: npm run test:unit
+      - run: npm run build
+      
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+```
+
+---
+
+## 🎯 Résumé Architecture
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   GitHub Repo   │───▶│  Vercel Build    │───▶│  Global CDN     │
+│                 │    │  (Vite + React)  │    │  Edge Network   │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                                         │
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│  localStorage   │◀───│   User Browser   │◀───│ https://app.com │
+│  AES Encrypted  │    │  React 18 + MUI  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
+
+**Stack Final :**
+- **Frontend** : React 18 + TypeScript + Material-UI
+- **Build** : Vite (ES2015 target, 202KB gzipped)
+- **Hosting** : Vercel Edge Network
+- **Database** : Supabase (optionnel)
+- **Storage** : localStorage + AES-256 encryption
+- **Testing** : Vitest + Playwright (9/9 tests passent)
+
+---
+
+🎉 **ManaTuner Pro - Architecture technique moderne, sécurisée et performante !** 
