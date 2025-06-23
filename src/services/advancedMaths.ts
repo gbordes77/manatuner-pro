@@ -40,12 +40,14 @@ export class AdvancedMathEngine {
     }
     
     this.metrics = {
-      startTime: 0,
+      startTime: performance.now(),
       endTime: 0,
       duration: 0,
       iterationsCompleted: 0,
       cacheHits: 0,
-      cacheMisses: 0
+      cacheMisses: 0,
+      calculationsPerformed: 0,
+      averageCalculationTime: 0
     }
   }
 
@@ -193,6 +195,11 @@ export class AdvancedMathEngine {
    */
   async runMonteCarloSimulation(params: MonteCarloParams): Promise<MonteCarloResult> {
     this.metrics.startTime = performance.now()
+    
+    // Validation des paramètres
+    if (params.iterations <= 0 || params.deckSize <= 0 || params.landCount < 0) {
+      throw new Error('Invalid Monte Carlo parameters')
+    }
     
     const { iterations, deckSize, landCount, targetTurn, mulliganStrategy, playFirst, maxMulligans } = params
     
@@ -565,7 +572,13 @@ export class AdvancedMathEngine {
   getMetrics(): CalculationMetrics {
     this.metrics.endTime = performance.now()
     this.metrics.duration = this.metrics.endTime - this.metrics.startTime
-    this.cache.hitRate = this.metrics.cacheHits / (this.metrics.cacheHits + this.metrics.cacheMisses)
+    this.metrics.calculationsPerformed = this.metrics.cacheHits + this.metrics.cacheMisses
+    this.metrics.averageCalculationTime = this.metrics.calculationsPerformed > 0 
+      ? this.metrics.duration / this.metrics.calculationsPerformed 
+      : 0
+    this.cache.hitRate = this.metrics.calculationsPerformed > 0 
+      ? this.metrics.cacheHits / this.metrics.calculationsPerformed 
+      : 0
     
     return { ...this.metrics }
   }

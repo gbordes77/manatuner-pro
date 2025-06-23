@@ -194,6 +194,8 @@ export interface CalculationMetrics {
   iterationsCompleted: number
   cacheHits: number
   cacheMisses: number
+  calculationsPerformed: number
+  averageCalculationTime: number
   memoryUsage?: number
 }
 
