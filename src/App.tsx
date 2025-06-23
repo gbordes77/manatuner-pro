@@ -11,6 +11,7 @@ import { BetaBanner } from './components'
 import { HomePage } from './pages/HomePage'
 import AnalyzerPage from './pages/AnalyzerPage'
 import { GuidePage } from './pages/GuidePage'
+import MathematicsPage from './pages/MathematicsPage'
 import MyAnalysesPage from './pages/MyAnalysesPage'
 import PrivacyFirstPage from './pages/PrivacyFirstPage'
 
@@ -71,6 +72,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/analyzer" element={<AnalyzerPage />} />
               <Route path="/guide" element={<GuidePage />} />
+              <Route path="/mathematics" element={<MathematicsPage />} />
               <Route path="/mes-analyses" element={<MyAnalysesPage />} />
               <Route path="/privacy-first" element={<PrivacyFirstPage />} />
               <Route path="/about" element={
