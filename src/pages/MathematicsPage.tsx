@@ -153,12 +153,12 @@ const MathematicsPage: React.FC = () => {
               </ListItem>
             </List>
 
-            <Alert severity="success" sx={{ mt: 2 }}>
-              <Typography variant="body2">
-                <strong>Real Example:</strong> With 24 lands in a 60-card deck, what's the probability 
-                of having at least 3 lands in your opening hand of 7? Answer: ~78%
-              </Typography>
-            </Alert>
+                         <Alert severity="success" sx={{ mt: 2 }}>
+               <Typography variant="body2">
+                 <strong>Real Example:</strong> With 14 red sources in a 60-card deck, what's the probability 
+                 of having at least 1 red source on Turn 1 (7 cards drawn)? Answer: ~90% (Karsten standard)
+               </Typography>
+             </Alert>
           </AccordionDetails>
         </Accordion>
 
@@ -208,42 +208,49 @@ const MathematicsPage: React.FC = () => {
               Frank Karsten's 2022 update incorporates modern Magic design and play patterns.
             </Typography>
 
-            <TableContainer component={Paper} sx={{ my: 2 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell><strong>Sources Needed</strong></TableCell>
-                    <TableCell><strong>Turn 1</strong></TableCell>
-                    <TableCell><strong>Turn 2</strong></TableCell>
-                    <TableCell><strong>Turn 3</strong></TableCell>
-                    <TableCell><strong>Turn 4</strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>1 Mana</TableCell>
-                    <TableCell>13 sources</TableCell>
-                    <TableCell>14 sources</TableCell>
-                    <TableCell>15 sources</TableCell>
-                    <TableCell>16 sources</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>2 Mana</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>18 sources</TableCell>
-                    <TableCell>19 sources</TableCell>
-                    <TableCell>20 sources</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>3 Mana</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>22 sources</TableCell>
-                    <TableCell>23 sources</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+                         <TableContainer component={Paper} sx={{ my: 2 }}>
+               <Table size="small">
+                 <TableHead>
+                   <TableRow>
+                     <TableCell><strong>Mana Cost</strong></TableCell>
+                     <TableCell><strong>Turn 1</strong></TableCell>
+                     <TableCell><strong>Turn 2</strong></TableCell>
+                     <TableCell><strong>Turn 3</strong></TableCell>
+                     <TableCell><strong>Turn 4</strong></TableCell>
+                   </TableRow>
+                 </TableHead>
+                 <TableBody>
+                   <TableRow>
+                     <TableCell>1 Colored (C)</TableCell>
+                     <TableCell>14 sources</TableCell>
+                     <TableCell>12 sources</TableCell>
+                     <TableCell>11 sources</TableCell>
+                     <TableCell>10 sources</TableCell>
+                   </TableRow>
+                   <TableRow>
+                     <TableCell>1C + Colorless</TableCell>
+                     <TableCell>-</TableCell>
+                     <TableCell>13 sources</TableCell>
+                     <TableCell>12 sources</TableCell>
+                     <TableCell>11 sources</TableCell>
+                   </TableRow>
+                   <TableRow>
+                     <TableCell>2 Same Color (CC)</TableCell>
+                     <TableCell>-</TableCell>
+                     <TableCell>21 sources</TableCell>
+                     <TableCell>19 sources</TableCell>
+                     <TableCell>18 sources</TableCell>
+                   </TableRow>
+                   <TableRow>
+                     <TableCell>3 Same Color (CCC)</TableCell>
+                     <TableCell>-</TableCell>
+                     <TableCell>-</TableCell>
+                     <TableCell>25 sources</TableCell>
+                     <TableCell>23 sources</TableCell>
+                   </TableRow>
+                 </TableBody>
+               </Table>
+             </TableContainer>
 
             <Typography variant="body2" paragraph>
               <strong>Key Updates for 2022:</strong>
@@ -353,11 +360,11 @@ const MathematicsPage: React.FC = () => {
               to cast your spells on curve with mathematical precision.
             </Typography>
             
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Chip label="Turn 1: 13+ sources" size="small" />
-              <Chip label="Turn 2: 18+ sources" size="small" />
-              <Chip label="Turn 3: 22+ sources" size="small" />
-            </Box>
+                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+               <Chip label="T1 1C: 14 sources" size="small" />
+               <Chip label="T2 CC: 21 sources" size="small" />
+               <Chip label="T3 CCC: 25 sources" size="small" />
+             </Box>
           </Grid>
         </Grid>
       </Paper>
