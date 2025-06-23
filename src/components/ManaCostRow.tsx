@@ -13,6 +13,7 @@ import {
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
 import { manaCalculator } from '../services/manaCalculator'
+import { ManaSymbol as LegalManaSymbol, ManaSequence } from './common/ManaSymbols'
 
 interface ManaCostRowProps {
   cardName: string
@@ -95,84 +96,54 @@ const ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
   )
 }
 
-// Memoized mana symbols renderer
-const ManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
-  const symbols = useMemo(() => {
-    if (!manaCost) return []
+// Parse Scryfall mana cost et crée une séquence pour nos symboles légaux
+const parseManaCostToSymbols = (manaCost: string): Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> => {
+  if (!manaCost) return [];
+  
+  const sequence: Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> = [];
+  const matches = manaCost.match(/\{[^}]+\}/g) || [];
+  
+  matches.forEach(symbol => {
+    const cleanSymbol = symbol.replace(/[{}]/g, '');
     
-    const matches = manaCost.match(/\{[^}]+\}/g) || []
-    return matches.map((symbol, index) => {
-      const cleanSymbol = symbol.replace(/[{}]/g, '')
-      let color = '#999'
-      let bgColor = '#f0f0f0'
-      let textContent = cleanSymbol
-
-      if (/^\d+$/.test(cleanSymbol)) {
-        color = '#666'
-        bgColor = '#e0e0e0'
-      } else if (cleanSymbol === 'W') {
-        color = '#333'
-        bgColor = '#fffbd5'
-        textContent = '☀'
-      } else if (cleanSymbol === 'U') {
-        color = '#fff'
-        bgColor = '#0e68ab'
-        textContent = '💧'
-      } else if (cleanSymbol === 'B') {
-        color = '#fff'
-        bgColor = '#150b00'
-        textContent = '💀'
-      } else if (cleanSymbol === 'R') {
-        color = '#fff'
-        bgColor = '#d3202a'
-        textContent = '🔥'
-      } else if (cleanSymbol === 'G') {
-        color = '#fff'
-        bgColor = '#00733e'
-        textContent = '🌿'
-      } else if (cleanSymbol === 'X') {
-        color = '#666'
-        bgColor = '#e0e0e0'
-        textContent = 'X'
+    if (['W', 'U', 'B', 'R', 'G'].includes(cleanSymbol)) {
+      sequence.push(cleanSymbol as 'W' | 'U' | 'B' | 'R' | 'G');
+    } else if (/^\d+$/.test(cleanSymbol)) {
+      // Pour les coûts génériques, ajouter des symboles colorless
+      const count = parseInt(cleanSymbol);
+      for (let i = 0; i < count; i++) {
+        sequence.push('C');
       }
+    } else if (cleanSymbol === 'X') {
+      sequence.push('C'); // X compte comme colorless
+    }
+  });
+  
+  return sequence;
+};
 
-      return {
-        key: index,
-        symbol: cleanSymbol,
-        color,
-        bgColor,
-        textContent
-      }
-    })
-  }, [manaCost])
+// Composant amélioré avec nos symboles légaux
+const ScryfallManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
+  const symbols = useMemo(() => parseManaCostToSymbols(manaCost), [manaCost]);
+  
+  if (symbols.length === 0) {
+    return (
+      <Typography variant="body2" color="text.secondary" component="span">
+        No cost
+      </Typography>
+    );
+  }
+  
+  return <ManaSequence sequence={symbols} size="small" />;
+});
 
-  return (
-    <>
-      {symbols.map(({ key, color, bgColor, textContent }) => (
-        <Box
-          key={key}
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 20,
-            height: 20,
-            borderRadius: '50%',
-            fontSize: '10px',
-            fontWeight: 'bold',
-            border: '1px solid #ccc',
-            color,
-            backgroundColor: bgColor,
-            flexShrink: 0
-          }}
-        >
-          {textContent}
-        </Box>
-      ))}
-    </>
-  )
+// Memoized mana symbols renderer (legacy pour compatibilité)
+const ManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
+  // Utiliser nos nouveaux symboles légaux
+  return <ScryfallManaSymbols manaCost={manaCost} />;
 })
 
+ScryfallManaSymbols.displayName = 'ScryfallManaSymbols'
 ManaSymbols.displayName = 'ManaSymbols'
 
 // Memoized probability calculator
@@ -489,16 +460,23 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
           {/* Card Name & Quantity */}
           <Grid item xs={12} sm={3}>
             <Tooltip title={`${cardName} - ${cardData?.type_line || 'Unknown type'}`} arrow>
-              <Typography 
-                variant="body2" 
-                fontWeight="600"
-                sx={{ 
-                  cursor: 'pointer',
-                  '&:hover': { color: 'var(--mtg-blue)' }
-                }}
-              >
-                {quantity}x {cardName}
-              </Typography>
+              <Box>
+                <Typography 
+                  variant="body2" 
+                  fontWeight="600"
+                  sx={{ 
+                    cursor: 'pointer',
+                    '&:hover': { color: 'var(--mtg-blue)' }
+                  }}
+                >
+                  {quantity}x {cardData?.name || cardName}
+                </Typography>
+                {cardData?.mana_cost && (
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    Cost: {cardData.mana_cost}
+                  </Typography>
+                )}
+              </Box>
             </Tooltip>
           </Grid>
 
