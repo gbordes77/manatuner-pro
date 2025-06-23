@@ -489,7 +489,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
           {/* Mana Cost */}
           <Grid item xs={12} sm={3}>
             <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap">
-              <ManaSymbols manaCost={cardData?.mana_cost || getSimulatedManaCost(cardName)} />
+              <ManaSymbols manaCost={cardData?.mana_cost || ''} />
               <Typography variant="caption" color="text.secondary" ml={1}>
                 CMC: {cardData?.cmc || 2}
               </Typography>

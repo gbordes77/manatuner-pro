@@ -62,23 +62,18 @@ const convertScryfallCard = (scryfallCard: ScryfallCard): Card => {
   return {
     id: scryfallCard.id,
     name: scryfallCard.name,
-    manaCost: scryfallCard.mana_cost || undefined,
+    mana_cost: scryfallCard.mana_cost || undefined,
     cmc: scryfallCard.cmc,
     colors: scryfallCard.colors,
-    colorIdentity: scryfallCard.color_identity,
-    type: scryfallCard.type_line,
-    types: scryfallCard.type_line.split(' — ')[0].split(' '),
-    subtypes: scryfallCard.type_line.includes(' — ') 
-      ? scryfallCard.type_line.split(' — ')[1].split(' ')
-      : undefined,
+    color_identity: scryfallCard.color_identity,
+    type_line: scryfallCard.type_line,
     rarity: scryfallCard.rarity,
-    setCode: scryfallCard.set,
+    set: scryfallCard.set,
+    set_name: scryfallCard.set || 'Unknown',
+    legalities: {},
     imageUris: scryfallCard.image_uris,
-    faces: scryfallCard.card_faces?.map(convertScryfallCard),
-    layout: scryfallCard.layout,
-    isLand,
-    producedMana: scryfallCard.produced_mana
-  }
+    layout: scryfallCard.layout
+  } as Card
 }
 
 /**
@@ -102,7 +97,7 @@ const scryfallRequest = async <T>(endpoint: string): Promise<T> => {
 }
 
 /**
- * Recherche une carte by name
+ * Recherche une carte by name avec fallbacks intelligents
  */
 export const searchCardByName = async (name: string): Promise<Card | null> => {
   const cacheKey = name.toLowerCase().trim()
@@ -111,18 +106,35 @@ export const searchCardByName = async (name: string): Promise<Card | null> => {
     return cardCache.get(cacheKey)!
   }
   
-  try {
-    const encodedName = encodeURIComponent(name)
-    const response = await scryfallRequest<ScryfallCard>(`/cards/named?fuzzy=${encodedName}`)
-    
-    const card = convertScryfallCard(response)
-    cardCache.set(cacheKey, card)
-    
-    return card
-  } catch (error) {
-    console.warn(`Card not found: ${name}`, error)
-    return null
+  // Liste des variantes à essayer
+  const nameVariants = [
+    name.trim(),
+    name.replace(/'/g, "'"), // Apostrophe droite → courbe
+    name.replace(/'/g, "'"), // Apostrophe courbe → droite  
+    name.replace(/['']/g, ""), // Supprimer apostrophes
+    name.replace(/,/g, ""), // Supprimer virgules
+    name.replace(/\s+/g, " ").trim() // Normaliser espaces
+  ]
+  
+  for (const variant of nameVariants) {
+    try {
+      console.log(`🔍 Tentative Scryfall: "${variant}"`)
+      const encodedName = encodeURIComponent(variant)
+      const response = await scryfallRequest<ScryfallCard>(`/cards/named?fuzzy=${encodedName}`)
+      
+      const card = convertScryfallCard(response)
+      cardCache.set(cacheKey, card)
+      
+      console.log(`✅ Trouvé: "${variant}" → ${card.name}`)
+      return card
+    } catch (error) {
+      console.log(`❌ Échec: "${variant}"`)
+      continue
+    }
   }
+  
+  console.warn(`🚫 Aucune variante trouvée pour: "${name}"`)
+  return null
 }
 
 /**
