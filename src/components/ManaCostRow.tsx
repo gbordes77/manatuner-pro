@@ -366,11 +366,17 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
       setError(null)
       
       try {
+        console.log(`🔍 Recherche Scryfall pour: "${cardName}"`)
         const data = await searchCardByName(cardName)
+        console.log(`📋 Résultat Scryfall:`, data)
         setCardData(data)
+        
+        if (!data) {
+          console.warn(`⚠️ Aucune donnée trouvée pour: "${cardName}"`)
+        }
       } catch (err) {
         setError('Failed to fetch card data')
-        console.error('Erreur lors de la récupération des données de carte:', err)
+        console.error('❌ Erreur lors de la récupération des données de carte:', err)
       } finally {
         setLoading(false)
       }
@@ -483,7 +489,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
           {/* Mana Cost */}
           <Grid item xs={12} sm={3}>
             <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap">
-              <ManaSymbols manaCost={cardData?.mana_cost || ''} />
+              <ManaSymbols manaCost={cardData?.mana_cost || getSimulatedManaCost(cardName)} />
               <Typography variant="caption" color="text.secondary" ml={1}>
                 CMC: {cardData?.cmc || 2}
               </Typography>

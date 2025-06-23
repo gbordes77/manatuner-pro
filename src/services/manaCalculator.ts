@@ -64,7 +64,7 @@ export const calculateProbabilityByTurn = (
   const results: Array<{ turn: number; probability: number }> = [];
   
   // Compter les terrains dans le deck
-  const totalLands = deck.cards.filter(card => 
+  const landCountForTurn = deck.cards.filter(card => 
     card.name.includes('Mountain') || 
     card.name.includes('Island') || 
     card.name.includes('Plains') || 
@@ -78,7 +78,7 @@ export const calculateProbabilityByTurn = (
     const cardsSeen = 7 + turn - 1;
     const probability = calculator.cumulativeHypergeometric(
       deck.totalCards,
-      totalLands,
+      landCountForTurn,
       cardsSeen,
       1 // Au moins 1 source
     );
