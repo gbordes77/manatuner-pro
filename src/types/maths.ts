@@ -124,7 +124,8 @@ export const MAGIC_CONSTANTS = {
   CONFIDENCE_LEVEL: 0.95        // 95% confidence intervals
 } as const
 
-// Karsten's lookup tables for optimal sources
+// Karsten's lookup tables for optimal sources (2022 Update)
+// Source: https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/
 export const KARSTEN_TABLES: Record<number, Record<number, number>> = {
   // Sources needed for X colored symbols by turn Y (90% probability)
   1: { // Single colored symbol (e.g., R, 1B, 2W)

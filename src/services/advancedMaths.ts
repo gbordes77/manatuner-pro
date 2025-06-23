@@ -14,6 +14,7 @@ import {
   MAGIC_CONSTANTS,
   KARSTEN_TABLES,
   type MultivariateAnalysis,
+  type ColorCombinationAnalysis,
   type SimulationState,
   type MulliganDecision,
   type CalculationMetrics,
@@ -153,9 +154,10 @@ export class AdvancedMathEngine {
     onThePlay: boolean = true,
     handSize: number = 7
   ): TurnAnalysis {
-    // CRITICAL: Frank Karsten always uses handSize + turn - 1
-    // The -1 accounts for not drawing on the first turn
-    const cardsDrawn = handSize + turn - 1
+    // CRITICAL: Frank Karsten formula for cards seen
+    // On the play: handSize + turn - 1
+    // On the draw: handSize + turn (extra card on first turn)
+    const cardsDrawn = onThePlay ? handSize + turn - 1 : handSize + turn
 
     const probabilityResult = this.cumulativeHypergeometric({
       populationSize: deckSize,
@@ -427,7 +429,7 @@ export class AdvancedMathEngine {
     deckConfig: DeckConfiguration,
     colorRequirements: ColorRequirement[]
   ): MultivariateAnalysis {
-    const combinations: any[] = []
+    const colorCombinations: ColorCombinationAnalysis[] = []
     let overallConsistency = 1
     const bottleneckColors: ManaColor[] = []
     const recommendations: string[] = []
@@ -441,7 +443,7 @@ export class AdvancedMathEngine {
         requirement.intensity
       )
       
-      combinations.push({
+      colorCombinations.push({
         colors: [requirement.color],
         probability: analysis.castProbability,
         sources: requirement.sources,
@@ -465,7 +467,7 @@ export class AdvancedMathEngine {
     const optimalManabase = this.generateOptimalManabase(deckConfig, colorRequirements)
     
     return {
-      colorCombinations: combinations,
+      colorCombinations,
       overallConsistency,
       bottleneckColors,
       recommendations,
@@ -571,6 +573,9 @@ export class AdvancedMathEngine {
 
 // Export default instance for compatibility
 export const advancedMathEngine = new AdvancedMathEngine()
+
+// Add missing methods to instance for test compatibility
+;(advancedMathEngine as any).calculateHypergeometric = advancedMathEngine.cumulativeHypergeometric.bind(advancedMathEngine)
 
 // Export compatibility methods for existing tests
 export const calculateHypergeometric = (params: HypergeometricParams) => 
