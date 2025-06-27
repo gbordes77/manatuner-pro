@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <meta name="theme-color" content="#1976d2" />
     <meta name="description" content="ManaTuner Pro - Advanced MTG Manabase Analysis Tool - Calculate optimal mana bases for Magic: The Gathering decks" />
     <title>ManaTuner Pro - MTG Manabase Analyzer</title>
@@ -21,9 +21,25 @@
     <link rel="dns-prefetch" href="https://api.scryfall.com" />
     
     <style>
+      /* Critical CSS - Responsive fixes */
+      * {
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      
       /* Critical CSS - Loading state */
       #root {
         min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
