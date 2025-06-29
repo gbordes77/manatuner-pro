@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManaTuner Pro – Mathématiques expliquées</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #181c24; color: #f3f3f3; margin: 0; padding: 0; }
+    .container { max-width: 800px; margin: 40px auto; background: #23283a; border-radius: 12px; box-shadow: 0 4px 24px #0008; padding: 32px; }
+    h1, h2 { color: #7ec4fa; }
+    a { color: #ffd700; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: #222; color: #ffd700; padding: 2px 6px; border-radius: 4px; }
+    .exemple { background: #1a1e2a; border-left: 4px solid #7ec4fa; margin: 1em 0; padding: 1em; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Principes mathématiques de ManaTuner Pro</h1>
+    <p>ManaTuner Pro s'appuie sur des outils mathématiques puissants pour analyser la cohérence d'une manabase :</p>
+    <h2>1. Distribution hypergéométrique</h2>
+    <p>Permet de calculer la probabilité de piocher un certain nombre de terrains (ou de sources de couleur) dans une main de départ ou sur plusieurs tours.</p>
+    <div class="exemple">
+      <strong>Exemple :</strong> <br>
+      <em>Vous avez 24 terrains dans un deck de 60 cartes. Quelle est la probabilité d'en avoir au moins 2 dans une main de 7 ?</em><br>
+      <code>P(X ≥ 2) = 1 - P(0) - P(1)</code> <br>
+      (où P(k) = proba d'avoir exactement k terrains, calculée par la formule hypergéométrique)
+    </div>
+    <h2>2. Simulation Monte Carlo</h2>
+    <p>On simule des milliers de parties pour estimer la probabilité d'atteindre une couleur ou un nombre de terrains à un tour donné.</p>
+    <div class="exemple">
+      <strong>Exemple :</strong> <br>
+      <em>Simuler 10 000 mains pour voir combien permettent de lancer un sort à 3 manas rouges au tour 3.</em>
+    </div>
+    <h2>3. Méthode Frank Karsten</h2>
+    <p>Utilisation des tables et recommandations issues de l'article <a href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/" target="_blank">TCGPlayer 2022 – Frank Karsten</a> pour déterminer le nombre optimal de sources de couleur.</p>
+    <div class="exemple">
+      <strong>Exemple :</strong> <br>
+      <em>Pour lancer un sort à double bleu au tour 3 dans un deck de 60 cartes, il faut au moins 18 sources bleues pour 90% de fiabilité.</em>
+    </div>
+    <h2>4. Analyse multicolore et fetchlands</h2>
+    <p>Le moteur prend en compte les terrains spéciaux (fetchlands, duals) et analyse la cohérence pour chaque couleur.</p>
+    <div class="exemple">
+      <strong>Exemple :</strong> <br>
+      <em>Un fetchland qui peut chercher une île ou une montagne compte comme une source pour chaque couleur concernée.</em>
+    </div>
+    <p style="margin-top:2em;"><a href="project-overview.html">&#8592; Retour à l'accueil</a></p>
+  </div>
+</body>
+</html> 
