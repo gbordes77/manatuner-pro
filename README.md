@@ -362,4 +362,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-**🎉 Ready to optimize your manabase with mathematical precision? [Start analyzing now!](https://manatuner-pro.vercel.app)** 
+**🎉 Ready to optimize your manabase with mathematical precision? [Start analyzing now!](https://manatuner-pro.vercel.app)**
+
+// Trigger redeploy: 2025-06-28 
