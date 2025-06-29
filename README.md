@@ -7,9 +7,9 @@
 
 **🔗 Live Application**: [https://manatuner-pro.vercel.app](https://manatuner-pro.vercel.app) ✅ **LIVE**
 
----
+<!-- Vercel Sync Trigger: 2025-06-29 15:45 -->
 
-## 🎯 What is ManaTuner Pro?
+## 🎯 Project Overview
 
 ManaTuner Pro is an **advanced manabase analyzer** for Magic: The Gathering based on **Frank Karsten's mathematical research**. It helps competitive players optimize their manabases with scientific precision.
 
