@@ -9,6 +9,7 @@ import { CircularProgress, Box } from '@mui/material'
 import { store, persistor } from './store'
 import App from './App'
 import './styles/index.css'
+import './styles/ux-improvements.css'
 
 // Configure React Query client with performance optimizations
 const queryClient = new QueryClient({

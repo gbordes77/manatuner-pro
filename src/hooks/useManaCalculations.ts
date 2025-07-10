@@ -107,7 +107,7 @@ export const useManaCalculationsWithWorker = ({
     queryFn: async (): Promise<AnalysisResult> => {
       return new Promise((resolve, reject) => {
         // Create Web Worker for heavy calculations
-        const worker = new Worker('/workers/manaCalculator.worker.js');
+        const worker = new Worker(new URL('/workers/manaCalculator.worker.js', import.meta.url));
         
         worker.postMessage({ deckList });
         

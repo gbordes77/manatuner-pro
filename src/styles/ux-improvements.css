@@ -1,0 +1,143 @@
+/* 🎨 UX IMPROVEMENTS - ManaTuner Pro
+ * Basé sur l'audit UX/UI avec corrections techniques
+ * Risque : MINIMAL - CSS uniquement
+ */
+
+/* ✅ Amélioration du contraste (WCAG AA) */
+.MuiFormHelperText-root {
+  color: #52525B !important; /* au lieu de #71717A */
+}
+
+.MuiTypography-body2 {
+  color: #52525B !important;
+}
+
+/* ✅ Focus amélioré pour l'accessibilité */
+.MuiTextField-root .MuiOutlinedInput-root {
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root:focus-within {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  border-color: #3b82f6;
+}
+
+.MuiButton-root:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ✅ Animations fluides pour les états de loading */
+.analyzing-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ✅ Progressive disclosure améliorée */
+.progressive-disclosure {
+  transition: all 0.3s ease-in-out;
+}
+
+.progressive-disclosure-content {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.progressive-disclosure-content.open {
+  opacity: 1;
+  max-height: 1000px;
+}
+
+/* ✅ Feedback visuel pour les erreurs de validation */
+.validation-error {
+  border-left: 4px solid #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+  padding: 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.validation-success {
+  border-left: 4px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+  padding: 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+/* ✅ Améliorations mobile */
+@media (max-width: 768px) {
+  .MuiTextField-root .MuiOutlinedInput-root {
+    font-size: 16px; /* Évite le zoom sur iOS */
+  }
+  
+  .mobile-optimized {
+    padding: 8px !important;
+  }
+  
+  .mobile-stack {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* ✅ Skeleton loaders pour le feedback immédiat */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ✅ Tooltips améliorés */
+.enhanced-tooltip {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  font-size: 0.875rem !important;
+  max-width: 300px !important;
+  padding: 8px 12px !important;
+}
+
+/* ✅ Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.status-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.status-error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+} 

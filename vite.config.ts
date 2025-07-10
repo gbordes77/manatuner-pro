@@ -115,23 +115,12 @@ export default defineConfig({
     }
   },
   build: {
-    target: 'esnext',
+    target: 'es2015',
     minify: 'terser',
-    sourcemap: true, // Enable for debugging
+    sourcemap: false, // Disable for production
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core vendor chunk
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          // UI library chunk
-          material: ['@mui/material', '@mui/icons-material', '@mui/system'],
-          // Charts chunk for analysis visualizations
-          charts: ['recharts'],
-          // Redux state management
-          store: ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
-          // Firebase/backend services (if used)
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/functions']
-        }
+        manualChunks: undefined // Let Vite handle chunking automatically
       }
     },
     // Build optimizations

@@ -378,7 +378,10 @@ const AnalyzerPage: React.FC = () => {
         py: isSmallMobile ? 1 : isMobile ? 2 : 4,
         px: isSmallMobile ? 0.5 : isMobile ? 1 : 3,
         width: '100%',
-        overflowX: 'hidden'
+        maxWidth: '100% !important',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
+        margin: '0 auto'
       }}
     >
       {/* Header */}
@@ -438,10 +441,15 @@ const AnalyzerPage: React.FC = () => {
         spacing={isSmallMobile ? 1 : isMobile ? 2 : 4}
         sx={{ 
           width: '100%',
+          maxWidth: '100%',
           margin: 0,
+          overflowX: 'hidden',
+          boxSizing: 'border-box',
           '& .MuiGrid-item': {
             paddingLeft: isSmallMobile ? '4px !important' : undefined,
-            paddingTop: isSmallMobile ? '4px !important' : undefined
+            paddingTop: isSmallMobile ? '4px !important' : undefined,
+            maxWidth: '100%',
+            boxSizing: 'border-box'
           }
         }}
       >

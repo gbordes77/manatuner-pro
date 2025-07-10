@@ -18,7 +18,8 @@ import {
   LightMode as LightModeIcon,
   MenuBook as GuideIcon,
   History as HistoryIcon,
-  Lock as LockIcon
+  Lock as LockIcon,
+  Functions as FunctionsIcon
 } from '@mui/icons-material'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { useTheme } from '../common/NotificationProvider'
@@ -33,6 +34,7 @@ export const Header: React.FC = () => {
     { label: 'Home', path: '/' },
     { label: 'Analyzer', path: '/analyzer' },
     { label: 'Guide', path: '/guide' },
+    { label: 'Mathematics', path: '/mathematics' },
     { label: 'My Analyses', path: '/mes-analyses', icon: HistoryIcon },
     { label: 'Privacy-First', path: '/privacy-first', icon: LockIcon },
     { label: 'About', path: '/about' }
@@ -70,6 +72,7 @@ export const Header: React.FC = () => {
                 variant={location.pathname === item.path ? 'outlined' : 'text'}
                 startIcon={
                   item.path === '/guide' ? <GuideIcon /> :
+                  item.path === '/mathematics' ? <FunctionsIcon /> :
                   item.path === '/mes-analyses' ? <HistoryIcon /> :
                   item.path === '/privacy-first' ? <LockIcon /> :
                   undefined

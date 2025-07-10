@@ -20,12 +20,35 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 #root {
   width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
   min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Fix Material-UI container overflow */
+.MuiContainer-root {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.MuiGrid-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.MuiGrid-item {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Tables responsive */
@@ -70,12 +93,39 @@ html, body {
   }
   
   .MuiContainer-root {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
   
   .MuiPaper-root {
     margin: 4px 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Fix input fields on mobile */
+  .MuiTextField-root {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .MuiTextField-root .MuiOutlinedInput-root {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Additional mobile fixes */
+@media (max-width: 480px) {
+  * {
+    max-width: 100vw !important;
+    box-sizing: border-box;
+  }
+  
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
   }
 }
 

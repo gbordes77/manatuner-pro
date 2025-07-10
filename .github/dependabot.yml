@@ -13,9 +13,11 @@ updates:
     assignees:
       - "gbordes77"
     commit-message:
-      prefix: "⬆️"
-      prefix-development: "⬆️ dev"
+      prefix: "deps"
       include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -30,5 +32,8 @@ updates:
     assignees:
       - "gbordes77"
     commit-message:
-      prefix: "🔧"
-      include: "scope" 
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "automated" 

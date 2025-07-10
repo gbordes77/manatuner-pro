@@ -30,6 +30,9 @@ export const Footer: React.FC = () => {
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               © 2024 ManaTuner Pro. Open source under MIT License.
             </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+              This project is not affiliated with Wizards of the Coast. Magic: The Gathering is a trademark of Wizards of the Coast LLC.
+            </Typography>
           </Grid>
           
           <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
