@@ -9,7 +9,8 @@ export default defineConfig({
       'playwright-core',
       '@playwright/test',
       'chromium-bidi',
-      'framer-motion'
+      'framer-motion',
+      'fsevents'
     ],
     include: [
       'react',
@@ -22,15 +23,17 @@ export default defineConfig({
     noExternal: []
   },
   build: {
-    target: 'es2015',
+    target: 'es2020',
     minify: 'esbuild',
     cssMinify: true,
+    sourcemap: false,
     rollupOptions: {
       external: [
         'playwright',
         'playwright-core',
         '@playwright/test',
-        'chromium-bidi'
+        'chromium-bidi',
+        'fsevents'
       ],
       output: {
         manualChunks: {
@@ -40,7 +43,8 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1500,
+    outDir: 'dist'
   },
   test: {
     globals: true,
@@ -59,9 +63,14 @@ export default defineConfig({
     }
   },
   define: {
-    global: 'globalThis'
+    global: 'globalThis',
+    'process.env.NODE_ENV': '"production"'
   },
   esbuild: {
-    drop: ['console', 'debugger']
-  }
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    logOverride: {
+      'use client': 'silent'
+    }
+  },
+  logLevel: process.env.NODE_ENV === 'production' ? 'warn' : 'info'
 }) 
