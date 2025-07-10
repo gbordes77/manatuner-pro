@@ -47,14 +47,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "ignore": [
-    "node_modules/**",
-    ".git/**",
-    "tests/**",
-    "test-results/**",
-    "playwright-report/**",
-    ".env.local",
-    ".env.*.local"
   ]
 } 
