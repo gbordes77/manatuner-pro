@@ -98,7 +98,7 @@
     "eslint": "^8.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
-    "firebase-tools": "^11.25.1",
+    "firebase-tools": "^14.12.1",
     "jest": "^30.0.1",
     "jsdom": "^26.1.0",
     "ts-jest": "^29.4.0",
