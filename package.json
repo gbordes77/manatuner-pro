@@ -50,7 +50,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@hookform/resolvers": "^2.9.11",
-    "@mui/icons-material": "^5.11.9",
+    "@mui/icons-material": "^7.3.1",
     "@mui/lab": "^5.0.0-alpha.120",
     "@mui/material": "^5.11.10",
     "@mui/x-charts": "^6.0.0",
