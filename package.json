@@ -95,7 +95,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "@vitest/ui": "^0.29.2",
     "c8": "^7.13.0",
-    "eslint": "^8.35.0",
+    "eslint": "^9.37.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
     "firebase-tools": "^11.25.1",
