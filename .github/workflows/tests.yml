@@ -100,7 +100,7 @@ jobs:
         run: npx playwright test tests/e2e/tabs/
       
       - name: Upload des rapports Playwright
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report-e2e
@@ -134,7 +134,7 @@ jobs:
         run: npx playwright test tests/e2e/responsive/
       
       - name: Upload screenshots responsivité
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: responsive-screenshots
@@ -168,7 +168,7 @@ jobs:
         run: npx playwright test tests/e2e/accessibility/
       
       - name: Upload rapport accessibilité
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: accessibility-report
@@ -202,7 +202,7 @@ jobs:
         run: npx playwright test tests/e2e/performance/
       
       - name: Upload métriques performance
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: performance-metrics
@@ -239,7 +239,7 @@ jobs:
         run: npx playwright test --project=${{ matrix.browser }} tests/e2e/tabs/
       
       - name: Upload rapport ${{ matrix.browser }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: ${{ matrix.browser }}-report
