@@ -1,7 +1,7 @@
 # ManaTuner Pro - Refonte du Système de Gestion des Terrains
 
-**Version**: 1.0  
-**Date**: 25 décembre 2025  
+**Version**: 1.1  
+**Date**: 25 décembre 2025 (mis à jour)  
 **Auteur**: Analyse IA approfondie (mode ultrathink)  
 **Statut**: Proposition - En attente d'approbation
 
@@ -38,7 +38,7 @@ Le système actuel de ManaTuner Pro **ignore le tempo** dans ses calculs de prob
 
 Refonte complète du système de détection et calcul avec :
 - Prise en compte du **tempo** (ETB tapped/untapped)
-- **Base de données exhaustive** de 200+ terrains
+- **Système de cache hybride** : Scryfall API + localStorage (auto-mise à jour)
 - **Calculs probabilistes par tour** avec pondération
 - Support des **MDFC** (Pathways) et autres cas complexes
 
@@ -46,8 +46,8 @@ Refonte complète du système de détection et calcul avec :
 
 | Phase | Durée | Complexité |
 |-------|-------|------------|
-| Types & Data | 1 jour | Moyenne |
-| Service unifié | 2 jours | Haute |
+| Types & Cache System | 1 jour | Moyenne |
+| Service unifié + API | 2 jours | Haute |
 | Calculs tempo | 2 jours | Haute |
 | Tests & Cleanup | 1 jour | Moyenne |
 | **Total** | **6 jours** | |
@@ -713,91 +713,246 @@ export function calculateTempoAwareProbability(
 }
 ```
 
-### 6.4 Base de Données de Lands
+### 6.4 Système de Stockage Hybride
 
-```json
-// src/data/knownLands.json (extrait)
+#### Pourquoi pas un fichier JSON statique ?
 
+Un fichier JSON avec 200+ terrains nécessiterait une mise à jour manuelle à chaque nouvelle extension MTG (4-5 par an). Ce n'est pas viable pour un projet maintenu.
+
+#### Architecture de Cache Multi-Niveaux
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    LAND DETECTION FLOW                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. Cache Session (Map en mémoire)                              │
+│     └─► Hit? → Return immédiat (0ms)                            │
+│                                                                  │
+│  2. localStorage (persistant navigateur)                        │
+│     └─► Hit + données < 30 jours? → Return (~1ms)               │
+│                                                                  │
+│  3. Scryfall API (source de vérité)                             │
+│     └─► Fetch oracle_text + card_faces (~200ms)                 │
+│     └─► Analyser avec patterns regex                            │
+│     └─► Sauvegarder dans localStorage                           │
+│                                                                  │
+│  4. Fallback Patterns (si API échoue)                           │
+│     └─► Analyse nom de carte + type_line                        │
+│     └─► Confiance réduite (50%)                                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Structure localStorage
+
+```typescript
+// Clé: "manatuner_lands_cache"
+interface LandCacheStorage {
+  version: string           // "1.0" - pour migrations futures
+  lastCleanup: string       // ISO date du dernier nettoyage
+  lands: {
+    [cardName: string]: {
+      metadata: LandMetadata
+      fetchedAt: string     // ISO date
+      source: 'scryfall' | 'pattern' | 'seed'
+      expiresAt: string     // ISO date (fetchedAt + 30 jours)
+    }
+  }
+}
+
+// Exemple de données stockées
 {
-  "Plains": {
-    "name": "Plains",
-    "category": "basic",
-    "produces": ["W"],
-    "producesAny": false,
-    "etbBehavior": { "type": "always_untapped" },
-    "isFetch": false,
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "confidence": 100
-  },
+  "version": "1.0",
+  "lastCleanup": "2025-12-25T10:00:00Z",
+  "lands": {
+    "Hallowed Fountain": {
+      "metadata": {
+        "name": "Hallowed Fountain",
+        "category": "shock",
+        "produces": ["W", "U"],
+        "etbBehavior": {
+          "type": "conditional",
+          "condition": { "type": "pay_life", "amount": 2 }
+        },
+        "confidence": 98
+      },
+      "fetchedAt": "2025-12-25T10:00:00Z",
+      "source": "scryfall",
+      "expiresAt": "2026-01-24T10:00:00Z"
+    }
+  }
+}
+```
+
+#### Seed Optionnel (Accélération Premier Chargement)
+
+Un petit fichier JSON (~50 terrains les plus communs) peut être inclus pour accélérer le premier chargement. Ce n'est PAS la source de vérité, juste un cache initial.
+
+```typescript
+// src/data/landSeed.ts (optionnel, ~50 lands critiques)
+export const LAND_SEED: Partial<Record<string, LandMetadata>> = {
+  // 6 Basic Lands
+  'Plains': { category: 'basic', produces: ['W'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
+  'Island': { category: 'basic', produces: ['U'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
+  'Swamp': { category: 'basic', produces: ['B'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
+  'Mountain': { category: 'basic', produces: ['R'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
+  'Forest': { category: 'basic', produces: ['G'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
+  'Wastes': { category: 'basic', produces: ['C'], etbBehavior: { type: 'always_untapped' }, confidence: 100 },
   
-  "Hallowed Fountain": {
-    "name": "Hallowed Fountain",
-    "category": "shock",
-    "produces": ["W", "U"],
-    "producesAny": false,
-    "etbBehavior": {
-      "type": "conditional",
-      "condition": { "type": "pay_life", "amount": 2 }
-    },
-    "isFetch": false,
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "confidence": 100
-  },
+  // 10 Fetchlands (les plus joués)
+  'Flooded Strand': { category: 'fetch', produces: [], isFetch: true, fetchTargets: ['Plains', 'Island'], confidence: 100 },
+  'Polluted Delta': { category: 'fetch', produces: [], isFetch: true, fetchTargets: ['Island', 'Swamp'], confidence: 100 },
+  // ... 8 autres
   
-  "Seachrome Coast": {
-    "name": "Seachrome Coast",
-    "category": "fast",
-    "produces": ["W", "U"],
-    "producesAny": false,
-    "etbBehavior": {
-      "type": "conditional",
-      "condition": { "type": "control_lands_max", "threshold": 2 }
-    },
-    "isFetch": false,
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "confidence": 100
-  },
+  // 10 Shocklands
+  'Hallowed Fountain': { category: 'shock', produces: ['W', 'U'], etbBehavior: { type: 'conditional', condition: { type: 'pay_life', amount: 2 }}, confidence: 100 },
+  // ... 9 autres
+}
+```
+
+#### Avantages de l'Approche Hybride
+
+| Aspect | Bénéfice |
+|--------|----------|
+| **Toujours à jour** | Scryfall = source de vérité, nouvelles extensions automatiques |
+| **Fonctionne offline** | localStorage persiste les données entre sessions |
+| **Pas de maintenance** | Aucun fichier JSON à mettre à jour manuellement |
+| **Performance** | Cache mémoire + localStorage = réponse instantanée après 1er fetch |
+| **Robustesse** | Fallback patterns si API indisponible |
+| **Privacy-first** | Tout reste local, aucun serveur backend requis |
+
+#### Gestion du Cache
+
+```typescript
+// src/services/landCacheService.ts
+
+const CACHE_KEY = 'manatuner_lands_cache'
+const CACHE_TTL_DAYS = 30
+const CACHE_VERSION = '1.0'
+
+export class LandCacheService {
+  private memoryCache: Map<string, LandMetadata> = new Map()
   
-  "Flooded Strand": {
-    "name": "Flooded Strand",
-    "category": "fetch",
-    "produces": [],
-    "producesAny": false,
-    "etbBehavior": { "type": "always_untapped" },
-    "isFetch": true,
-    "fetchTargets": ["Plains", "Island"],
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "confidence": 100
-  },
+  /**
+   * Récupère un terrain du cache (mémoire → localStorage → null)
+   */
+  get(cardName: string): LandMetadata | null {
+    // 1. Memory cache (instant)
+    if (this.memoryCache.has(cardName)) {
+      return this.memoryCache.get(cardName)!
+    }
+    
+    // 2. localStorage
+    const storage = this.getStorage()
+    const cached = storage.lands[cardName]
+    
+    if (cached && !this.isExpired(cached.expiresAt)) {
+      // Populate memory cache
+      this.memoryCache.set(cardName, cached.metadata)
+      return cached.metadata
+    }
+    
+    return null
+  }
   
-  "Raffine's Tower": {
-    "name": "Raffine's Tower",
-    "category": "triome",
-    "produces": ["W", "U", "B"],
-    "producesAny": false,
-    "etbBehavior": { "type": "always_tapped" },
-    "isFetch": false,
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "confidence": 100
-  },
+  /**
+   * Stocke un terrain dans les deux niveaux de cache
+   */
+  set(cardName: string, metadata: LandMetadata, source: 'scryfall' | 'pattern' | 'seed'): void {
+    // Memory cache
+    this.memoryCache.set(cardName, metadata)
+    
+    // localStorage
+    const storage = this.getStorage()
+    const now = new Date()
+    const expiresAt = new Date(now.getTime() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000)
+    
+    storage.lands[cardName] = {
+      metadata,
+      fetchedAt: now.toISOString(),
+      source,
+      expiresAt: expiresAt.toISOString()
+    }
+    
+    this.saveStorage(storage)
+  }
   
-  "Cragcrown Pathway": {
-    "name": "Cragcrown Pathway",
-    "category": "pathway",
-    "produces": ["R"],
-    "producesAny": false,
-    "etbBehavior": { "type": "always_untapped" },
-    "isFetch": false,
-    "isCreatureLand": false,
-    "hasChannel": false,
-    "isMDFC": true,
-    "otherFace": "Timbercrown Pathway",
-    "confidence": 100
+  /**
+   * Nettoie les entrées expirées (appelé au démarrage)
+   */
+  cleanup(): void {
+    const storage = this.getStorage()
+    const now = new Date()
+    
+    for (const [name, entry] of Object.entries(storage.lands)) {
+      if (this.isExpired(entry.expiresAt)) {
+        delete storage.lands[name]
+      }
+    }
+    
+    storage.lastCleanup = now.toISOString()
+    this.saveStorage(storage)
+  }
+  
+  /**
+   * Statistiques du cache
+   */
+  getStats(): { total: number, bySource: Record<string, number>, memorySize: number } {
+    const storage = this.getStorage()
+    const bySource: Record<string, number> = {}
+    
+    for (const entry of Object.values(storage.lands)) {
+      bySource[entry.source] = (bySource[entry.source] || 0) + 1
+    }
+    
+    return {
+      total: Object.keys(storage.lands).length,
+      bySource,
+      memorySize: this.memoryCache.size
+    }
+  }
+  
+  private getStorage(): LandCacheStorage {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed.version === CACHE_VERSION) {
+          return parsed
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to read land cache:', e)
+    }
+    
+    // Return empty storage
+    return { version: CACHE_VERSION, lastCleanup: new Date().toISOString(), lands: {} }
+  }
+  
+  private saveStorage(storage: LandCacheStorage): void {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(storage))
+    } catch (e) {
+      console.warn('Failed to save land cache:', e)
+      // localStorage full? Clear old entries
+      this.emergencyCleanup()
+    }
+  }
+  
+  private isExpired(expiresAt: string): boolean {
+    return new Date(expiresAt) < new Date()
+  }
+  
+  private emergencyCleanup(): void {
+    // Keep only last 100 entries by fetchedAt
+    const storage = this.getStorage()
+    const entries = Object.entries(storage.lands)
+      .sort((a, b) => new Date(b[1].fetchedAt).getTime() - new Date(a[1].fetchedAt).getTime())
+      .slice(0, 100)
+    
+    storage.lands = Object.fromEntries(entries)
+    localStorage.setItem(CACHE_KEY, JSON.stringify(storage))
   }
 }
 ```
@@ -940,31 +1095,35 @@ Sources_Effectives(turn, color) = Σ pour chaque land L:
 
 ## 8. Plan d'Implémentation
 
-### Phase 1 : Types et Données (1 jour)
+### Phase 1 : Types et Système de Cache (1 jour)
 
 | Tâche | Fichier | Priorité |
 |-------|---------|----------|
-| Créer types LandMetadata | `src/types/lands.ts` | P0 |
-| Créer base 200+ lands | `src/data/knownLands.json` | P0 |
+| Créer types LandMetadata + LandCacheStorage | `src/types/lands.ts` | P0 |
+| Créer LandCacheService | `src/services/landCacheService.ts` | P0 |
+| Créer seed optionnel (~50 lands) | `src/data/landSeed.ts` | P2 |
 | Étendre interface Scryfall | `src/services/scryfall.ts` | P1 |
 
 **Livrables** :
-- Types TypeScript complets
-- JSON avec tous les Fetchlands, Shocklands, Fastlands, Checklands, Slowlands, Triomes, Pathways, Painlands, Horizon Lands
+- Types TypeScript complets (LandMetadata, LandCacheStorage, ETBCondition)
+- Service de cache multi-niveaux (mémoire + localStorage)
+- Seed optionnel avec Basic Lands, Fetchlands, Shocklands
 
-### Phase 2 : Service Unifié (2 jours)
+### Phase 2 : Service Unifié + Intégration API (2 jours)
 
 | Tâche | Fichier | Priorité |
 |-------|---------|----------|
-| Créer LandService | `src/services/landService.ts` | P0 |
+| Créer LandService (orchestrateur) | `src/services/landService.ts` | P0 |
+| Intégrer LandCacheService | `src/services/landService.ts` | P0 |
 | Implémenter détection MDFC | `src/services/landService.ts` | P0 |
 | Implémenter patterns Oracle | `src/services/landService.ts` | P0 |
-| Ajouter cache LRU | `src/services/landService.ts` | P1 |
+| Étendre fetchCardData pour oracle_text | `src/services/scryfall.ts` | P1 |
 
 **Livrables** :
-- Service de détection unifié
-- Support MDFC complet
+- Service de détection unifié avec cache hybride
+- Support MDFC complet (Pathways, etc.)
 - 12 patterns de détection ETB
+- Intégration Scryfall avec oracle_text et card_faces
 
 ### Phase 3 : Calculs Tempo (2 jours)
 
@@ -1099,9 +1258,11 @@ describe('Tempo-Aware Calculations', () => {
 
 | Risque | Probabilité | Impact | Mitigation |
 |--------|-------------|--------|------------|
-| API Scryfall rate limit | Moyenne | Moyen | Cache LRU + bulk data |
-| MDFC non détectés | Haute | Haut | Tests exhaustifs + fallback |
-| Performance dégradée | Basse | Moyen | Mémoïsation + lazy loading |
+| API Scryfall rate limit | Basse | Moyen | Cache localStorage (30 jours) + rate limiting client |
+| API Scryfall indisponible | Basse | Moyen | Fallback patterns + seed initial |
+| localStorage plein | Très basse | Faible | emergencyCleanup() garde 100 derniers |
+| MDFC non détectés | Moyenne | Haut | Tests exhaustifs + fallback |
+| Performance dégradée | Très basse | Moyen | Cache mémoire + localStorage = instant |
 | Régression calculs existants | Moyenne | Haut | Tests de non-régression |
 
 ### 10.2 Risques Fonctionnels
@@ -1122,9 +1283,23 @@ describe('Tempo-Aware Calculations', () => {
 
 ## Annexes
 
-### A. Liste Complète des 200+ Terrains
+### A. Terrains Gérés Automatiquement
 
-*(À générer dans knownLands.json)*
+Grâce à l'approche hybride (Scryfall API + localStorage), **tous les terrains sont gérés automatiquement**, y compris ceux des futures extensions.
+
+**Seed Initial (~50 terrains critiques)** :
+- 6 Basic Lands (Plains, Island, Swamp, Mountain, Forest, Wastes)
+- 10 Fetchlands (Flooded Strand, Polluted Delta, etc.)
+- 10 Shocklands (Hallowed Fountain, Watery Grave, etc.)
+- 10 Fastlands (Seachrome Coast, Darkslick Shores, etc.)
+- 5 Triomes les plus joués (Raffine's Tower, Spara's Headquarters, etc.)
+- 10 Pathways (Brightclimb Pathway, Clearwater Pathway, etc.)
+
+**Terrains détectés dynamiquement via Scryfall** :
+- Slowlands, Checklands, Battle Lands, Painlands
+- Horizon Lands, Filter Lands, Reveal Lands
+- Creature Lands, Channel Lands
+- Tous les terrains des nouvelles extensions
 
 ### B. Références
 
