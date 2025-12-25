@@ -202,7 +202,7 @@ const PrivacyFirstPage: React.FC = () => {
               2. Instant analysis
             </Typography>
             <Typography variant="body1">
-              Your deck is analyzed locally using Frank Karsten's mathematics.
+              Your deck is analyzed locally using advanced probability mathematics.
               Nothing is sent to any server.
             </Typography>
           </Box>
