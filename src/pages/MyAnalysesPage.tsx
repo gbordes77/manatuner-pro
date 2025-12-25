@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
 import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Alert,
-  Button
-} from '@mui/material'
-import {
-  Code as CodeIcon
+    Code as CodeIcon
 } from '@mui/icons-material'
-import { getUserCode, getMyAnalyses, exportAnalyses, clearAllLocalData } from '../lib/privacy'
+import {
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Container,
+    Typography
+} from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import CloudSyncSettings from '../components/CloudSyncSettings'
+import { clearAllLocalData, exportAnalyses, getMyAnalyses, getUserCode } from '../lib/privacy'
 
 const MyAnalysesPage: React.FC = () => {
   const [userCode] = useState(() => getUserCode())
@@ -30,7 +30,7 @@ const MyAnalysesPage: React.FC = () => {
       </Typography>
 
       {/* Cloud Sync Settings */}
-      <CloudSyncSettings 
+      <CloudSyncSettings
         onSyncModeChange={(enabled) => {
           console.log('Cloud sync mode changed:', enabled)
           // You can add additional logic here if needed
@@ -71,7 +71,7 @@ const MyAnalysesPage: React.FC = () => {
               <Typography variant="body1" color="text.secondary">
                 {analyses.length} analysis(es) found in local storage.
               </Typography>
-              
+
               <Box mt={2} display="flex" gap={2} flexWrap="wrap">
                 <Button
                   variant="outlined"
@@ -112,4 +112,4 @@ const MyAnalysesPage: React.FC = () => {
   )
 }
 
-export default MyAnalysesPage 
+export default MyAnalysesPage

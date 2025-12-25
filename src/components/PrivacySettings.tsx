@@ -1,42 +1,42 @@
 import {
-  Close as CloseIcon,
-  ContentCopy as CopyIcon,
-  DeleteForever as DeleteIcon,
-  Download as DownloadIcon,
-  Info as InfoIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
-  Security as SecurityIcon,
-  Shield as ShieldIcon,
-  Upload as UploadIcon,
-  Verified as VerifiedIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
+    Close as CloseIcon,
+    ContentCopy as CopyIcon,
+    DeleteForever as DeleteIcon,
+    Download as DownloadIcon,
+    Info as InfoIcon,
+    Lock as LockIcon,
+    Public as PublicIcon,
+    Security as SecurityIcon,
+    Shield as ShieldIcon,
+    Upload as UploadIcon,
+    Verified as VerifiedIcon,
+    Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon,
 } from "@mui/icons-material";
 import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControlLabel,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Snackbar,
-  Switch,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Snackbar,
+    Switch,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { PrivacyStorage } from "../lib/privacy";
@@ -139,12 +139,15 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             ? "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)"
             : "linear-gradient(135deg, #059669 0%, #10b981 100%)",
           color: "white",
+          "& .MuiTypography-root": { color: "white" },
+          "& .MuiListItemText-primary": { color: "white" },
+          "& .MuiAlert-message": { color: "white" },
         }}
       >
         <CardContent>
           <Box display="flex" alignItems="center" gap={2} mb={2}>
             {isPrivate ? <LockIcon /> : <PublicIcon />}
-            <Typography variant="h6" component="h2">
+            <Typography variant="h6" component="h2" sx={{ color: "white" }}>
               🔐 Privacy Settings
             </Typography>
           </Box>
@@ -167,7 +170,11 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             }
             label={
               <Box display="flex" alignItems="center" gap={1}>
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ color: "white" }}
+                >
                   {isPrivate ? "Private Mode Active" : "Public Mode"}
                 </Typography>
                 <Chip
@@ -194,7 +201,12 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           >
             {isPrivate ? (
               <>
-                <Typography variant="body2" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  gutterBottom
+                  sx={{ color: "white" }}
+                >
                   ✅ Your decks are protected
                 </Typography>
                 <List dense sx={{ mt: 1 }}>
@@ -204,8 +216,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                     </ListItemIcon>
                     <ListItemText
                       primary="Encrypted local storage only"
-                      primaryTypographyProps={{ variant: "body2" }}
-                      sx={{ color: "inherit" }}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        sx: { color: "white" },
+                      }}
                     />
                   </ListItem>
                   <ListItem sx={{ py: 0 }}>
@@ -214,8 +228,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                     </ListItemIcon>
                     <ListItemText
                       primary="No sensitive data sent to server"
-                      primaryTypographyProps={{ variant: "body2" }}
-                      sx={{ color: "inherit" }}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        sx: { color: "white" },
+                      }}
                     />
                   </ListItem>
                   <ListItem sx={{ py: 0 }}>
@@ -224,8 +240,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                     </ListItemIcon>
                     <ListItemText
                       primary="Zero-Knowledge Architecture"
-                      primaryTypographyProps={{ variant: "body2" }}
-                      sx={{ color: "inherit" }}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        sx: { color: "white" },
+                      }}
                     />
                   </ListItem>
                 </List>
@@ -259,7 +277,11 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               justifyContent="space-between"
               mb={1}
             >
-              <Typography variant="body2" fontWeight="bold">
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "white" }}
+              >
                 🎫 Your Personal Code
               </Typography>
               <Tooltip title={showUserCode ? "Hide code" : "Show code"}>
@@ -283,6 +305,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                   padding: "4px 8px",
                   borderRadius: 1,
                   letterSpacing: 1,
+                  color: "white",
                 }}
               >
                 {showUserCode ? userCode : "•••••-••••-••"}
@@ -301,7 +324,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
 
             <Typography
               variant="caption"
-              sx={{ opacity: 0.8, mt: 1, display: "block" }}
+              sx={{ color: "white", mt: 1, display: "block" }}
             >
               💡 Note this code to retrieve your analyses on any device
             </Typography>

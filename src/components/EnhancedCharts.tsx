@@ -1,34 +1,31 @@
+import {
+    Box,
+    Chip,
+    Grid,
+    Paper,
+    Typography,
+    useTheme
+} from '@mui/material';
 import React from 'react';
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Tooltip as MuiTooltip,
-  Chip,
-  useTheme
-} from '@mui/material';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Legend,
-  Area,
-  AreaChart
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    PolarAngleAxis,
+    PolarGrid,
+    PolarRadiusAxis,
+    Radar,
+    RadarChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from 'recharts';
 import { DeckAnalysis } from '../types';
 
@@ -171,13 +168,13 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="turn" 
+                <XAxis
+                  dataKey="turn"
                   stroke="#64748b"
                   fontSize={12}
                   tickFormatter={(value) => `T${value}`}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#64748b"
                   fontSize={12}
                   tickFormatter={(value) => `${value}%`}
@@ -221,8 +218,8 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomPieTooltip />} />
-                <Legend 
-                  verticalAlign="bottom" 
+                <Legend
+                  verticalAlign="bottom"
                   height={36}
                   formatter={(value, entry: any) => (
                     <span style={{ color: entry.color, fontWeight: 600 }}>
@@ -250,16 +247,16 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="cmc" 
+                <XAxis
+                  dataKey="cmc"
                   stroke="#64748b"
                   fontSize={12}
                   tickFormatter={(value) => value === 0 ? '0' : `${value}+`}
                 />
                 <YAxis stroke="#64748b" fontSize={12} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="count" 
+                <Bar
+                  dataKey="count"
                   fill="url(#curveGradient)"
                   radius={[4, 4, 0, 0]}
                   stroke="var(--mtg-green)"
@@ -279,13 +276,13 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
             <ResponsiveContainer width="100%" height="85%">
               <RadarChart data={prepareConsistencyData()}>
                 <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis 
-                  dataKey="metric" 
+                <PolarAngleAxis
+                  dataKey="metric"
                   tick={{ fontSize: 10, fill: '#64748b' }}
                 />
-                <PolarRadiusAxis 
-                  angle={90} 
-                  domain={[0, 100]} 
+                <PolarRadiusAxis
+                  angle={90}
+                  domain={[0, 100]}
                   tick={{ fontSize: 10, fill: '#64748b' }}
                 />
                 <Radar
@@ -313,23 +310,23 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
               <BarChart data={prepareMulliganData()} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={12} />
-                <YAxis 
-                  type="category" 
-                  dataKey="scenario" 
-                  stroke="#64748b" 
+                <YAxis
+                  type="category"
+                  dataKey="scenario"
+                  stroke="#64748b"
                   fontSize={12}
                   width={100}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="keep" 
+                <Bar
+                  dataKey="keep"
                   stackId="decision"
                   fill="var(--mtg-green)"
                   name="Keep"
                   radius={[0, 4, 4, 0]}
                 />
-                <Bar 
-                  dataKey="mulligan" 
+                <Bar
+                  dataKey="mulligan"
                   stackId="decision"
                   fill="var(--mtg-red)"
                   name="Mulligan"
@@ -352,9 +349,9 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="body2" color="text.secondary">
                   Overall Score
                 </Typography>
-                <Chip 
-                  label="Good" 
-                  size="small" 
+                <Chip
+                  label="Good"
+                  size="small"
                   className="mtg-chip good"
                   sx={{ mt: 1 }}
                 />
@@ -368,9 +365,9 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="body2" color="text.secondary">
                   Consistency
                 </Typography>
-                <Chip 
-                  label="Average" 
-                  size="small" 
+                <Chip
+                  label="Average"
+                  size="small"
                   className="mtg-chip average"
                   sx={{ mt: 1 }}
                 />
@@ -384,9 +381,9 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="body2" color="text.secondary">
                   Color Screw Risk
                 </Typography>
-                <Chip 
-                  label="Low" 
-                  size="small" 
+                <Chip
+                  label="Low"
+                  size="small"
                   className="mtg-chip excellent"
                   sx={{ mt: 1 }}
                 />
@@ -400,9 +397,9 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="body2" color="text.secondary">
                   Average CMC
                 </Typography>
-                <Chip 
-                  label="Optimal" 
-                  size="small" 
+                <Chip
+                  label="Optimal"
+                  size="small"
                   className="mtg-chip good"
                   sx={{ mt: 1 }}
                 />
@@ -415,4 +412,4 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
   );
 };
 
-export default EnhancedCharts; 
+export default EnhancedCharts;

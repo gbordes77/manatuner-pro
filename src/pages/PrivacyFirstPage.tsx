@@ -1,22 +1,22 @@
 import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  useMediaQuery,
-  useTheme,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Container,
+    Grid,
+    List,
+    ListItem,
+    ListItemText,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +87,7 @@ const PrivacyFirstPage: React.FC = () => {
       {/* Hero Section */}
       <Card
         sx={{
-          background: "linear-gradient(135deg, #0f3460 0%, #16213e 100%)",
+          bgcolor: "#2563eb",
           color: "white",
           textAlign: "center",
           py: 8,
@@ -119,7 +119,7 @@ const PrivacyFirstPage: React.FC = () => {
       </Card>
 
       {/* Privacy Promise */}
-      <Card sx={{ mb: 4, bgcolor: "#0f3460", color: "white" }}>
+      <Card sx={{ mb: 4, bgcolor: "#2563eb", color: "white" }}>
         <CardContent sx={{ p: 4 }}>
           <Typography
             variant="h4"
@@ -158,8 +158,8 @@ const PrivacyFirstPage: React.FC = () => {
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card
               sx={{
-                bgcolor: "#16213e",
-                color: "white",
+                bgcolor: "#dbeafe",
+                color: "#1e3a8a",
                 textAlign: "center",
                 p: 3,
                 height: "100%",
@@ -175,14 +175,14 @@ const PrivacyFirstPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 {feature.title}
               </Typography>
-              <Typography variant="body2">{feature.description}</Typography>
+              <Typography variant="body2" sx={{ color: "#1e3a8a" }}>{feature.description}</Typography>
             </Card>
           </Grid>
         ))}
       </Grid>
 
       {/* How it works */}
-      <Card sx={{ mb: 4, bgcolor: "#0f3460", color: "white" }}>
+      <Card sx={{ mb: 4, bgcolor: "#2563eb", color: "white" }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h4" gutterBottom sx={{ color: "#00d4ff" }}>
             🎫 How does it work?
@@ -204,7 +204,7 @@ const PrivacyFirstPage: React.FC = () => {
             >
               Your code: STORM-MAGE-42
             </Box>
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant="body2" sx={{ mt: 1, color: "#bfdbfe" }}>
               Easy to remember, like a player username!
             </Typography>
           </Box>
@@ -235,7 +235,7 @@ const PrivacyFirstPage: React.FC = () => {
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: "#16213e" }}>
+              <TableRow sx={{ bgcolor: "#2563eb" }}>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                   Feature
                 </TableCell>
@@ -267,7 +267,7 @@ const PrivacyFirstPage: React.FC = () => {
       {/* What we store / don't store */}
       <Grid container spacing={3} sx={{ mb: 5 }}>
         <Grid item xs={12} md={6}>
-          <Card sx={{ bgcolor: "#16213e", color: "white", height: "100%" }}>
+          <Card sx={{ bgcolor: "#2563eb", color: "white", height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ color: "#4CAF50" }}>
                 ✅ What we store
@@ -291,7 +291,7 @@ const PrivacyFirstPage: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{ bgcolor: "#16213e", color: "white", height: "100%" }}>
+          <Card sx={{ bgcolor: "#2563eb", color: "white", height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ color: "#f44336" }}>
                 ❌ What we DON'T store

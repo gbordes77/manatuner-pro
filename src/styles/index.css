@@ -261,7 +261,7 @@ body {
   .mana-symbol {
     border-width: 2px;
   }
-  
+
   .card-type-creature,
   .card-type-instant,
   .card-type-sorcery,
@@ -280,7 +280,7 @@ body {
   .pulse {
     animation: none;
   }
-  
+
   .loading-skeleton {
     animation: none;
     background: #e0e0e0;
@@ -292,20 +292,20 @@ body {
   body {
     background: white !important;
   }
-  
+
   .mana-symbol {
     border: 1px solid #000 !important;
     background: white !important;
     color: black !important;
   }
-  
+
   .reliability-excellent,
   .reliability-good,
   .reliability-marginal,
   .reliability-poor {
     color: black !important;
   }
-  
+
   /* Hide interactive elements when printing */
   button,
   .MuiFab-root,
@@ -374,7 +374,7 @@ textarea:focus-visible {
     line-height: 1em;
     font-size: 0.7em;
   }
-  
+
   /* Increase touch targets */
   button {
     min-height: 44px;
@@ -434,7 +434,7 @@ textarea:focus-visible {
   body {
     background: white !important;
   }
-  
+
   .no-print {
     display: none !important;
   }
@@ -465,7 +465,7 @@ textarea:focus-visible {
   --mtg-black: #150B00;
   --mtg-red: #D3202A;
   --mtg-green: #00733E;
-  
+
   /* Enhanced Color Variants */
   --mtg-white-light: #FFFFFF;
   --mtg-white-dark: #F5F1E8;
@@ -477,28 +477,28 @@ textarea:focus-visible {
   --mtg-red-dark: #A91E22;
   --mtg-green-light: #27AE60;
   --mtg-green-dark: #005A2F;
-  
+
   /* Neutral Colors */
   --mtg-gold: #DAA520;
   --mtg-silver: #C0C0C0;
   --mtg-bronze: #CD7F32;
-  
+
   /* Background Gradients */
   --bg-primary: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   --bg-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --bg-card: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 8px rgba(0,0,0,0.12);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
   --shadow-xl: 0 12px 24px rgba(0,0,0,0.18);
-  
+
   /* Typography */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-heading: 'Poppins', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -506,14 +506,14 @@ textarea:focus-visible {
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
-  
+
   /* Transitions */
   --transition-fast: 0.15s ease-out;
   --transition-normal: 0.25s ease-out;
@@ -783,21 +783,21 @@ h3 {
   h1 {
     font-size: 2rem;
   }
-  
+
   h2 {
     font-size: 1.5rem;
   }
-  
+
   .mtg-card {
     margin: var(--spacing-sm);
   }
-  
+
   .mana-symbol {
     width: 24px;
     height: 24px;
     font-size: 11px;
   }
-  
+
   .mtg-button {
     padding: var(--spacing-sm);
     font-size: 0.85rem;
@@ -808,14 +808,14 @@ h3 {
   h1 {
     font-size: 1.75rem;
   }
-  
+
   .mana-symbol {
     width: 20px;
     height: 20px;
     font-size: 10px;
     margin: 0 2px;
   }
-  
+
   .mtg-chip {
     font-size: 0.7rem;
     padding: 2px var(--spacing-xs);
@@ -874,7 +874,7 @@ h3 {
   .mtg-card {
     border: 2px solid #000;
   }
-  
+
   .mana-symbol {
     border-width: 3px;
   }
@@ -1008,13 +1008,13 @@ h3 {
   .mtg-card {
     margin-bottom: 16px;
   }
-  
+
   .animate-slideIn,
   .animate-slideInLeft,
   .animate-slideInRight {
     animation-duration: 0.4s;
   }
-  
+
   .mtg-button {
     padding: 12px 16px !important;
     font-size: 0.875rem !important;
@@ -1025,7 +1025,7 @@ h3 {
   .mtg-card {
     padding: 16px !important;
   }
-  
+
   .mtg-symbol {
     width: 20px !important;
     height: 20px !important;
@@ -1084,7 +1084,7 @@ h3 {
   .animate-glow {
     animation: none;
   }
-  
+
   .mtg-card,
   .mtg-button {
     transition: none;
@@ -1103,8 +1103,8 @@ h3 {
   .mtg-card {
     border: 2px solid #000;
   }
-  
+
   .mtg-symbol {
     border: 1px solid #000;
   }
-} 
+}
