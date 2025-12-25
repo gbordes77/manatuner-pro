@@ -38,6 +38,7 @@ import EnhancedRecommendations from "../components/EnhancedRecommendations";
 import EnhancedSpellAnalysis from "../components/EnhancedSpellAnalysis";
 import ManaCostRow from "../components/ManaCostRow";
 import PrivacySettings from "../components/PrivacySettings";
+import { PrivacyStorage } from "../lib/privacy";
 import { AnalysisResult, DeckAnalyzer } from "../services/deckAnalyzer";
 import { ManaCalculator } from "../services/manaCalculator";
 import { COLOR_NAMES, MANA_COLORS } from "../types";
@@ -673,9 +674,6 @@ const AnalyzerPage: React.FC = () => {
           mathematics
         </Typography>
       </Box>
-
-      {/* Privacy Settings */}
-      <PrivacySettings />
 
 
 
@@ -2008,6 +2006,11 @@ const AnalyzerPage: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Privacy Settings - En bas de page */}
+      <Box sx={{ mt: 4 }}>
+        <PrivacySettings />
+      </Box>
 
       {/* Snackbar pour les notifications */}
       <Snackbar
