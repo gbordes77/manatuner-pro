@@ -1,31 +1,33 @@
-import React, { Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { Box, Typography, Container, CircularProgress } from '@mui/material'
-import { Header } from './components/layout/Header'
-import { Footer } from './components/layout/Footer'
-import { ErrorBoundary } from './components/common/ErrorBoundary'
-import { NotificationProvider } from './components/common/NotificationProvider'
-import { BetaBanner } from './components'
+import { Box, CircularProgress, Container, Typography } from "@mui/material";
+import React, { Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import { BetaBanner } from "./components";
+import { ErrorBoundary } from "./components/common/ErrorBoundary";
+import { NotificationProvider } from "./components/common/NotificationProvider";
+import { Footer } from "./components/layout/Footer";
+import { Header } from "./components/layout/Header";
 
 // Direct imports for core pages (avoiding lazy loading issues)
-import { HomePage } from './pages/HomePage'
-import AnalyzerPage from './pages/AnalyzerPage'
-import { GuidePage } from './pages/GuidePage'
-import MathematicsPage from './pages/MathematicsPage'
-import MyAnalysesPage from './pages/MyAnalysesPage'
-import PrivacyFirstPage from './pages/PrivacyFirstPage'
+import AnalyzerPage from "./pages/AnalyzerPage";
+import { GuidePage } from "./pages/GuidePage";
+import { HomePage } from "./pages/HomePage";
+import MathematicsPage from "./pages/MathematicsPage";
+import MyAnalysesPage from "./pages/MyAnalysesPage";
+import PrivacyFirstPage from "./pages/PrivacyFirstPage";
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
   <Container maxWidth="lg" sx={{ py: 6 }}>
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      minHeight: '50vh',
-      gap: 2
-    }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "50vh",
+        gap: 2,
+      }}
+    >
       <CircularProgress size={48} />
       <Typography variant="h6" color="text.secondary">
         Loading ManaTuner Pro...
@@ -35,16 +37,20 @@ const PageLoader = () => (
       </Typography>
     </Box>
   </Container>
-)
+);
 
 // Lazy-loaded temporary components for other pages
-const AboutPage = React.lazy(() => 
-  import('./components/layout/StaticPages').then(m => ({ default: m.AboutPage }))
-)
+const AboutPage = React.lazy(() =>
+  import("./components/layout/StaticPages").then((m) => ({
+    default: m.AboutPage,
+  })),
+);
 
-const PrivacyPage = React.lazy(() => 
-  import('./components/layout/StaticPages').then(m => ({ default: m.PrivacyPage }))
-)
+const PrivacyPage = React.lazy(() =>
+  import("./components/layout/StaticPages").then((m) => ({
+    default: m.PrivacyPage,
+  })),
+);
 
 function App() {
   return (
@@ -52,20 +58,20 @@ function App() {
       <NotificationProvider>
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
           }}
         >
-          <Header />
           <BetaBanner />
-          
+          <Header />
+
           <Box
             component="main"
             sx={{
               flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <Routes>
@@ -75,25 +81,31 @@ function App() {
               <Route path="/mathematics" element={<MathematicsPage />} />
               <Route path="/mes-analyses" element={<MyAnalysesPage />} />
               <Route path="/privacy-first" element={<PrivacyFirstPage />} />
-              <Route path="/about" element={
-                <Suspense fallback={<PageLoader />}>
-                  <AboutPage />
-                </Suspense>
-              } />
-              <Route path="/privacy" element={
-                <Suspense fallback={<PageLoader />}>
-                  <PrivacyPage />
-                </Suspense>
-              } />
+              <Route
+                path="/about"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <AboutPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <PrivacyPage />
+                  </Suspense>
+                }
+              />
               <Route path="*" element={<HomePage />} />
             </Routes>
           </Box>
-          
+
           <Footer />
         </Box>
       </NotificationProvider>
     </ErrorBoundary>
-  )
+  );
 }
 
-export default App 
+export default App;
