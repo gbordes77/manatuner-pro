@@ -32,7 +32,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import AnalysisActions from "../components/AnalysisActions";
 import { CardImageTooltip } from "../components/CardImageTooltip";
 import EnhancedCharts from "../components/EnhancedCharts";
 import EnhancedRecommendations from "../components/EnhancedRecommendations";
@@ -510,6 +509,18 @@ const AnalyzerPage: React.FC = () => {
         setAnalysisResult(result);
         // Minimiser automatiquement "Your Deck" quand les résultats s'affichent
         setIsDeckMinimized(true);
+
+        // Auto-save silencieux
+        try {
+          const deckName = `Deck ${new Date().toLocaleDateString()}`;
+          PrivacyStorage.saveAnalysis({
+            deckName,
+            deckList,
+            analysis: result,
+          });
+        } catch (saveError) {
+          console.warn("Auto-save failed:", saveError);
+        }
       } catch (error) {
         console.error("Erreur lors de l'analyse:", error);
         // Fallback en cas d'erreur
@@ -666,19 +677,7 @@ const AnalyzerPage: React.FC = () => {
       {/* Privacy Settings */}
       <PrivacySettings />
 
-      {/* Analysis Actions - Save, Share, History */}
-      {analysisResult && (
-        <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-          <AnalysisActions
-            deckList={deckList}
-            analysisResult={analysisResult}
-            onLoadAnalysis={(loadedDeckList, loadedResult) => {
-              setDeckList(loadedDeckList);
-              setAnalysisResult(loadedResult);
-            }}
-          />
-        </Box>
-      )}
+
 
       <Grid
         container
