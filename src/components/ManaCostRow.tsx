@@ -254,8 +254,8 @@ const useProbabilityCalculation = (cardData: MTGCard | null, cardName: string) =
       const symbols = actualManaCost.match(/\{[^}]+\}/g) || []
       const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
       
-      let baseP1 = 90 - (coloredSymbols.length * 8)
-      let baseP2 = 75 - (coloredSymbols.length * 10)
+      const baseP1 = 90 - (coloredSymbols.length * 8)
+      const baseP2 = 75 - (coloredSymbols.length * 10)
       
       return {
         p1: Math.max(Math.min(baseP1, 95), 25),
