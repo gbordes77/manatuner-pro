@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import {
+    decryptObject,
+    encryptObject
+} from "../lib/encryption";
+import { PrivacyStorage } from "../lib/privacy";
 import { handleSupabaseError, supabaseHelpers } from "../services/supabase";
 
 interface SavedAnalysis {
@@ -9,6 +14,12 @@ interface SavedAnalysis {
   created_at: string;
   format: string | null;
   is_public: boolean;
+}
+
+interface EncryptedLocalStorage {
+  version: number;
+  encrypted: boolean;
+  data: string;
 }
 
 interface UseAnalysisStorageReturn {
@@ -34,30 +45,75 @@ interface UseAnalysisStorageReturn {
   loadSharedAnalysis: (id: string) => Promise<SavedAnalysis | null>;
   clearError: () => void;
 
-  // Local storage fallback
-  saveToLocal: (deckList: string, analysisResult: any, name?: string) => void;
-  loadFromLocal: () => SavedAnalysis[];
+  // Local storage fallback (now with encryption)
+  saveToLocal: (deckList: string, analysisResult: any, name?: string) => Promise<void>;
+  loadFromLocal: () => Promise<SavedAnalysis[]>;
+
+  // Encryption status
+  isEncryptionReady: boolean;
 }
 
 const LOCAL_STORAGE_KEY = "manatuner-analyses";
+const STORAGE_VERSION = 2; // Version 2 = encrypted
 
 export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEncryptionReady, setIsEncryptionReady] = useState(false);
+
+  // Initialize encryption
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const isValid = await PrivacyStorage.verifyUserCode();
+        setIsEncryptionReady(isValid);
+      } catch {
+        setIsEncryptionReady(true); // Assume ready if no data exists
+      }
+    };
+    init();
+  }, []);
 
   // Clear error
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  // Local storage helpers
+  // Get user code for encryption
+  const getUserCode = useCallback(() => {
+    return PrivacyStorage.getUserCode();
+  }, []);
+
+  // Check if stored data is legacy (unencrypted)
+  const isLegacyFormat = useCallback((stored: string): boolean => {
+    try {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed);
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Migrate legacy data to encrypted format
+  const migrateLegacyData = useCallback(async (legacyData: SavedAnalysis[]): Promise<void> => {
+    const userCode = getUserCode();
+    const encryptedData = await encryptObject(legacyData, userCode);
+
+    const storageWrapper: EncryptedLocalStorage = {
+      version: STORAGE_VERSION,
+      encrypted: true,
+      data: encryptedData,
+    };
+
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageWrapper));
+  }, [getUserCode]);
+
+  // Local storage helpers with encryption
   const saveToLocal = useCallback(
-    (deckList: string, analysisResult: any, name?: string) => {
+    async (deckList: string, analysisResult: any, name?: string) => {
       try {
-        const existing = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE_KEY) || "[]",
-        );
+        const existing = await loadFromLocalInternal();
         const newAnalysis: SavedAnalysis = {
           id: Date.now().toString(),
           name: name || null,
@@ -68,25 +124,63 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
           is_public: false,
         };
 
-        const updated = [newAnalysis, ...existing].slice(0, 50); // Keep only 50 most recent
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+        const updated = [newAnalysis, ...existing].slice(0, 50);
+
+        // Encrypt before storing
+        const userCode = getUserCode();
+        const encryptedData = await encryptObject(updated, userCode);
+
+        const storageWrapper: EncryptedLocalStorage = {
+          version: STORAGE_VERSION,
+          encrypted: true,
+          data: encryptedData,
+        };
+
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageWrapper));
         setSavedAnalyses(updated);
       } catch (err) {
         console.error("Failed to save to local storage:", err);
+        setError("Failed to encrypt and save data");
       }
     },
-    [],
+    [getUserCode],
   );
 
-  const loadFromLocal = useCallback((): SavedAnalysis[] => {
+  // Internal load function
+  const loadFromLocalInternal = useCallback(async (): Promise<SavedAnalysis[]> => {
     try {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) return [];
+
+      // Check for legacy format
+      if (isLegacyFormat(stored)) {
+        const legacyData = JSON.parse(stored) as SavedAnalysis[];
+        // Migrate to encrypted format
+        await migrateLegacyData(legacyData);
+        return legacyData;
+      }
+
+      // Parse the storage wrapper
+      const wrapper = JSON.parse(stored) as EncryptedLocalStorage;
+
+      if (!wrapper.encrypted) {
+        // Unencrypted wrapper format
+        return JSON.parse(wrapper.data) as SavedAnalysis[];
+      }
+
+      // Decrypt the data
+      const userCode = getUserCode();
+      const analyses = await decryptObject<SavedAnalysis[]>(wrapper.data, userCode);
+      return analyses;
     } catch (err) {
       console.error("Failed to load from local storage:", err);
       return [];
     }
-  }, []);
+  }, [getUserCode, isLegacyFormat, migrateLegacyData]);
+
+  const loadFromLocal = useCallback(async (): Promise<SavedAnalysis[]> => {
+    return loadFromLocalInternal();
+  }, [loadFromLocalInternal]);
 
   // Supabase operations
   const saveAnalysis = useCallback(
@@ -118,21 +212,21 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
             setSavedAnalyses((prev) => [saved, ...prev]);
             return saved;
           } else {
-            // Fallback to local storage
-            saveToLocal(deckList, analysisResult, name);
+            // Fallback to local storage with encryption
+            await saveToLocal(deckList, analysisResult, name);
             return null;
           }
         } else {
-          // Fallback to local storage
-          saveToLocal(deckList, analysisResult, name);
+          // Fallback to local storage with encryption
+          await saveToLocal(deckList, analysisResult, name);
           return null;
         }
       } catch (err) {
         const errorMessage = handleSupabaseError(err);
         setError(errorMessage);
 
-        // Fallback to local storage on error
-        saveToLocal(deckList, analysisResult, name);
+        // Fallback to local storage with encryption on error
+        await saveToLocal(deckList, analysisResult, name);
         return null;
       } finally {
         setIsLoading(false);
@@ -150,8 +244,8 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
         const analyses = await supabaseHelpers.getUserAnalyses();
         setSavedAnalyses(analyses);
       } else {
-        // Load from local storage
-        const localAnalyses = loadFromLocal();
+        // Load from encrypted local storage
+        const localAnalyses = await loadFromLocal();
         setSavedAnalyses(localAnalyses);
       }
     } catch (err) {
@@ -159,8 +253,12 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
       setError(errorMessage);
 
       // Fallback to local storage
-      const localAnalyses = loadFromLocal();
-      setSavedAnalyses(localAnalyses);
+      try {
+        const localAnalyses = await loadFromLocal();
+        setSavedAnalyses(localAnalyses);
+      } catch {
+        setSavedAnalyses([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -173,21 +271,29 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
 
       try {
         if (supabaseHelpers.isConfigured()) {
-          // Delete from Supabase (we need to add this function to supabaseHelpers)
-          // For now, just remove from local state
+          // Delete from Supabase
           setSavedAnalyses((prev) =>
             prev.filter((analysis) => analysis.id !== id),
           );
         } else {
-          // Remove from local storage
-          const localAnalyses = loadFromLocal().filter(
+          // Remove from encrypted local storage
+          const localAnalyses = await loadFromLocal();
+          const filtered = localAnalyses.filter(
             (analysis) => analysis.id !== id,
           );
-          localStorage.setItem(
-            LOCAL_STORAGE_KEY,
-            JSON.stringify(localAnalyses),
-          );
-          setSavedAnalyses(localAnalyses);
+
+          // Re-encrypt and save
+          const userCode = getUserCode();
+          const encryptedData = await encryptObject(filtered, userCode);
+
+          const storageWrapper: EncryptedLocalStorage = {
+            version: STORAGE_VERSION,
+            encrypted: true,
+            data: encryptedData,
+          };
+
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageWrapper));
+          setSavedAnalyses(filtered);
         }
       } catch (err) {
         const errorMessage = handleSupabaseError(err);
@@ -196,7 +302,7 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
         setIsLoading(false);
       }
     },
-    [loadFromLocal],
+    [loadFromLocal, getUserCode],
   );
 
   const shareAnalysis = useCallback(
@@ -277,6 +383,9 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
     // Local storage fallback
     saveToLocal,
     loadFromLocal,
+
+    // Encryption status
+    isEncryptionReady,
   };
 };
 
