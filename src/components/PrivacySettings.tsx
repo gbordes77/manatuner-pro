@@ -74,7 +74,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const copyUserCode = async () => {
     try {
       await navigator.clipboard.writeText(userCode);
-      setSnackbarMessage("Code copié dans le presse-papiers !");
+      setSnackbarMessage("Code copied to clipboard!");
       setShowSnackbar(true);
     } catch {
       // Fallback for older browsers
@@ -84,7 +84,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
       textArea.select();
       document.execCommand("copy");
       document.body.removeChild(textArea);
-      setSnackbarMessage("Code copié !");
+      setSnackbarMessage("Code copied!");
       setShowSnackbar(true);
     }
   };
@@ -100,7 +100,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setSnackbarMessage("Données exportées avec succès !");
+    setSnackbarMessage("Data exported successfully!");
     setShowSnackbar(true);
   };
 
@@ -116,10 +116,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           const data = e.target?.result as string;
           try {
             PrivacyStorage.importAnalyses(data);
-            setSnackbarMessage("Données importées avec succès !");
+            setSnackbarMessage("Data imported successfully!");
             setShowSnackbar(true);
           } catch {
-            setSnackbarMessage("Erreur lors de l'importation");
+            setSnackbarMessage("Error during import");
             setShowSnackbar(true);
           }
         };
@@ -251,11 +251,11 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             ) : (
               <>
                 <Typography variant="body2" fontWeight="bold" gutterBottom>
-                  🌍 Mode Public Activé
+                  🌍 Public Mode Enabled
                 </Typography>
                 <Typography variant="body2">
-                  Vos analyses contribuent aux statistiques communautaires et
-                  sont accessibles depuis n'importe quel appareil.
+                  Your analyses contribute to community statistics and are
+                  accessible from any device.
                 </Typography>
               </>
             )}
@@ -410,7 +410,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
       >
         <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <ShieldIcon color="primary" />
-          Notre Engagement Privacy-First
+          Our Privacy-First Commitment
           {isMobile && (
             <IconButton
               onClick={() => setShowPrivacyDialog(false)}
@@ -422,54 +422,53 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography variant="h6" color="error" gutterBottom>
-            ❌ Ce que nous NE faisons PAS :
+            ❌ What we DO NOT do:
           </Typography>
           <List>
             <ListItem>
-              <ListItemText primary="• Nous ne stockons JAMAIS vos decks en clair" />
+              <ListItemText primary="• We NEVER store your decks in plain text" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Nous ne pouvons PAS lire vos decks privés" />
+              <ListItemText primary="• We CANNOT read your private decks" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Nous ne vendons AUCUNE donnée" />
+              <ListItemText primary="• We sell NO data whatsoever" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Nous n'utilisons PAS de cookies de tracking" />
+              <ListItemText primary="• We DO NOT use tracking cookies" />
             </ListItem>
           </List>
 
           <Divider sx={{ my: 2 }} />
 
           <Typography variant="h6" color="primary" gutterBottom>
-            ✅ Comment ça marche :
+            ✅ How it works:
           </Typography>
           <List>
             <ListItem>
               <ListItemText
-                primary="1. Mode Privé (par défaut)"
-                secondary="Vos decks restent chiffrés sur votre appareil. Seuls les résultats mathématiques sont sauvegardés."
+                primary="1. Private Mode (default)"
+                secondary="Your decks remain encrypted on your device. Only mathematical results are saved."
               />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary="2. Chiffrement Client-Side"
-                secondary="Si vous choisissez de sauvegarder en ligne, tout est chiffré avec une clé que VOUS seul possédez."
+                primary="2. Client-Side Encryption"
+                secondary="If you choose to save online, everything is encrypted with a key that only YOU possess."
               />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary="3. Partage Sécurisé"
-                secondary="Les liens de partage ne contiennent que l'ID. Le destinataire voit les résultats, pas forcément le deck."
+                primary="3. Secure Sharing"
+                secondary="Share links contain only the ID. The recipient sees the results, not necessarily the deck."
               />
             </ListItem>
           </List>
 
           <Alert severity="info" sx={{ mt: 2 }}>
             <Typography variant="body2">
-              <strong>Transparence Totale :</strong> Notre code est open source.
-              Vous pouvez vérifier exactement ce que nous faisons avec vos
-              données sur GitHub.
+              <strong>Full Transparency:</strong> Our code is open source. You
+              can verify exactly what we do with your data on GitHub.
             </Typography>
           </Alert>
         </DialogContent>
@@ -478,7 +477,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             onClick={() => setShowPrivacyDialog(false)}
             variant="contained"
           >
-            J'ai compris
+            I understand
           </Button>
         </DialogActions>
       </Dialog>
@@ -489,39 +488,39 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         onClose={() => setShowDataDialog(false)}
         maxWidth="sm"
       >
-        <DialogTitle color="error">⚠️ Supprimer toutes les données</DialogTitle>
+        <DialogTitle color="error">⚠️ Delete all data</DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
-            Cette action supprimera définitivement :
+            This action will permanently delete:
           </Typography>
           <List>
             <ListItem>
-              <ListItemText primary="• Votre code personnel" />
+              <ListItemText primary="• Your personal code" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Toutes vos analyses sauvegardées" />
+              <ListItemText primary="• All your saved analyses" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Vos clés de chiffrement" />
+              <ListItemText primary="• Your encryption keys" />
             </ListItem>
           </List>
           <Alert severity="warning" sx={{ mt: 2 }}>
-            Cette action est irréversible !
+            This action is irreversible!
           </Alert>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDataDialog(false)}>Annuler</Button>
+          <Button onClick={() => setShowDataDialog(false)}>Cancel</Button>
           <Button
             onClick={() => {
               PrivacyStorage.clearAllLocalData();
               setShowDataDialog(false);
-              setSnackbarMessage("Toutes les données ont été supprimées");
+              setSnackbarMessage("All data has been deleted");
               setShowSnackbar(true);
             }}
             color="error"
             variant="contained"
           >
-            Supprimer
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

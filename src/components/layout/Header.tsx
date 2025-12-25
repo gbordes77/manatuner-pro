@@ -1,24 +1,24 @@
 import {
-  Analytics as AnalyticsIcon,
-  DarkMode as DarkModeIcon,
-  Functions as FunctionsIcon,
-  GitHub as GitHubIcon,
-  History as HistoryIcon,
-  LightMode as LightModeIcon,
-  Lock as LockIcon,
-  Menu as MenuIcon,
-  MenuBook as GuideIcon,
+    Analytics as AnalyticsIcon,
+    DarkMode as DarkModeIcon,
+    Functions as FunctionsIcon,
+    GitHub as GitHubIcon,
+    MenuBook as GuideIcon,
+    History as HistoryIcon,
+    LightMode as LightModeIcon,
+    Lock as LockIcon,
+    Menu as MenuIcon,
 } from "@mui/icons-material";
 import {
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme as useMuiTheme,
+    AppBar,
+    Box,
+    Button,
+    IconButton,
+    Toolbar,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    useTheme as useMuiTheme,
 } from "@mui/material";
 import React from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -112,7 +112,7 @@ export const Header: React.FC = () => {
 
         {/* Theme Toggle */}
         <Tooltip
-          title={`Basculer vers le thème ${isDark ? "clair" : "sombre"}`}
+          title={`Switch to ${isDark ? "light" : "dark"} theme`}
         >
           <IconButton
             color="inherit"
@@ -130,14 +130,14 @@ export const Header: React.FC = () => {
         </Tooltip>
 
         {/* GitHub link */}
-        <Tooltip title="Voir le code source sur GitHub">
+        <Tooltip title="View source code on GitHub">
           <IconButton
             color="inherit"
             component="a"
             href="https://github.com/project-manabase"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Voir le code source sur GitHub"
+            aria-label="View source code on GitHub"
             sx={{ ml: 1 }}
           >
             <GitHubIcon />

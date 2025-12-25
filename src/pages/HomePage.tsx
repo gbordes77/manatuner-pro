@@ -267,12 +267,12 @@ export const HomePage: React.FC = () => {
                   <BookIcon />
                 </Avatar>
                 <Typography variant="h6" component="h3">
-                  Guide Complet
+                  Complete Guide
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                Apprenez les bases des manabases avec notre guide détaillé basé
-                sur les recherches de Frank Karsten.
+                Learn the basics of manabases with our detailed guide based on
+                Frank Karsten's research.
               </Typography>
             </CardContent>
             <CardActions>
@@ -281,7 +281,7 @@ export const HomePage: React.FC = () => {
                 onClick={() => navigate("/guide")}
                 variant="outlined"
               >
-                Lire le Guide
+                Read the Guide
               </Button>
             </CardActions>
           </Card>
@@ -299,11 +299,11 @@ export const HomePage: React.FC = () => {
           >
             <CardContent>
               <Typography variant="h4" component="h2" gutterBottom>
-                🔐 Premier Analyseur MTG Privacy-First
+                🔐 First Privacy-First MTG Analyzer
               </Typography>
               <Typography variant="h6" sx={{ mb: 3 }}>
-                Vos decks restent privés. Même nous, les développeurs, ne
-                pouvons pas les voir !
+                Your decks stay private. Even we, the developers, cannot see
+                them!
               </Typography>
 
               <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -314,7 +314,7 @@ export const HomePage: React.FC = () => {
                     </Typography>
                     <Typography variant="h6">Zero-Knowledge</Typography>
                     <Typography variant="body2">
-                      Chiffrement côté client
+                      Client-side encryption
                     </Typography>
                   </Box>
                 </Grid>
@@ -325,7 +325,7 @@ export const HomePage: React.FC = () => {
                     </Typography>
                     <Typography variant="h6">100% Local</Typography>
                     <Typography variant="body2">
-                      Fonctionne hors ligne
+                      Works offline
                     </Typography>
                   </Box>
                 </Grid>
@@ -334,9 +334,9 @@ export const HomePage: React.FC = () => {
                     <Typography variant="h3" sx={{ mb: 1 }}>
                       🔑
                     </Typography>
-                    <Typography variant="h6">Code Personnel</Typography>
+                    <Typography variant="h6">Personal Code</Typography>
                     <Typography variant="body2">
-                      Retrouvez vos analyses
+                      Retrieve your analyses
                     </Typography>
                   </Box>
                 </Grid>
@@ -345,9 +345,9 @@ export const HomePage: React.FC = () => {
                     <Typography variant="h3" sx={{ mb: 1 }}>
                       🚀
                     </Typography>
-                    <Typography variant="h6">Ultra Rapide</Typography>
+                    <Typography variant="h6">Ultra Fast</Typography>
                     <Typography variant="body2">
-                      Pas de serveur = vitesse
+                      No server = speed
                     </Typography>
                   </Box>
                 </Grid>
