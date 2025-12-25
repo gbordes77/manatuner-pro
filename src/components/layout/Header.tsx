@@ -1,93 +1,107 @@
-import React from 'react'
+import {
+  Analytics as AnalyticsIcon,
+  DarkMode as DarkModeIcon,
+  Functions as FunctionsIcon,
+  GitHub as GitHubIcon,
+  History as HistoryIcon,
+  LightMode as LightModeIcon,
+  Lock as LockIcon,
+  Menu as MenuIcon,
+  MenuBook as GuideIcon,
+} from "@mui/icons-material";
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  Button,
   Box,
+  Button,
   IconButton,
+  Toolbar,
+  Tooltip,
+  Typography,
   useMediaQuery,
   useTheme as useMuiTheme,
-  Tooltip
-} from '@mui/material'
-import {
-  Menu as MenuIcon,
-  Analytics as AnalyticsIcon,
-  GitHub as GitHubIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-  MenuBook as GuideIcon,
-  History as HistoryIcon,
-  Lock as LockIcon,
-  Functions as FunctionsIcon
-} from '@mui/icons-material'
-import { Link as RouterLink, useLocation } from 'react-router-dom'
-import { useTheme } from '../common/NotificationProvider'
+} from "@mui/material";
+import React from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useTheme } from "../common/NotificationProvider";
 
 export const Header: React.FC = () => {
-  const muiTheme = useMuiTheme()
-  const { isDark, toggleTheme } = useTheme()
-  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
-  const location = useLocation()
+  const muiTheme = useMuiTheme();
+  const { isDark, toggleTheme } = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  const location = useLocation();
 
   const navItems = [
-    { label: 'Home', path: '/' },
-    { label: 'Analyzer', path: '/analyzer' },
-    { label: 'Guide', path: '/guide' },
-    { label: 'Mathematics', path: '/mathematics' },
-    { label: 'My Analyses', path: '/mes-analyses', icon: HistoryIcon },
-    { label: 'Privacy-First', path: '/privacy-first', icon: LockIcon },
-    { label: 'About', path: '/about' }
-  ]
+    { label: "Home", path: "/" },
+    { label: "Analyzer", path: "/analyzer" },
+    { label: "Guide", path: "/guide" },
+    { label: "Mathematics", path: "/mathematics" },
+    { label: "My Analyses", path: "/mes-analyses", icon: HistoryIcon },
+    { label: "Privacy-First", path: "/privacy-first", icon: LockIcon },
+    { label: "About", path: "/about" },
+  ];
 
   return (
     <AppBar position="sticky" elevation={2}>
       <Toolbar>
         {/* Logo */}
-        <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+        <Box display="flex" alignItems="center">
           <AnalyticsIcon sx={{ mr: 1 }} />
           <Typography
             variant="h6"
             component={RouterLink}
             to="/"
             sx={{
-              textDecoration: 'none',
-              color: 'inherit',
-              fontWeight: 'bold'
+              textDecoration: "none",
+              color: "inherit",
+              fontWeight: "bold",
             }}
           >
             ManaTuner Pro
           </Typography>
         </Box>
 
-        {/* Navigation */}
+        {/* Navigation - Centré */}
         {!isMobile && (
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1,
+              flexGrow: 1,
+              justifyContent: "center",
+            }}
+          >
             {navItems.map((item) => (
               <Button
                 key={item.path}
                 component={RouterLink}
                 to={item.path}
                 color="inherit"
-                variant={location.pathname === item.path ? 'outlined' : 'text'}
+                variant={location.pathname === item.path ? "outlined" : "text"}
                 startIcon={
-                  item.path === '/guide' ? <GuideIcon /> :
-                  item.path === '/mathematics' ? <FunctionsIcon /> :
-                  item.path === '/mes-analyses' ? <HistoryIcon /> :
-                  item.path === '/privacy-first' ? <LockIcon /> :
-                  undefined
+                  item.path === "/guide" ? (
+                    <GuideIcon />
+                  ) : item.path === "/mathematics" ? (
+                    <FunctionsIcon />
+                  ) : item.path === "/mes-analyses" ? (
+                    <HistoryIcon />
+                  ) : item.path === "/privacy-first" ? (
+                    <LockIcon />
+                  ) : undefined
                 }
                 sx={{
-                  borderColor: location.pathname === item.path ? 'rgba(255,255,255,0.5)' : 'transparent',
+                  borderColor:
+                    location.pathname === item.path
+                      ? "rgba(255,255,255,0.5)"
+                      : "transparent",
                   // Style spécial pour le bouton Guide
-                  ...(item.path === '/guide' && {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  ...(item.path === "/guide" && {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
                     },
-                    fontWeight: 'bold',
-                    textTransform: 'none'
-                  })
+                    fontWeight: "bold",
+                    textTransform: "none",
+                  }),
                 }}
               >
                 {item.label}
@@ -97,16 +111,18 @@ export const Header: React.FC = () => {
         )}
 
         {/* Theme Toggle */}
-        <Tooltip title={`Basculer vers le thème ${isDark ? 'clair' : 'sombre'}`}>
+        <Tooltip
+          title={`Basculer vers le thème ${isDark ? "clair" : "sombre"}`}
+        >
           <IconButton
             color="inherit"
             onClick={toggleTheme}
-            sx={{ 
+            sx={{
               ml: 1,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'rotate(180deg)',
-              }
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "rotate(180deg)",
+              },
             }}
           >
             {isDark ? <LightModeIcon /> : <DarkModeIcon />}
@@ -130,15 +146,11 @@ export const Header: React.FC = () => {
 
         {/* Mobile menu */}
         {isMobile && (
-          <IconButton
-            color="inherit"
-            edge="end"
-            sx={{ ml: 1 }}
-          >
+          <IconButton color="inherit" edge="end" sx={{ ml: 1 }}>
             <MenuIcon />
           </IconButton>
         )}
       </Toolbar>
     </AppBar>
-  )
-} 
+  );
+};
