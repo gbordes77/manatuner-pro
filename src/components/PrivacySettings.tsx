@@ -139,9 +139,11 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             ? "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)"
             : "linear-gradient(135deg, #059669 0%, #10b981 100%)",
           color: "white",
-          "& .MuiTypography-root": { color: "white" },
-          "& .MuiListItemText-primary": { color: "white" },
-          "& .MuiAlert-message": { color: "white" },
+          "& .MuiTypography-root": { color: "white !important" },
+          "& .MuiListItemText-primary": { color: "white !important" },
+          "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.9) !important" },
+          "& .MuiAlert-message": { color: "white !important" },
+          "& .MuiAlert-message *": { color: "white !important" },
         }}
       >
         <CardContent>
