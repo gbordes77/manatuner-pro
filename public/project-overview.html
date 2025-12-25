@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ManaTuner Pro – Mathématiques expliquées</title>
+  <title>ManaTuner Pro – Présentation du Projet</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -74,13 +74,9 @@
       margin-bottom: 0.3em;
       color: #1976d2;
     }
-    .exemple {
-      background: #e8f5e9;
-      border-left: 4px solid #219a1f;
-      margin: 1em 0;
-      padding: 1em;
-      border-radius: 6px;
-      color: #1b5e20;
+    .features-list {
+      margin: 0.7em 0 0.7em 1.5em;
+      padding: 0;
     }
     .nav-btn {
       display: inline-block;
@@ -128,64 +124,43 @@
 </head>
 <body>
   <div class="banner">
-    📊 Découvrez les mathématiques derrière l'analyse de manabase MTG (hypergéométrique, Monte Carlo, Karsten)
+    ⚡ Optimisez votre manabase MTG avec la précision scientifique de Frank Karsten et la sécurité privacy-first !
   </div>
   <div class="container">
     <div class="title">
       <img src="https://img.icons8.com/color/48/mtg-card-back.png" alt="ManaTuner Pro"/>
-      Mathématiques ManaTuner Pro
+      ManaTuner Pro
     </div>
     <div class="subtitle">
-      Les fondements scientifiques de l'optimisation de manabase Magic: The Gathering
+      Analyseur avancé de manabases Magic: The Gathering – React, TypeScript, Vercel, Privacy-first
     </div>
     <div class="section">
       <span class="section-number">1</span>
-      <span class="section-title">Distribution hypergéométrique</span>
+      <span class="section-title">But du projet</span>
       <div>
-        Permet de calculer la probabilité de piocher un certain nombre de terrains (ou de sources de couleur) dans une main de départ ou sur plusieurs tours.
-        <div class="exemple">
-          <strong>Exemple :</strong> <br>
-          <em>Vous avez 24 terrains dans un deck de 60 cartes. Quelle est la probabilité d'en avoir au moins 2 dans une main de 7 ?</em><br>
-          <span style="color:#222;">P(X ≥ 2) = 1 - P(0) - P(1)</span> <br>
-          (où P(k) = proba d'avoir exactement k terrains, calculée par la formule hypergéométrique)
-        </div>
+        Fournir aux joueurs de Magic: The Gathering un outil scientifique pour analyser et optimiser leur base de mana, basé sur les recherches de Frank Karsten (TCGPlayer 2022).
       </div>
     </div>
     <div class="section">
       <span class="section-number">2</span>
-      <span class="section-title">Simulation Monte Carlo</span>
-      <div>
-        On simule des milliers de parties pour estimer la probabilité d'atteindre une couleur ou un nombre de terrains à un tour donné.
-        <div class="exemple">
-          <strong>Exemple :</strong> <br>
-          <em>Simuler 10 000 mains pour voir combien permettent de lancer un sort à 3 manas rouges au tour 3.</em>
-        </div>
-      </div>
+      <span class="section-title">Fonctionnalités principales</span>
+      <ul class="features-list">
+        <li>Analyse hypergéométrique et Monte Carlo de la manabase</li>
+        <li>Recommandations Frank Karsten (TCGPlayer 2022)</li>
+        <li>Analyse tour par tour et multicolore</li>
+        <li>Détection intelligente des terrains (fetchlands, duals, etc.)</li>
+        <li>Interface moderne, responsive, et privacy-first (chiffrement local AES-256)</li>
+        <li>Tests unitaires, e2e et performance intégrés</li>
+        <li>Déploiement Vercel, architecture modulaire React/TypeScript</li>
+      </ul>
     </div>
     <div class="section">
       <span class="section-number">3</span>
-      <span class="section-title">Méthode Frank Karsten</span>
+      <span class="section-title">Navigation</span>
       <div>
-        Utilisation des tables et recommandations issues de l'article <a href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/" target="_blank">TCGPlayer 2022 – Frank Karsten</a> pour déterminer le nombre optimal de sources de couleur.
-        <div class="exemple">
-          <strong>Exemple :</strong> <br>
-          <em>Pour lancer un sort à double bleu au tour 3 dans un deck de 60 cartes, il faut au moins 18 sources bleues pour 90% de fiabilité.</em>
-        </div>
+        <a class="nav-btn" href="maths-explained.html">Principes mathématiques</a>
+        <a class="nav-btn" href="project-code-map.html">Architecture & code</a>
       </div>
-    </div>
-    <div class="section">
-      <span class="section-number">4</span>
-      <span class="section-title">Analyse multicolore et fetchlands</span>
-      <div>
-        Le moteur prend en compte les terrains spéciaux (fetchlands, duals) et analyse la cohérence pour chaque couleur.
-        <div class="exemple">
-          <strong>Exemple :</strong> <br>
-          <em>Un fetchland qui peut chercher une île ou une montagne compte comme une source pour chaque couleur concernée.</em>
-        </div>
-      </div>
-    </div>
-    <div class="section">
-      <a class="nav-btn" href="project-overview.html">&#8592; Retour à l'accueil</a>
     </div>
     <div class="links">
       <strong>Liens utiles :</strong>
