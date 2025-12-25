@@ -301,7 +301,7 @@ export const HomePage: React.FC = () => {
               <Typography variant="h4" component="h2" gutterBottom>
                 🔐 Premier Analyseur MTG Privacy-First
               </Typography>
-              <Typography variant="h6" sx={{ mb: 3, opacity: 0.9 }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
                 Vos decks restent privés. Même nous, les développeurs, ne
                 pouvons pas les voir !
               </Typography>
@@ -313,7 +313,7 @@ export const HomePage: React.FC = () => {
                       🔒
                     </Typography>
                     <Typography variant="h6">Zero-Knowledge</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    <Typography variant="body2">
                       Chiffrement côté client
                     </Typography>
                   </Box>
@@ -324,7 +324,7 @@ export const HomePage: React.FC = () => {
                       📱
                     </Typography>
                     <Typography variant="h6">100% Local</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    <Typography variant="body2">
                       Fonctionne hors ligne
                     </Typography>
                   </Box>
@@ -335,7 +335,7 @@ export const HomePage: React.FC = () => {
                       🔑
                     </Typography>
                     <Typography variant="h6">Code Personnel</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    <Typography variant="body2">
                       Retrouvez vos analyses
                     </Typography>
                   </Box>
@@ -346,7 +346,7 @@ export const HomePage: React.FC = () => {
                       🚀
                     </Typography>
                     <Typography variant="h6">Ultra Rapide</Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    <Typography variant="body2">
                       Pas de serveur = vitesse
                     </Typography>
                   </Box>
@@ -425,7 +425,7 @@ export const HomePage: React.FC = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Ready to Optimize Your Deck?
         </Typography>
-        <Typography variant="h6" paragraph sx={{ opacity: 0.9 }}>
+        <Typography variant="h6" paragraph>
           Join thousands of players using scientific manabase analysis
         </Typography>
         <Button
