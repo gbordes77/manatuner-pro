@@ -29,14 +29,13 @@ import {
     IconButton,
     List,
     ListItem,
-    ListItemIcon,
     ListItemText,
     Snackbar,
     Switch,
     Tooltip,
     Typography,
     useMediaQuery,
-    useTheme,
+    useTheme
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { PrivacyStorage } from "../lib/privacy";
@@ -147,40 +146,42 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         }}
       >
         <CardContent>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            {isPrivate ? <LockIcon /> : <PublicIcon />}
-            <Typography variant="h6" component="h2" sx={{ color: "white" }}>
-              🔐 Privacy Settings
-            </Typography>
-          </Box>
+          <Box display="flex" alignItems="center" justifyContent="center" gap={4} mb={2}>
+            <Box display="flex" alignItems="center" gap={2}>
+              {isPrivate ? <LockIcon /> : <PublicIcon />}
+              <Typography variant="h6" component="h2" sx={{ color: "white" }}>
+                🔐 Privacy Settings
+              </Typography>
+            </Box>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isPrivate}
-                onChange={handlePrivacyToggle}
-                color="default"
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color: "white",
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor: "rgba(255,255,255,0.3)",
-                  },
-                }}
-              />
-            }
-            label={
-              <Box display="flex" alignItems="center" gap={1}>
-                <Typography
-                  variant="body1"
-                  fontWeight="bold"
-                  sx={{ color: "white" }}
-                >
-                  {isPrivate ? "Private Mode Active" : "Public Mode"}
-                </Typography>
-                <Chip
-                  label={isPrivate ? "SECURE" : "SHARED"}
+            <FormControlLabel
+              sx={{ mr: 0 }}
+              control={
+                <Switch
+                  checked={isPrivate}
+                  onChange={handlePrivacyToggle}
+                  color="default"
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "white",
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "rgba(255,255,255,0.3)",
+                    },
+                  }}
+                />
+              }
+              label={
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    sx={{ color: "white" }}
+                  >
+                    {isPrivate ? "Private Mode Active" : "Public Mode"}
+                  </Typography>
+                  <Chip
+                    label={isPrivate ? "SECURE" : "SHARED"}
                   size="small"
                   sx={{
                     backgroundColor: isPrivate ? "#10b981" : "#f59e0b",
@@ -190,84 +191,95 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 />
               </Box>
             }
-          />
+            />
+          </Box>
 
-          <Alert
-            severity={isPrivate ? "success" : "info"}
-            sx={{
-              mt: 2,
-              backgroundColor: "rgba(255,255,255,0.1)",
-              color: "white",
-              "& .MuiAlert-icon": { color: "white" },
-            }}
-          >
-            {isPrivate ? (
-              <>
-                <Typography
-                  variant="body2"
-                  fontWeight="bold"
-                  gutterBottom
-                  sx={{ color: "white" }}
+          {/* Security Status - Compact Inline Layout */}
+          {isPrivate ? (
+            <Box
+              sx={{
+                mt: 2,
+                p: 1.5,
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: 2,
+              }}
+            >
+              <Box
+                display="flex"
+                alignItems="stretch"
+                gap={0}
+              >
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={0.5}
+                  sx={{
+                    flex: 1,
+                    borderRight: "1px solid rgba(255,255,255,0.2)",
+                    py: 0.5
+                  }}
                 >
-                  ✅ Your decks are protected
-                </Typography>
-                <List dense sx={{ mt: 1 }}>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <ShieldIcon sx={{ color: "white", fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Encrypted local storage only"
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        sx: { color: "white" },
-                      }}
-                    />
-                  </ListItem>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <VerifiedIcon sx={{ color: "white", fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="No sensitive data sent to server"
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        sx: { color: "white" },
-                      }}
-                    />
-                  </ListItem>
-                  <ListItem sx={{ py: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 30 }}>
-                      <SecurityIcon sx={{ color: "white", fontSize: 16 }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Zero-Knowledge Architecture"
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        sx: { color: "white" },
-                      }}
-                    />
-                  </ListItem>
-                </List>
-              </>
-            ) : (
-              <>
-                <Typography variant="body2" fontWeight="bold" gutterBottom>
-                  🌍 Public Mode Enabled
-                </Typography>
-                <Typography variant="body2">
-                  Your analyses contribute to community statistics and are
-                  accessible from any device.
-                </Typography>
-              </>
-            )}
-          </Alert>
+                  <ShieldIcon sx={{ color: "#4ade80", fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
+                    Encrypted locally
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={0.5}
+                  sx={{
+                    flex: 1,
+                    borderRight: "1px solid rgba(255,255,255,0.2)",
+                    py: 0.5
+                  }}
+                >
+                  <VerifiedIcon sx={{ color: "#4ade80", fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
+                    No data sent
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={0.5}
+                  sx={{
+                    flex: 1,
+                    py: 0.5
+                  }}
+                >
+                  <SecurityIcon sx={{ color: "#4ade80", fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
+                    Zero-Knowledge
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <Alert
+              severity="info"
+              sx={{
+                mt: 2,
+                backgroundColor: "rgba(255,255,255,0.1)",
+                color: "white",
+                "& .MuiAlert-icon": { color: "white" },
+                py: 0.5,
+              }}
+            >
+              <Typography variant="caption" sx={{ color: "white" }}>
+                🌍 Public Mode - Analyses contribute to community stats
+              </Typography>
+            </Alert>
+          )}
 
-          {/* User Code Section */}
+          {/* User Code Section - Compact Inline Layout */}
           <Box
             sx={{
-              mt: 3,
-              p: 2,
+              mt: 2,
+              p: 1.5,
               backgroundColor: "rgba(255,255,255,0.1)",
               borderRadius: 2,
               border: "1px solid rgba(255,255,255,0.2)",
@@ -277,59 +289,62 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               display="flex"
               alignItems="center"
               justifyContent="space-between"
-              mb={1}
+              flexWrap="wrap"
+              gap={1}
             >
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{ color: "white" }}
-              >
-                🎫 Your Personal Code
-              </Typography>
-              <Tooltip title={showUserCode ? "Hide code" : "Show code"}>
-                <IconButton
-                  size="small"
-                  onClick={() => setShowUserCode(!showUserCode)}
+              <Box display="flex" alignItems="center" gap={1}>
+                <Typography
+                  variant="caption"
+                  fontWeight="bold"
                   sx={{ color: "white" }}
                 >
-                  {showUserCode ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              </Tooltip>
-            </Box>
-
-            <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-              <Typography
-                variant="h6"
-                component="code"
-                sx={{
-                  fontFamily: "monospace",
-                  backgroundColor: "rgba(0,0,0,0.3)",
-                  padding: "4px 8px",
-                  borderRadius: 1,
-                  letterSpacing: 1,
-                  color: "white",
-                }}
-              >
-                {showUserCode ? userCode : "•••••-••••-••"}
-              </Typography>
-
-              <Tooltip title="Copy code">
-                <IconButton
-                  size="small"
-                  onClick={copyUserCode}
-                  sx={{ color: "white" }}
+                  🎫 Your Code:
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="code"
+                  sx={{
+                    fontFamily: "monospace",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    padding: "2px 6px",
+                    borderRadius: 1,
+                    letterSpacing: 1,
+                    color: "white",
+                    fontSize: "0.85rem",
+                  }}
                 >
-                  <CopyIcon />
-                </IconButton>
-              </Tooltip>
+                  {showUserCode ? userCode : "•••••-••••-••"}
+                </Typography>
+                <Tooltip title={showUserCode ? "Hide" : "Show"}>
+                  <IconButton
+                    size="small"
+                    onClick={() => setShowUserCode(!showUserCode)}
+                    sx={{ color: "white", p: 0.5 }}
+                  >
+                    {showUserCode ? (
+                      <VisibilityOffIcon sx={{ fontSize: 18 }} />
+                    ) : (
+                      <VisibilityIcon sx={{ fontSize: 18 }} />
+                    )}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Copy">
+                  <IconButton
+                    size="small"
+                    onClick={copyUserCode}
+                    sx={{ color: "white", p: 0.5 }}
+                  >
+                    <CopyIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <Typography
+                variant="caption"
+                sx={{ color: "rgba(255,255,255,0.7)", fontSize: "0.7rem" }}
+              >
+                Save to sync across devices
+              </Typography>
             </Box>
-
-            <Typography
-              variant="caption"
-              sx={{ color: "white", mt: 1, display: "block" }}
-            >
-              💡 Note this code to retrieve your analyses on any device
-            </Typography>
           </Box>
 
           {/* Action Buttons */}
