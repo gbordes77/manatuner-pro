@@ -1,21 +1,21 @@
-import React from 'react';
 import {
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Collapse,
-  IconButton,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-  Analytics as AnalyticsIcon
+    Add as AddIcon,
+    Analytics as AnalyticsIcon,
+    ExpandLess as ExpandLessIcon,
+    ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    Collapse,
+    IconButton,
+    Paper,
+    TextField,
+    Typography,
+    useMediaQuery,
+    useTheme
+} from '@mui/material';
+import React from 'react';
 
 interface DeckInputSectionProps {
   deckList: string;
@@ -70,19 +70,19 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
 4 Starting Town (FIN) 289`;
 
   return (
-    <Paper 
-      elevation={3} 
-      sx={{ 
+    <Paper
+      elevation={3}
+      sx={{
         mb: isMobile ? 2 : 3,
         overflow: 'hidden',
         transition: 'all 0.3s ease-in-out'
       }}
     >
       {/* Header avec bouton collapse */}
-      <Box 
-        sx={{ 
-          p: 2, 
-          bgcolor: 'primary.main', 
+      <Box
+        sx={{
+          p: 2,
+          bgcolor: 'primary.main',
           color: 'white',
           display: 'flex',
           alignItems: 'center',
@@ -91,10 +91,10 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
         }}
         onClick={() => setIsDeckMinimized(!isDeckMinimized)}
       >
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            display: 'flex', 
+        <Typography
+          variant="h6"
+          sx={{
+            display: 'flex',
             alignItems: 'center',
             fontSize: isMobile ? '1rem' : '1.25rem'
           }}
@@ -102,7 +102,7 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
           <AddIcon sx={{ mr: 1 }} />
           Your Deck
         </Typography>
-        <IconButton 
+        <IconButton
           sx={{ color: 'white' }}
           size={isMobile ? 'small' : 'medium'}
         >
@@ -119,10 +119,13 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
             rows={isMobile ? 8 : 12}
             variant="outlined"
             placeholder="Paste your deck list here (one card per line)
-Example:
+
+Supported formats: Moxfield, Archidekt, MTGA, MTGO, TappedOut
+
+Examples:
 4 Lightning Bolt
-2 Counterspell
-20 Island"
+4 Counterspell (MKM) 47
+1 Arid Mesa // Gruul Turf"
             value={deckList}
             onChange={(e) => setDeckList(e.target.value)}
             sx={{
@@ -133,10 +136,10 @@ Example:
               }
             }}
           />
-          
-          <Box 
-            sx={{ 
-              display: 'flex', 
+
+          <Box
+            sx={{
+              display: 'flex',
               gap: 1,
               flexDirection: isMobile ? 'column' : 'row',
               alignItems: isMobile ? 'stretch' : 'center'
@@ -148,18 +151,18 @@ Example:
               onClick={onAnalyze}
               disabled={isAnalyzing || !deckList.trim()}
               startIcon={<AnalyticsIcon />}
-              sx={{ 
+              sx={{
                 minWidth: isMobile ? 'auto' : 120,
                 fontSize: isMobile ? '0.8rem' : '0.9rem'
               }}
             >
               {isAnalyzing ? 'Analyzing...' : 'Analyze Deck'}
             </Button>
-            
+
             <Button
               variant="outlined"
               onClick={handleLoadSample}
-              sx={{ 
+              sx={{
                 fontSize: isMobile ? '0.8rem' : '0.9rem'
               }}
             >
@@ -170,4 +173,4 @@ Example:
       </Collapse>
     </Paper>
   );
-}; 
+};
