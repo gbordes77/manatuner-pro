@@ -1,0 +1,111 @@
+/*
+ * Corrections de contraste WCAG AA (ratio 4.5:1 minimum)
+ * Appliqué aux fonds violet/bleu avec gradients
+ */
+
+/* Amélioration contraste sur gradients sombres */
+.MuiCard-root[style*="linear-gradient"] {
+  color: #ffffff !important;
+}
+
+.MuiCard-root[style*="linear-gradient"] .MuiTypography-root {
+  color: #ffffff !important;
+}
+
+.MuiCard-root[style*="linear-gradient"] .MuiTypography-colorTextSecondary {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Texte sur fond violet (#667eea, #764ba2) */
+.MuiCard-root[style*="667eea"],
+.MuiCard-root[style*="764ba2"] {
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.95);
+}
+
+/* Texte sur fond bleu foncé (#0f3460, #16213e) */
+.MuiCard-root[style*="0f3460"],
+.MuiCard-root[style*="16213e"] {
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.95);
+}
+
+/* Force le texte blanc sur les Cards avec gradient */
+[style*="linear-gradient"] .MuiCardContent-root,
+[style*="linear-gradient"] .MuiCardContent-root * {
+  color: inherit !important;
+}
+
+/* Amélioration du texte secondaire global */
+body .MuiTypography-colorTextSecondary {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+body[data-theme="dark"] .MuiTypography-colorTextSecondary {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Texte sur Paper avec fond gradient */
+.MuiPaper-root[style*="linear-gradient"] {
+  color: #ffffff !important;
+}
+
+.MuiPaper-root[style*="linear-gradient"] .MuiTypography-root {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Amélioration lisibilité des liens sur fonds sombres */
+[style*="linear-gradient"] a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Code blocks sur fond sombre */
+[style*="linear-gradient"] code,
+[style*="linear-gradient"] pre {
+  background: rgba(0, 0, 0, 0.2) !important;
+  color: #ffffff !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Amélioration contraste des chips sur fond gradient */
+[style*="linear-gradient"] .MuiChip-root {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Amélioration des icônes sur fond gradient */
+[style*="linear-gradient"] .MuiSvgIcon-root {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Privacy-First page spécifique */
+.MuiCard-root[style*="0f3460"] .MuiTypography-body1,
+.MuiCard-root[style*="0f3460"] .MuiTypography-body2 {
+  color: rgba(255, 255, 255, 0.95) !important;
+  line-height: 1.7;
+}
+
+/* My Analyses page */
+.MuiCard-root[style*="667eea"] .MuiTypography-caption,
+.MuiCard-root[style*="667eea"] .MuiTypography-body2 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Amélioration boutons sur fond gradient */
+[style*="linear-gradient"] .MuiButton-root {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+[style*="linear-gradient"] .MuiButton-root:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5);
+}
