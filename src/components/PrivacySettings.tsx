@@ -1,13 +1,10 @@
 import {
     Close as CloseIcon,
-    ContentCopy as CopyIcon,
     DeleteForever as DeleteIcon,
     Download as DownloadIcon,
     Info as InfoIcon,
     Storage as StorageIcon,
     Upload as UploadIcon,
-    Visibility as VisibilityIcon,
-    VisibilityOff as VisibilityOffIcon,
 } from "@mui/icons-material";
 import {
     Alert,
@@ -25,46 +22,21 @@ import {
     ListItem,
     ListItemText,
     Snackbar,
-    Tooltip,
     Typography,
     useMediaQuery,
     useTheme
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { PrivacyStorage } from "../lib/privacy";
 
 export const PrivacySettings: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [userCode, setUserCode] = useState("");
-  const [showUserCode, setShowUserCode] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [showDataDialog, setShowDataDialog] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [showSnackbar, setShowSnackbar] = useState(false);
-
-  useEffect(() => {
-    setUserCode(PrivacyStorage.getUserCode());
-  }, []);
-
-  const copyUserCode = async () => {
-    try {
-      await navigator.clipboard.writeText(userCode);
-      setSnackbarMessage("Code copied to clipboard!");
-      setShowSnackbar(true);
-    } catch {
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = userCode;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setSnackbarMessage("Code copied!");
-      setShowSnackbar(true);
-    }
-  };
 
   const exportData = () => {
     const data = PrivacyStorage.exportAnalyses();
@@ -119,7 +91,7 @@ export const PrivacySettings: React.FC = () => {
       >
         <CardContent>
           {/* Header */}
-          <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={2}>
+          <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={1}>
             <StorageIcon />
             <Typography variant="h6" component="h2" sx={{ color: "white" }}>
               💾 Your Data
@@ -129,113 +101,24 @@ export const PrivacySettings: React.FC = () => {
           {/* Status Info */}
           <Box
             sx={{
-              mt: 2,
               p: 1.5,
               backgroundColor: "rgba(255,255,255,0.1)",
               borderRadius: 2,
             }}
           >
-            <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-              <Typography variant="body2" sx={{ color: "white", textAlign: "center" }}>
-                📱 All your analyses are stored locally in your browser
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* User Code Section */}
-          <Box
-            sx={{
-              mt: 2,
-              p: 1.5,
-              backgroundColor: "rgba(255,255,255,0.1)",
-              borderRadius: 2,
-              border: "1px solid rgba(255,255,255,0.2)",
-            }}
-          >
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              gap={1}
-            >
-              <Box display="flex" alignItems="center" gap={1}>
-                <Typography
-                  variant="caption"
-                  fontWeight="bold"
-                  sx={{ color: "white" }}
-                >
-                  🎫 Your Code:
-                </Typography>
-                <Typography
-                  variant="body2"
-                  component="code"
-                  sx={{
-                    fontFamily: "monospace",
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    padding: "2px 6px",
-                    borderRadius: 1,
-                    letterSpacing: 1,
-                    color: "white",
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  {showUserCode ? userCode : "•••••-••••-••"}
-                </Typography>
-                <Tooltip title={showUserCode ? "Hide" : "Show"}>
-                  <IconButton
-                    size="small"
-                    onClick={() => setShowUserCode(!showUserCode)}
-                    sx={{ color: "white", p: 0.5 }}
-                  >
-                    {showUserCode ? (
-                      <VisibilityOffIcon sx={{ fontSize: 18 }} />
-                    ) : (
-                      <VisibilityIcon sx={{ fontSize: 18 }} />
-                    )}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Copy">
-                  <IconButton
-                    size="small"
-                    onClick={copyUserCode}
-                    sx={{ color: "white", p: 0.5 }}
-                  >
-                    <CopyIcon sx={{ fontSize: 18 }} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              <Typography
-                variant="caption"
-                sx={{ color: "rgba(255,255,255,0.7)", fontSize: "0.7rem" }}
-              >
-                Use this code to identify your backups
-              </Typography>
-            </Box>
+            <Typography variant="body2" sx={{ color: "white", textAlign: "center" }}>
+              📱 All your analyses are stored locally in your browser
+            </Typography>
           </Box>
 
           {/* Action Buttons */}
           <Box
             display="flex"
             gap={1}
-            mt={3}
+            mt={2}
             flexDirection={isMobile ? "column" : "row"}
-            flexWrap="wrap"
+            justifyContent="center"
           >
-            <Button
-              variant="outlined"
-              startIcon={<InfoIcon />}
-              onClick={() => setShowInfoDialog(true)}
-              sx={{
-                color: "white",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": { borderColor: "white" },
-              }}
-              fullWidth={isMobile}
-            >
-              Learn More
-            </Button>
-
             <Button
               variant="outlined"
               startIcon={<DownloadIcon />}
@@ -245,7 +128,6 @@ export const PrivacySettings: React.FC = () => {
                 borderColor: "rgba(255,255,255,0.5)",
                 "&:hover": { borderColor: "white" },
               }}
-              fullWidth={isMobile}
             >
               Export
             </Button>
@@ -259,9 +141,21 @@ export const PrivacySettings: React.FC = () => {
                 borderColor: "rgba(255,255,255,0.5)",
                 "&:hover": { borderColor: "white" },
               }}
-              fullWidth={isMobile}
             >
               Import
+            </Button>
+
+            <Button
+              variant="outlined"
+              startIcon={<InfoIcon />}
+              onClick={() => setShowInfoDialog(true)}
+              sx={{
+                color: "white",
+                borderColor: "rgba(255,255,255,0.5)",
+                "&:hover": { borderColor: "white" },
+              }}
+            >
+              Info
             </Button>
 
             <Button
@@ -276,7 +170,6 @@ export const PrivacySettings: React.FC = () => {
                   backgroundColor: "rgba(255,107,107,0.1)",
                 },
               }}
-              fullWidth={isMobile}
             >
               Reset
             </Button>
@@ -288,7 +181,7 @@ export const PrivacySettings: React.FC = () => {
       <Dialog
         open={showInfoDialog}
         onClose={() => setShowInfoDialog(false)}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
         fullScreen={isMobile}
       >
@@ -308,15 +201,12 @@ export const PrivacySettings: React.FC = () => {
           <Typography variant="h6" color="primary" gutterBottom>
             ✅ Local Storage
           </Typography>
-          <List>
+          <List dense>
             <ListItem>
-              <ListItemText primary="• Your analyses are stored in your browser's localStorage" />
+              <ListItemText primary="• Your analyses are stored in your browser" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Data stays on your device - nothing is sent to any server" />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="• Use Export/Import to backup or transfer your data" />
+              <ListItemText primary="• Nothing is sent to any server" />
             </ListItem>
             <ListItem>
               <ListItemText primary="• Clearing browser data will delete your analyses" />
@@ -328,39 +218,29 @@ export const PrivacySettings: React.FC = () => {
           <Typography variant="h6" color="primary" gutterBottom>
             💡 Tips
           </Typography>
-          <List>
+          <List dense>
             <ListItem>
               <ListItemText
                 primary="Backup regularly"
-                secondary="Use the Export button to save your analyses as a JSON file"
+                secondary="Use Export to save your analyses as a JSON file"
               />
             </ListItem>
             <ListItem>
               <ListItemText
                 primary="Transfer between devices"
-                secondary="Export from one device and Import on another"
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemText
-                primary="Your code is unique"
-                secondary="Save it to identify your backups later"
+                secondary="Export from one device, Import on another"
               />
             </ListItem>
           </List>
 
           <Alert severity="info" sx={{ mt: 2 }}>
             <Typography variant="body2">
-              <strong>Privacy:</strong> ManaTuner Pro does not collect any personal data.
-              Everything stays in your browser.
+              <strong>Privacy:</strong> ManaTuner Pro does not collect any data.
             </Typography>
           </Alert>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setShowInfoDialog(false)}
-            variant="contained"
-          >
+          <Button onClick={() => setShowInfoDialog(false)} variant="contained">
             Got it
           </Button>
         </DialogActions>
@@ -375,18 +255,10 @@ export const PrivacySettings: React.FC = () => {
         <DialogTitle color="error">⚠️ Delete all data</DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
-            This action will permanently delete:
+            This will permanently delete all your saved analyses.
           </Typography>
-          <List>
-            <ListItem>
-              <ListItemText primary="• Your personal code" />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="• All your saved analyses" />
-            </ListItem>
-          </List>
           <Alert severity="warning" sx={{ mt: 2 }}>
-            This action is irreversible! Consider exporting your data first.
+            This action is irreversible! Consider exporting first.
           </Alert>
         </DialogContent>
         <DialogActions>
@@ -394,7 +266,6 @@ export const PrivacySettings: React.FC = () => {
           <Button
             onClick={() => {
               PrivacyStorage.clearAllLocalData();
-              setUserCode(PrivacyStorage.getUserCode());
               setShowDataDialog(false);
               setSnackbarMessage("All data has been deleted");
               setShowSnackbar(true);

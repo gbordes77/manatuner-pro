@@ -1,5 +1,7 @@
 import {
-    Code as CodeIcon
+    DeleteForever as DeleteIcon,
+    Download as DownloadIcon,
+    Storage as StorageIcon
 } from '@mui/icons-material'
 import {
     Alert,
@@ -11,11 +13,9 @@ import {
     Typography
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import CloudSyncSettings from '../components/CloudSyncSettings'
-import { clearAllLocalData, exportAnalyses, getMyAnalyses, getUserCode } from '../lib/privacy'
+import { clearAllLocalData, exportAnalyses, getMyAnalyses } from '../lib/privacy'
 
 const MyAnalysesPage: React.FC = () => {
-  const [userCode] = useState(() => getUserCode())
   const [analyses, setAnalyses] = useState<any[]>([])
 
   useEffect(() => {
@@ -23,34 +23,46 @@ const MyAnalysesPage: React.FC = () => {
     setAnalyses(localAnalyses)
   }, [])
 
+  const handleExport = () => {
+    const data = exportAnalyses()
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `manatuner-backup-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleClearAll = () => {
+    if (window.confirm('Are you sure you want to delete all your analyses? This cannot be undone.')) {
+      clearAllLocalData()
+      setAnalyses([])
+    }
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
         📊 My Analyses
       </Typography>
 
-      {/* Cloud Sync Settings */}
-      <CloudSyncSettings
-        onSyncModeChange={(enabled) => {
-          console.log('Cloud sync mode changed:', enabled)
-          // You can add additional logic here if needed
-        }}
-      />
-
-      {/* Code Personnel */}
-      <Card sx={{ mb: 4, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      {/* Storage Info */}
+      <Card sx={{ mb: 4, background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' }}>
         <CardContent>
           <Box display="flex" alignItems="center" gap={2}>
-            <CodeIcon sx={{ color: 'white' }} />
+            <StorageIcon sx={{ color: 'white' }} />
             <Typography variant="h6" sx={{ color: 'white' }}>
-              Your Personal Code
+              Local Storage
             </Typography>
           </Box>
-          <Typography variant="h4" sx={{ color: 'white', fontFamily: 'monospace', mt: 1 }}>
-            {userCode}
+          <Typography variant="body1" sx={{ color: 'white', mt: 1 }}>
+            {analyses.length} analysis(es) saved in your browser
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mt: 1 }}>
-            Note this code to retrieve your analyses on any device
+            Use Export to backup your data or transfer to another device
           </Typography>
         </CardContent>
       </Card>
@@ -59,7 +71,7 @@ const MyAnalysesPage: React.FC = () => {
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            📈 Your Analyses ({analyses.length})
+            📈 Your Analyses
           </Typography>
 
           {analyses.length === 0 ? (
@@ -68,25 +80,21 @@ const MyAnalysesPage: React.FC = () => {
             </Alert>
           ) : (
             <Box>
-              <Typography variant="body1" color="text.secondary">
-                {analyses.length} analysis(es) found in local storage.
-              </Typography>
-
               <Box mt={2} display="flex" gap={2} flexWrap="wrap">
                 <Button
-                  variant="outlined"
-                  onClick={exportAnalyses}
-                  size="small"
+                  variant="contained"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleExport}
                 >
-                  📤 Export
+                  Export All
                 </Button>
                 <Button
                   variant="outlined"
                   color="error"
-                  onClick={clearAllLocalData}
-                  size="small"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleClearAll}
                 >
-                  🗑️ Clear All Data
+                  Clear All
                 </Button>
               </Box>
             </Box>
@@ -94,17 +102,16 @@ const MyAnalysesPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Information Privacy-First */}
+      {/* Information Privacy */}
       <Card sx={{ mt: 4, bgcolor: 'success.light', color: 'success.contrastText' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            🔐 Privacy-First Architecture
+            🔒 Privacy
           </Typography>
           <Typography variant="body2">
             ✅ Your data stays on your device<br/>
-            ✅ No transmission to servers<br/>
-            ✅ Full control of your information<br/>
-            ✅ Personal code to retrieve your analyses
+            ✅ Nothing is sent to any server<br/>
+            ✅ Full control of your data
           </Typography>
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { AnalysisRecord, PrivacyStorage } from "../lib/privacy";
 
 interface SavedAnalysis {
@@ -8,16 +8,11 @@ interface SavedAnalysis {
 }
 
 interface UsePrivacyStorageReturn {
-  // Core privacy storage
-  userCode: string;
-
   // Analysis management
   saveAnalysis: (
     deckList: string,
     analysisResult: any,
-    options?: {
-      name?: string;
-    },
+    options?: { name?: string },
   ) => Promise<{ shareId: string; success: boolean }>;
 
   getAnalysis: (shareId: string) => Promise<{
@@ -34,30 +29,20 @@ interface UsePrivacyStorageReturn {
   error: string | null;
 
   // Utility functions
-  shareAnalysisLink: (shareId: string) => Promise<void>;
   resetAllData: () => void;
-  exportUserData: () => Promise<string>;
-  importUserData: (jsonData: string) => Promise<boolean>;
+  exportUserData: () => string;
+  importUserData: (jsonData: string) => boolean;
 }
 
 export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
-  const [userCode, setUserCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Initialize user code
-  useEffect(() => {
-    const code = PrivacyStorage.getUserCode();
-    setUserCode(code);
-  }, []);
 
   const saveAnalysis = useCallback(
     async (
       deckList: string,
       analysisResult: any,
-      options: {
-        name?: string;
-      } = {},
+      options: { name?: string } = {},
     ) => {
       setIsLoading(true);
       setError(null);
@@ -121,9 +106,7 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
       }));
     } catch (err) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Error loading analyses";
+        err instanceof Error ? err.message : "Error loading analyses";
       setError(errorMessage);
       return [];
     } finally {
@@ -131,31 +114,12 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
     }
   }, []);
 
-  const shareAnalysisLink = useCallback(async (shareId: string) => {
-    const url = `${window.location.origin}/analysis/${shareId}`;
-
-    try {
-      await navigator.clipboard.writeText(url);
-      console.log("Link copied to clipboard");
-    } catch {
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = url;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      console.log("Link copied (fallback)");
-    }
-  }, []);
-
   const resetAllData = useCallback(() => {
     PrivacyStorage.clearAllLocalData();
-    setUserCode(PrivacyStorage.getUserCode());
     setError(null);
   }, []);
 
-  const exportUserData = useCallback(async () => {
+  const exportUserData = useCallback(() => {
     try {
       return PrivacyStorage.exportAnalyses();
     } catch (err) {
@@ -166,7 +130,7 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
     }
   }, []);
 
-  const importUserData = useCallback(async (jsonData: string) => {
+  const importUserData = useCallback((jsonData: string) => {
     try {
       PrivacyStorage.importAnalyses(jsonData);
       return true;
@@ -179,13 +143,11 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
   }, []);
 
   return {
-    userCode,
     saveAnalysis,
     getAnalysis,
     getUserAnalyses,
     isLoading,
     error,
-    shareAnalysisLink,
     resetAllData,
     exportUserData,
     importUserData,
