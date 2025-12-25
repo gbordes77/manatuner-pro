@@ -1,34 +1,34 @@
 import {
-  Add as AddIcon,
-  Analytics as AnalyticsIcon,
-  Assessment as AssessmentIcon,
-  Speed as SpeedIcon,
-  Terrain as TerrainIcon,
-  ViewList as ViewListIcon,
+    Add as AddIcon,
+    Analytics as AnalyticsIcon,
+    Assessment as AssessmentIcon,
+    Speed as SpeedIcon,
+    Terrain as TerrainIcon,
+    ViewList as ViewListIcon,
 } from "@mui/icons-material";
 import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Container,
-  Divider,
-  Grid,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Snackbar,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-  useMediaQuery,
-  useTheme,
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    Container,
+    Divider,
+    Grid,
+    LinearProgress,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    Snackbar,
+    Tab,
+    Tabs,
+    TextField,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
@@ -664,15 +664,7 @@ const AnalyzerPage: React.FC = () => {
       </Box>
 
       {/* Privacy Settings */}
-      <PrivacySettings
-        currentMode="private"
-        onPrivacyModeChange={(isPrivate) => {
-          console.log(
-            "Privacy mode changed:",
-            isPrivate ? "private" : "public",
-          );
-        }}
-      />
+      <PrivacySettings />
 
       {/* Analysis Actions - Save, Share, History */}
       {analysisResult && (

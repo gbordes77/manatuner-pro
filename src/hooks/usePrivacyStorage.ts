@@ -5,7 +5,6 @@ interface SavedAnalysis {
   shareId: string;
   name: string;
   createdAt: string;
-  isPrivate: boolean;
 }
 
 interface UsePrivacyStorageReturn {
@@ -18,8 +17,6 @@ interface UsePrivacyStorageReturn {
     analysisResult: any,
     options?: {
       name?: string;
-      isPrivate?: boolean;
-      shareWithDeck?: boolean;
     },
   ) => Promise<{ shareId: string; success: boolean }>;
 
@@ -28,7 +25,6 @@ interface UsePrivacyStorageReturn {
     deckList: string | null;
     name: string | null;
     createdAt: string;
-    isPrivate: boolean;
   } | null>;
 
   getUserAnalyses: () => Promise<SavedAnalysis[]>;
@@ -37,45 +33,22 @@ interface UsePrivacyStorageReturn {
   isLoading: boolean;
   error: string | null;
 
-  // Privacy controls
-  isPrivateMode: boolean;
-  setPrivateMode: (isPrivate: boolean) => void;
-
   // Utility functions
   shareAnalysisLink: (shareId: string) => Promise<void>;
   resetAllData: () => void;
   exportUserData: () => Promise<string>;
   importUserData: (jsonData: string) => Promise<boolean>;
-
-  // Encryption status
-  isEncryptionReady: boolean;
-  verifyEncryption: () => Promise<boolean>;
 }
 
 export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
   const [userCode, setUserCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isPrivateMode, setIsPrivateModeState] = useState(true);
-  const [isEncryptionReady, setIsEncryptionReady] = useState(false);
 
-  // Initialize user code and verify encryption
+  // Initialize user code
   useEffect(() => {
-    const initialize = async () => {
-      const code = PrivacyStorage.getUserCode();
-      setUserCode(code);
-      setIsPrivateModeState(PrivacyStorage.getPrivacyMode());
-
-      // Verify that encryption is working
-      const isValid = await PrivacyStorage.verifyUserCode();
-      setIsEncryptionReady(isValid);
-
-      if (!isValid) {
-        setError("Encryption verification failed. Your data may not be accessible.");
-      }
-    };
-
-    initialize();
+    const code = PrivacyStorage.getUserCode();
+    setUserCode(code);
   }, []);
 
   const saveAnalysis = useCallback(
@@ -84,32 +57,28 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
       analysisResult: any,
       options: {
         name?: string;
-        isPrivate?: boolean;
-        shareWithDeck?: boolean;
       } = {},
     ) => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Use async version with encryption
-        const id = await PrivacyStorage.saveAnalysisAsync({
+        const id = PrivacyStorage.saveAnalysis({
           deckName: options.name || "Unnamed Deck",
           deckList,
           analysis: analysisResult,
-          isPrivate: options.isPrivate ?? isPrivateMode,
         });
         return { shareId: id, success: true };
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "Erreur lors de la sauvegarde";
+          err instanceof Error ? err.message : "Error saving analysis";
         setError(errorMessage);
         return { shareId: "", success: false };
       } finally {
         setIsLoading(false);
       }
     },
-    [isPrivateMode],
+    [],
   );
 
   const getAnalysis = useCallback(async (shareId: string) => {
@@ -117,8 +86,7 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
     setError(null);
 
     try {
-      // Use async version with decryption
-      const analyses = await PrivacyStorage.getMyAnalysesAsync();
+      const analyses = PrivacyStorage.getMyAnalyses();
       const analysis = analyses.find(
         (a: AnalysisRecord) => a.id === shareId || a.shareId === shareId,
       );
@@ -129,11 +97,10 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
         deckList: analysis.deckList,
         name: analysis.deckName,
         createdAt: analysis.date || new Date(analysis.timestamp).toISOString(),
-        isPrivate: analysis.isPrivate,
       };
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Erreur lors du chargement";
+        err instanceof Error ? err.message : "Error loading analysis";
       setError(errorMessage);
       return null;
     } finally {
@@ -146,19 +113,17 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
     setError(null);
 
     try {
-      // Use async version with decryption
-      const analyses = await PrivacyStorage.getMyAnalysesAsync();
+      const analyses = PrivacyStorage.getMyAnalyses();
       return analyses.map((a: AnalysisRecord) => ({
         shareId: a.id,
         name: a.deckName,
         createdAt: a.date || new Date(a.timestamp).toISOString(),
-        isPrivate: a.isPrivate,
       }));
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Erreur lors du chargement des analyses";
+          : "Error loading analyses";
       setError(errorMessage);
       return [];
     } finally {
@@ -171,8 +136,8 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
 
     try {
       await navigator.clipboard.writeText(url);
-      console.log("Lien copie dans le presse-papiers");
-    } catch (err) {
+      console.log("Link copied to clipboard");
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
       textArea.value = url;
@@ -180,24 +145,22 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
       textArea.select();
       document.execCommand("copy");
       document.body.removeChild(textArea);
-      console.log("Lien copie (fallback)");
+      console.log("Link copied (fallback)");
     }
   }, []);
 
   const resetAllData = useCallback(() => {
     PrivacyStorage.clearAllLocalData();
     setUserCode(PrivacyStorage.getUserCode());
-    setIsEncryptionReady(true);
     setError(null);
   }, []);
 
   const exportUserData = useCallback(async () => {
     try {
-      // Use async version to properly decrypt data for export
-      return await PrivacyStorage.exportAnalysesAsync();
+      return PrivacyStorage.exportAnalyses();
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Erreur lors de l'export";
+        err instanceof Error ? err.message : "Error exporting data";
       setError(errorMessage);
       return "[]";
     }
@@ -205,32 +168,12 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
 
   const importUserData = useCallback(async (jsonData: string) => {
     try {
-      // Use async version to properly encrypt imported data
-      await PrivacyStorage.importAnalysesAsync(jsonData);
+      PrivacyStorage.importAnalyses(jsonData);
       return true;
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Erreur lors de l'import";
+        err instanceof Error ? err.message : "Error importing data";
       setError(errorMessage);
-      return false;
-    }
-  }, []);
-
-  const setPrivateMode = useCallback((isPrivate: boolean) => {
-    setIsPrivateModeState(isPrivate);
-    PrivacyStorage.setPrivacyMode(isPrivate);
-  }, []);
-
-  const verifyEncryption = useCallback(async () => {
-    try {
-      const isValid = await PrivacyStorage.verifyUserCode();
-      setIsEncryptionReady(isValid);
-      if (!isValid) {
-        setError("Encryption verification failed");
-      }
-      return isValid;
-    } catch (err) {
-      setError("Failed to verify encryption");
       return false;
     }
   }, []);
@@ -242,13 +185,9 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
     getUserAnalyses,
     isLoading,
     error,
-    isPrivateMode,
-    setPrivateMode,
     shareAnalysisLink,
     resetAllData,
     exportUserData,
     importUserData,
-    isEncryptionReady,
-    verifyEncryption,
   };
 };

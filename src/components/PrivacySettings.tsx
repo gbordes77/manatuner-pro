@@ -4,12 +4,8 @@ import {
     DeleteForever as DeleteIcon,
     Download as DownloadIcon,
     Info as InfoIcon,
-    Lock as LockIcon,
-    Public as PublicIcon,
-    Security as SecurityIcon,
-    Shield as ShieldIcon,
+    Storage as StorageIcon,
     Upload as UploadIcon,
-    Verified as VerifiedIcon,
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
 } from "@mui/icons-material";
@@ -19,19 +15,16 @@ import {
     Button,
     Card,
     CardContent,
-    Chip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     Divider,
-    FormControlLabel,
     IconButton,
     List,
     ListItem,
     ListItemText,
     Snackbar,
-    Switch,
     Tooltip,
     Typography,
     useMediaQuery,
@@ -40,22 +33,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { PrivacyStorage } from "../lib/privacy";
 
-interface PrivacySettingsProps {
-  onPrivacyModeChange?: (isPrivate: boolean) => void;
-  currentMode?: "private" | "public";
-}
-
-export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
-  onPrivacyModeChange,
-  currentMode = "private",
-}) => {
+export const PrivacySettings: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [userCode, setUserCode] = useState("");
-  const [isPrivate, setIsPrivate] = useState(currentMode === "private");
   const [showUserCode, setShowUserCode] = useState(false);
-  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [showDataDialog, setShowDataDialog] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -63,12 +47,6 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   useEffect(() => {
     setUserCode(PrivacyStorage.getUserCode());
   }, []);
-
-  const handlePrivacyToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrivateMode = event.target.checked;
-    setIsPrivate(newPrivateMode);
-    onPrivacyModeChange?.(newPrivateMode);
-  };
 
   const copyUserCode = async () => {
     try {
@@ -134,148 +112,37 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         elevation={3}
         sx={{
           mb: 3,
-          background: isPrivate
-            ? "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)"
-            : "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+          background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)",
           color: "white",
           "& .MuiTypography-root": { color: "white !important" },
-          "& .MuiListItemText-primary": { color: "white !important" },
-          "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.9) !important" },
-          "& .MuiAlert-message": { color: "white !important" },
-          "& .MuiAlert-message *": { color: "white !important" },
         }}
       >
         <CardContent>
-          <Box display="flex" alignItems="center" justifyContent="center" gap={4} mb={2}>
-            <Box display="flex" alignItems="center" gap={2}>
-              {isPrivate ? <LockIcon /> : <PublicIcon />}
-              <Typography variant="h6" component="h2" sx={{ color: "white" }}>
-                🔐 Privacy Settings
-              </Typography>
-            </Box>
-
-            <FormControlLabel
-              sx={{ mr: 0 }}
-              control={
-                <Switch
-                  checked={isPrivate}
-                  onChange={handlePrivacyToggle}
-                  color="default"
-                  sx={{
-                    "& .MuiSwitch-switchBase.Mui-checked": {
-                      color: "white",
-                    },
-                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                      backgroundColor: "rgba(255,255,255,0.3)",
-                    },
-                  }}
-                />
-              }
-              label={
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="bold"
-                    sx={{ color: "white" }}
-                  >
-                    {isPrivate ? "Private Mode Active" : "Public Mode"}
-                  </Typography>
-                  <Chip
-                    label={isPrivate ? "SECURE" : "SHARED"}
-                  size="small"
-                  sx={{
-                    backgroundColor: isPrivate ? "#10b981" : "#f59e0b",
-                    color: "white",
-                    fontWeight: "bold",
-                  }}
-                />
-              </Box>
-            }
-            />
+          {/* Header */}
+          <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={2}>
+            <StorageIcon />
+            <Typography variant="h6" component="h2" sx={{ color: "white" }}>
+              💾 Your Data
+            </Typography>
           </Box>
 
-          {/* Security Status - Compact Inline Layout */}
-          {isPrivate ? (
-            <Box
-              sx={{
-                mt: 2,
-                p: 1.5,
-                backgroundColor: "rgba(255,255,255,0.1)",
-                borderRadius: 2,
-              }}
-            >
-              <Box
-                display="flex"
-                alignItems="stretch"
-                gap={0}
-              >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={0.5}
-                  sx={{
-                    flex: 1,
-                    borderRight: "1px solid rgba(255,255,255,0.2)",
-                    py: 0.5
-                  }}
-                >
-                  <ShieldIcon sx={{ color: "#4ade80", fontSize: 18 }} />
-                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
-                    Encrypted locally
-                  </Typography>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={0.5}
-                  sx={{
-                    flex: 1,
-                    borderRight: "1px solid rgba(255,255,255,0.2)",
-                    py: 0.5
-                  }}
-                >
-                  <VerifiedIcon sx={{ color: "#4ade80", fontSize: 18 }} />
-                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
-                    No data sent
-                  </Typography>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={0.5}
-                  sx={{
-                    flex: 1,
-                    py: 0.5
-                  }}
-                >
-                  <SecurityIcon sx={{ color: "#4ade80", fontSize: 18 }} />
-                  <Typography variant="caption" sx={{ color: "white", fontWeight: 500 }}>
-                    Zero-Knowledge
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-          ) : (
-            <Alert
-              severity="info"
-              sx={{
-                mt: 2,
-                backgroundColor: "rgba(255,255,255,0.1)",
-                color: "white",
-                "& .MuiAlert-icon": { color: "white" },
-                py: 0.5,
-              }}
-            >
-              <Typography variant="caption" sx={{ color: "white" }}>
-                🌍 Public Mode - Analyses contribute to community stats
+          {/* Status Info */}
+          <Box
+            sx={{
+              mt: 2,
+              p: 1.5,
+              backgroundColor: "rgba(255,255,255,0.1)",
+              borderRadius: 2,
+            }}
+          >
+            <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+              <Typography variant="body2" sx={{ color: "white", textAlign: "center" }}>
+                📱 All your analyses are stored locally in your browser
               </Typography>
-            </Alert>
-          )}
+            </Box>
+          </Box>
 
-          {/* User Code Section - Compact Inline Layout */}
+          {/* User Code Section */}
           <Box
             sx={{
               mt: 2,
@@ -342,7 +209,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 variant="caption"
                 sx={{ color: "rgba(255,255,255,0.7)", fontSize: "0.7rem" }}
               >
-                Save to sync across devices
+                Use this code to identify your backups
               </Typography>
             </Box>
           </Box>
@@ -358,7 +225,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             <Button
               variant="outlined"
               startIcon={<InfoIcon />}
-              onClick={() => setShowPrivacyDialog(true)}
+              onClick={() => setShowInfoDialog(true)}
               sx={{
                 color: "white",
                 borderColor: "rgba(255,255,255,0.5)",
@@ -417,20 +284,20 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
         </CardContent>
       </Card>
 
-      {/* Privacy Information Dialog */}
+      {/* Information Dialog */}
       <Dialog
-        open={showPrivacyDialog}
-        onClose={() => setShowPrivacyDialog(false)}
+        open={showInfoDialog}
+        onClose={() => setShowInfoDialog(false)}
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
       >
         <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ShieldIcon color="primary" />
-          Our Privacy-First Commitment
+          <StorageIcon color="primary" />
+          How Your Data is Stored
           {isMobile && (
             <IconButton
-              onClick={() => setShowPrivacyDialog(false)}
+              onClick={() => setShowInfoDialog(false)}
               sx={{ ml: "auto" }}
             >
               <CloseIcon />
@@ -438,63 +305,63 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           )}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="h6" color="error" gutterBottom>
-            ❌ What we DO NOT do:
+          <Typography variant="h6" color="primary" gutterBottom>
+            ✅ Local Storage
           </Typography>
           <List>
             <ListItem>
-              <ListItemText primary="• We NEVER store your decks in plain text" />
+              <ListItemText primary="• Your analyses are stored in your browser's localStorage" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• We CANNOT read your private decks" />
+              <ListItemText primary="• Data stays on your device - nothing is sent to any server" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• We sell NO data whatsoever" />
+              <ListItemText primary="• Use Export/Import to backup or transfer your data" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• We DO NOT use tracking cookies" />
+              <ListItemText primary="• Clearing browser data will delete your analyses" />
             </ListItem>
           </List>
 
           <Divider sx={{ my: 2 }} />
 
           <Typography variant="h6" color="primary" gutterBottom>
-            ✅ How it works:
+            💡 Tips
           </Typography>
           <List>
             <ListItem>
               <ListItemText
-                primary="1. Private Mode (default)"
-                secondary="Your decks remain encrypted on your device. Only mathematical results are saved."
+                primary="Backup regularly"
+                secondary="Use the Export button to save your analyses as a JSON file"
               />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary="2. Client-Side Encryption"
-                secondary="If you choose to save online, everything is encrypted with a key that only YOU possess."
+                primary="Transfer between devices"
+                secondary="Export from one device and Import on another"
               />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary="3. Secure Sharing"
-                secondary="Share links contain only the ID. The recipient sees the results, not necessarily the deck."
+                primary="Your code is unique"
+                secondary="Save it to identify your backups later"
               />
             </ListItem>
           </List>
 
           <Alert severity="info" sx={{ mt: 2 }}>
             <Typography variant="body2">
-              <strong>Full Transparency:</strong> Our code is open source. You
-              can verify exactly what we do with your data on GitHub.
+              <strong>Privacy:</strong> ManaTuner Pro does not collect any personal data.
+              Everything stays in your browser.
             </Typography>
           </Alert>
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => setShowPrivacyDialog(false)}
+            onClick={() => setShowInfoDialog(false)}
             variant="contained"
           >
-            I understand
+            Got it
           </Button>
         </DialogActions>
       </Dialog>
@@ -517,12 +384,9 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             <ListItem>
               <ListItemText primary="• All your saved analyses" />
             </ListItem>
-            <ListItem>
-              <ListItemText primary="• Your encryption keys" />
-            </ListItem>
           </List>
           <Alert severity="warning" sx={{ mt: 2 }}>
-            This action is irreversible!
+            This action is irreversible! Consider exporting your data first.
           </Alert>
         </DialogContent>
         <DialogActions>
@@ -530,6 +394,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           <Button
             onClick={() => {
               PrivacyStorage.clearAllLocalData();
+              setUserCode(PrivacyStorage.getUserCode());
               setShowDataDialog(false);
               setSnackbarMessage("All data has been deleted");
               setShowSnackbar(true);

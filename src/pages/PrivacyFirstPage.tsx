@@ -56,7 +56,7 @@ const PrivacyFirstPage: React.FC = () => {
       others: { text: "✅ Yes", color: "success" },
     },
     {
-      feature: "Client-side encryption",
+      feature: "100% Local storage",
       manatuner: { text: "✅ Yes", color: "success" },
       others: { text: "❌ No", color: "error" },
     },

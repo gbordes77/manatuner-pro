@@ -55,7 +55,7 @@ export const HomePage: React.FC = () => {
   ];
 
   const privacyFeatures = [
-    { icon: "🔒", title: "Zero-Knowledge", desc: "Client-side encryption" },
+    { icon: "🔒", title: "Privacy-First", desc: "No data collected" },
     { icon: "📱", title: "100% Local", desc: "Works offline" },
     { icon: "🔑", title: "Personal Code", desc: "Retrieve your analyses" },
     { icon: "🚀", title: "Ultra Fast", desc: "No server = speed" },
