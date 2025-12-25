@@ -1,5 +1,6 @@
 import {
     Analytics as AnalyticsIcon,
+    ArrowForward as ArrowForwardIcon,
     Book as BookIcon,
     MenuBook as MenuBookIcon,
     Security as SecurityIcon,
@@ -9,11 +10,9 @@ import {
     Widgets as WidgetsIcon,
 } from "@mui/icons-material";
 import {
-    Avatar,
     Box,
     Button,
     Card,
-    CardActions,
     CardContent,
     Chip,
     Container,
@@ -30,36 +29,43 @@ export const HomePage: React.FC = () => {
 
   const features = [
     {
-      icon: <AnalyticsIcon color="primary" sx={{ fontSize: 40 }} />,
+      icon: <AnalyticsIcon color="primary" sx={{ fontSize: 32 }} />,
       title: "Advanced Analytics",
       description:
         "Precise manabase calculations using Frank Karsten's research and hypergeometric distribution.",
     },
     {
-      icon: <SpeedIcon color="primary" sx={{ fontSize: 40 }} />,
+      icon: <SpeedIcon color="primary" sx={{ fontSize: 32 }} />,
       title: "Lightning Fast",
       description:
         "Instant results with cached Scryfall data and optimized algorithms.",
     },
     {
-      icon: <SecurityIcon color="primary" sx={{ fontSize: 40 }} />,
+      icon: <SecurityIcon color="primary" sx={{ fontSize: 32 }} />,
       title: "Secure & Private",
       description:
         "Your deck data stays private. No tracking, no ads, just pure manabase analysis.",
     },
     {
-      icon: <WidgetsIcon color="primary" sx={{ fontSize: 40 }} />,
+      icon: <WidgetsIcon color="primary" sx={{ fontSize: 32 }} />,
       title: "All Formats",
       description:
         "Support for Standard, Modern, Legacy, Commander, and more MTG formats.",
     },
   ];
 
+  const privacyFeatures = [
+    { icon: "🔒", title: "Zero-Knowledge", desc: "Client-side encryption" },
+    { icon: "📱", title: "100% Local", desc: "Works offline" },
+    { icon: "🔑", title: "Personal Code", desc: "Retrieve your analyses" },
+    { icon: "🚀", title: "Ultra Fast", desc: "No server = speed" },
+  ];
+
   return (
     <Container maxWidth="lg">
-      {/* Hero Section */}
+      {/* Hero Section - Optimisation 3: Reduced spacing */}
       <AnimatedContainer animation="fadeInUp">
-        <Box sx={{ textAlign: "center", py: 4 }}>
+        <Box sx={{ textAlign: "center", py: 2 }}>
           <Typography
             variant="h2"
             component="h1"
@@ -80,7 +86,7 @@ export const HomePage: React.FC = () => {
               display: "flex",
               gap: 1,
               justifyContent: "center",
-              mb: 3,
+              mb: 2,
               flexWrap: "wrap",
             }}
           >
@@ -122,7 +128,7 @@ export const HomePage: React.FC = () => {
 
           <Box
             sx={{
-              mt: 4,
+              mt: 2,
               display: "flex",
               gap: 3,
               justifyContent: "center",
@@ -137,7 +143,7 @@ export const HomePage: React.FC = () => {
                 startIcon={<MenuBookIcon />}
                 sx={{
                   px: 5,
-                  py: 2,
+                  py: 1.5,
                   fontSize: "1.1rem",
                   fontWeight: "bold",
                   borderRadius: 3,
@@ -154,7 +160,7 @@ export const HomePage: React.FC = () => {
                   transition: "all 0.3s ease-in-out",
                 }}
               >
-                📖 Read Guide First
+                Read Guide First
               </Button>
             </AnimatedContainer>
 
@@ -166,7 +172,7 @@ export const HomePage: React.FC = () => {
                 startIcon={<AnalyticsIcon />}
                 sx={{
                   px: 6,
-                  py: 2,
+                  py: 1.5,
                   fontSize: "1.2rem",
                   fontWeight: "bold",
                   borderRadius: 3,
@@ -183,7 +189,7 @@ export const HomePage: React.FC = () => {
                   transition: "all 0.3s ease-in-out",
                 }}
               >
-                🚀 Start Analyzing
+                Start Analyzing
               </Button>
             </AnimatedContainer>
 
@@ -195,7 +201,7 @@ export const HomePage: React.FC = () => {
                 color="secondary"
                 sx={{
                   px: 5,
-                  py: 2,
+                  py: 1.5,
                   fontSize: "1.1rem",
                   fontWeight: "bold",
                   borderRadius: 3,
@@ -212,17 +218,17 @@ export const HomePage: React.FC = () => {
                   transition: "all 0.3s ease-in-out",
                 }}
               >
-                📚 Learn More
+                Learn More
               </Button>
             </AnimatedContainer>
           </Box>
         </Box>
       </AnimatedContainer>
 
-      {/* Features Grid */}
-      <Grid container spacing={4} sx={{ py: 6 }}>
+      {/* Features Grid - Optimisation 4: 4 colonnes au lieu de 2x2 */}
+      <Grid container spacing={2} sx={{ py: 3 }}>
         {features.map((feature, index) => (
-          <Grid item xs={12} md={6} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <Card
               sx={{
                 height: "100%",
@@ -235,9 +241,9 @@ export const HomePage: React.FC = () => {
                 },
               }}
             >
-              <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
-                <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                <Typography variant="h6" component="h2" gutterBottom>
+              <CardContent sx={{ flexGrow: 1, textAlign: "center", py: 2 }}>
+                <Box sx={{ mb: 1 }}>{feature.icon}</Box>
+                <Typography variant="subtitle1" component="h2" gutterBottom fontWeight="bold">
                   {feature.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -247,186 +253,134 @@ export const HomePage: React.FC = () => {
             </Card>
           </Grid>
         ))}
+      </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              transition: "all 0.3s ease-in-out",
-              "&:hover": {
-                transform: "translateY(-8px)",
-                boxShadow: 4,
-              },
-            }}
-          >
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box display="flex" alignItems="center" mb={2}>
-                <Avatar sx={{ bgcolor: "secondary.main", mr: 2 }}>
-                  <BookIcon />
-                </Avatar>
-                <Typography variant="h6" component="h3">
-                  Complete Guide
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                Learn the basics of manabases with our detailed guide based on
-                Frank Karsten's research.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                onClick={() => navigate("/guide")}
-                variant="outlined"
-              >
-                Read the Guide
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
+      {/* Complete Guide - Optimisation 1: Bandeau horizontal compact */}
+      <Paper
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 3,
+          py: 1.5,
+          mb: 3,
+          bgcolor: "action.hover",
+          borderRadius: 2,
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <BookIcon color="secondary" />
+          <Typography variant="body1">
+            <strong>Complete Guide:</strong> Learn manabase basics with Frank Karsten's research
+          </Typography>
+        </Box>
+        <Button
+          size="small"
+          onClick={() => navigate("/guide")}
+          endIcon={<ArrowForwardIcon />}
+          sx={{ whiteSpace: "nowrap" }}
+        >
+          Read Guide
+        </Button>
+      </Paper>
 
-        {/* Privacy-First Feature - NEW */}
-        <Grid item xs={12}>
-          <Card
-            sx={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              color: "white",
-              textAlign: "center",
-              py: 4,
-            }}
-          >
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom>
+      {/* Privacy-First Feature - Optimisation 2: Layout 2 colonnes */}
+      <Card
+        sx={{
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          color: "white",
+          mb: 3,
+        }}
+      >
+        <CardContent sx={{ py: 3, px: 4 }}>
+          <Grid container spacing={3} alignItems="center">
+            {/* Left: Title + description */}
+            <Grid item xs={12} md={5}>
+              <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
                 🔐 First Privacy-First MTG Analyzer
               </Typography>
-              <Typography variant="h6" sx={{ mb: 3 }}>
-                Your decks stay private. Even we, the developers, cannot see
-                them!
+              <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                Your decks stay private. Even we, the developers, cannot see them!
               </Typography>
-
-              <Grid container spacing={3} sx={{ mt: 2 }}>
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="h3" sx={{ mb: 1 }}>
-                      🔒
-                    </Typography>
-                    <Typography variant="h6">Zero-Knowledge</Typography>
-                    <Typography variant="body2">
-                      Client-side encryption
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="h3" sx={{ mb: 1 }}>
-                      📱
-                    </Typography>
-                    <Typography variant="h6">100% Local</Typography>
-                    <Typography variant="body2">
-                      Works offline
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="h3" sx={{ mb: 1 }}>
-                      🔑
-                    </Typography>
-                    <Typography variant="h6">Personal Code</Typography>
-                    <Typography variant="body2">
-                      Retrieve your analyses
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="h3" sx={{ mb: 1 }}>
-                      🚀
-                    </Typography>
-                    <Typography variant="h6">Ultra Fast</Typography>
-                    <Typography variant="body2">
-                      No server = speed
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-
-              <Box
-                sx={{
-                  mt: 4,
-                  display: "flex",
-                  gap: 2,
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                }}
-              >
+              <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button
                   variant="contained"
-                  size="large"
+                  size="small"
                   onClick={() => navigate("/analyzer")}
                   sx={{
                     bgcolor: "rgba(255,255,255,0.2)",
                     color: "white",
-                    "&:hover": {
-                      bgcolor: "rgba(255,255,255,0.3)",
-                    },
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
                   }}
                 >
-                  🔍 Try Analyzer
+                  Try Analyzer
                 </Button>
                 <Button
                   variant="outlined"
-                  size="large"
+                  size="small"
                   onClick={() => navigate("/privacy-first")}
                   sx={{
                     borderColor: "rgba(255,255,255,0.5)",
                     color: "white",
-                    "&:hover": {
-                      borderColor: "white",
-                      bgcolor: "rgba(255,255,255,0.1)",
-                    },
+                    "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
                   }}
                 >
-                  🔒 Privacy-First Info
+                  Privacy Info
                 </Button>
                 <Button
                   variant="outlined"
-                  size="large"
+                  size="small"
                   onClick={() => navigate("/mes-analyses")}
                   sx={{
                     borderColor: "rgba(255,255,255,0.5)",
                     color: "white",
-                    "&:hover": {
-                      borderColor: "white",
-                      bgcolor: "rgba(255,255,255,0.1)",
-                    },
+                    "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
                   }}
                 >
-                  📊 View My Analyses
+                  My Analyses
                 </Button>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            </Grid>
+            {/* Right: 2x2 grid of features */}
+            <Grid item xs={12} md={7}>
+              <Grid container spacing={1}>
+                {privacyFeatures.map((feat, idx) => (
+                  <Grid item xs={6} key={idx}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
+                      <Typography variant="h6" component="span">{feat.icon}</Typography>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">{feat.title}</Typography>
+                        <Typography variant="caption" sx={{ opacity: 0.85 }}>{feat.desc}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
-      {/* Call to Action */}
+      {/* Call to Action - Optimisation 5: Compacté en une ligne */}
       <Paper
         sx={{
-          p: 6,
-          textAlign: "center",
-          mt: 6,
+          p: 3,
+          mt: 3,
+          mb: 4,
           background: "linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)",
           color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 2,
+          borderRadius: 2,
         }}
       >
-        <Typography variant="h4" component="h2" gutterBottom>
+        <Typography variant="h5" component="h2" fontWeight="bold">
           Ready to Optimize Your Deck?
-        </Typography>
-        <Typography variant="h6" paragraph>
-          Join thousands of players using scientific manabase analysis
         </Typography>
         <Button
           variant="contained"
@@ -434,10 +388,9 @@ export const HomePage: React.FC = () => {
           onClick={() => navigate("/analyzer")}
           startIcon={<AnalyticsIcon />}
           sx={{
-            mt: 2,
-            px: 5,
-            py: 1.5,
-            fontSize: "1.1rem",
+            px: 4,
+            py: 1,
+            fontSize: "1rem",
             fontWeight: "bold",
             bgcolor: "rgba(255,255,255,0.2)",
             borderRadius: 3,
@@ -449,7 +402,7 @@ export const HomePage: React.FC = () => {
             transition: "all 0.3s ease-in-out",
           }}
         >
-          🎯 Try It Now - It's Free
+          Try It Now - Free
         </Button>
       </Paper>
     </Container>
