@@ -29,13 +29,13 @@ const PrivacyFirstPage: React.FC = () => {
   const features = [
     {
       icon: "🏠",
-      title: "Local Storage",
-      description: "Your decks stay on your device, encrypted with AES-256",
+      title: "100% Local",
+      description: "Your decks never leave your browser",
     },
     {
-      icon: "🔐",
-      title: "Zero-Knowledge",
-      description: "Even we cannot see your private data",
+      icon: "💾",
+      title: "Auto-Save",
+      description: "Analyses saved automatically on your device",
     },
     {
       icon: "🌍",
@@ -114,7 +114,7 @@ const PrivacyFirstPage: React.FC = () => {
           The ONLY manabase analyzer that truly respects your privacy
         </Typography>
         <Typography variant="h6" sx={{ mt: 2 }}>
-          ✨ Your decks stay AT HOME ✨
+          ✨ Your decks stay on YOUR device ✨
         </Typography>
       </Card>
 
@@ -138,16 +138,15 @@ const PrivacyFirstPage: React.FC = () => {
             align="center"
             sx={{ my: 3, fontWeight: "bold" }}
           >
-            "We CANNOT see your decks, even if we wanted to"
+            "We CANNOT see your decks - everything stays in your browser"
           </Typography>
           <Typography
             variant="body1"
             sx={{ fontSize: "1.1rem", lineHeight: 1.7 }}
           >
-            Unlike other sites, your decklists are NEVER sent to our servers in
-            private mode. Everything stays encrypted on your device. This is a
-            "Zero-Knowledge" architecture: we know you analyzed a deck, but not
-            WHICH deck.
+            Unlike other sites, your decklists are NEVER sent to any server.
+            Everything is processed locally in your browser and saved to your
+            device's local storage. No account needed, no data transmitted.
           </Typography>
         </CardContent>
       </Card>
@@ -190,41 +189,41 @@ const PrivacyFirstPage: React.FC = () => {
 
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>
-              1. You receive a unique personal code
+              1. Paste your deck
             </Typography>
-            <Box
-              sx={{
-                bgcolor: "#0a0a0a",
-                border: "1px solid #333",
-                borderRadius: 1,
-                p: 2,
-                fontFamily: "monospace",
-                fontSize: "1.1rem",
-              }}
-            >
-              Your code: STORM-MAGE-42
-            </Box>
-            <Typography variant="body2" sx={{ mt: 1, color: "#bfdbfe" }}>
-              Easy to remember, like a player username!
+            <Typography variant="body1">
+              Copy your decklist from Moxfield, Archidekt, MTGA, or any other source.
+              All major formats are supported.
             </Typography>
           </Box>
 
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>
-              2. Your analyses are linked to this code
+              2. Instant analysis
             </Typography>
             <Typography variant="body1">
-              Retrieve all your analyses by entering your code, from any device.
+              Your deck is analyzed locally using Frank Karsten's mathematics.
+              Nothing is sent to any server.
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              3. Auto-saved locally
+            </Typography>
+            <Typography variant="body1">
+              Your analyses are automatically saved to your browser's local storage.
+              Access them anytime from "My Analyses".
             </Typography>
           </Box>
 
           <Box>
             <Typography variant="h6" gutterBottom>
-              3. Secure sharing
+              4. Export & share
             </Typography>
             <Typography variant="body1">
-              Share your results without revealing your complete decklist. You
-              control what others see.
+              Export your data anytime. Import it on another device if needed.
+              You control your data.
             </Typography>
           </Box>
         </CardContent>
@@ -270,20 +269,20 @@ const PrivacyFirstPage: React.FC = () => {
           <Card sx={{ bgcolor: "#2563eb", color: "white", height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ color: "#4CAF50" }}>
-                ✅ What we store
+                ✅ What stays on YOUR device
               </Typography>
               <List>
                 <ListItem>
-                  <ListItemText primary="Mathematical analysis results" />
+                  <ListItemText primary="Your complete decklists" />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="Anonymous hash of your code" />
+                  <ListItemText primary="Analysis results" />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="Analysis date" />
+                  <ListItemText primary="Analysis history" />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="That's ALL!" />
+                  <ListItemText primary="All your data!" />
                 </ListItem>
               </List>
             </CardContent>
@@ -294,11 +293,11 @@ const PrivacyFirstPage: React.FC = () => {
           <Card sx={{ bgcolor: "#2563eb", color: "white", height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ color: "#f44336" }}>
-                ❌ What we DON'T store
+                ❌ What we DON'T have access to
               </Typography>
               <List>
                 <ListItem>
-                  <ListItemText primary="Your complete decklist" />
+                  <ListItemText primary="Your decklists (never sent)" />
                 </ListItem>
                 <ListItem>
                   <ListItemText primary="Your IP address" />
@@ -347,17 +346,17 @@ const PrivacyFirstPage: React.FC = () => {
             },
           }}
         >
-          Try ManatunerPro 🚀
+          Try ManatunerPro
         </Button>
         <Typography variant="body1" sx={{ mt: 2 }}>
-          No registration • No tracking • 100% private
+          No registration - No tracking - 100% local
         </Typography>
       </Card>
 
       {/* Footer */}
       <Box sx={{ textAlign: "center", mt: 8 }}>
         <Typography variant="body2" gutterBottom>
-          An open source project created with ❤️ for the MTG community
+          An open source project created with love for the MTG community
         </Typography>
         <Typography variant="body2">
           <a
