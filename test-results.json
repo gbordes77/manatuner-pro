@@ -1,7 +1,7 @@
 {
   "config": {
-    "configFile": "/Users/guillaumebordes/Documents/Project Mana base V2/playwright.config.js",
-    "rootDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+    "configFile": "/Volumes/DataDisk/_Projects/Project Mana base V2/playwright.config.js",
+    "rootDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
     "forbidOnly": false,
     "fullyParallel": true,
     "globalSetup": null,
@@ -35,13 +35,13 @@
     "quiet": false,
     "projects": [
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "chromium",
         "name": "chromium",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -49,13 +49,13 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "firefox",
         "name": "firefox",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -63,13 +63,13 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "webkit",
         "name": "webkit",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -77,13 +77,13 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -91,13 +91,13 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "Mobile Safari",
         "name": "Mobile Safari",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -105,13 +105,13 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/Users/guillaumebordes/Documents/Project Mana base V2/test-results",
+        "outputDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {},
         "id": "iPad",
         "name": "iPad",
-        "testDir": "/Users/guillaumebordes/Documents/Project Mana base V2/tests/e2e",
+        "testDir": "/Volumes/DataDisk/_Projects/Project Mana base V2/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -120,9 +120,10 @@
       }
     ],
     "shard": null,
+    "tags": [],
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
-    "version": "1.53.1",
+    "version": "1.57.0",
     "workers": 5,
     "webServer": {
       "command": "npm run dev",
@@ -138,8 +139,8 @@
     }
   ],
   "stats": {
-    "startTime": "2025-06-22T12:47:51.445Z",
-    "duration": 60339.18,
+    "startTime": "2025-12-25T10:15:43.463Z",
+    "duration": 60365.69,
     "expected": 0,
     "skipped": 0,
     "unexpected": 0,
