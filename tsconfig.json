@@ -32,6 +32,7 @@
       "@/utils/*": ["src/utils/*"],
       "@/types/*": ["src/types/*"],
       "@/store/*": ["src/store/*"],
+      "@/data/*": ["src/data/*"]
     },
   },
   "include": ["src/**/*", "src/**/*.ts", "src/**/*.tsx"],
