@@ -1,3 +1,8 @@
+import {
+    BarChart as BarChartIcon,
+    Bolt as BoltIcon,
+    Lightbulb as LightbulbIcon,
+} from "@mui/icons-material";
 import { Box, Tab, Tabs } from "@mui/material";
 import React, { useState } from "react";
 import { AnalysisResult } from "../../services/deckAnalyzer";
@@ -34,9 +39,9 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = ({
           },
         }}
       >
-        <Tab label="⚡ Spells & Tempo" />
-        <Tab label="📊 Probabilities" />
-        <Tab label="💡 All Recommendations" />
+        <Tab icon={<BoltIcon />} iconPosition="start" label="Spells & Tempo" />
+        <Tab icon={<BarChartIcon />} iconPosition="start" label="Probabilities" />
+        <Tab icon={<LightbulbIcon />} iconPosition="start" label="Recommendations" />
       </Tabs>
 
       {/* Spells & Tempo */}

@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import React from "react";
 
 interface TabPanelProps {
@@ -9,15 +9,21 @@ interface TabPanelProps {
 
 export function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  const isActive = value === index;
+
   return (
     <div
       role="tabpanel"
-      hidden={value !== index}
+      hidden={!isActive}
       id={`analyzer-tabpanel-${index}`}
       aria-labelledby={`analyzer-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {isActive && (
+        <Fade in={isActive} timeout={300}>
+          <Box sx={{ p: 3 }}>{children}</Box>
+        </Fade>
+      )}
     </div>
   );
 }

@@ -241,66 +241,6 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
         </Grid>
       </Grid>
 
-      {/* Tempo Impact by Color */}
-      {hasTempoData && tempoImpactByColor && Object.keys(tempoImpactByColor).length > 0 && (
-        <Paper className="mtg-card" sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
-            <TimerIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Tempo Impact by Color (Turn 3)
-          </Typography>
-          <Grid container spacing={2}>
-            {Object.entries(tempoImpactByColor)
-              // Filter out colors with very few sources (likely just from "any color" lands)
-              .filter(([_, impact]) => impact.rawSources >= 3)
-              .map(([color, impact]) => {
-              const colorNames: Record<string, string> = {
-                'W': 'White', 'U': 'Blue', 'B': 'Black', 'R': 'Red', 'G': 'Green'
-              };
-              const colorIcons: Record<string, string> = {
-                'W': '☀️', 'U': '💧', 'B': '💀', 'R': '🔥', 'G': '🌲'
-              };
-              const impactColor = impact.impact > 0.05 ? 'var(--mtg-red)' : impact.impact > 0.02 ? '#ff9800' : 'var(--mtg-green)';
-
-              return (
-                <Grid item xs={12} sm={6} md={2.4} key={color}>
-                  <Card variant="outlined" sx={{ height: '100%' }}>
-                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <Typography variant="h6">{colorIcons[color]}</Typography>
-                        <Typography variant="subtitle2" fontWeight="600">
-                          {colorNames[color] || color}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Sources: {impact.rawSources} → {impact.effectiveSources.toFixed(1)} effective
-                      </Typography>
-                      <Box display="flex" alignItems="center" gap={1} mt={1}>
-                        <Typography variant="body2" sx={{ color: impactColor, fontWeight: 600 }}>
-                          {impact.impactPercent} tempo loss
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={impact.tempoAdjustedProbability * 100}
-                        sx={{
-                          mt: 1,
-                          height: 4,
-                          borderRadius: 2,
-                          backgroundColor: '#e0e0e0',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: impactColor
-                          }
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Paper>
-      )}
-
       <Grid container spacing={3}>
         {/* Spell Castability Chart */}
         <Grid item xs={12} lg={8}>

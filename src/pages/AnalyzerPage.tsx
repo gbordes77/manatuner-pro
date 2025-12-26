@@ -22,7 +22,7 @@ import {
     DashboardTab,
     DeckInputSection,
     ManabaseFullTab,
-    TabPanel,
+    TabPanel
 } from "../components/analyzer";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
@@ -271,7 +271,9 @@ const AnalyzerPage: React.FC = () => {
               }
             }}
           >
-            {!analysisResult ? (
+            {isAnalyzing ? (
+              <AnalyzerSkeleton variant="results" />
+            ) : !analysisResult ? (
               <Box sx={{ textAlign: "center", py: isMobile ? 4 : 8 }}>
                 <AssessmentIcon sx={{ fontSize: isMobile ? 60 : 80, color: "text.secondary", mb: 2 }} />
                 <Typography
