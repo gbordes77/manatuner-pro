@@ -30,8 +30,7 @@ import {
     LinearProgress,
     Paper,
     Tooltip,
-    Typography,
-    useTheme
+    Typography
 } from '@mui/material'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
@@ -74,16 +73,14 @@ interface ArchetypeSelectorProps {
 }
 
 const ArchetypeSelector: React.FC<ArchetypeSelectorProps> = ({ value, onChange, disabled }) => {
-  const theme = useTheme()
-
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        🎯 Deck Archetype
-        <Tooltip title="Select your deck's archetype to optimize mulligan decisions for your strategy">
-          <HelpIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help' }} />
-        </Tooltip>
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+        <Typography variant="subtitle2">
+          🎯 Deck Archetype
+        </Typography>
+        <InfoTooltip title={TOOLTIPS.archetype} />
+      </Box>
 
       <Grid container spacing={1}>
         {(Object.entries(ARCHETYPE_CONFIGS) as [Archetype, typeof ARCHETYPE_CONFIGS.aggro][]).map(([key, config]) => (
@@ -170,6 +167,154 @@ const ScoreLegendSection: React.FC = () => {
 }
 
 // =============================================================================
+// TOOLTIPS - Explanations for all technical terms
+// =============================================================================
+
+const TOOLTIPS = {
+  expectedScore7: `Average Score at 7 Cards
+
+This is the average quality of all 7-card hands your deck can generate.
+
+The higher this number, the more consistently your deck produces good opening hands.
+
+Example: A score of 75 means on average, your 7-card hands are "good" and playable.`,
+
+  expectedScore6: `Average Score at 6 Cards
+
+This is the average quality after mulliganing to 6 cards (draw 7, keep 6).
+
+Thanks to London Mulligan, this score often stays close to 7-card score because you choose the best 6.`,
+
+  threshold7: `Decision Threshold to Keep 7 Cards
+
+If your 7-card hand scores BELOW this threshold, you should mulligan.
+
+Why? Because statistically, a 6-card hand will be better on average.
+
+In practice: Mentally compare your hand to this threshold to decide.`,
+
+  threshold6: `Decision Threshold to Keep 6 Cards
+
+If your 6-card hand scores BELOW this threshold, you should mulligan to 5.
+
+Warning: Going to 5 cards is risky, so this threshold is usually low.`,
+
+  manaEfficiency: `Mana Efficiency (0-100%)
+
+Measures how much mana you actually spend over the first 4 turns.
+
+100% = You spend all your mana every turn (ideal)
+50% = You waste half your mana (problematic)
+
+A low score means your mana curve doesn't match your lands.`,
+
+  curvePlayability: `Curve Playability (0-100%)
+
+Measures if you can play spells optimally each turn.
+
+Checks if you have:
+• A 1-drop for Turn 1 (crucial for Aggro)
+• A 2-drop for Turn 2
+• A 3-drop for Turn 3
+• etc.`,
+
+  colorAccess: `Color Access (0-100%)
+
+Measures if your lands produce the right colors to cast your spells.
+
+100% = All your spells are castable with your lands
+70% = Some spells are blocked by missing colors
+
+A low score indicates a multicolor manabase problem.`,
+
+  earlyGame: `Early Game (0-100%)
+
+Evaluates if you can act in the first turns.
+
+For Aggro: Do you have a 1-drop + enough lands?
+For Midrange: Do you have a playable 2-drop or 3-drop?
+For Control: Do you have answers and enough lands?`,
+
+  landBalance: `Land Balance (0-100%)
+
+Checks if you have the right number of lands for your archetype.
+
+Aggro: 2-3 lands ideal (4+ = flood)
+Midrange: 3-4 lands ideal
+Control: 4-5 lands ideal (less = screw)`,
+
+  distribution: `Distribution Chart
+
+Shows the probability of getting each hand quality level.
+
+• Green Curve (7 cards): Normal distribution
+• Blue Curve (6 cards): After 1 mulligan
+• Orange Curve (5 cards): After 2 mulligans
+
+The more the curve is to the right, the better the hands.
+The more "peaked" it is, the more predictable the results.`,
+
+  optimalStrategy: `Optimal Strategy
+
+These bars show you mathematically calculated decision thresholds.
+
+How to use them:
+1. Evaluate your hand (the tool does it for you in "Sample Hands")
+2. Compare to the corresponding threshold
+3. If your hand is BELOW the threshold → Mulligan
+4. If your hand is ABOVE the threshold → Keep`,
+
+  sampleHands: `Sample Hands
+
+These are REAL hands your deck can generate, drawn from the simulation.
+
+Each hand shows:
+• The cards (lands in green, spells outlined)
+• The calculated score and recommendation
+• The turn-by-turn game plan (T1-T4)
+• Detailed reasoning for the decision`,
+
+  archetype: `Deck Archetype
+
+Your deck's strategy type completely changes mulligan criteria:
+
+⚡ Aggro: Priority on 1-drops, 2-3 lands max
+⚖️ Midrange: Balanced curve, 3-4 lands
+🛡️ Control: Answers + lands, 4+ lands OK
+🔮 Combo: Combo pieces + mana to cast them`,
+
+  deckQuality: `Deck Quality
+
+Overall evaluation of your deck's consistency based on simulations:
+
+• Excellent (80+): Most hands are keepable
+• Good (65-79): Good hands frequent
+• Average (50-64): Variable results
+• Poor (<50): Many problematic hands`
+}
+
+// Helper component for tooltip with question mark
+const InfoTooltip: React.FC<{ title: string }> = ({ title }) => (
+  <Tooltip
+    title={<Typography sx={{ whiteSpace: 'pre-line', fontSize: '0.85rem' }}>{title}</Typography>}
+    arrow
+    placement="top"
+  >
+    <HelpIcon
+      fontSize="small"
+      sx={{
+        color: 'text.secondary',
+        cursor: 'help',
+        ml: 0.5,
+        fontSize: '1rem',
+        verticalAlign: 'middle',
+        '&:hover': { color: 'primary.main' }
+      }}
+    />
+  </Tooltip>
+)
+
+// =============================================================================
 // EXPECTED VALUES DISPLAY
 // =============================================================================
 
@@ -178,8 +323,6 @@ interface ExpectedValuesProps {
 }
 
 const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
-  const theme = useTheme()
-
   const getScoreColor = (score: number): string => {
     if (score >= 90) return '#4caf50'
     if (score >= 75) return '#8bc34a'
@@ -188,14 +331,39 @@ const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
     return '#b71c1c'
   }
 
+  const metrics = [
+    {
+      label: 'Average Score (7 cards)',
+      shortLabel: 'Avg. 7 cards',
+      value: result.expectedScores.hand7,
+      highlight: true,
+      tooltip: TOOLTIPS.expectedScore7
+    },
+    {
+      label: 'Average Score (6 cards)',
+      shortLabel: 'Avg. 6 cards',
+      value: result.expectedScores.hand6,
+      tooltip: TOOLTIPS.expectedScore6
+    },
+    {
+      label: 'Keep 7 Threshold',
+      shortLabel: 'Thresh. 7',
+      value: result.thresholds.keep7,
+      isThreshold: true,
+      tooltip: TOOLTIPS.threshold7
+    },
+    {
+      label: 'Keep 6 Threshold',
+      shortLabel: 'Thresh. 6',
+      value: result.thresholds.keep6,
+      isThreshold: true,
+      tooltip: TOOLTIPS.threshold6
+    },
+  ]
+
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
-      {[
-        { label: 'E[Score] at 7 cards', value: result.expectedScores.hand7, highlight: true },
-        { label: 'E[Score] at 6 cards', value: result.expectedScores.hand6 },
-        { label: 'Keep 7 Threshold', value: result.thresholds.keep7, isThreshold: true },
-        { label: 'Keep 6 Threshold', value: result.thresholds.keep6, isThreshold: true },
-      ].map((item, i) => (
+      {metrics.map((item, i) => (
         <Grid item xs={6} md={3} key={i}>
           <Paper
             elevation={item.highlight ? 3 : 1}
@@ -213,9 +381,12 @@ const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
             >
               {item.value}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {item.label}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Typography variant="caption" color="text.secondary">
+                {item.shortLabel}
+              </Typography>
+              <InfoTooltip title={item.tooltip} />
+            </Box>
           </Paper>
         </Grid>
       ))}
@@ -240,7 +411,10 @@ const OptimalStrategy: React.FC<OptimalStrategyProps> = ({ result }) => {
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
-      <Typography variant="subtitle2" gutterBottom>🎯 Optimal Strategy</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Typography variant="subtitle2">🎯 Optimal Strategy</Typography>
+        <InfoTooltip title={TOOLTIPS.optimalStrategy} />
+      </Box>
       {strategies.map((s, i) => (
         <Box key={i} sx={{ mb: 1.5 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -284,7 +458,10 @@ const DistributionChart: React.FC<DistributionChartProps> = ({ result }) => {
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
-      <Typography variant="subtitle2" gutterBottom>📈 Hand Quality Distribution</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Typography variant="subtitle2">📈 Hand Quality Distribution</Typography>
+        <InfoTooltip title={TOOLTIPS.distribution} />
+      </Box>
       <ResponsiveContainer width="100%" height={250}>
         <AreaChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -311,11 +488,11 @@ interface ScoreBreakdownProps {
 
 const ScoreBreakdownDisplay: React.FC<ScoreBreakdownProps> = ({ breakdown }) => {
   const metrics = [
-    { label: 'Mana Efficiency', value: breakdown.manaEfficiency, icon: '⚡' },
-    { label: 'Curve Playability', value: breakdown.curvePlayability, icon: '📈' },
-    { label: 'Color Access', value: breakdown.colorAccess, icon: '🎨' },
-    { label: 'Early Game', value: breakdown.earlyGame, icon: '🚀' },
-    { label: 'Land Balance', value: breakdown.landBalance, icon: '🏔️' },
+    { label: 'Mana Efficiency', value: breakdown.manaEfficiency, icon: '⚡', tooltip: TOOLTIPS.manaEfficiency },
+    { label: 'Curve Playability', value: breakdown.curvePlayability, icon: '📈', tooltip: TOOLTIPS.curvePlayability },
+    { label: 'Color Access', value: breakdown.colorAccess, icon: '🎨', tooltip: TOOLTIPS.colorAccess },
+    { label: 'Early Game', value: breakdown.earlyGame, icon: '🚀', tooltip: TOOLTIPS.earlyGame },
+    { label: 'Land Balance', value: breakdown.landBalance, icon: '🏔️', tooltip: TOOLTIPS.landBalance },
   ]
 
   const getColor = (value: number): string => {
@@ -328,16 +505,23 @@ const ScoreBreakdownDisplay: React.FC<ScoreBreakdownProps> = ({ breakdown }) => 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
       {metrics.map((m, i) => (
-        <Chip
+        <Tooltip
           key={i}
-          label={`${m.icon} ${m.label}: ${m.value}%`}
-          size="small"
-          sx={{
-            backgroundColor: `${getColor(m.value)}22`,
-            borderColor: getColor(m.value),
-            border: 1,
-          }}
-        />
+          title={<Typography sx={{ whiteSpace: 'pre-line', fontSize: '0.85rem' }}>{m.tooltip}</Typography>}
+          arrow
+          placement="top"
+        >
+          <Chip
+            label={`${m.icon} ${m.label}: ${m.value}%`}
+            size="small"
+            sx={{
+              backgroundColor: `${getColor(m.value)}22`,
+              borderColor: getColor(m.value),
+              border: 1,
+              cursor: 'help',
+            }}
+          />
+        </Tooltip>
       ))}
     </Box>
   )
@@ -428,7 +612,7 @@ const SampleHandCard: React.FC<SampleHandCardProps> = ({ hand, index }) => {
         {/* Turn by Turn Plan */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="caption">📅 Turn-by-Turn Plan (T1-T4)</Typography>
+            <Typography variant="caption">📅 Turn by Turn Plan (T1-T4)</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Grid container spacing={1}>
@@ -494,18 +678,18 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
 
   return (
     <Box>
-      <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        🃏 Sample Hands from Your Deck
-        <Tooltip title="These are actual hands your deck can generate, scored with your selected archetype">
-          <HelpIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help' }} />
-        </Tooltip>
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+        <Typography variant="subtitle2">
+          🃏 Sample Hands From Your Deck
+        </Typography>
+        <InfoTooltip title={TOOLTIPS.sampleHands} />
+      </Box>
 
       {categories.map((cat) => (
         <Accordion key={cat.key} defaultExpanded={cat.key === 'excellent' || cat.key === 'marginal'}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body2">
-              {cat.label} ({cat.hands.length} examples)
+              {cat.label} ({cat.hands.length} exemples)
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -540,7 +724,7 @@ export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile = fals
 
   const runAnalysis = useCallback(async () => {
     if (totalCards < 40) {
-      setError('Need at least 40 cards for mulligan analysis')
+      setError('You need at least 40 cards for mulligan analysis')
       return
     }
 
@@ -577,7 +761,7 @@ export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile = fals
   if (totalCards < 40) {
     return (
       <Alert severity="warning">
-        Need at least 40 cards in your deck to run mulligan analysis.
+        You need at least 40 cards in your deck for mulligan analysis.
         Currently: {totalCards} cards.
       </Alert>
     )
@@ -597,7 +781,7 @@ export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile = fals
           disabled={isAnalyzing}
           size="small"
         >
-          {isAnalyzing ? 'Analyzing...' : 'Re-analyze'}
+          {isAnalyzing ? 'Analyzing...' : 'Re-run Analysis'}
         </Button>
       </Box>
 

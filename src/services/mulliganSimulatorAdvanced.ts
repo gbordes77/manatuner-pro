@@ -186,7 +186,7 @@ export const SCORE_LEGEND = {
   snapKeep: { min: 90, label: 'SNAP KEEP', description: 'Perfect hand - keep without thinking', color: '#4caf50' },
   keep: { min: 75, label: 'KEEP', description: 'Good hand - plays well on curve', color: '#8bc34a' },
   marginal: { min: 60, label: 'MARGINAL', description: 'Risky hand - depends on draws', color: '#ff9800' },
-  mulligan: { min: 40, label: 'MULLIGAN', description: 'Weak hand - likely to struggle', color: '#f44336' },
+  mulligan: { min: 40, label: 'MULLIGAN', description: 'Weak hand - will struggle', color: '#f44336' },
   snapMull: { min: 0, label: 'SNAP MULL', description: 'Unplayable - mulligan immediately', color: '#b71c1c' }
 }
 

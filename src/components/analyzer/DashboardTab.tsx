@@ -8,12 +8,10 @@ import {
     Warning as WarningIcon
 } from "@mui/icons-material";
 import {
-    Alert,
     Box,
     Card,
     CardContent,
     Chip,
-    Divider,
     Grid,
     IconButton,
     LinearProgress,
@@ -42,9 +40,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     if (consistencyPercent >= 55) return { label: "Average", color: "warning", icon: <WarningIcon /> };
     return { label: "Needs Work", color: "error", icon: <ErrorIcon /> };
   }, [consistencyPercent]);
-
-  // Top recommendations (max 3)
-  const topRecommendations = analysisResult.recommendations?.slice(0, 3) || [];
 
   return (
     <Box>
@@ -226,29 +221,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         </CardContent>
       </Card>
 
-      {/* Top Recommendations */}
-      {topRecommendations.length > 0 && (
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              💡 Key Recommendations
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            {topRecommendations.map((rec, index) => (
-              <Alert
-                key={index}
-                severity={index === 0 ? "warning" : "info"}
-                sx={{ mb: index < topRecommendations.length - 1 ? 1.5 : 0 }}
-                icon={index === 0 ? <WarningIcon /> : <TrendingIcon />}
-              >
-                <Typography variant="body2">
-                  {rec}
-                </Typography>
-              </Alert>
-            ))}
-          </CardContent>
-        </Card>
-      )}
     </Box>
   );
 };
