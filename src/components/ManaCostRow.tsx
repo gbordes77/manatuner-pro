@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useMemo, memo } from 'react'
 import {
-  Box,
-  Typography,
-  Chip,
-  CircularProgress,
-  Alert,
-  Grid,
-  Tooltip,
-  Paper,
-  Fade
+    Box,
+    Chip,
+    CircularProgress,
+    Fade,
+    Grid,
+    Paper,
+    Tooltip,
+    Typography
 } from '@mui/material'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
-import { manaCalculator } from '../services/manaCalculator'
-import { ManaSymbol as LegalManaSymbol, ManaSequence } from './common/ManaSymbols'
+import { ManaSequence } from './common/ManaSymbols'
 
 interface ManaCostRowProps {
   cardName: string
   quantity: number
+  deckSources?: Record<string, number>  // Sources par couleur dans le deck
+  totalLands?: number                    // Nombre total de terrains
+  totalCards?: number                    // Nombre total de cartes
 }
 
 interface ManaSymbolProps {
@@ -88,7 +89,7 @@ const ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
   }
 
   const cleanSymbol = symbol.replace(/[{}]/g, '')
-  
+
   return (
     <Box component="span" sx={getSymbolStyle(cleanSymbol)}>
       {cleanSymbol}
@@ -99,13 +100,13 @@ const ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
 // Parse Scryfall mana cost et crée une séquence pour nos symboles légaux
 const parseManaCostToSymbols = (manaCost: string): Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> => {
   if (!manaCost) return [];
-  
+
   const sequence: Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> = [];
   const matches = manaCost.match(/\{[^}]+\}/g) || [];
-  
+
   matches.forEach(symbol => {
     const cleanSymbol = symbol.replace(/[{}]/g, '');
-    
+
     if (['W', 'U', 'B', 'R', 'G'].includes(cleanSymbol)) {
       sequence.push(cleanSymbol as 'W' | 'U' | 'B' | 'R' | 'G');
     } else if (/^\d+$/.test(cleanSymbol)) {
@@ -118,14 +119,14 @@ const parseManaCostToSymbols = (manaCost: string): Array<'W' | 'U' | 'B' | 'R' |
       sequence.push('C'); // X compte comme colorless
     }
   });
-  
+
   return sequence;
 };
 
 // Composant amélioré avec nos symboles légaux
 const ScryfallManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
   const symbols = useMemo(() => parseManaCostToSymbols(manaCost), [manaCost]);
-  
+
   if (symbols.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary" component="span">
@@ -133,7 +134,7 @@ const ScryfallManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
       </Typography>
     );
   }
-  
+
   return <ManaSequence sequence={symbols} size="small" />;
 });
 
@@ -147,122 +148,114 @@ ScryfallManaSymbols.displayName = 'ScryfallManaSymbols'
 ManaSymbols.displayName = 'ManaSymbols'
 
 // Memoized probability calculator
-const useProbabilityCalculation = (cardData: MTGCard | null, cardName: string) => {
+// Basé sur la méthodologie du site original (project-manabase)
+//
+// P1 = Probabilité CONDITIONNELLE avec TES sources (assume land drops OK)
+//      "Assuming you hit all your landdrops"
+//      Parmi N lands, quelle proba d'avoir les bonnes couleurs?
+//
+// P2 = P1 × Probabilité d'avoir N lands au tour N
+//      "Realistic probability" - inclut le risque de mana screw
+//      P2 ≤ P1 toujours
+const useProbabilityCalculation = (
+  cardData: MTGCard | null,
+  cardName: string,
+  deckSources?: Record<string, number>,
+  totalLands?: number,
+  totalCards?: number
+) => {
   return useMemo(() => {
     if (!cardData?.mana_cost && !cardName) {
-      return { p1: 85, p2: 65 }
+      return { p1: 95, p2: 90 }
     }
 
     const actualManaCost = cardData?.mana_cost || getSimulatedManaCost(cardName)
-    
-    if (!actualManaCost) return { p1: 85, p2: 65 }
-    
+
+    if (!actualManaCost) return { p1: 95, p2: 90 }
+
     try {
       // Parser le coût de mana pour extraire les symboles colorés
       const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
       const colorCounts: { [color: string]: number } = {}
-      
+
       manaCostSymbols.forEach(symbol => {
         const color = symbol.replace(/[{}]/g, '')
         colorCounts[color] = (colorCounts[color] || 0) + 1
       })
-      
-      // Si pas de symboles colorés, retourner des probabilités élevées
+
+      // Si pas de symboles colorés (colorless spell), très haute probabilité
       if (Object.keys(colorCounts).length === 0) {
-        return { p1: 95, p2: 90 }
+        return { p1: 99, p2: 98 }
       }
-      
-      const deckSize = 60
-      const cmc = cardData?.cmc || actualManaCost.match(/\{(\d+)\}/)?.[1] ? parseInt(actualManaCost.match(/\{(\d+)\}/)?.[1] || '1') : 1
-      
-      // Fonction hypergeométrique selon Frank Karsten
+
+      const deckSize = totalCards || 60
+      const landsInDeck = totalLands || 24
+      const cmc = cardData?.cmc || 2
+
+      // Fonction hypergeométrique cumulative (au moins k succès)
       const hypergeometric = (N: number, K: number, n: number, k: number): number => {
-        const combination = (n: number, r: number): number => {
-          if (r > n || r < 0) return 0
-          if (r === 0 || r === n) return 1
-          
+        const combination = (a: number, b: number): number => {
+          if (b > a || b < 0) return 0
+          if (b === 0 || b === a) return 1
+
           let result = 1
-          for (let i = 0; i < r; i++) {
-            result = result * (n - i) / (i + 1)
+          for (let i = 0; i < b; i++) {
+            result = result * (a - i) / (i + 1)
           }
           return result
         }
-        
+
         let probability = 0
         for (let i = k; i <= Math.min(n, K); i++) {
           probability += combination(K, i) * combination(N - K, n - i) / combination(N, n)
         }
         return probability
       }
-      
-      // Calculer les probabilités selon Frank Karsten
-      let worstCaseProbability = 1
-      
-      for (const [color, symbolCount] of Object.entries(colorCounts)) {
-        // Tables de Frank Karsten pour les sources nécessaires
-        let sourcesNeeded: number
-        if (symbolCount === 1) {
-          sourcesNeeded = 14  // 1 symbole = 14 sources pour 90.4%
-        } else if (symbolCount === 2) {
-          sourcesNeeded = 20  // 2 symboles = 20 sources pour 90%
-        } else if (symbolCount === 3) {
-          sourcesNeeded = 23  // 3 symboles = 23 sources pour 90%
-        } else {
-          sourcesNeeded = Math.min(25, 14 + (symbolCount - 1) * 3)
-        }
-        
-        // Cartes vues au tour où on veut jouer la carte
-        const turn = Math.max(1, Math.min(cmc, 6))
-        const cardsSeen = 7 + (turn - 1) // Main de départ + pioches
-        
-        // Calcul hypergeométrique
-        const probability = hypergeometric(deckSize, sourcesNeeded, cardsSeen, symbolCount)
-        
-        // Prendre le pire cas pour les cartes multicolores
-        worstCaseProbability = Math.min(worstCaseProbability, probability)
+
+      // Tour où on veut jouer = CMC (plafonné à 10)
+      const turn = Math.max(1, Math.min(cmc, 10))
+      // Cartes vues = 7 (main) + (turn - 1) pioches
+      const cardsSeen = 7 + (turn - 1)
+
+      // ═══════════════════════════════════════════════════════════
+      // P1: Probabilité CONDITIONNELLE (assume qu'on a 'turn' lands)
+      // ═══════════════════════════════════════════════════════════
+      let p1Probability = 1
+
+      for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
+        const actualSourcesForColor = deckSources?.[color] || 0
+        const realSources = actualSourcesForColor > 0 ? actualSourcesForColor : 0
+
+        // Parmi 'turn' terrains piochés du deck, proba d'avoir assez de cette couleur
+        const p1Color = realSources > 0
+          ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded)
+          : 0
+        p1Probability = Math.min(p1Probability, p1Color)
       }
-      
-      // P1 : Scénario optimal (manabase parfaite selon Karsten)
-      const p1Percentage = Math.round(worstCaseProbability * 100)
-      
-      // P2 : Scénario réaliste (manabase sous-optimale)
-      // Réduction de 10-15% pour tenir compte des manabases imparfaites
-      const totalSymbols = Object.values(colorCounts).reduce((sum, count) => sum + count, 0)
-      const colorCount = Object.keys(colorCounts).length
-      
-      let realisticPenalty = 0.10 // 10% de base
-      
-      if (colorCount > 1) {
-        realisticPenalty += (colorCount - 1) * 0.05 // +5% par couleur supplémentaire
-      }
-      
-      if (totalSymbols > 2) {
-        realisticPenalty += (totalSymbols - 2) * 0.03 // +3% par symbole intensif
-      }
-      
-      const p2Percentage = Math.round(worstCaseProbability * (1 - realisticPenalty) * 100)
-      
+
+      // ═══════════════════════════════════════════════════════════
+      // Probabilité d'avoir au moins 'turn' lands parmi 'cardsSeen' cartes
+      // ═══════════════════════════════════════════════════════════
+      const probHavingEnoughLands = hypergeometric(deckSize, landsInDeck, cardsSeen, turn)
+
+      // ═══════════════════════════════════════════════════════════
+      // P2 = P1 × Probabilité d'avoir assez de lands (RÉALISTE)
+      // ═══════════════════════════════════════════════════════════
+      const p2Probability = p1Probability * probHavingEnoughLands
+
+      const finalP1 = Math.round(Math.max(Math.min(p1Probability * 100, 99), 0))
+      const finalP2 = Math.round(Math.max(Math.min(p2Probability * 100, 99), 0))
+
       return {
-        p1: Math.max(Math.min(p1Percentage, 95), 25),
-        p2: Math.max(Math.min(p2Percentage, 85), 15)
+        p1: finalP1,  // Optimiste (assume lands OK)
+        p2: finalP2   // Réaliste (inclut mana screw)
       }
-      
+
     } catch (error) {
       console.error('Error calculating probabilities:', error)
-      
-      // Fallback simple basé sur la complexité du coût
-      const symbols = actualManaCost.match(/\{[^}]+\}/g) || []
-      const coloredSymbols = symbols.filter((s: string) => /\{[WUBRG]\}/.test(s))
-      
-      const baseP1 = 90 - (coloredSymbols.length * 8)
-      const baseP2 = 75 - (coloredSymbols.length * 10)
-      
-      return {
-        p1: Math.max(Math.min(baseP1, 95), 25),
-        p2: Math.max(Math.min(baseP2, 85), 15)
-      }
+      return { p1: 85, p2: 75 }
     }
-  }, [cardData, cardName])
+  }, [cardData, cardName, deckSources, totalLands, totalCards])
 }
 
 // Fonction helper pour simuler les coûts de mana
@@ -326,7 +319,7 @@ const getSimulatedManaCost = (cardName: string): string => {
     'Birds of Paradise': '{G}',
     'Elvish Mystic': '{G}'
   }
-  
+
   return commonCosts[cardName] || '{2}'
 }
 
@@ -340,7 +333,7 @@ const QualityChip = memo(({ probability }: { probability: number }) => {
   }, [probability])
 
   return (
-    <Chip 
+    <Chip
       label={`${probability}%`}
       size="small"
       className={`mtg-chip ${chipData.class}`}
@@ -350,13 +343,19 @@ const QualityChip = memo(({ probability }: { probability: number }) => {
 
 QualityChip.displayName = 'QualityChip'
 
-const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) => {
+const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
+  cardName,
+  quantity,
+  deckSources,
+  totalLands,
+  totalCards
+}) => {
   const [cardData, setCardData] = useState<MTGCard | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Memoized probability calculation
-  const probabilities = useProbabilityCalculation(cardData, cardName)
+  // Memoized probability calculation with actual deck sources
+  const probabilities = useProbabilityCalculation(cardData, cardName, deckSources, totalLands, totalCards)
 
   useEffect(() => {
     if (!cardName) return
@@ -364,13 +363,13 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
     const fetchCardData = async () => {
       setLoading(true)
       setError(null)
-      
+
       try {
         console.log(`🔍 Recherche Scryfall pour: "${cardName}"`)
         const data = await searchCardByName(cardName)
         console.log(`📋 Résultat Scryfall:`, data)
         setCardData(data)
-        
+
         if (!data) {
           console.warn(`⚠️ Aucune donnée trouvée pour: "${cardName}"`)
         }
@@ -433,25 +432,25 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
             </Box>
           </Grid>
           <Grid item xs={3}>
-            <Chip 
-              label="Unknown" 
-              size="small" 
-              sx={{ 
+            <Chip
+              label="Unknown"
+              size="small"
+              sx={{
                 background: 'linear-gradient(135deg, #95a5a6, #7f8c8d)',
                 color: 'white',
                 fontWeight: 600
-              }} 
+              }}
             />
           </Grid>
           <Grid item xs={3}>
-            <Chip 
-              label="Unknown" 
-              size="small" 
-              sx={{ 
+            <Chip
+              label="Unknown"
+              size="small"
+              sx={{
                 background: 'linear-gradient(135deg, #95a5a6, #7f8c8d)',
                 color: 'white',
                 fontWeight: 600
-              }} 
+              }}
             />
           </Grid>
         </Grid>
@@ -467,10 +466,10 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
           <Grid item xs={12} sm={3}>
             <Tooltip title={`${cardName} - ${cardData?.type_line || 'Unknown type'}`} arrow>
               <Box>
-                <Typography 
-                  variant="body2" 
+                <Typography
+                  variant="body2"
                   fontWeight="600"
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
                     '&:hover': { color: 'var(--mtg-blue)' }
                   }}
@@ -506,12 +505,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
                 <QualityChip probability={probabilities.p1} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>
-                <Box 
-                  className="mtg-progress-bar" 
-                  sx={{ 
+                <Box
+                  className="mtg-progress-bar"
+                  sx={{
                     width: `${probabilities.p1}%`,
                     background: `linear-gradient(90deg, var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}-light))`
-                  }} 
+                  }}
                 />
               </Box>
             </Box>
@@ -527,12 +526,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
                 <QualityChip probability={probabilities.p2} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>
-                <Box 
-                  className="mtg-progress-bar" 
-                  sx={{ 
+                <Box
+                  className="mtg-progress-bar"
+                  sx={{
                     width: `${probabilities.p2}%`,
                     background: `linear-gradient(90deg, var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}-light))`
-                  }} 
+                  }}
                 />
               </Box>
             </Box>
@@ -563,4 +562,4 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({ cardName, quantity }) =>
 
 ManaCostRow.displayName = 'ManaCostRow'
 
-export default ManaCostRow 
+export default ManaCostRow

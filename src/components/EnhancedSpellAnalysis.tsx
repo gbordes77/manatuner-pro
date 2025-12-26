@@ -1,49 +1,40 @@
+import {
+    CheckCircle as CheckCircleIcon,
+    Error as ErrorIcon,
+    FlashOn as FlashOnIcon,
+    Shield as ShieldIcon,
+    Speed as SpeedIcon,
+    Timer as TimerIcon,
+    TrendingUp as TrendingUpIcon,
+    Warning as WarningIcon
+} from '@mui/icons-material';
+import {
+    Avatar,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Divider,
+    Grid,
+    LinearProgress,
+    Paper,
+    Tooltip,
+    Typography
+} from '@mui/material';
 import React from 'react';
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Chip,
-  Card,
-  CardContent,
-  LinearProgress,
-  Tooltip,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Divider
-} from '@mui/material';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Legend,
-  ScatterChart,
-  Scatter
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart,
+    Tooltip as RechartsTooltip,
+    ResponsiveContainer,
+    XAxis,
+    YAxis
 } from 'recharts';
-import {
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Speed as SpeedIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
-} from '@mui/icons-material';
+import type { TempoImpactSummary, TempoSpellAnalysis } from '../services/deckAnalyzer';
 
 interface SpellAnalysisData {
   [spellName: string]: {
@@ -55,20 +46,40 @@ interface SpellAnalysisData {
 
 interface EnhancedSpellAnalysisProps {
   spellAnalysis: SpellAnalysisData;
+  tempoSpellAnalysis?: Record<string, TempoSpellAnalysis>;
+  tempoImpactByColor?: Record<string, TempoImpactSummary>;
 }
 
-const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnalysis }) => {
-  // Prepare data for different visualizations
+const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
+  spellAnalysis,
+  tempoSpellAnalysis,
+  tempoImpactByColor
+}) => {
+  // Always use tempo mode - no toggle needed
+  const hasTempoData = tempoSpellAnalysis && Object.keys(tempoSpellAnalysis).length > 0;
+
+  // Prepare data for different visualizations - Always use tempo when available
   const prepareSpellData = () => {
-    return Object.entries(spellAnalysis).map(([name, data]) => ({
-      name: name.length > 15 ? name.substring(0, 15) + '...' : name,
-      fullName: name,
-      percentage: data.percentage,
-      castable: data.castable,
-      total: data.total,
-      efficiency: (data.castable / data.total) * 100,
-      category: getSpellCategory(data.percentage)
-    })).sort((a, b) => b.percentage - a.percentage);
+    return Object.entries(spellAnalysis).map(([name, data]) => {
+      const tempoData = tempoSpellAnalysis?.[name];
+      // Always use tempo-adjusted percentage when available
+      const displayPercentage = tempoData?.tempoAdjustedPercentage || data.percentage;
+
+      return {
+        name: name.length > 15 ? name.substring(0, 15) + '...' : name,
+        fullName: name,
+        percentage: displayPercentage,
+        rawPercentage: data.percentage,
+        tempoPercentage: tempoData?.tempoAdjustedPercentage || data.percentage,
+        tempoImpact: tempoData?.tempoImpact || 0,
+        castable: data.castable,
+        total: data.total,
+        efficiency: (data.castable / data.total) * 100,
+        category: getSpellCategory(displayPercentage),
+        tempoRating: tempoData?.rating || 'good',
+        scenarios: tempoData?.scenarios || { aggressive: 100, conservative: 100, balanced: 100 }
+      };
+    }).sort((a, b) => b.percentage - a.percentage);
   };
 
   const getSpellCategory = (percentage: number) => {
@@ -128,13 +139,29 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <Paper className="mtg-card" sx={{ p: 2, maxWidth: 250 }}>
+        <Paper className="mtg-card" sx={{ p: 2, maxWidth: 280 }}>
           <Typography variant="subtitle2" fontWeight="600" mb={1}>
             {data.fullName || label}
           </Typography>
           <Typography variant="body2">
             Castability: {data.percentage}%
           </Typography>
+          {hasTempoData && data.tempoImpact !== 0 && (
+            <>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="body2" color="text.secondary">
+                Raw: {data.rawPercentage}% → Tempo: {data.tempoPercentage}%
+              </Typography>
+              <Typography variant="body2" sx={{
+                color: data.tempoImpact > 5 ? 'var(--mtg-red)' : data.tempoImpact > 0 ? '#ff9800' : 'var(--mtg-green)'
+              }}>
+                Tempo Impact: {data.tempoImpact > 0 ? '-' : '+'}{Math.abs(data.tempoImpact)}%
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                ⚡ Aggro: {data.scenarios.aggressive}% | 🛡️ Control: {data.scenarios.conservative}%
+              </Typography>
+            </>
+          )}
           <Typography variant="body2">
             Copies: {data.castable}/{data.total}
           </Typography>
@@ -151,6 +178,22 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
 
   return (
     <Box className="animate-fadeIn">
+      {/* Tempo Analysis Header */}
+      {hasTempoData && (
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TimerIcon color="primary" />
+          <Typography variant="subtitle1" fontWeight="600">
+            Tempo-Aware Analysis
+          </Typography>
+          <Chip
+            label="ETB Considered"
+            size="small"
+            color="primary"
+            icon={<FlashOnIcon />}
+          />
+        </Box>
+      )}
+
       {/* Overview Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
@@ -163,18 +206,18 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
             </Typography>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h4" fontWeight="700" color="var(--mtg-green)">
               {Math.round(averagePercentage)}%
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Avg Castability
+              Avg Tempo Castability
             </Typography>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h4" fontWeight="700" color="var(--mtg-gold)">
@@ -185,7 +228,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
             </Typography>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
@@ -198,6 +241,66 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
         </Grid>
       </Grid>
 
+      {/* Tempo Impact by Color */}
+      {hasTempoData && tempoImpactByColor && Object.keys(tempoImpactByColor).length > 0 && (
+        <Paper className="mtg-card" sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
+            <TimerIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            Tempo Impact by Color (Turn 3)
+          </Typography>
+          <Grid container spacing={2}>
+            {Object.entries(tempoImpactByColor)
+              // Filter out colors with very few sources (likely just from "any color" lands)
+              .filter(([_, impact]) => impact.rawSources >= 3)
+              .map(([color, impact]) => {
+              const colorNames: Record<string, string> = {
+                'W': 'White', 'U': 'Blue', 'B': 'Black', 'R': 'Red', 'G': 'Green'
+              };
+              const colorIcons: Record<string, string> = {
+                'W': '☀️', 'U': '💧', 'B': '💀', 'R': '🔥', 'G': '🌲'
+              };
+              const impactColor = impact.impact > 0.05 ? 'var(--mtg-red)' : impact.impact > 0.02 ? '#ff9800' : 'var(--mtg-green)';
+
+              return (
+                <Grid item xs={12} sm={6} md={2.4} key={color}>
+                  <Card variant="outlined" sx={{ height: '100%' }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Typography variant="h6">{colorIcons[color]}</Typography>
+                        <Typography variant="subtitle2" fontWeight="600">
+                          {colorNames[color] || color}
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Sources: {impact.rawSources} → {impact.effectiveSources.toFixed(1)} effective
+                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1} mt={1}>
+                        <Typography variant="body2" sx={{ color: impactColor, fontWeight: 600 }}>
+                          {impact.impactPercent} tempo loss
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={impact.tempoAdjustedProbability * 100}
+                        sx={{
+                          mt: 1,
+                          height: 4,
+                          borderRadius: 2,
+                          backgroundColor: '#e0e0e0',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: impactColor
+                          }
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Paper>
+      )}
+
       <Grid container spacing={3}>
         {/* Spell Castability Chart */}
         <Grid item xs={12} lg={8}>
@@ -208,22 +311,22 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
             <ResponsiveContainer width="100%" height="85%">
               <BarChart data={spellData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   stroke="#64748b"
                   fontSize={10}
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#64748b"
                   fontSize={12}
                   tickFormatter={(value) => `${value}%`}
                 />
                 <RechartsTooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="percentage" 
+                <Bar
+                  dataKey="percentage"
                   radius={[4, 4, 0, 0]}
                 >
                   {spellData.map((entry, index) => (
@@ -258,7 +361,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
-                <RechartsTooltip 
+                <RechartsTooltip
                   formatter={(value, name, props) => [
                     `${value} spells (${props.payload.percentage}%)`,
                     props.payload.category
@@ -292,14 +395,14 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
               📋 Detailed Spell Analysis
             </Typography>
-            
+
             <Grid container spacing={2}>
               {spellData.map((spell, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <Card 
-                    variant="outlined" 
+                  <Card
+                    variant="outlined"
                     className="animate-slideIn"
-                    sx={{ 
+                    sx={{
                       height: '100%',
                       transition: 'all 0.2s',
                       '&:hover': {
@@ -310,10 +413,10 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                   >
                     <CardContent sx={{ p: 2 }}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <Avatar 
-                          sx={{ 
-                            width: 24, 
-                            height: 24, 
+                        <Avatar
+                          sx={{
+                            width: 24,
+                            height: 24,
                             bgcolor: getCategoryColor(spell.category),
                             fontSize: '0.75rem'
                           }}
@@ -321,10 +424,10 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                           {spell.percentage}
                         </Avatar>
                         <Tooltip title={spell.fullName} arrow>
-                          <Typography 
-                            variant="subtitle2" 
+                          <Typography
+                            variant="subtitle2"
                             fontWeight="600"
-                            sx={{ 
+                            sx={{
                               flexGrow: 1,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -335,29 +438,46 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                           </Typography>
                         </Tooltip>
                       </Box>
-                      
+
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
                         {getCategoryIcon(spell.category)}
-                        <Chip 
+                        <Chip
                           label={spell.category}
                           size="small"
-                          sx={{ 
+                          sx={{
                             backgroundColor: getCategoryColor(spell.category),
                             color: 'white',
                             fontSize: '0.7rem'
                           }}
                         />
+                        {/* Tempo Impact Badge */}
+                        {hasTempoData && spell.tempoImpact !== 0 && (
+                          <Tooltip title={`Tempo impact: ${spell.tempoImpact > 0 ? '-' : '+'}${Math.abs(spell.tempoImpact)}%`}>
+                            <Chip
+                              label={`${spell.tempoImpact > 0 ? '-' : '+'}${Math.abs(spell.tempoImpact)}%`}
+                              size="small"
+                              icon={<TimerIcon sx={{ fontSize: '0.9rem !important' }} />}
+                              sx={{
+                                backgroundColor: spell.tempoImpact > 5 ? 'var(--mtg-red)' : spell.tempoImpact > 0 ? '#ff9800' : 'var(--mtg-green)',
+                                color: 'white',
+                                fontSize: '0.65rem',
+                                height: 20,
+                                '& .MuiChip-icon': { color: 'white' }
+                              }}
+                            />
+                          </Tooltip>
+                        )}
                       </Box>
-                      
+
                       <Typography variant="body2" color="text.secondary" mb={1}>
                         {spell.castable}/{spell.total} copies castable
                       </Typography>
-                      
-                      <LinearProgress 
-                        variant="determinate" 
+
+                      <LinearProgress
+                        variant="determinate"
                         value={spell.percentage}
-                        sx={{ 
-                          height: 6, 
+                        sx={{
+                          height: 6,
                           borderRadius: 3,
                           backgroundColor: '#e0e0e0',
                           '& .MuiLinearProgress-bar': {
@@ -365,14 +485,38 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                           }
                         }}
                       />
-                      
-                      <Typography 
-                        variant="caption" 
+
+                      <Typography
+                        variant="caption"
                         color="text.secondary"
                         sx={{ mt: 0.5, display: 'block' }}
                       >
-                        {spell.percentage}% castability
+                        {spell.percentage}% tempo castability
                       </Typography>
+
+                      {/* Scenario comparison */}
+                      {hasTempoData && (
+                        <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                          <Tooltip title="Aggressive: Pay life, play fast">
+                            <Chip
+                              icon={<FlashOnIcon sx={{ fontSize: '0.8rem !important' }} />}
+                              label={`${spell.scenarios.aggressive}%`}
+                              size="small"
+                              variant="outlined"
+                              sx={{ fontSize: '0.6rem', height: 18 }}
+                            />
+                          </Tooltip>
+                          <Tooltip title="Conservative: Preserve life total">
+                            <Chip
+                              icon={<ShieldIcon sx={{ fontSize: '0.8rem !important' }} />}
+                              label={`${spell.scenarios.conservative}%`}
+                              size="small"
+                              variant="outlined"
+                              sx={{ fontSize: '0.6rem', height: 18 }}
+                            />
+                          </Tooltip>
+                        </Box>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>
@@ -387,7 +531,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
               💡 Performance Insights
             </Typography>
-            
+
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
                 <Box textAlign="center" p={2}>
@@ -400,7 +544,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                   </Typography>
                 </Box>
               </Grid>
-              
+
               <Grid item xs={12} md={4}>
                 <Box textAlign="center" p={2}>
                   <WarningIcon sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
@@ -412,7 +556,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
                   </Typography>
                 </Box>
               </Grid>
-              
+
               <Grid item xs={12} md={4}>
                 <Box textAlign="center" p={2}>
                   <ErrorIcon sx={{ fontSize: 48, color: 'var(--mtg-red)', mb: 1 }} />
@@ -432,4 +576,4 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({ spellAnal
   );
 };
 
-export default EnhancedSpellAnalysis; 
+export default EnhancedSpellAnalysis;

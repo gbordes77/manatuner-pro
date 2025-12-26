@@ -1,4 +1,7 @@
-import { ManaColor, MANA_COLORS } from "../types";
+import { MANA_COLORS, ManaColor } from "../types";
+import type { LandManaColor, LandMetadata } from "../types/lands";
+import { landService } from "./landService";
+import { analyzeSpellCastability, compareTempoImpact } from "./manaCalculator";
 
 // Interface pour les données Scryfall
 interface ScryfallCard {
@@ -30,6 +33,35 @@ export interface DeckCard {
   ravland?: boolean;
   fastland?: boolean;
   producesMana?: boolean;
+  // New: LandMetadata from LandService
+  landMetadata?: LandMetadata;
+}
+
+// Enhanced spell analysis with tempo consideration
+export interface TempoSpellAnalysis {
+  castable: number;
+  total: number;
+  percentage: number;
+  // New tempo-aware data
+  tempoAdjustedPercentage: number;
+  tempoImpact: number;
+  scenarios: {
+    aggressive: number;
+    conservative: number;
+    balanced: number;
+  };
+  rating: 'excellent' | 'good' | 'average' | 'weak' | 'critical';
+}
+
+// Tempo impact summary per color
+export interface TempoImpactSummary {
+  color: LandManaColor;
+  rawSources: number;
+  effectiveSources: number;
+  rawProbability: number;
+  tempoAdjustedProbability: number;
+  impact: number;
+  impactPercent: string;
 }
 
 export interface AnalysisResult {
@@ -54,6 +86,10 @@ export interface AnalysisResult {
     string,
     { castable: number; total: number; percentage: number }
   >;
+  // NEW: Tempo-aware analysis
+  tempoSpellAnalysis?: Record<string, TempoSpellAnalysis>;
+  tempoImpactByColor?: Record<string, TempoImpactSummary>;
+  landMetadata?: LandMetadata[];
 }
 
 export class DeckAnalyzer {
@@ -361,7 +397,7 @@ export class DeckAnalyzer {
     );
   }
 
-  // Enhanced card parsing with better mana cost handling
+  // Enhanced card parsing with better mana cost handling and LandService integration
   private static async parseDeckList(deckList: string): Promise<DeckCard[]> {
     const lines = deckList.split("\n").filter((line) => line.trim());
     const cards: DeckCard[] = [];
@@ -391,13 +427,42 @@ export class DeckAnalyzer {
         // Clean card name by removing MTGA set codes like "(TDM) 33" or "(RNA) 245"
         name = this.cleanCardName(name);
 
-        // Utiliser Scryfall pour une détection précise des terrains
-        const isLand = await this.isLandCardScryfall(name);
-        const manaCost = this.getSimulatedManaCost(name);
-        const { colors, cmc, cost } = this.parseManaCost(manaCost);
-        const producedMana = isLand
-          ? await this.getProducedManaScryfall(name)
+        // Use LandService for precise land detection with ETB analysis
+        const landMetadata = await landService.detectLand(name);
+        const isLand = landMetadata !== null;
+
+        let manaCost = "";
+        let colors: ManaColor[] = [];
+        let cmc = 0;
+
+        if (isLand) {
+          // Lands don't have mana costs
+          manaCost = "";
+          colors = [];
+          cmc = 0;
+        } else {
+          // For spells, try to get mana cost from Scryfall first
+          const scryfallData = await this.fetchCardFromScryfall(name);
+          if (scryfallData && scryfallData.mana_cost) {
+            manaCost = scryfallData.mana_cost;
+            const parsed = this.parseManaCost(manaCost);
+            colors = parsed.colors;
+            cmc = scryfallData.cmc || parsed.cmc;
+          } else {
+            // Fallback to simulated mana cost for unknown cards
+            manaCost = this.getSimulatedManaCost(name);
+            const parsed = this.parseManaCost(manaCost);
+            colors = parsed.colors;
+            cmc = parsed.cmc;
+          }
+        }
+
+        // Use LandMetadata for produced mana if available
+        const producedMana = isLand && landMetadata
+          ? landMetadata.produces as ManaColor[]
           : undefined;
+
+        // Keep legacy land properties for compatibility, but enhance with LandMetadata
         const landProperties = isLand ? this.evaluateLandProperties(name) : {};
 
         cards.push({
@@ -409,6 +474,8 @@ export class DeckAnalyzer {
           producedMana,
           cmc,
           ...landProperties,
+          // NEW: Include full LandMetadata for tempo analysis
+          landMetadata: landMetadata || undefined,
         });
       }
     }
@@ -889,6 +956,89 @@ export class DeckAnalyzer {
       };
     });
 
+    // NEW: Extract LandMetadata from cards for tempo analysis
+    const landMetadataList: LandMetadata[] = [];
+    lands.forEach((land) => {
+      if (land.landMetadata) {
+        // Add one entry per quantity
+        for (let i = 0; i < land.quantity; i++) {
+          landMetadataList.push(land.landMetadata);
+        }
+      }
+    });
+
+    // NEW: Calculate tempo-aware spell analysis
+    const tempoSpellAnalysis: Record<string, TempoSpellAnalysis> = {};
+
+    if (landMetadataList.length > 0) {
+      for (const spell of nonLands) {
+        try {
+          const tempoResult = await analyzeSpellCastability(
+            {
+              name: spell.name,
+              manaCost: spell.manaCost,
+              cmc: spell.cmc
+            },
+            landMetadataList,
+            totalCards
+          );
+
+          tempoSpellAnalysis[spell.name] = {
+            castable: spellAnalysis[spell.name]?.castable || spell.quantity,
+            total: spell.quantity,
+            percentage: spellAnalysis[spell.name]?.percentage || 100,
+            tempoAdjustedPercentage: Math.round(tempoResult.overallCastability * 100),
+            tempoImpact: tempoResult.colorRequirements.length > 0
+              ? Math.round(tempoResult.colorRequirements.reduce((sum, cr) => sum + cr.tempoImpact, 0) / tempoResult.colorRequirements.length * 100)
+              : 0,
+            scenarios: {
+              aggressive: tempoResult.colorRequirements.length > 0
+                ? Math.round(Math.min(...tempoResult.colorRequirements.map(cr => cr.scenarios.aggressive)) * 100)
+                : 100,
+              conservative: tempoResult.colorRequirements.length > 0
+                ? Math.round(Math.min(...tempoResult.colorRequirements.map(cr => cr.scenarios.conservative)) * 100)
+                : 100,
+              balanced: tempoResult.colorRequirements.length > 0
+                ? Math.round(Math.min(...tempoResult.colorRequirements.map(cr => cr.scenarios.balanced)) * 100)
+                : 100
+            },
+            rating: tempoResult.rating
+          };
+        } catch (error) {
+          console.warn(`[DeckAnalyzer] Error analyzing tempo for ${spell.name}:`, error);
+          // Fallback to basic analysis
+          tempoSpellAnalysis[spell.name] = {
+            castable: spellAnalysis[spell.name]?.castable || spell.quantity,
+            total: spell.quantity,
+            percentage: spellAnalysis[spell.name]?.percentage || 100,
+            tempoAdjustedPercentage: spellAnalysis[spell.name]?.percentage || 100,
+            tempoImpact: 0,
+            scenarios: { aggressive: 100, conservative: 100, balanced: 100 },
+            rating: 'good'
+          };
+        }
+      }
+    }
+
+    // NEW: Calculate tempo impact by color
+    let tempoImpactByColor: Record<string, TempoImpactSummary> | undefined;
+
+    if (landMetadataList.length > 0) {
+      try {
+        const tempoImpact = compareTempoImpact(landMetadataList, totalCards, 3);
+        tempoImpactByColor = {};
+
+        for (const [color, impact] of Object.entries(tempoImpact)) {
+          tempoImpactByColor[color] = {
+            color: color as LandManaColor,
+            ...impact
+          };
+        }
+      } catch (error) {
+        console.warn('[DeckAnalyzer] Error calculating tempo impact by color:', error);
+      }
+    }
+
     return {
       ...partialAnalysis,
       recommendations,
@@ -901,6 +1051,10 @@ export class DeckAnalyzer {
       averageCMC,
       landRatio,
       spellAnalysis,
+      // NEW: Include tempo-aware analysis
+      tempoSpellAnalysis: Object.keys(tempoSpellAnalysis).length > 0 ? tempoSpellAnalysis : undefined,
+      tempoImpactByColor,
+      landMetadata: landMetadataList.length > 0 ? landMetadataList : undefined,
     };
   }
 

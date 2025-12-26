@@ -969,16 +969,16 @@ const AnalyzerPage: React.FC = () => {
                     },
                   }}
                 >
-                  <Tab label="Overview" />
-                  <Tab label="Probabilities" />
-                  <Tab label="💰 Mana Cost" />
-                  <Tab label="Recommendations" />
-                  <Tab label="Spell Analysis" />
-                  <Tab label="Deck List" />
-                  <Tab label="Manabase" />
+                  <Tab label="🎯 Castability" />
+                  <Tab label="💡 Recommendations" />
+                  <Tab label="⚡ Spell Analysis" />
+                  <Tab label="📊 Probabilities" />
+                  <Tab label="📋 Overview" />
+                  <Tab label="🏔️ Manabase" />
+                  <Tab label="📜 Deck List" />
                 </Tabs>
 
-                <TabPanel value={activeTab} index={0}>
+                <TabPanel value={activeTab} index={4}>
                   <Grid container spacing={isMobile ? 1 : 2}>
                     <Grid item xs={6} sm={6} md={3}>
                       <Card
@@ -1205,7 +1205,7 @@ const AnalyzerPage: React.FC = () => {
                   </Box>
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={1}>
+                <TabPanel value={activeTab} index={3}>
                   <EnhancedCharts
                     analysis={{
                       id: "current-analysis",
@@ -1271,9 +1271,9 @@ const AnalyzerPage: React.FC = () => {
                   />
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={2}>
+                <TabPanel value={activeTab} index={0}>
                   <Typography variant="h6" gutterBottom>
-                    💰 Mana Cost Analysis
+                    🎯 Castability Analysis
                   </Typography>
                   <Typography
                     variant="body2"
@@ -1334,6 +1334,9 @@ const AnalyzerPage: React.FC = () => {
                               key={index}
                               cardName={cardName}
                               quantity={quantity}
+                              deckSources={analysisResult?.colorDistribution}
+                              totalLands={analysisResult?.totalLands || 0}
+                              totalCards={analysisResult?.totalCards || 60}
                             />
                           );
                         })
@@ -1356,7 +1359,7 @@ const AnalyzerPage: React.FC = () => {
                   </Box>
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={3}>
+                <TabPanel value={activeTab} index={1}>
                   <EnhancedRecommendations
                     recommendations={analysisResult.recommendations}
                     analysis={{
@@ -1368,15 +1371,17 @@ const AnalyzerPage: React.FC = () => {
                   />
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={4}>
+                <TabPanel value={activeTab} index={2}>
                   <EnhancedSpellAnalysis
                     spellAnalysis={analysisResult.spellAnalysis}
+                    tempoSpellAnalysis={analysisResult.tempoSpellAnalysis}
+                    tempoImpactByColor={analysisResult.tempoImpactByColor}
                   />
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={5}>
+                <TabPanel value={activeTab} index={6}>
                   <Typography variant="h6" gutterBottom>
-                    📋 Deck List
+                    📜 Deck List
                   </Typography>
                   <Typography
                     variant="body2"
@@ -1472,7 +1477,7 @@ const AnalyzerPage: React.FC = () => {
                   </Box>
                 </TabPanel>
 
-                <TabPanel value={activeTab} index={6}>
+                <TabPanel value={activeTab} index={5}>
                   <Typography variant="h6" gutterBottom>
                     🏔️ Manabase Analysis
                   </Typography>

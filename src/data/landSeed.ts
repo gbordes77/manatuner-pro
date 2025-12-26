@@ -1,14 +1,28 @@
 /**
  * Land Seed Data for ManaTuner Pro
  *
- * This file contains ~50 of the most commonly played lands with their
+ * This file contains ~200 of the most commonly played lands with their
  * metadata pre-defined. This serves as an initial cache to avoid
  * Scryfall API calls for the most common lands.
  *
- * NOTE: This is NOT the source of truth. Scryfall API is the source of truth.
- * This seed just accelerates first-time loading.
+ * Categories included:
+ * - Basic lands (6)
+ * - Fetchlands (10)
+ * - Shocklands (10)
+ * - Fastlands (10)
+ * - Checklands (10)
+ * - Painlands (10)
+ * - Slowlands (10)
+ * - Triomes (10)
+ * - Pathways (10)
+ * - Creature lands (10)
+ * - Utility lands (50+)
+ * - Channel lands (10)
+ * - Horizon lands (6)
+ * - Filter lands (10)
+ * - Bounce lands (10)
  *
- * @version 1.0
+ * @version 2.0
  * @see docs/LAND_SYSTEM_REDESIGN.md
  */
 
@@ -97,6 +111,62 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false
+  },
+
+  // Snow basics
+  'Snow-Covered Plains': {
+    category: 'basic',
+    produces: ['W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Plains']
+  },
+
+  'Snow-Covered Island': {
+    category: 'basic',
+    produces: ['U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Island']
+  },
+
+  'Snow-Covered Swamp': {
+    category: 'basic',
+    produces: ['B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Swamp']
+  },
+
+  'Snow-Covered Mountain': {
+    category: 'basic',
+    produces: ['R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Mountain']
+  },
+
+  'Snow-Covered Forest': {
+    category: 'basic',
+    produces: ['G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Forest']
   },
 
   // ===========================================================================
@@ -209,6 +279,51 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
     fetchTargets: ['Forest', 'Island'],
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Budget fetchlands
+  'Fabled Passage': {
+    category: 'fetch',
+    produces: [],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: true,
+    fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Prismatic Vista': {
+    category: 'fetch',
+    produces: [],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: true,
+    fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Terramorphic Expanse': {
+    category: 'fetch',
+    produces: [],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: true,
+    fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Evolving Wilds': {
+    category: 'fetch',
+    produces: [],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: true,
+    fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
     isCreatureLand: false,
     hasChannel: false
   },
@@ -492,9 +607,382 @@ const SEED_DATA: Record<string, SeedLandData> = {
   },
 
   // ===========================================================================
-  // TRIOMES (5 most played)
+  // CHECKLANDS (10)
   // ===========================================================================
 
+  'Glacial Fortress': {
+    category: 'check',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Plains', 'Island'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Drowned Catacomb': {
+    category: 'check',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Dragonskull Summit': {
+    category: 'check',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Rootbound Crag': {
+    category: 'check',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sunpetal Grove': {
+    category: 'check',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Isolated Chapel': {
+    category: 'check',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Plains', 'Swamp'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sulfur Falls': {
+    category: 'check',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Mountain'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Woodland Cemetery': {
+    category: 'check',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Forest'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Clifftop Retreat': {
+    category: 'check',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Plains'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Hinterland Harbor': {
+    category: 'check',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Island'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // PAINLANDS (10)
+  // ===========================================================================
+
+  'Adarkar Wastes': {
+    category: 'pain',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Underground River': {
+    category: 'pain',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sulfurous Springs': {
+    category: 'pain',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Karplusan Forest': {
+    category: 'pain',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Brushland': {
+    category: 'pain',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Caves of Koilos': {
+    category: 'pain',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Shivan Reef': {
+    category: 'pain',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Llanowar Wastes': {
+    category: 'pain',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Battlefield Forge': {
+    category: 'pain',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Yavimaya Coast': {
+    category: 'pain',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // SLOWLANDS (10) - Innistrad Midnight Hunt/Crimson Vow
+  // ===========================================================================
+
+  'Deserted Beach': {
+    category: 'slow',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Shipwreck Marsh': {
+    category: 'slow',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Haunted Ridge': {
+    category: 'slow',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Rockfall Vale': {
+    category: 'slow',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Overgrown Farmland': {
+    category: 'slow',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Shattered Sanctum': {
+    category: 'slow',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Stormcarved Coast': {
+    category: 'slow',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Deathcap Glade': {
+    category: 'slow',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sundown Pass': {
+    category: 'slow',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Dreamroot Cascade': {
+    category: 'slow',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 2 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // TRIOMES (10) - Ikoria + Streets of New Capenna
+  // ===========================================================================
+
+  // Streets of New Capenna
   "Raffine's Tower": {
     category: 'triome',
     produces: ['W', 'U', 'B'],
@@ -550,8 +1038,64 @@ const SEED_DATA: Record<string, SeedLandData> = {
     basicLandTypes: ['Mountain', 'Forest', 'Plains']
   },
 
+  // Ikoria Triomes
+  'Indatha Triome': {
+    category: 'triome',
+    produces: ['W', 'B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Plains', 'Swamp', 'Forest']
+  },
+
+  'Ketria Triome': {
+    category: 'triome',
+    produces: ['G', 'U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Forest', 'Island', 'Mountain']
+  },
+
+  'Raugrin Triome': {
+    category: 'triome',
+    produces: ['U', 'R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Island', 'Mountain', 'Plains']
+  },
+
+  'Savai Triome': {
+    category: 'triome',
+    produces: ['R', 'W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Mountain', 'Plains', 'Swamp']
+  },
+
+  'Zagoth Triome': {
+    category: 'triome',
+    produces: ['B', 'G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Swamp', 'Forest', 'Island']
+  },
+
   // ===========================================================================
-  // PATHWAYS (10) - MDFC
+  // PATHWAYS (10) - Zendikar Rising + Kaldheim
   // ===========================================================================
 
   'Brightclimb Pathway': {
@@ -672,6 +1216,1154 @@ const SEED_DATA: Record<string, SeedLandData> = {
     hasChannel: false,
     isMDFC: true,
     otherFace: 'Riverglide Pathway'
+  },
+
+  'Needleverge Pathway': {
+    category: 'pathway',
+    produces: ['R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Pillarverge Pathway'
+  },
+
+  'Pillarverge Pathway': {
+    category: 'pathway',
+    produces: ['W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Needleverge Pathway'
+  },
+
+  'Darkbore Pathway': {
+    category: 'pathway',
+    produces: ['B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Slitherbore Pathway'
+  },
+
+  'Slitherbore Pathway': {
+    category: 'pathway',
+    produces: ['G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Darkbore Pathway'
+  },
+
+  'Blightstep Pathway': {
+    category: 'pathway',
+    produces: ['B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Searstep Pathway'
+  },
+
+  'Searstep Pathway': {
+    category: 'pathway',
+    produces: ['R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Blightstep Pathway'
+  },
+
+  'Barkchannel Pathway': {
+    category: 'pathway',
+    produces: ['G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Tidechannel Pathway'
+  },
+
+  'Tidechannel Pathway': {
+    category: 'pathway',
+    produces: ['U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Barkchannel Pathway'
+  },
+
+  'Hengegate Pathway': {
+    category: 'pathway',
+    produces: ['W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Mistgate Pathway'
+  },
+
+  'Mistgate Pathway': {
+    category: 'pathway',
+    produces: ['U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    isMDFC: true,
+    otherFace: 'Hengegate Pathway'
+  },
+
+  // ===========================================================================
+  // CREATURE LANDS (12)
+  // ===========================================================================
+
+  'Celestial Colonnade': {
+    category: 'creature',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Creeping Tar Pit': {
+    category: 'creature',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Lavaclaw Reaches': {
+    category: 'creature',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Raging Ravine': {
+    category: 'creature',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Stirring Wildwood': {
+    category: 'creature',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Shambling Vent': {
+    category: 'creature',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Wandering Fumarole': {
+    category: 'creature',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Hissing Quagmire': {
+    category: 'creature',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Needle Spires': {
+    category: 'creature',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Lumbering Falls': {
+    category: 'creature',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  // Mono-color creature lands
+  'Mutavault': {
+    category: 'creature',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  'Faceless Haven': {
+    category: 'creature',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: true,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // HORIZON LANDS (6)
+  // ===========================================================================
+
+  'Horizon Canopy': {
+    category: 'horizon',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Silent Clearing': {
+    category: 'horizon',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Fiery Islet': {
+    category: 'horizon',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Nurturing Peatland': {
+    category: 'horizon',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sunbaked Canyon': {
+    category: 'horizon',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Waterlogged Grove': {
+    category: 'horizon',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // CHANNEL LANDS - Kamigawa Neon Dynasty (10)
+  // ===========================================================================
+
+  'Eiganjo, Seat of the Empire': {
+    category: 'channel',
+    produces: ['W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: true
+  },
+
+  'Otawara, Soaring City': {
+    category: 'channel',
+    produces: ['U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: true
+  },
+
+  'Takenuma, Abandoned Mire': {
+    category: 'channel',
+    produces: ['B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: true
+  },
+
+  'Sokenzan, Crucible of Defiance': {
+    category: 'channel',
+    produces: ['R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: true
+  },
+
+  'Boseiju, Who Endures': {
+    category: 'channel',
+    produces: ['G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: true
+  },
+
+  // ===========================================================================
+  // UTILITY LANDS (50+)
+  // ===========================================================================
+
+  // Any color producers
+  'Command Tower': {
+    category: 'utility',
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'City of Brass': {
+    category: 'utility',
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Mana Confluence': {
+    category: 'utility',
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Reflecting Pool': {
+    category: 'utility',
+    produces: [],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Gemstone Caverns': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Exotic Orchard': {
+    category: 'utility',
+    produces: [],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Colorless utility
+  'Ancient Tomb': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Cavern of Souls': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Field of the Dead': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Urza\'s Saga': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'The One Ring': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Blast Zone': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Detection Tower': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Ghost Quarter': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Field of Ruin': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Inventors\' Fair': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Maze of Ith': {
+    category: 'utility',
+    produces: [],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Phyrexian Tower': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Reliquary Tower': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Strip Mine': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Wasteland': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Tectonic Edge': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Castle Ardenvale': {
+    category: 'utility',
+    produces: ['W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Plains'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Castle Vantress': {
+    category: 'utility',
+    produces: ['U'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Island'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Castle Locthwain': {
+    category: 'utility',
+    produces: ['B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Swamp'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Castle Embereth': {
+    category: 'utility',
+    produces: ['R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Mountain'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Castle Garenbrig': {
+    category: 'utility',
+    produces: ['G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Forest'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Lair lands (Planescape)
+  'Plaza of Heroes': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Secluded Courtyard': {
+    category: 'utility',
+    produces: [],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Unclaimed Territory': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Starting Town (special - conditional based on turn)
+  'Starting Town': {
+    category: 'utility',
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'turn_threshold', threshold: 3 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Thran Portal
+  'Thran Portal': {
+    category: 'utility',
+    produces: [],
+    producesAny: true,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // BOUNCE LANDS (10) - Ravnica
+  // ===========================================================================
+
+  'Azorius Chancery': {
+    category: 'bounce',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Dimir Aqueduct': {
+    category: 'bounce',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Rakdos Carnarium': {
+    category: 'bounce',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Gruul Turf': {
+    category: 'bounce',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Selesnya Sanctuary': {
+    category: 'bounce',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Orzhov Basilica': {
+    category: 'bounce',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Izzet Boilerworks': {
+    category: 'bounce',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Golgari Rot Farm': {
+    category: 'bounce',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Boros Garrison': {
+    category: 'bounce',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Simic Growth Chamber': {
+    category: 'bounce',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // FILTER LANDS (10) - Shadowmoor/Eventide
+  // ===========================================================================
+
+  'Mystic Gate': {
+    category: 'filter',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Sunken Ruins': {
+    category: 'filter',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Graven Cairns': {
+    category: 'filter',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Fire-Lit Thicket': {
+    category: 'filter',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Wooded Bastion': {
+    category: 'filter',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Fetid Heath': {
+    category: 'filter',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Cascade Bluffs': {
+    category: 'filter',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Twilight Mire': {
+    category: 'filter',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Rugged Prairie': {
+    category: 'filter',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Flooded Grove': {
+    category: 'filter',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // SURVEIL LANDS - Duskmourn (10)
+  // ===========================================================================
+
+  'Gloomlake Verge': {
+    category: 'utility',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Blazemire Verge': {
+    category: 'utility',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Thornspire Verge': {
+    category: 'utility',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Riftstone Verge': {
+    category: 'utility',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Shadowy Backstreet': {
+    category: 'utility',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Undercity Sewers': {
+    category: 'utility',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Raucous Theater': {
+    category: 'utility',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Commercial District': {
+    category: 'utility',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Lush Portico': {
+    category: 'utility',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  'Meticulous Archive': {
+    category: 'utility',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
+  // ORIGINAL DUAL LANDS (10) - Reserved List
+  // ===========================================================================
+
+  'Tundra': {
+    category: 'dual',
+    produces: ['W', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Plains', 'Island']
+  },
+
+  'Underground Sea': {
+    category: 'dual',
+    produces: ['U', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Island', 'Swamp']
+  },
+
+  'Badlands': {
+    category: 'dual',
+    produces: ['B', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Swamp', 'Mountain']
+  },
+
+  'Taiga': {
+    category: 'dual',
+    produces: ['R', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Mountain', 'Forest']
+  },
+
+  'Savannah': {
+    category: 'dual',
+    produces: ['G', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Forest', 'Plains']
+  },
+
+  'Scrubland': {
+    category: 'dual',
+    produces: ['W', 'B'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Plains', 'Swamp']
+  },
+
+  'Volcanic Island': {
+    category: 'dual',
+    produces: ['U', 'R'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Island', 'Mountain']
+  },
+
+  'Bayou': {
+    category: 'dual',
+    produces: ['B', 'G'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Swamp', 'Forest']
+  },
+
+  'Plateau': {
+    category: 'dual',
+    produces: ['R', 'W'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Mountain', 'Plains']
+  },
+
+  'Tropical Island': {
+    category: 'dual',
+    produces: ['G', 'U'],
+    producesAny: false,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+    basicLandTypes: ['Forest', 'Island']
   }
 }
 
