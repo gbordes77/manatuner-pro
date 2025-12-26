@@ -321,15 +321,6 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
             <Box sx={{ textAlign: "right" }}>
               <Typography
                 sx={{
-                  color: BLUEPRINT_COLORS.textMuted,
-                  fontFamily: "monospace",
-                  fontSize: "0.7rem",
-                }}
-              >
-                Powered by
-              </Typography>
-              <Typography
-                sx={{
                   color: BLUEPRINT_COLORS.cyan,
                   fontWeight: 700,
                   fontSize: "1rem",
