@@ -2,183 +2,187 @@
 
 ## Date: 26 Décembre 2025
 
-## État Actuel: ✅ PRODUCTION READY - Mathématiques Validées
+## État Actuel: ✅ PRODUCTION READY - Optimisations Majeures Complétées
 
-Le site est maintenant fonctionnel avec toutes les features core implémentées.
-
----
-
-## Travail Complété Cette Session
-
-### 1. Système de Probabilités P1/P2 (MAJEUR)
-
-Implémentation complète basée sur la méthodologie du site original [Project Manabase](https://project-manabase.firebaseapp.com/).
-
-**Logique finale :**
-- **P1 (Perfect)** = Probabilité conditionnelle avec TES sources (assume land drops OK)
-  - "Si j'ai N terrains au tour N, quelle proba d'avoir les bonnes couleurs?"
-  - Formule: `Hypergeometric(totalLands, sourcesForColor, CMC, symbolsNeeded)`
-
-- **P2 (Realistic)** = P1 × Probabilité d'avoir assez de lands (inclut mana screw)
-  - Formule: `P1 × Hypergeometric(deckSize, totalLands, cardsSeen, CMC)`
-  - `cardsSeen = 7 (main) + (CMC - 1) pioches`
-
-**Impact CMC sur P2 (mana screw):**
-| CMC | P(avoir lands) | Impact |
-|-----|----------------|--------|
-| 2 | ~89% | Faible |
-| 5 | ~41% | Moyen |
-| 8 | ~9% | Critique |
-
-**Fichier modifié:** `src/components/ManaCostRow.tsx`
-
-### 2. Réorganisation des Onglets
-
-Nouvel ordre optimisé pour l'utilisateur :
-
-| # | Onglet | Description |
-|---|--------|-------------|
-| 1 | 🎯 Castability | Analyse P1/P2 par carte (LE plus important) |
-| 2 | 💡 Recommendations | Actions concrètes |
-| 3 | ⚡ Spell Analysis | Analyse tempo |
-| 4 | 📊 Probabilities | Probas par tour |
-| 5 | 📋 Overview | Résumé global |
-| 6 | 🏔️ Manabase | Détails terrains |
-| 7 | 📜 Deck List | Référence |
-
-**Fichier modifié:** `src/pages/AnalyzerPage.tsx`
-
-### 3. Correction Affichage Couleurs
-
-Filtrage des couleurs avec < 3 sources dans "Tempo Impact by Color" (évite d'afficher W/R dans un deck Sultai à cause de Cavern of Souls).
-
-**Fichier modifié:** `src/components/EnhancedSpellAnalysis.tsx`
-
-### 4. Extension Land Seed
-
-Passage de 51 à 195 terrains dans le cache local couvrant :
-- Fetch lands, Shock lands, Fast lands, Check lands
-- Pain lands, Slow lands, Triomes, Pathways
-- Creature lands, Horizon lands, Channel lands
-- Bounce lands, Filter lands, Utility lands
-
-**Fichier modifié:** `src/data/landSeed.ts`
-
-### 5. Documentation
-
-Création de `docs/P1_P2_PROBABILITY_METHOD.md` expliquant en détail la méthodologie de calcul avec formules et exemples.
+Le site est maintenant optimisé avec une UX améliorée et des performances boostées.
 
 ---
 
-## Fichiers Modifiés
+## Travail Complété Cette Session (26 Déc 2025 - Après-midi)
 
+### 1. ✅ Menu Mobile Fonctionnel (BLOQUANT RÉSOLU)
+
+**Problème:** Le bouton hamburger ne faisait rien au clic.
+
+**Solution:** Ajout d'un Drawer MUI complet avec :
+- Navigation complète avec icônes
+- Toggle thème accessible
+- Lien GitHub
+- Style actif avec bordure colorée
+
+**Fichier:** `src/components/layout/Header.tsx`
+
+---
+
+### 2. ✅ Lazy Loading - Bundle -87%
+
+**Avant:** 684 KB chargés immédiatement
+**Après:** 90 KB initial, le reste à la demande
+
+| Page | Taille | Chargement |
+|------|--------|------------|
+| Initial | 90 KB | Immédiat |
+| AnalyzerPage | 565 KB | On demand |
+| GuidePage | 12 KB | On demand |
+| MathematicsPage | 11 KB | On demand |
+
+**Fichier:** `src/App.tsx`
+
+---
+
+### 3. ✅ Refactoring AnalyzerPage (-80% lignes)
+
+**Avant:** 2041 lignes dans un seul fichier
+**Après:** 407 lignes + composants modulaires
+
+**Nouveaux composants créés:**
 ```
-src/components/ManaCostRow.tsx      - Calcul P1/P2 corrigé
-src/components/EnhancedSpellAnalysis.tsx - Filtre couleurs < 3 sources
-src/pages/AnalyzerPage.tsx          - Réorganisation onglets + icônes
-src/services/deckAnalyzer.ts        - Nettoyage console.log
-src/data/landSeed.ts                - Extension 51 → 195 lands
-docs/P1_P2_PROBABILITY_METHOD.md    - Documentation méthode (NEW)
+src/components/analyzer/
+├── TabPanel.tsx (23 lignes)
+├── landUtils.ts (366 lignes)
+├── DeckInputSection.tsx (208 lignes)
+├── OverviewTab.tsx (253 lignes)
+├── CastabilityTab.tsx (93 lignes)
+├── DeckListTab.tsx (112 lignes)
+├── ManabaseTab.tsx (430 lignes)
+├── ProbabilitiesTab.tsx (69 lignes)
+├── DashboardTab.tsx (NEW - Dashboard consolidé)
+├── AnalysisTab.tsx (NEW - Sous-onglets Analysis)
+├── ManabaseFullTab.tsx (NEW - Sous-onglets Manabase)
+└── index.ts (exports)
 ```
+
+---
+
+### 4. ✅ Bouton Analyzer CTA Doré
+
+Style Call-to-Action distinctif pour l'outil principal :
+- Couleur dorée (#FFD700)
+- Icône AnalyticsIcon
+- Ombre portée + effet hover
+- Même style dans le menu mobile
+
+**Fichier:** `src/components/layout/Header.tsx`
+
+---
+
+### 5. ✅ Réorganisation Onglets (7→4) avec Dashboard
+
+**Avant (7 onglets - surcharge cognitive):**
+```
+🎯 Castability | 💡 Recommendations | ⚡ Spell Analysis | 📊 Probabilities | 📋 Overview | 🏔️ Manabase | 📜 Deck List
+```
+
+**Après (4 onglets clairs avec sous-navigation):**
+```
+📊 Dashboard | 🎯 Castability | ⚡ Analysis | 🏔️ Manabase
+```
+
+| Onglet | Contenu |
+|--------|---------|
+| **Dashboard** | Score santé, stats, couleurs, top 3 recommandations |
+| **Castability** | Analyse P1/P2 par carte (inchangé) |
+| **Analysis** | Sous-tabs: Spells & Tempo / Probabilities / All Recommendations |
+| **Manabase** | Sous-tabs: Lands Analysis / Full Deck List |
+
+**Fichiers:** `src/pages/AnalyzerPage.tsx` + nouveaux composants
+
+---
+
+## Résumé des Améliorations
+
+| Métrique | Avant | Après | Gain |
+|----------|-------|-------|------|
+| Bundle initial | 684 KB | 90 KB | **-87%** |
+| AnalyzerPage.tsx | 2041 lignes | 407 lignes | **-80%** |
+| Onglets | 7 | 4 | **-43%** |
+| Menu mobile | ❌ Cassé | ✅ Fonctionnel | **BLOQUANT** |
+| Bouton Analyzer | Standard | CTA doré | **Visibilité** |
+
+---
+
+## Points de Restauration
+
+| Tag | Description |
+|-----|-------------|
+| `v1.0-pre-optimization` | Avant toutes optimisations |
+| `v1.1-pre-refactoring` | Avant refactoring AnalyzerPage |
+| `v1.2-analyzer-cta` | Avec CTA doré |
+
+**Rollback:** `git checkout <tag>`
 
 ---
 
 ## Tests Effectués
 
 - [x] Build production réussi
-- [x] P1 toujours ≥ P2
-- [x] Valeurs cohérentes avec site original
-- [x] Onglets dans le bon ordre
-- [x] Icônes appropriées
+- [x] Menu mobile fonctionnel (iOS/Android)
+- [x] Lazy loading vérifié (Network tab)
+- [x] 4 onglets navigables
+- [x] Sous-onglets Analysis et Manabase
+- [x] Dashboard avec score santé
+- [x] Responsive sur tous écrans
+
+---
+
+## Fichiers Modifiés/Créés
+
+```
+MODIFIÉS:
+src/App.tsx                          - Lazy loading
+src/pages/AnalyzerPage.tsx           - Refacto + 4 onglets
+src/components/layout/Header.tsx     - Menu mobile + CTA doré
+
+CRÉÉS:
+src/components/analyzer/TabPanel.tsx
+src/components/analyzer/landUtils.ts
+src/components/analyzer/DeckInputSection.tsx
+src/components/analyzer/OverviewTab.tsx
+src/components/analyzer/CastabilityTab.tsx
+src/components/analyzer/DeckListTab.tsx
+src/components/analyzer/ManabaseTab.tsx
+src/components/analyzer/ProbabilitiesTab.tsx
+src/components/analyzer/DashboardTab.tsx
+src/components/analyzer/AnalysisTab.tsx
+src/components/analyzer/ManabaseFullTab.tsx
+src/components/analyzer/index.ts
+```
+
+---
+
+## Documentation Existante
+
+- `docs/MATH_VALIDATION_REPORT.md` - Validation mathématique complète
+- `docs/AUDIT_UI_UX_PERFORMANCE.md` - Audit détaillé (résolu)
+- `docs/FUTURE_IDEAS.md` - Backlog (Mana Dorks, i18n)
+- `docs/P1_P2_PROBABILITY_METHOD.md` - Méthodologie P1/P2
 
 ---
 
 ## Prochaines Étapes Suggérées
 
-1. **Tests utilisateur** - Valider avec plusieurs decks réels
-2. **Performance** - Optimiser si nécessaire pour gros decks (Brawl/Commander)
-3. **Mobile** - Vérifier responsive sur petits écrans
-4. **PWA** - Ajouter manifest pour installation mobile
+1. **Tests utilisateur** - Valider la nouvelle UX avec vrais utilisateurs
+2. **PWA** - Ajouter manifest pour installation mobile
+3. **Dark mode polish** - Vérifier contraste Dashboard
+4. **Animations** - Transitions entre onglets
 
 ---
 
 ## Commandes Utiles
 
 ```bash
-# Dev
-npm run dev
-
-# Build
-npm run build
-
-# Preview production
-npm run preview
+npm run dev      # Développement
+npm run build    # Build production
+npm run preview  # Preview build
+npm run lint     # Vérification code
 ```
-
----
-
-## Notes Importantes
-
-- Le texte d'aide du site original contient une ERREUR (P1/P2 inversés dans la description)
-- Notre implémentation est basée sur les DONNÉES affichées, pas le texte d'aide
-- Les hauts CMC (8+) ont des P2 très bas (~9%) - c'est CORRECT mathématiquement
-
----
-
-## Validation Mathématique Complète (26 Déc 2025)
-
-Une analyse approfondie de tous les algorithmes a été réalisée. **Résultat: ✅ TOUT VALIDÉ**
-
-| Composant | Statut | Notes |
-|-----------|--------|-------|
-| Hypergeometric | ✅ | Formule standard correcte |
-| P1 (conditionnel) | ✅ | MIN des probas par couleur |
-| P2 (réaliste) | ✅ | P1 × P(lands OK) |
-| Tables Karsten | ✅ | Valeurs officielles 90% |
-| colorDistribution | ✅ | Multi-production gérée |
-| Tempo analysis | ✅ | ETB conditions précises |
-| Land Seed | ✅ | 195 terrains référencés |
-
-**Documentation complète:** `docs/MATH_VALIDATION_REPORT.md`
-
----
-
-## Audit UI/UX/Performance Complet (26 Déc 2025)
-
-Analyse ultra-thinking par 4 agents spécialisés. **Backup créé avant optimisations.**
-
-### Scores Actuels
-
-| Domaine | Score | Priorité Correction |
-|---------|-------|---------------------|
-| UI/Design Visuel | 7.5/10 | Moyenne |
-| UX/Ergonomie | 6.2/10 | Haute |
-| Performance | 6.0/10 | Haute |
-| Qualité Code | 6.5/10 | Haute |
-| **MOYENNE** | **6.5/10** | - |
-
-### Problèmes Critiques Identifiés
-
-1. **Menu mobile non fonctionnel** - BLOQUANT
-2. **AnalyzerPage.tsx = 2041 lignes** - Maintenabilité
-3. **Bundle initial = 684 KB** - Pas de lazy loading
-4. **7 onglets = surcharge cognitive** - UX
-
-### Points de Restauration
-
-- **Commit**: `e14d0e9` - Backup avant optimisations
-- **Tag**: `v1.0-pre-optimization`
-
-### Documentation
-
-- `docs/AUDIT_UI_UX_PERFORMANCE.md` - Rapport complet (400+ lignes)
-- `docs/FUTURE_IDEAS.md` - Backlog améliorations (Mana Dorks, i18n)
-
-### Prochaines Actions Prioritaires
-
-| # | Action | Effort | Impact |
-|---|--------|--------|--------|
-| 1 | Implémenter menu mobile | 2h | BLOQUANT |
-| 2 | Lazy load 6 pages | 1h | -40% bundle |
-| 3 | Réduire à 4 onglets | 2h | UX majeur |
-| 4 | Décomposer AnalyzerPage | 4h | Maintenabilité |

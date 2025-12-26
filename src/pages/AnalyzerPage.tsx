@@ -17,16 +17,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
+    AnalysisTab,
     CastabilityTab,
+    DashboardTab,
     DeckInputSection,
-    DeckListTab,
-    ManabaseTab,
-    OverviewTab,
-    ProbabilitiesTab,
+    ManabaseFullTab,
     TabPanel,
 } from "../components/analyzer";
-import EnhancedRecommendations from "../components/EnhancedRecommendations";
-import EnhancedSpellAnalysis from "../components/EnhancedSpellAnalysis";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
 import { AnalysisResult, DeckAnalyzer } from "../services/deckAnalyzer";
@@ -296,83 +293,56 @@ const AnalyzerPage: React.FC = () => {
                   {!isDeckMinimized && !isMobile && "(Click to minimize deck)"}
                 </Typography>
 
+                {/* NEW: 4 Clean Tabs */}
                 <Tabs
                   value={activeTab}
                   onChange={handleTabChange}
-                  variant={isTablet ? "scrollable" : "standard"}
-                  scrollButtons={isTablet ? "auto" : false}
+                  variant={isMobile ? "scrollable" : "fullWidth"}
+                  scrollButtons={isMobile ? "auto" : false}
                   allowScrollButtonsMobile
                   sx={{
                     mb: isMobile ? 2 : 3,
                     "& .MuiTab-root": {
-                      fontSize: isSmallMobile ? "0.7rem" : isMobile ? "0.75rem" : undefined,
-                      minWidth: isSmallMobile ? "60px" : isMobile ? "auto" : undefined,
-                      padding: isSmallMobile ? "4px 6px" : isMobile ? "6px 8px" : undefined,
+                      fontSize: isSmallMobile ? "0.75rem" : isMobile ? "0.85rem" : "0.95rem",
+                      fontWeight: "medium",
                       textTransform: "none",
+                      minHeight: isMobile ? 48 : 56,
                     },
-                    "& .MuiTabs-scrollButtons.Mui-disabled": { opacity: 0.3 },
-                    "& .MuiTabs-indicator": { height: isMobile ? 2 : 3 },
+                    "& .MuiTabs-indicator": {
+                      height: 3,
+                      borderRadius: "3px 3px 0 0",
+                    },
                   }}
                 >
+                  <Tab label="📊 Dashboard" />
                   <Tab label="🎯 Castability" />
-                  <Tab label="💡 Recommendations" />
-                  <Tab label="⚡ Spell Analysis" />
-                  <Tab label="📊 Probabilities" />
-                  <Tab label="📋 Overview" />
+                  <Tab label="⚡ Analysis" />
                   <Tab label="🏔️ Manabase" />
-                  <Tab label="📜 Deck List" />
                 </Tabs>
 
-                {/* Tab 0: Castability */}
+                {/* Tab 0: Dashboard - Overview + Top Recommendations */}
                 <TabPanel value={activeTab} index={0}>
+                  <DashboardTab analysisResult={analysisResult} isMobile={isMobile} />
+                </TabPanel>
+
+                {/* Tab 1: Castability - The core feature */}
+                <TabPanel value={activeTab} index={1}>
                   <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
                 </TabPanel>
 
-                {/* Tab 1: Recommendations */}
-                <TabPanel value={activeTab} index={1}>
-                  <EnhancedRecommendations
-                    recommendations={analysisResult.recommendations}
-                    analysis={{
-                      consistency: analysisResult.consistency,
-                      colorScrew: (1 - analysisResult.consistency) * 0.2,
-                      landRatio: analysisResult.landRatio,
-                      avgCMC: analysisResult.averageCMC,
-                    }}
-                  />
-                </TabPanel>
-
-                {/* Tab 2: Spell Analysis */}
+                {/* Tab 2: Analysis - Spells + Probabilities + Full Recommendations */}
                 <TabPanel value={activeTab} index={2}>
-                  <EnhancedSpellAnalysis
-                    spellAnalysis={analysisResult.spellAnalysis}
-                    tempoSpellAnalysis={analysisResult.tempoSpellAnalysis}
-                    tempoImpactByColor={analysisResult.tempoImpactByColor}
-                  />
+                  <AnalysisTab analysisResult={analysisResult} isMobile={isMobile} />
                 </TabPanel>
 
-                {/* Tab 3: Probabilities */}
+                {/* Tab 3: Manabase - Lands + Full Deck List */}
                 <TabPanel value={activeTab} index={3}>
-                  <ProbabilitiesTab analysisResult={analysisResult} />
-                </TabPanel>
-
-                {/* Tab 4: Overview */}
-                <TabPanel value={activeTab} index={4}>
-                  <OverviewTab analysisResult={analysisResult} isMobile={isMobile} />
-                </TabPanel>
-
-                {/* Tab 5: Manabase */}
-                <TabPanel value={activeTab} index={5}>
-                  <ManabaseTab
+                  <ManabaseFullTab
                     deckList={deckList}
                     analysisResult={analysisResult}
                     isMobile={isMobile}
                     isSmallMobile={isSmallMobile}
                   />
-                </TabPanel>
-
-                {/* Tab 6: Deck List */}
-                <TabPanel value={activeTab} index={6}>
-                  <DeckListTab deckList={deckList} />
                 </TabPanel>
               </div>
             )}
