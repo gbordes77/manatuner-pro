@@ -1,0 +1,55 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="100%" style="stop-color:#ff6b6b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="200" fill="#e94560" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="250" fill="#e94560" opacity="0.08"/>
+
+  <!-- Mana symbols representation -->
+  <g transform="translate(150, 280)">
+    <circle cx="0" cy="0" r="45" fill="#f8f8f8" opacity="0.9"/>
+    <text x="0" y="12" font-family="serif" font-size="40" fill="#1a1a2e" text-anchor="middle" font-weight="bold">W</text>
+  </g>
+  <g transform="translate(260, 280)">
+    <circle cx="0" cy="0" r="45" fill="#0e68ab" opacity="0.9"/>
+    <text x="0" y="12" font-family="serif" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">U</text>
+  </g>
+  <g transform="translate(370, 280)">
+    <circle cx="0" cy="0" r="45" fill="#150b00" opacity="0.9"/>
+    <text x="0" y="12" font-family="serif" font-size="40" fill="#a48e7b" text-anchor="middle" font-weight="bold">B</text>
+  </g>
+  <g transform="translate(480, 280)">
+    <circle cx="0" cy="0" r="45" fill="#d32029" opacity="0.9"/>
+    <text x="0" y="12" font-family="serif" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">R</text>
+  </g>
+  <g transform="translate(590, 280)">
+    <circle cx="0" cy="0" r="45" fill="#00733e" opacity="0.9"/>
+    <text x="0" y="12" font-family="serif" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">G</text>
+  </g>
+
+  <!-- Main title -->
+  <text x="900" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="72" fill="#ffffff" text-anchor="middle" font-weight="bold">ManaTuner Pro</text>
+
+  <!-- Subtitle -->
+  <text x="900" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#e94560" text-anchor="middle">MTG Manabase Analyzer</text>
+
+  <!-- Description -->
+  <text x="900" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#a0a0a0" text-anchor="middle">Hypergeometric Probability Calculator</text>
+  <text x="900" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#a0a0a0" text-anchor="middle">Monte Carlo Simulations</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="610" width="1200" height="20" fill="url(#accent)"/>
+</svg>

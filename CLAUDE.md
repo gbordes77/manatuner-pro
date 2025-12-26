@@ -37,14 +37,7 @@ echo "Rafraîchis http://localhost:5173/[page-modifiée]"
 - `/guide` - Guide utilisateur
 - `/mathematics` - Explications mathématiques
 
-## Session 2025-12-26
+## Notes Techniques
 
-### Corrections effectuées
-- ✅ 9 erreurs ESLint corrigées (case blocks + escape)
-- ✅ 67→40 warnings ESLint (unused vars/imports)
-- ✅ Test AnalyzerPage.test.jsx corrigé (mock + noms d'onglets)
-- ✅ Original Dual Lands ajoutés en #1 dans Land Glossary
-
-### Tests Status
-- Unit: 86/88 passing (2 skipped)
-- ESLint: 0 errors, 40 warnings
+### Supabase
+**Status: DISABLED** - Service entièrement mocké (`isConfigured: () => false`). Toutes les données restent en localStorage. App 100% privacy-first.
