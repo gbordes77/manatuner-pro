@@ -7,7 +7,7 @@ import {
     History as HistoryIcon,
     LightMode as LightModeIcon,
     Lock as LockIcon,
-    Menu as MenuIcon,
+    Menu as MenuIcon
 } from "@mui/icons-material";
 import {
     AppBar,
@@ -18,10 +18,10 @@ import {
     Tooltip,
     Typography,
     useMediaQuery,
-    useTheme as useMuiTheme,
+    useTheme as useMuiTheme
 } from "@mui/material";
-import React from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../common/NotificationProvider";
 
 export const Header: React.FC = () => {
@@ -29,15 +29,26 @@ export const Header: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   const location = useLocation();
+  const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  };
 
   const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Analyzer", path: "/analyzer" },
-    { label: "Guide", path: "/guide" },
-    { label: "Mathematics", path: "/mathematics" },
+    { label: "Home", path: "/", icon: HomeIcon },
+    { label: "Analyzer", path: "/analyzer", icon: AnalyticsIcon },
+    { label: "Guide", path: "/guide", icon: GuideIcon },
+    { label: "Mathematics", path: "/mathematics", icon: FunctionsIcon },
     { label: "My Analyses", path: "/mes-analyses", icon: HistoryIcon },
     { label: "Privacy-First", path: "/privacy-first", icon: LockIcon },
-    { label: "About", path: "/about" },
+    { label: "About", path: "/about", icon: InfoIcon },
   ];
 
   return (
@@ -144,13 +155,133 @@ export const Header: React.FC = () => {
           </IconButton>
         </Tooltip>
 
-        {/* Mobile menu */}
+        {/* Mobile menu button */}
         {isMobile && (
-          <IconButton color="inherit" edge="end" sx={{ ml: 1 }}>
+          <IconButton
+            color="inherit"
+            edge="end"
+            sx={{ ml: 1 }}
+            onClick={handleMobileMenuToggle}
+            aria-label="Open navigation menu"
+          >
             <MenuIcon />
           </IconButton>
         )}
       </Toolbar>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileMenuOpen}
+        onClose={handleMobileMenuToggle}
+        PaperProps={{
+          sx: {
+            width: 280,
+            backgroundColor: muiTheme.palette.background.paper,
+          },
+        }}
+      >
+        {/* Drawer Header */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            p: 2,
+            backgroundColor: muiTheme.palette.primary.main,
+            color: muiTheme.palette.primary.contrastText,
+          }}
+        >
+          <Box display="flex" alignItems="center">
+            <AnalyticsIcon sx={{ mr: 1 }} />
+            <Typography variant="h6" fontWeight="bold">
+              ManaTuner Pro
+            </Typography>
+          </Box>
+          <IconButton
+            color="inherit"
+            onClick={handleMobileMenuToggle}
+            aria-label="Close navigation menu"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        <Divider />
+
+        {/* Navigation Items */}
+        <List sx={{ pt: 1 }}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  onClick={() => handleNavigation(item.path)}
+                  selected={isActive}
+                  sx={{
+                    py: 1.5,
+                    "&.Mui-selected": {
+                      backgroundColor: muiTheme.palette.primary.main + "20",
+                      borderRight: `3px solid ${muiTheme.palette.primary.main}`,
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: isActive
+                        ? muiTheme.palette.primary.main
+                        : "inherit",
+                      minWidth: 40,
+                    }}
+                  >
+                    <Icon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? "bold" : "normal",
+                      color: isActive
+                        ? muiTheme.palette.primary.main
+                        : "inherit",
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        <Divider sx={{ my: 1 }} />
+
+        {/* Theme Toggle in Drawer */}
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={toggleTheme} sx={{ py: 1.5 }}>
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+              </ListItemIcon>
+              <ListItemText
+                primary={isDark ? "Light Mode" : "Dark Mode"}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              component="a"
+              href="https://github.com/project-manabase"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ py: 1.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <GitHubIcon />
+              </ListItemIcon>
+              <ListItemText primary="GitHub" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Drawer>
     </AppBar>
   );
 };
