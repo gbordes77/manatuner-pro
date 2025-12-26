@@ -34,9 +34,9 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = ({
           },
         }}
       >
-        <Tab label="⚡ Spells & Tempo" />
-        <Tab label="📊 Probabilities" />
-        <Tab label="💡 All Recommendations" />
+        <Tab icon={<BoltIcon />} iconPosition="start" label="Spells & Tempo" />
+        <Tab icon={<BarChartIcon />} iconPosition="start" label="Probabilities" />
+        <Tab icon={<LightbulbIcon />} iconPosition="start" label="All Recommendations" />
       </Tabs>
 
       {/* Spells & Tempo */}
