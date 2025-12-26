@@ -7,13 +7,8 @@ import { NotificationProvider } from "./components/common/NotificationProvider";
 import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
 
-// Direct imports for core pages (avoiding lazy loading issues)
-import AnalyzerPage from "./pages/AnalyzerPage";
-import { GuidePage } from "./pages/GuidePage";
+// Only HomePage is loaded immediately (landing page)
 import { HomePage } from "./pages/HomePage";
-import MathematicsPage from "./pages/MathematicsPage";
-import MyAnalysesPage from "./pages/MyAnalysesPage";
-import PrivacyFirstPage from "./pages/PrivacyFirstPage";
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -39,7 +34,15 @@ const PageLoader = () => (
   </Container>
 );
 
-// Lazy-loaded temporary components for other pages
+// Lazy-loaded pages - loaded only when navigating to them
+const AnalyzerPage = React.lazy(() => import("./pages/AnalyzerPage"));
+const GuidePage = React.lazy(() =>
+  import("./pages/GuidePage").then((m) => ({ default: m.GuidePage }))
+);
+const MathematicsPage = React.lazy(() => import("./pages/MathematicsPage"));
+const MyAnalysesPage = React.lazy(() => import("./pages/MyAnalysesPage"));
+const PrivacyFirstPage = React.lazy(() => import("./pages/PrivacyFirstPage"));
+
 const AboutPage = React.lazy(() =>
   import("./components/layout/StaticPages").then((m) => ({
     default: m.AboutPage,
@@ -74,31 +77,19 @@ function App() {
               flexDirection: "column",
             }}
           >
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/analyzer" element={<AnalyzerPage />} />
-              <Route path="/guide" element={<GuidePage />} />
-              <Route path="/mathematics" element={<MathematicsPage />} />
-              <Route path="/mes-analyses" element={<MyAnalysesPage />} />
-              <Route path="/privacy-first" element={<PrivacyFirstPage />} />
-              <Route
-                path="/about"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <AboutPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/privacy"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <PrivacyPage />
-                  </Suspense>
-                }
-              />
-              <Route path="*" element={<HomePage />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/analyzer" element={<AnalyzerPage />} />
+                <Route path="/guide" element={<GuidePage />} />
+                <Route path="/mathematics" element={<MathematicsPage />} />
+                <Route path="/mes-analyses" element={<MyAnalysesPage />} />
+                <Route path="/privacy-first" element={<PrivacyFirstPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="*" element={<HomePage />} />
+              </Routes>
+            </Suspense>
           </Box>
 
           <Footer />
