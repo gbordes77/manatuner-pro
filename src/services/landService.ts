@@ -32,7 +32,7 @@ const MANA_SYMBOL_MAP: Record<string, LandManaColor> = {
 }
 
 /** Basic land type to color mapping */
-const BASIC_TYPE_COLOR: Record<string, LandManaColor> = {
+const _BASIC_TYPE_COLOR: Record<string, LandManaColor> = {
   'Plains': 'W',
   'Island': 'U',
   'Swamp': 'B',

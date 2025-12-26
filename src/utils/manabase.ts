@@ -1,10 +1,10 @@
 import type {
-  Card,
-  ColorRequirement,
-  DeckCard,
-  SimulationParams,
-  SimulationResult,
-  TurnAnalysis,
+    Card,
+    ColorRequirement,
+    DeckCard,
+    SimulationParams,
+    SimulationResult,
+    TurnAnalysis,
 } from "@/types";
 
 // Constants basés sur les recherches de Frank Karsten
@@ -79,7 +79,7 @@ export const extractColors = (cost: string): ManaColor[] => {
 export const calculateRequiredSources = (
   cost: string,
   turn: number,
-  colorIntensity: number = 1,
+  _colorIntensity: number = 1,
 ): number => {
   const colors = extractColors(cost);
   if (colors.length === 0) return 0;
@@ -275,7 +275,7 @@ export const runManabaseSimulation = (
     keepRate: number;
   }> = [];
   let totalKeeps = 0;
-  let totalMulligans = 0;
+  const _totalMulligans = 0;
 
   for (let turn = 1; turn <= 6; turn++) {
     let successfulCasts = 0;
@@ -297,7 +297,7 @@ export const runManabaseSimulation = (
         validGames++;
 
         // Simule la pioche jusqu'au tour T
-        const cardsDrawn = 7 - mulligans + (turn - 1);
+        const _cardsDrawn = 7 - mulligans + (turn - 1);
         const landsInPlay = Math.min(
           hand.lands + Math.floor((turn - 1) * 0.4),
           turn,
@@ -312,7 +312,7 @@ export const runManabaseSimulation = (
         }
       }
 
-      totalMulligans += mulligans;
+      _totalMulligans += mulligans;
     }
 
     results.push({
