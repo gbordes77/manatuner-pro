@@ -1,24 +1,34 @@
 import {
     Analytics as AnalyticsIcon,
+    Close as CloseIcon,
     DarkMode as DarkModeIcon,
     Functions as FunctionsIcon,
     GitHub as GitHubIcon,
     MenuBook as GuideIcon,
     History as HistoryIcon,
+    Home as HomeIcon,
+    Info as InfoIcon,
     LightMode as LightModeIcon,
     Lock as LockIcon,
-    Menu as MenuIcon
+    Menu as MenuIcon,
 } from "@mui/icons-material";
 import {
     AppBar,
     Box,
     Button,
+    Divider,
+    Drawer,
     IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
     Toolbar,
     Tooltip,
     Typography,
     useMediaQuery,
-    useTheme as useMuiTheme
+    useTheme as useMuiTheme,
 } from "@mui/material";
 import React, { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
