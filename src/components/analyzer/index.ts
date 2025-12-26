@@ -2,11 +2,12 @@
 export { DeckInputSection } from "./DeckInputSection";
 export { TabPanel } from "./TabPanel";
 
-// New consolidated tabs (4 tabs)
+// New consolidated tabs (5 tabs)
 export { AnalysisTab } from "./AnalysisTab";
 export { CastabilityTab } from "./CastabilityTab";
 export { DashboardTab } from "./DashboardTab";
 export { ManabaseFullTab } from "./ManabaseFullTab";
+export { MulliganTab } from "./MulliganTab";
 
 // Legacy tabs (used internally)
 export { DeckListTab } from "./DeckListTab";

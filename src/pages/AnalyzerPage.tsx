@@ -24,6 +24,7 @@ import {
     DashboardTab,
     DeckInputSection,
     ManabaseFullTab,
+    MulliganTab,
     TabPanel,
 } from "../components/analyzer";
 import PrivacySettings from "../components/PrivacySettings";
@@ -281,8 +282,8 @@ const AnalyzerPage: React.FC = () => {
                 <Tabs
                   value={activeTab}
                   onChange={handleTabChange}
-                  variant={isMobile ? "scrollable" : "fullWidth"}
-                  scrollButtons={isMobile ? "auto" : false}
+                  variant="scrollable"
+                  scrollButtons="auto"
                   allowScrollButtonsMobile
                   sx={{
                     mb: isMobile ? 2 : 3,
@@ -300,6 +301,7 @@ const AnalyzerPage: React.FC = () => {
                 >
                   <Tab label="📊 Dashboard" />
                   <Tab label="🎯 Castability" />
+                  <Tab label="🎲 Mulligan" />
                   <Tab label="⚡ Analysis" />
                   <Tab label="🏔️ Manabase" />
                 </Tabs>
@@ -314,13 +316,18 @@ const AnalyzerPage: React.FC = () => {
                   <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
                 </TabPanel>
 
-                {/* Tab 2: Analysis - Spells + Probabilities + Full Recommendations */}
+                {/* Tab 2: Mulligan Strategy - Advanced Monte Carlo analysis */}
                 <TabPanel value={activeTab} index={2}>
+                  <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
+                </TabPanel>
+
+                {/* Tab 3: Analysis - Spells + Probabilities + Full Recommendations */}
+                <TabPanel value={activeTab} index={3}>
                   <AnalysisTab analysisResult={analysisResult} isMobile={isMobile} cards={analysisResult.cards} />
                 </TabPanel>
 
-                {/* Tab 3: Manabase - Lands + Full Deck List */}
-                <TabPanel value={activeTab} index={3}>
+                {/* Tab 4: Manabase - Lands + Full Deck List */}
+                <TabPanel value={activeTab} index={4}>
                   <ManabaseFullTab
                     deckList={deckList}
                     analysisResult={analysisResult}
