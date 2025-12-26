@@ -18,11 +18,12 @@ import {
 import React, { useEffect, useState } from "react";
 import {
     AnalysisTab,
+    AnalyzerSkeleton,
     CastabilityTab,
     DashboardTab,
     DeckInputSection,
     ManabaseFullTab,
-    TabPanel
+    TabPanel,
 } from "../components/analyzer";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
