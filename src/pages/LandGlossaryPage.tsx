@@ -10,7 +10,6 @@ import {
     CardContent,
     Chip,
     Container,
-    Divider,
     Grid,
     Paper,
     Typography,
@@ -19,6 +18,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { AnimatedContainer } from "../components/common/AnimatedContainer";
 
 interface LandCategory {
   rank: number;
@@ -156,9 +156,18 @@ const LAND_CATEGORIES: LandCategory[] = [
 
 const getRankColor = (rank: number): string => {
   if (rank === 1) return "#FFD700"; // Gold
-  if (rank === 2) return "#C0C0C0"; // Silver
+  if (rank === 2) return "#9e9e9e"; // Silver
   if (rank === 3) return "#CD7F32"; // Bronze
-  return "#1976d2"; // Default blue
+  if (rank <= 6) return "#1976d2"; // Blue
+  if (rank <= 9) return "#9c27b0"; // Purple
+  return "#607d8b"; // Grey
+};
+
+const getRankGradient = (rank: number): string => {
+  if (rank === 1) return "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)";
+  if (rank === 2) return "linear-gradient(135deg, #C0C0C0 0%, #9e9e9e 100%)";
+  if (rank === 3) return "linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)";
+  return `linear-gradient(135deg, ${getRankColor(rank)} 0%, ${getRankColor(rank)}dd 100%)`;
 };
 
 export const LandGlossaryPage: React.FC = () => {
@@ -166,207 +175,276 @@ export const LandGlossaryPage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const rankingFactors = [
+    { title: "Tempo", desc: "Does it enter untapped?", icon: "⚡", color: "#f44336" },
+    { title: "Flexibility", desc: "How many colors? Fetchable?", icon: "🎨", color: "#2196f3" },
+    { title: "Synergy", desc: "Basic land types? Enables others?", icon: "🔗", color: "#4caf50" },
+    { title: "Downside", desc: "Life cost? Conditions?", icon: "⚠️", color: "#ff9800" },
+  ];
+
+  const deckTips = [
+    { type: "Aggro", desc: "Prioritize untapped lands. Fetchlands, Fastlands, and Rainbow Lands.", color: "#f44336" },
+    { type: "Midrange", desc: "Balance Fetchlands + Shocklands, add Checklands and basics.", color: "#ff9800" },
+    { type: "Control", desc: "Can afford some taplands. Triomes become more playable.", color: "#2196f3" },
+  ];
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)}
-          sx={{ mb: 2 }}
-        >
-          Back
-        </Button>
-        <Typography variant="h4" gutterBottom fontWeight="bold">
-          <TerrainIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-          Land Type Glossary
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Understanding the different types of lands and their power level is crucial for building
-          an optimal manabase. This guide ranks land categories from most to least powerful for
-          competitive constructed play.
-        </Typography>
-      </Box>
+      <AnimatedContainer animation="fadeInUp">
+        <Box sx={{ mb: 5 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{ mb: 2 }}
+          >
+            Back
+          </Button>
 
-      {/* Power Ranking Explanation */}
-      <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50' }}>
-        <Typography variant="h6" gutterBottom>
-          <TrophyIcon sx={{ mr: 1, verticalAlign: "middle", color: "#FFD700" }} />
-          Why This Ranking?
-        </Typography>
-        <Typography variant="body2" paragraph>
-          The ranking is based on several factors that matter in competitive Magic:
-        </Typography>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: "2rem", md: "3rem" },
+                background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #9c27b0 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+              }}
+            >
+              <TerrainIcon sx={{ fontSize: { xs: 40, md: 56 }, color: "#1976d2" }} />
+              Land Type Glossary
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ maxWidth: 700, mx: "auto" }}
+            >
+              Understanding land types is crucial for building an optimal manabase.
+              Ranked from most to least powerful for competitive play.
+            </Typography>
+          </Box>
+        </Box>
+      </AnimatedContainer>
+
+      {/* Ranking Factors */}
+      <Paper
+        sx={{
+          p: 3,
+          mb: 5,
+          borderRadius: 3,
+          background: "linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)",
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+          <TrophyIcon sx={{ color: "#FFD700", fontSize: 28 }} />
+          <Typography variant="h5" fontWeight={700}>
+            Why This Ranking?
+          </Typography>
+        </Box>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                  Tempo
+          {rankingFactors.map((factor, index) => (
+            <Grid item xs={6} md={3} key={index}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  borderRadius: 2,
+                  border: "2px solid",
+                  borderColor: factor.color,
+                  bgcolor: `${factor.color}08`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 4px 12px ${factor.color}30`,
+                  },
+                }}
+              >
+                <Typography variant="h4" sx={{ mb: 0.5 }}>{factor.icon}</Typography>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: factor.color }}>
+                  {factor.title}
                 </Typography>
-                <Typography variant="caption">
-                  Does it enter untapped? Tempo loss from tapped lands can cost games.
+                <Typography variant="caption" color="text.secondary">
+                  {factor.desc}
                 </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                  Flexibility
-                </Typography>
-                <Typography variant="caption">
-                  How many colors can it produce? Can it be fetched?
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                  Synergy
-                </Typography>
-                <Typography variant="caption">
-                  Does it have basic land types? Does it enable other lands?
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                  Downside
-                </Typography>
-                <Typography variant="caption">
-                  Life cost, conditions, or other restrictions that limit usefulness.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
 
       {/* Land Categories */}
-      <Grid container spacing={3}>
-        {LAND_CATEGORIES.map((category) => (
-          <Grid item xs={12} key={category.name}>
-            <Card
-              sx={{
-                borderLeft: `4px solid ${getRankColor(category.rank)}`,
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "translateX(4px)",
-                },
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, flexWrap: "wrap" }}>
-                  <Chip
-                    label={`#${category.rank}`}
-                    size="small"
+      <Box sx={{ mb: 5 }}>
+        <Grid container spacing={3}>
+          {LAND_CATEGORIES.map((category, index) => (
+            <Grid item xs={12} key={category.name}>
+              <AnimatedContainer animation="fadeInUp" delay={index * 0.05}>
+                <Card
+                  sx={{
+                    borderRadius: 3,
+                    overflow: "hidden",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "translateX(8px)",
+                      boxShadow: `0 8px 32px ${getRankColor(category.rank)}30`,
+                    },
+                  }}
+                >
+                  <Box
                     sx={{
-                      backgroundColor: getRankColor(category.rank),
-                      color: category.rank <= 3 ? "#000" : "#fff",
-                      fontWeight: "bold",
+                      height: 6,
+                      background: getRankGradient(category.rank),
                     }}
                   />
-                  <Typography variant="h6" fontWeight="bold">
-                    {category.name}
-                  </Typography>
-                </Box>
-
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {category.description}
-                </Typography>
-
-                <Paper sx={{ p: 2, mb: 2, backgroundColor: theme.palette.mode === 'dark' ? 'grey.800' : 'grey.100' }}>
-                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom color="primary">
-                    Why it's powerful:
-                  </Typography>
-                  <Typography variant="body2">
-                    {category.whyPowerful}
-                  </Typography>
-                </Paper>
-
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      Examples
-                    </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
-                      {category.examples.slice(0, isMobile ? 3 : 5).map((ex) => (
-                        <Chip key={ex} label={ex} size="small" variant="outlined" />
-                      ))}
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, flexWrap: "wrap" }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          background: getRankGradient(category.rank),
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: category.rank <= 3 ? "#000" : "#fff",
+                          fontWeight: 800,
+                          fontSize: "1.2rem",
+                          boxShadow: `0 4px 12px ${getRankColor(category.rank)}40`,
+                        }}
+                      >
+                        #{category.rank}
+                      </Box>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h5" fontWeight={700}>
+                          {category.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {category.description}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={3} md={3}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      ETB Tapped?
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium">
-                      {category.etbTapped}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6} sm={3} md={3}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      Color Fixing
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium">
-                      {category.colorFix}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      Downside
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium">
-                      {category.downside}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-            {category.rank < 11 && <Divider sx={{ my: 1 }} />}
-          </Grid>
-        ))}
-      </Grid>
 
-      {/* Footer Tips */}
-      <Paper sx={{ p: 3, mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
+                    <Paper
+                      sx={{
+                        p: 2,
+                        mb: 2,
+                        borderRadius: 2,
+                        bgcolor: `${getRankColor(category.rank)}10`,
+                        borderLeft: `4px solid ${getRankColor(category.rank)}`,
+                      }}
+                    >
+                      <Typography variant="subtitle2" fontWeight={700} sx={{ color: getRankColor(category.rank), mb: 0.5 }}>
+                        Why it's powerful:
+                      </Typography>
+                      <Typography variant="body2">
+                        {category.whyPowerful}
+                      </Typography>
+                    </Paper>
+
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Typography variant="caption" color="text.secondary" display="block" fontWeight={600}>
+                          Examples
+                        </Typography>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
+                          {category.examples.slice(0, isMobile ? 3 : 5).map((ex) => (
+                            <Chip
+                              key={ex}
+                              label={ex}
+                              size="small"
+                              sx={{
+                                bgcolor: `${getRankColor(category.rank)}15`,
+                                borderColor: getRankColor(category.rank),
+                                fontWeight: 500,
+                              }}
+                              variant="outlined"
+                            />
+                          ))}
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={3} md={3}>
+                        <Typography variant="caption" color="text.secondary" display="block" fontWeight={600}>
+                          ETB Tapped?
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {category.etbTapped}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3} md={3}>
+                        <Typography variant="caption" color="text.secondary" display="block" fontWeight={600}>
+                          Color Fixing
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {category.colorFix}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Typography variant="caption" color="text.secondary" display="block" fontWeight={600}>
+                          Downside
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {category.downside}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </AnimatedContainer>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Building Tips */}
+      <Paper
+        sx={{
+          p: 4,
+          borderRadius: 4,
+          background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #9c27b0 100%)",
+          color: "white",
+          mb: 4,
+        }}
+      >
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
           Building Your Manabase - Quick Tips
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-              Aggressive Decks (Aggro)
-            </Typography>
-            <Typography variant="body2">
-              Prioritize untapped lands. Fetchlands, Fastlands, and Rainbow Lands are your best friends.
-              Every tapped land is a turn you can't attack.
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-              Midrange Decks
-            </Typography>
-            <Typography variant="body2">
-              Balance is key. Mix Fetchlands + Shocklands for flexibility, add some Checklands for
-              consistency, and a few basics for Blood Moon protection.
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-              Control Decks
-            </Typography>
-            <Typography variant="body2">
-              You can afford some tapped lands early. Triomes become more playable, and the card
-              selection from Fetch + shuffle is valuable for long games.
-            </Typography>
-          </Grid>
+        <Grid container spacing={3}>
+          {deckTips.map((tip, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <Paper
+                sx={{
+                  p: 2.5,
+                  borderRadius: 2,
+                  bgcolor: "rgba(255,255,255,0.95)",
+                  height: "100%",
+                }}
+              >
+                <Chip
+                  label={tip.type}
+                  sx={{
+                    bgcolor: tip.color,
+                    color: "white",
+                    fontWeight: 700,
+                    mb: 1.5,
+                  }}
+                />
+                <Typography variant="body2" color="text.primary">
+                  {tip.desc}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
     </Container>

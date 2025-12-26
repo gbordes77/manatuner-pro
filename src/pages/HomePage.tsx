@@ -2,12 +2,12 @@ import {
     Analytics as AnalyticsIcon,
     ArrowForward as ArrowForwardIcon,
     Book as BookIcon,
+    Casino as CasinoIcon,
+    Functions as FunctionsIcon,
     MenuBook as MenuBookIcon,
-    Security as SecurityIcon,
-    Speed as SpeedIcon,
-    Star as StarIcon,
-    TrendingUp as TrendingUpIcon,
-    Widgets as WidgetsIcon,
+    Psychology as PsychologyIcon,
+    ShowChart as ShowChartIcon,
+    Timeline as TimelineIcon,
 } from "@mui/icons-material";
 import {
     Box,
@@ -27,382 +27,503 @@ import { AnimatedContainer } from "../components/common/AnimatedContainer";
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
+  // Réorganisé: dans l'ordre du Dashboard
   const features = [
     {
-      icon: <AnalyticsIcon color="primary" sx={{ fontSize: 32 }} />,
-      title: "Advanced Analytics",
-      description:
-        "Precise manabase calculations using Frank Karsten's research and hypergeometric distribution.",
+      icon: <TimelineIcon sx={{ fontSize: 40 }} />,
+      title: "Health Score",
+      description: "Instant manabase health percentage based on hypergeometric probability.",
+      color: "#4caf50",
     },
     {
-      icon: <SpeedIcon color="primary" sx={{ fontSize: 32 }} />,
-      title: "Lightning Fast",
-      description:
-        "Instant results with cached Scryfall data and optimized algorithms.",
+      icon: <ShowChartIcon sx={{ fontSize: 40 }} />,
+      title: "Castability",
+      description: "Exact probability of casting each spell on curve, turn by turn.",
+      color: "#2196f3",
     },
     {
-      icon: <SecurityIcon color="primary" sx={{ fontSize: 32 }} />,
-      title: "Secure & Private",
-      description:
-        "Your deck data stays private. No tracking, no ads, just pure manabase analysis.",
+      icon: <CasinoIcon sx={{ fontSize: 40 }} />,
+      title: "Mulligan Simulator",
+      description: "Monte Carlo simulation tells you exactly when to keep or mulligan.",
+      color: "#9c27b0",
     },
     {
-      icon: <WidgetsIcon color="primary" sx={{ fontSize: 32 }} />,
-      title: "All Formats",
-      description:
-        "Support for Standard, Modern, Legacy, Commander, and more MTG formats.",
+      icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
+      title: "4 Archetypes",
+      description: "Aggro, Midrange, Control, Combo - tailored analysis for each.",
+      color: "#ff9800",
     },
   ];
 
-  const privacyFeatures = [
-    { icon: "🔒", title: "Privacy-First", desc: "No data collected" },
-    { icon: "📱", title: "100% Local", desc: "Works offline" },
-    { icon: "💾", title: "Auto-Save", desc: "Your analyses saved locally" },
-    { icon: "🚀", title: "Ultra Fast", desc: "No server = speed" },
+  // Les fondations mathématiques avec couleurs
+  const mathFoundations = [
+    {
+      title: "Hypergeometric",
+      desc: "Exact probability, not approximations",
+      formula: "P(X≥k)",
+      color: "#e3f2fd",
+      borderColor: "#1976d2",
+    },
+    {
+      title: "Monte Carlo",
+      desc: "3,000 hands simulated",
+      formula: "n=3000",
+      color: "#f3e5f5",
+      borderColor: "#9c27b0",
+    },
+    {
+      title: "Bellman Equation",
+      desc: "Optimal stopping theory",
+      formula: "E[V₇]",
+      color: "#fff3e0",
+      borderColor: "#ff9800",
+    },
+    {
+      title: "Karsten Tables",
+      desc: "Pro-level requirements",
+      formula: "90%",
+      color: "#e8f5e9",
+      borderColor: "#4caf50",
+    },
   ];
 
   return (
     <Container maxWidth="lg">
-      {/* Hero Section - Optimisation 3: Reduced spacing */}
+      {/* Hero Section */}
       <AnimatedContainer animation="fadeInUp">
-        <Box sx={{ textAlign: "center", py: 2 }}>
+        <Box sx={{ textAlign: "center", py: 4 }}>
           <Typography
             variant="h2"
             component="h1"
             gutterBottom
             sx={{
-              fontWeight: "bold",
-              background: "linear-gradient(45deg, #1976d2, #42a5f5)",
+              fontWeight: 800,
+              fontSize: { xs: "2.5rem", md: "3.5rem" },
+              background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #9c27b0 100%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              letterSpacing: "-0.02em",
             }}
           >
-            Perfect Your Manabase
+            Can You Cast Your Spells On Curve?
           </Typography>
 
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{
+              maxWidth: 650,
+              mx: "auto",
+              mb: 3,
+              fontWeight: 400,
+              lineHeight: 1.6,
+            }}
+          >
+            Stop guessing. Get <strong>exact probabilities</strong> for every spell,
+            plus know <strong>exactly when to mulligan</strong>.
+          </Typography>
+
+          {/* Tags */}
           <Box
             sx={{
               display: "flex",
               gap: 1,
               justifyContent: "center",
-              mb: 2,
+              mb: 4,
               flexWrap: "wrap",
             }}
           >
             <Chip
-              icon={<StarIcon />}
-              label="Frank Karsten Research"
-              color="primary"
-              component="a"
-              href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
-              target="_blank"
-              rel="noopener noreferrer"
-              clickable
+              icon={<ShowChartIcon />}
+              label="Turn-by-Turn Probabilities"
               sx={{
-                cursor: "pointer",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: 2,
-                },
-                transition: "all 0.2s ease-in-out",
+                bgcolor: "#e3f2fd",
+                color: "#1565c0",
+                fontWeight: 600,
+                "& .MuiChip-icon": { color: "#1565c0" }
               }}
             />
             <Chip
-              icon={<TrendingUpIcon />}
-              label="Hypergeometric Analysis"
-              color="secondary"
+              icon={<CasinoIcon />}
+              label="Monte Carlo Mulligan"
+              sx={{
+                bgcolor: "#f3e5f5",
+                color: "#7b1fa2",
+                fontWeight: 600,
+                "& .MuiChip-icon": { color: "#7b1fa2" }
+              }}
             />
-            <Chip label="Free & Open Source" variant="outlined" />
+            <Chip
+              icon={<FunctionsIcon />}
+              label="Proven Mathematics"
+              sx={{
+                bgcolor: "#fff3e0",
+                color: "#e65100",
+                fontWeight: 600,
+                "& .MuiChip-icon": { color: "#e65100" }
+              }}
+            />
           </Box>
 
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            paragraph
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
-            Professional MTG manabase analysis tool. Get precise probabilities
-            and optimal land counts for competitive play.
-          </Typography>
-
+          {/* CTA Buttons */}
           <Box
             sx={{
-              mt: 2,
               display: "flex",
-              gap: 3,
+              gap: 2,
               justifyContent: "center",
               flexWrap: "wrap",
             }}
           >
-            <AnimatedContainer animation="slideInLeft" delay={0.2}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate("/guide")}
-                startIcon={<MenuBookIcon />}
-                sx={{
-                  px: 5,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  borderRadius: 3,
-                  boxShadow: 3,
-                  background:
-                    "linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)",
-                  color: "white",
-                  "&:hover": {
-                    boxShadow: 5,
-                    transform: "translateY(-2px)",
-                    background:
-                      "linear-gradient(45deg, #388e3c 30%, #4caf50 90%)",
-                  },
-                  transition: "all 0.3s ease-in-out",
-                }}
-              >
-                Read Guide First
-              </Button>
-            </AnimatedContainer>
-
-            <AnimatedContainer animation="scaleIn" delay={0.4}>
+            <AnimatedContainer animation="scaleIn" delay={0.2}>
               <Button
                 variant="contained"
                 size="large"
                 onClick={() => navigate("/analyzer")}
                 startIcon={<AnalyticsIcon />}
                 sx={{
-                  px: 6,
-                  py: 1.5,
-                  fontSize: "1.2rem",
-                  fontWeight: "bold",
+                  px: 5,
+                  py: 1.8,
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
                   borderRadius: 3,
-                  boxShadow: 4,
-                  background:
-                    "linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)",
-                  color: "white",
+                  boxShadow: "0 8px 32px rgba(25, 118, 210, 0.35)",
+                  background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
                   "&:hover": {
-                    boxShadow: 6,
-                    transform: "translateY(-2px)",
-                    background:
-                      "linear-gradient(45deg, #1565c0 30%, #1976d2 90%)",
+                    boxShadow: "0 12px 40px rgba(25, 118, 210, 0.45)",
+                    transform: "translateY(-3px)",
+                    background: "linear-gradient(135deg, #1565c0 0%, #1976d2 100%)",
                   },
-                  transition: "all 0.3s ease-in-out",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-                Start Analyzing
+                Analyze My Deck
               </Button>
             </AnimatedContainer>
 
-            <AnimatedContainer animation="slideInLeft" delay={0.6}>
+            <AnimatedContainer animation="slideInLeft" delay={0.4}>
               <Button
-                variant="contained"
+                variant="outlined"
                 size="large"
-                onClick={() => navigate("/about")}
-                color="secondary"
+                onClick={() => navigate("/guide")}
+                startIcon={<MenuBookIcon />}
                 sx={{
-                  px: 5,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
+                  px: 4,
+                  py: 1.8,
+                  fontSize: "1rem",
+                  fontWeight: 600,
                   borderRadius: 3,
-                  boxShadow: 3,
-                  background:
-                    "linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)",
-                  color: "white",
+                  borderWidth: 2,
                   "&:hover": {
-                    boxShadow: 5,
+                    borderWidth: 2,
                     transform: "translateY(-2px)",
-                    background:
-                      "linear-gradient(45deg, #7b1fa2 30%, #9c27b0 90%)",
                   },
-                  transition: "all 0.3s ease-in-out",
+                  transition: "all 0.3s ease",
                 }}
               >
-                Learn More
+                Read Guide
               </Button>
             </AnimatedContainer>
           </Box>
         </Box>
       </AnimatedContainer>
 
-      {/* Features Grid - Optimisation 4: 4 colonnes au lieu de 2x2 */}
-      <Grid container spacing={2} sx={{ py: 3 }}>
-        {features.map((feature, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                transition: "transform 0.2s ease-in-out",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: 4,
-                },
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1, textAlign: "center", py: 2 }}>
-                <Box sx={{ mb: 1 }}>{feature.icon}</Box>
-                <Typography variant="subtitle1" component="h2" gutterBottom fontWeight="bold">
-                  {feature.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {feature.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {/* Math Foundations - Design sexy */}
+      <Box sx={{ my: 5 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: "primary.main",
+              fontWeight: 700,
+              letterSpacing: 2,
+              fontSize: "0.85rem",
+            }}
+          >
+            Powered By
+          </Typography>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            sx={{ mt: 0.5 }}
+          >
+            Rigorous Mathematics
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mt: 1, maxWidth: 500, mx: "auto" }}
+          >
+            Not guesswork. Real probability theory used by mathematicians and pro players.
+          </Typography>
+        </Box>
 
-      {/* Complete Guide - Optimisation 1: Bandeau horizontal compact */}
+        <Grid container spacing={2}>
+          {mathFoundations.map((foundation, index) => (
+            <Grid item xs={6} md={3} key={index}>
+              <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    textAlign: "center",
+                    borderRadius: 3,
+                    bgcolor: foundation.color,
+                    border: "2px solid",
+                    borderColor: foundation.borderColor,
+                    height: "100%",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: `0 8px 24px ${foundation.borderColor}40`,
+                    },
+                  }}
+                >
+                  <Typography
+                    variant="h3"
+                    fontWeight={800}
+                    sx={{
+                      fontFamily: "monospace",
+                      color: foundation.borderColor,
+                      lineHeight: 1,
+                      mb: 1.5,
+                    }}
+                  >
+                    {foundation.formula}
+                  </Typography>
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={700}
+                    sx={{ color: foundation.borderColor }}
+                  >
+                    {foundation.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {foundation.desc}
+                  </Typography>
+                </Paper>
+              </AnimatedContainer>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Features Grid - Cards colorées */}
+      <Box sx={{ my: 5 }}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{ mb: 4, textAlign: "center" }}
+        >
+          What You Get
+        </Typography>
+        <Grid container spacing={3}>
+          {features.map((feature, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: 3,
+                    transition: "all 0.3s ease",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: `0 16px 40px ${feature.color}30`,
+                      borderColor: feature.color,
+                    },
+                  }}
+                >
+                  <CardContent sx={{ textAlign: "center", py: 4 }}>
+                    <Box
+                      sx={{
+                        width: 72,
+                        height: 72,
+                        borderRadius: "50%",
+                        bgcolor: `${feature.color}15`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mx: "auto",
+                        mb: 2,
+                        color: feature.color,
+                      }}
+                    >
+                      {feature.icon}
+                    </Box>
+                    <Typography variant="h6" fontWeight={700} gutterBottom>
+                      {feature.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {feature.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </AnimatedContainer>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* How It Works - Style moderne */}
+      <Card
+        sx={{
+          my: 5,
+          borderRadius: 4,
+          background: "linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)",
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <CardContent sx={{ py: 5, px: 4 }}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            sx={{ mb: 4, textAlign: "center" }}
+          >
+            How It Works
+          </Typography>
+          <Grid container spacing={4} alignItems="center">
+            {[
+              { num: "1", title: "Paste Your Deck", desc: "MTGO, MTGA, Moxfield or any format" },
+              { num: "2", title: "Get Probabilities", desc: "Cast chances for every spell, every turn" },
+              { num: "3", title: "Know Your Mulligans", desc: "Optimal thresholds for your archetype" },
+            ].map((step, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Box sx={{ textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto",
+                      mb: 2,
+                      boxShadow: "0 8px 24px rgba(25, 118, 210, 0.3)",
+                    }}
+                  >
+                    <Typography variant="h4" fontWeight={800} color="white">
+                      {step.num}
+                    </Typography>
+                  </Box>
+                  <Typography variant="h6" fontWeight={700}>
+                    {step.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {step.desc}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Guide Banner */}
       <Paper
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          px: 3,
-          py: 1.5,
+          px: 4,
+          py: 2.5,
           mb: 3,
-          bgcolor: "action.hover",
-          borderRadius: 2,
+          borderRadius: 3,
+          background: "linear-gradient(135deg, #f3e5f5 0%, #e8eaf6 100%)",
           flexWrap: "wrap",
           gap: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <BookIcon color="secondary" />
+          <BookIcon sx={{ color: "#7b1fa2", fontSize: 28 }} />
           <Typography variant="body1">
-            <strong>Complete Guide:</strong> Learn manabase basics with Frank Karsten's research
+            <strong>New to manabase theory?</strong> Learn the math behind optimal deckbuilding
           </Typography>
         </Box>
         <Button
-          size="small"
           onClick={() => navigate("/guide")}
           endIcon={<ArrowForwardIcon />}
-          sx={{ whiteSpace: "nowrap" }}
+          sx={{
+            fontWeight: 600,
+            color: "#7b1fa2",
+          }}
         >
           Read Guide
         </Button>
       </Paper>
 
-      {/* Privacy-First Feature - Optimisation 2: Layout 2 colonnes */}
-      <Card
+      {/* Privacy - Discret */}
+      <Box
         sx={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          mb: 3,
+          display: "flex",
+          justifyContent: "center",
+          gap: 4,
+          py: 2,
+          flexWrap: "wrap",
         }}
       >
-        <CardContent sx={{ py: 3, px: 4 }}>
-          <Grid container spacing={3} alignItems="center">
-            {/* Left: Title + description */}
-            <Grid item xs={12} md={5}>
-              <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
-                🔐 First Privacy-First MTG Analyzer
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                Your decks stay private. Even we, the developers, cannot see them!
-              </Typography>
-              <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => navigate("/analyzer")}
-                  sx={{
-                    bgcolor: "rgba(255,255,255,0.2)",
-                    color: "white",
-                    "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
-                  }}
-                >
-                  Try Analyzer
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate("/privacy-first")}
-                  sx={{
-                    borderColor: "rgba(255,255,255,0.5)",
-                    color: "white",
-                    "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-                  }}
-                >
-                  Privacy Info
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate("/mes-analyses")}
-                  sx={{
-                    borderColor: "rgba(255,255,255,0.5)",
-                    color: "white",
-                    "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-                  }}
-                >
-                  My Analyses
-                </Button>
-              </Box>
-            </Grid>
-            {/* Right: 2x2 grid of features */}
-            <Grid item xs={12} md={7}>
-              <Grid container spacing={1}>
-                {privacyFeatures.map((feat, idx) => (
-                  <Grid item xs={6} key={idx}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
-                      <Typography variant="h6" component="span">{feat.icon}</Typography>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight="bold">{feat.title}</Typography>
-                        <Typography variant="caption" sx={{ opacity: 0.85 }}>{feat.desc}</Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+        {[
+          { icon: "🔒", text: "100% Local" },
+          { icon: "⚡", text: "No account required" },
+          { icon: "💾", text: "Auto-saved" },
+        ].map((item, index) => (
+          <Typography key={index} variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            {item.icon} {item.text}
+          </Typography>
+        ))}
+      </Box>
 
-      {/* Call to Action - Optimisation 5: Compacté en une ligne */}
+      {/* Final CTA */}
       <Paper
         sx={{
-          p: 3,
+          p: 4,
           mt: 3,
           mb: 4,
-          background: "linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)",
+          borderRadius: 4,
+          background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #9c27b0 100%)",
           color: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 2,
-          borderRadius: 2,
+          gap: 3,
+          boxShadow: "0 16px 48px rgba(25, 118, 210, 0.3)",
         }}
       >
-        <Typography variant="h5" component="h2" fontWeight="bold">
-          Ready to Optimize Your Deck?
-        </Typography>
+        <Box>
+          <Typography variant="h4" fontWeight={700}>
+            Ready to Optimize?
+          </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>
+            Find out if your manabase can support your game plan
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           size="large"
           onClick={() => navigate("/analyzer")}
           startIcon={<AnalyticsIcon />}
           sx={{
-            px: 4,
-            py: 1,
-            fontSize: "1rem",
-            fontWeight: "bold",
-            bgcolor: "rgba(255,255,255,0.2)",
+            px: 5,
+            py: 1.5,
+            fontSize: "1.1rem",
+            fontWeight: 700,
+            bgcolor: "white",
+            color: "#1976d2",
             borderRadius: 3,
             "&:hover": {
-              bgcolor: "rgba(255,255,255,0.3)",
+              bgcolor: "rgba(255,255,255,0.9)",
               transform: "translateY(-2px)",
-              boxShadow: 6,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
             },
-            transition: "all 0.3s ease-in-out",
+            transition: "all 0.3s ease",
           }}
         >
-          Try It Now - Free
+          Start Now — Free
         </Button>
       </Paper>
     </Container>

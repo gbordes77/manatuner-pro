@@ -1,13 +1,13 @@
-import React from 'react'
+import { Favorite as FavoriteIcon, GitHub as GitHubIcon } from '@mui/icons-material'
 import {
-  Box,
-  Container,
-  Typography,
-  Link,
-  Divider,
-  Grid
+    Box,
+    Container,
+    Divider,
+    Grid,
+    Link,
+    Typography
 } from '@mui/material'
-import { GitHub as GitHubIcon, Favorite as FavoriteIcon } from '@mui/icons-material'
+import React from 'react'
 
 export const Footer: React.FC = () => {
   return (
@@ -28,18 +28,18 @@ export const Footer: React.FC = () => {
               Built with <FavoriteIcon sx={{ fontSize: 14, mx: 0.5, color: 'red' }} /> for the Magic: The Gathering community
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              © 2024 ManaTuner Pro. Open source under MIT License.
+              © 2025 ManaTuner Pro. Open source under MIT License.
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
               This project is not affiliated with Wizards of the Coast. Magic: The Gathering is a trademark of Wizards of the Coast LLC.
             </Typography>
           </Grid>
-          
+
           <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-              <Link 
-                href="https://github.com/project-manabase" 
-                target="_blank" 
+              <Link
+                href="https://github.com/gbordes77/manatuner-pro"
+                target="_blank"
                 rel="noopener noreferrer"
                 color="inherit"
                 sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
@@ -47,28 +47,28 @@ export const Footer: React.FC = () => {
                 <GitHubIcon fontSize="small" />
                 GitHub
               </Link>
-              
+
               <Divider orientation="vertical" flexItem />
-              
-              <Link 
-                href="https://scryfall.com" 
-                target="_blank" 
+
+              <Link
+                href="https://scryfall.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 color="inherit"
               >
                 Scryfall API
               </Link>
-              
+
               <Divider orientation="vertical" flexItem />
-              
-              <Link 
-                href="/privacy" 
+
+              <Link
+                href="/privacy"
                 color="inherit"
               >
                 Privacy
               </Link>
             </Box>
-            
+
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Powered by Frank Karsten's manabase research
             </Typography>
@@ -77,4 +77,4 @@ export const Footer: React.FC = () => {
       </Container>
     </Box>
   )
-} 
+}

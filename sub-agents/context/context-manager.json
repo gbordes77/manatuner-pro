@@ -1,0 +1,404 @@
+{
+  "projectName": "ManaTuner Pro",
+  "version": "2.0.0",
+  "lastFullScan": "2025-12-26T17:20:00Z",
+  "description": "Advanced MTG Manabase Analyzer using Frank Karsten mathematics, Monte Carlo simulation, and Bellman equation for optimal mulligan decisions",
+  "projectType": "React SPA",
+  "stack": {
+    "frontend": "React 18 + TypeScript",
+    "ui": "Material-UI (MUI) v5",
+    "state": "Redux Toolkit + Redux Persist",
+    "dataFetching": "TanStack React Query v5",
+    "routing": "React Router DOM v6",
+    "bundler": "Vite 7",
+    "testing": {
+      "unit": "Vitest",
+      "e2e": "Playwright",
+      "component": "Testing Library"
+    },
+    "deployment": "Vercel"
+  },
+  "directoryTree": {
+    "path": "/",
+    "purpose": "Root directory containing project configuration, documentation, and source code",
+    "lastScanned": "2025-12-26T17:20:00Z",
+    "keyFiles": [
+      "package.json",
+      "tsconfig.json",
+      "vite.config.ts",
+      "CLAUDE.md",
+      "README.md",
+      "HANDOFF.md"
+    ],
+    "subdirectories": {
+      "src": {
+        "path": "/src",
+        "purpose": "Primary application source code",
+        "lastScanned": "2025-12-26T17:20:00Z",
+        "subdirectories": {
+          "components": {
+            "path": "/src/components",
+            "purpose": "React components organized by feature/domain",
+            "subdirectories": {
+              "analyzer": {
+                "path": "/src/components/analyzer",
+                "purpose": "Core analyzer page components including tabs and deck analysis UI",
+                "keyFiles": [
+                  "AnalysisTab.tsx",
+                  "CastabilityTab.tsx",
+                  "DashboardTab.tsx",
+                  "DeckInputSection.tsx",
+                  "ManabaseFullTab.tsx",
+                  "MulliganTab.tsx",
+                  "ProbabilitiesTab.tsx"
+                ]
+              },
+              "analysis": {
+                "path": "/src/components/analysis",
+                "purpose": "Specialized analysis visualization components",
+                "keyFiles": ["MonteCarloResults.tsx", "TurnByTurnAnalysis.tsx"]
+              },
+              "common": {
+                "path": "/src/components/common",
+                "purpose": "Reusable UI components",
+                "keyFiles": [
+                  "ErrorBoundary.tsx",
+                  "NotificationProvider.tsx",
+                  "VirtualList.tsx",
+                  "ManaSymbols.tsx"
+                ]
+              },
+              "layout": {
+                "path": "/src/components/layout",
+                "purpose": "Layout components for page structure",
+                "keyFiles": ["Header.tsx", "Footer.tsx", "StaticPages.tsx"]
+              },
+              "performance": {
+                "path": "/src/components/performance",
+                "purpose": "Performance-optimized components",
+                "keyFiles": ["OptimizedComponents.tsx"]
+              }
+            }
+          },
+          "services": {
+            "path": "/src/services",
+            "purpose": "Business logic and API services - Core mathematical engine",
+            "keyFiles": [
+              {
+                "name": "manaCalculator.ts",
+                "purpose": "Frank Karsten hypergeometric probability calculations with tempo-aware analysis",
+                "exports": ["ManaCalculator", "calculateHypergeometric", "calculateTempoAwareProbability", "analyzeSpellCastability"]
+              },
+              {
+                "name": "advancedMaths.ts",
+                "purpose": "Advanced mathematical engine with caching, Monte Carlo, and multivariate analysis",
+                "exports": ["AdvancedMathEngine", "calculateKarstenProbability", "runMonteCarloSimulation"]
+              },
+              {
+                "name": "mulliganSimulator.ts",
+                "purpose": "Monte Carlo + Dynamic Programming mulligan simulator using Bellman equation",
+                "exports": ["analyzeMulliganStrategy", "quickMulliganAnalysis", "evaluateHand"]
+              },
+              {
+                "name": "mulliganSimulatorAdvanced.ts",
+                "purpose": "Archetype-aware mulligan analysis (Aggro/Midrange/Control/Combo)",
+                "exports": ["analyzeWithArchetype", "quickArchetypeAnalysis", "ARCHETYPE_CONFIGS"]
+              },
+              {
+                "name": "deckAnalyzer.ts",
+                "purpose": "Main deck analysis orchestrator with Scryfall integration",
+                "exports": ["DeckAnalyzer", "DeckCard", "AnalysisResult"]
+              },
+              {
+                "name": "landService.ts",
+                "purpose": "Land detection, ETB analysis, and tempo calculations",
+                "exports": ["landService", "createDeckContext", "LandService"]
+              },
+              {
+                "name": "scryfall.ts",
+                "purpose": "Scryfall API client with caching",
+                "exports": ["searchCardByName", "fetchLandData", "parseDecklistText"]
+              }
+            ]
+          },
+          "hooks": {
+            "path": "/src/hooks",
+            "purpose": "Custom React hooks for state and calculations",
+            "keyFiles": [
+              "useDeckAnalysis.ts",
+              "useManaCalculations.ts",
+              "useAdvancedAnalysis.ts",
+              "useWebWorker.ts",
+              "useMonteCarloWorker.ts"
+            ]
+          },
+          "pages": {
+            "path": "/src/pages",
+            "purpose": "Main application pages/routes",
+            "keyFiles": [
+              "AnalyzerPage.tsx",
+              "HomePage.tsx",
+              "GuidePage.tsx",
+              "MathematicsPage.tsx",
+              "LandGlossaryPage.tsx",
+              "MyAnalysesPage.tsx"
+            ]
+          },
+          "store": {
+            "path": "/src/store",
+            "purpose": "Redux store configuration and slices",
+            "subdirectories": {
+              "slices": {
+                "path": "/src/store/slices",
+                "purpose": "Redux Toolkit slices for state management",
+                "keyFiles": [
+                  "analyzerSlice.ts",
+                  "deckSlice.ts",
+                  "analysisSlice.ts",
+                  "uiSlice.ts"
+                ]
+              }
+            }
+          },
+          "types": {
+            "path": "/src/types",
+            "purpose": "TypeScript type definitions",
+            "keyFiles": [
+              "index.ts",
+              "lands.ts",
+              "maths.ts",
+              "scryfall.ts"
+            ]
+          },
+          "utils": {
+            "path": "/src/utils",
+            "purpose": "Utility functions for land detection and calculations",
+            "keyFiles": [
+              "landDetection.ts",
+              "landDetectionComplete.ts",
+              "hybridLandDetection.ts",
+              "intelligentLandAnalysis.ts"
+            ]
+          },
+          "data": {
+            "path": "/src/data",
+            "purpose": "Static data and seed files",
+            "keyFiles": ["landSeed.ts"]
+          },
+          "lib": {
+            "path": "/src/lib",
+            "purpose": "Custom libraries for privacy and validation",
+            "keyFiles": ["privacy.ts", "validations.ts"]
+          },
+          "theme": {
+            "path": "/src/theme",
+            "purpose": "MUI theme configuration",
+            "keyFiles": ["index.ts"]
+          },
+          "styles": {
+            "path": "/src/styles",
+            "purpose": "Global CSS styles",
+            "keyFiles": ["index.css", "contrast-fixes.css", "ux-improvements.css"]
+          }
+        }
+      },
+      "tests": {
+        "path": "/tests",
+        "purpose": "Test files organized by type",
+        "subdirectories": {
+          "component": {
+            "path": "/tests/component",
+            "purpose": "Component tests",
+            "keyFiles": ["AnalyzerPage.test.jsx"]
+          },
+          "e2e": {
+            "path": "/tests/e2e",
+            "purpose": "Playwright E2E tests",
+            "subdirectories": {
+              "core-flows": { "purpose": "Main user flow tests" },
+              "tabs": { "purpose": "Analyzer tab tests" },
+              "responsive": { "purpose": "Mobile/desktop responsive tests" },
+              "accessibility": { "purpose": "A11y compliance tests" },
+              "performance": { "purpose": "Loading performance tests" }
+            }
+          },
+          "mtg-specific": {
+            "path": "/tests/mtg-specific",
+            "purpose": "MTG domain-specific tests",
+            "subdirectories": {
+              "mana-calculations": { "purpose": "Frank Karsten formula validation" },
+              "card-types": { "purpose": "Special land detection tests" }
+            }
+          },
+          "fixtures": {
+            "path": "/tests/fixtures",
+            "purpose": "Test data and sample decklists"
+          }
+        }
+      },
+      "public": {
+        "path": "/public",
+        "purpose": "Static assets and Web Workers",
+        "subdirectories": {
+          "workers": {
+            "path": "/public/workers",
+            "purpose": "Web Workers for heavy calculations",
+            "keyFiles": ["manaCalculator.worker.js", "monteCarlo.worker.js"]
+          }
+        }
+      },
+      "docs": {
+        "path": "/docs",
+        "purpose": "Project documentation and technical guides",
+        "keyFiles": [
+          "MULLIGAN_SYSTEM.md",
+          "MATHEMATICAL_REFERENCE.md",
+          "LAND_SYSTEM_REDESIGN.md",
+          "FUTURE_IDEAS.md"
+        ]
+      },
+      ".github": {
+        "path": "/.github",
+        "purpose": "GitHub workflows and CI/CD",
+        "subdirectories": {
+          "workflows": { "purpose": "GitHub Actions workflows" }
+        }
+      }
+    }
+  },
+  "coreArchitecture": {
+    "entryPoint": "/src/main.tsx",
+    "mainApp": "/src/App.tsx",
+    "routing": {
+      "/": "HomePage",
+      "/analyzer": "AnalyzerPage (lazy loaded)",
+      "/guide": "GuidePage (lazy loaded)",
+      "/mathematics": "MathematicsPage (lazy loaded)",
+      "/land-glossary": "LandGlossaryPage (lazy loaded)",
+      "/mes-analyses": "MyAnalysesPage (lazy loaded)",
+      "/privacy-first": "PrivacyFirstPage (lazy loaded)"
+    },
+    "stateManagement": {
+      "redux": {
+        "slices": ["deck", "analysis", "ui", "auth", "analyzer"],
+        "persisted": ["deck", "analysis", "analyzer"]
+      },
+      "reactQuery": {
+        "purpose": "Scryfall API caching",
+        "staleTime": "10 minutes",
+        "gcTime": "15 minutes"
+      }
+    }
+  },
+  "mathematicalEngine": {
+    "frankKarsten": {
+      "formula": "P(X >= k) = sum(C(K,i) * C(N-K,n-i) / C(N,n)) for i = k to min(n,K)",
+      "karstenTables": {
+        "1symbol": { "turn1": 14, "turn2": 13, "turn3": 12, "turn4": 11 },
+        "2symbols": { "turn2": 20, "turn3": 18, "turn4": 16 },
+        "3symbols": { "turn3": 23, "turn4": 20 }
+      },
+      "cardsSeen": "handSize + turn - 1 (on the play)"
+    },
+    "mulliganSimulator": {
+      "algorithm": "Monte Carlo + Dynamic Programming",
+      "bellmanEquation": "V(k) = E[max(Score(best k from 7), V(k-1))]",
+      "handSizes": [4, 5, 6, 7],
+      "defaultIterations": 10000,
+      "quickIterations": 2000,
+      "archetypes": ["aggro", "midrange", "control", "combo"]
+    },
+    "tempoAwareCalculations": {
+      "purpose": "Account for ETB tapped lands in probability calculations",
+      "landCategories": ["basic", "fetch", "shock", "fast", "slow", "check", "battle", "pain", "filter", "triome", "pathway", "channel", "creature", "bounce", "dual", "utility"]
+    }
+  },
+  "testStatus": {
+    "unitTests": {
+      "total": 99,
+      "passed": 97,
+      "failed": 0,
+      "skipped": 2,
+      "coverage": "85%+"
+    },
+    "eslint": {
+      "errors": 0,
+      "warnings": 17
+    },
+    "criticalTestsValidated": [
+      "Frank Karsten hypergeometric formulas",
+      "P1 vs P2 probability differences",
+      "90% threshold validation",
+      "Performance < 1ms per calculation",
+      "Monte Carlo stability",
+      "Mulligan threshold calculations"
+    ]
+  },
+  "technicalDebt": {
+    "eslintWarnings": [
+      "MulliganTab.tsx: unused 'isMobile' prop, missing useEffect dependencies",
+      "OptimizedComponents.tsx: missing useCallback dependency",
+      "useAdvancedAnalysis.ts: missing useMemo dependencies",
+      "useManaCalculations.ts: complex dependency expression",
+      "mulliganSimulator.ts: unused HAND_SIZES constant",
+      "Several components with react-refresh warnings (exports)"
+    ],
+    "codeQualityIssues": [
+      "Some components mix exports with constants (react-refresh warning)",
+      "Some hooks have complex dependency arrays",
+      "2 skipped tests in AnalyzerPage.test.jsx"
+    ],
+    "futureImprovements": [
+      "Complete Web Worker implementation for heavy calculations",
+      "Add more comprehensive E2E tests",
+      "Improve error handling in deck parsing",
+      "Add visual regression testing"
+    ]
+  },
+  "keyPatterns": {
+    "lazyLoading": "React.lazy() for all pages except HomePage",
+    "errorBoundary": "ErrorBoundary wraps entire app",
+    "suspense": "PageLoader component for loading states",
+    "notifications": "NotificationProvider context",
+    "privacy": "PrivacyStorage for encrypted local storage (AES-256)",
+    "caching": "React Query + localStorage + in-memory caches"
+  },
+  "externalAPIs": {
+    "scryfall": {
+      "base": "https://api.scryfall.com",
+      "endpoints": ["/cards/named", "/cards/collection", "/cards/search"],
+      "rateLimit": "100ms between requests",
+      "caching": "1 week for card data, 1 month for images"
+    },
+    "supabase": {
+      "purpose": "Optional cloud sync",
+      "status": "Optional - not required for core functionality"
+    }
+  },
+  "buildOptimizations": {
+    "chunks": {
+      "vendor-react": ["react", "react-dom", "react-router-dom"],
+      "vendor-mui": ["@mui/material", "@mui/icons-material", "@emotion/react"],
+      "vendor-charts": ["recharts"],
+      "vendor-redux": ["@reduxjs/toolkit", "react-redux"]
+    },
+    "pwa": {
+      "enabled": true,
+      "caching": "Scryfall API + card images + fonts"
+    },
+    "production": {
+      "dropConsole": true,
+      "dropDebugger": true,
+      "sourcemaps": false
+    }
+  },
+  "agentActivityLog": {
+    "context-manager": {
+      "lastActionSummary": "Initial comprehensive project analysis and context-manager.json creation",
+      "lastActivityTimestamp": "2025-12-26T17:20:00Z",
+      "filesModified": [
+        "/sub-agents/context/context-manager.json"
+      ]
+    }
+  }
+}

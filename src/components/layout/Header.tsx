@@ -9,8 +9,7 @@ import {
     Home as HomeIcon,
     Info as InfoIcon,
     LightMode as LightModeIcon,
-    Lock as LockIcon,
-    Menu as MenuIcon,
+    Menu as MenuIcon
 } from "@mui/icons-material";
 import {
     AppBar,
@@ -62,7 +61,6 @@ export const Header: React.FC = () => {
     { label: "Guide", path: "/guide", icon: GuideIcon },
     { label: "Mathematics", path: "/mathematics", icon: FunctionsIcon },
     { label: "My Analyses", path: "/mes-analyses", icon: HistoryIcon },
-    { label: "Privacy-First", path: "/privacy-first", icon: LockIcon },
     { label: "About", path: "/about", icon: InfoIcon },
   ];
 
@@ -170,7 +168,7 @@ export const Header: React.FC = () => {
           <IconButton
             color="inherit"
             component="a"
-            href="https://github.com/project-manabase"
+            href="https://github.com/gbordes77/manatuner-pro"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View source code on GitHub"
@@ -309,7 +307,7 @@ export const Header: React.FC = () => {
           <ListItem disablePadding>
             <ListItemButton
               component="a"
-              href="https://github.com/project-manabase"
+              href="https://github.com/gbordes77/manatuner-pro"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ py: 1.5 }}

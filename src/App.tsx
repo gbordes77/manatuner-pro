@@ -41,7 +41,7 @@ const GuidePage = React.lazy(() =>
 );
 const MathematicsPage = React.lazy(() => import("./pages/MathematicsPage"));
 const MyAnalysesPage = React.lazy(() => import("./pages/MyAnalysesPage"));
-const PrivacyFirstPage = React.lazy(() => import("./pages/PrivacyFirstPage"));
+// PrivacyFirstPage removed - privacy info is now on HomePage
 const LandGlossaryPage = React.lazy(() => import("./pages/LandGlossaryPage"));
 
 const AboutPage = React.lazy(() =>
@@ -85,7 +85,7 @@ function App() {
                 <Route path="/guide" element={<GuidePage />} />
                 <Route path="/mathematics" element={<MathematicsPage />} />
                 <Route path="/mes-analyses" element={<MyAnalysesPage />} />
-                <Route path="/privacy-first" element={<PrivacyFirstPage />} />
+                {/* Privacy-First page removed - redirects to home */}
                 <Route path="/land-glossary" element={<LandGlossaryPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
