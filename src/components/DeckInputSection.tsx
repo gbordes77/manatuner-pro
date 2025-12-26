@@ -46,29 +46,6 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
     }
   };
 
-  const _defaultSampleDeck = `4 Light-Paws, Emperor's Voice (NEO) 25
-2 Inspiring Vantage (KLR) 283
-4 Esper Sentinel (MH2) 12
-4 Giver of Runes (MH1) 13
-4 Kor Spiritdancer (JMP) 116
-4 Ethereal Armor (DSK) 7
-1 Sentinel's Eyes (THB) 36
-4 Shardmage's Rescue (DSK) 29
-1 Combat Research (DMU) 44
-1 Sunbaked Canyon (MH1) 247
-1 Kaya's Ghostform (WAR) 94
-1 Plains (PIP) 317
-1 Cartouche of Zeal (AKR) 145
-3 Sticky Fingers (SNC) 124
-3 Sheltered by Ghosts (DSK) 30
-4 Demonic Ruckus (OTJ) 120
-1 Surge of Salvation (MOM) 41
-4 Sacred Foundry (GRN) 254
-4 Mana Confluence (JOU) 163
-4 Godless Shrine (RNA) 248
-1 Wingspan Stride (TDM) 66
-4 Starting Town (FIN) 289`;
-
   return (
     <Paper
       elevation={3}

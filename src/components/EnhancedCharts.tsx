@@ -6,8 +6,7 @@ import {
     IconButton,
     Tooltip as MuiTooltip,
     Paper,
-    Typography,
-    useTheme
+    Typography
 } from '@mui/material';
 import React from 'react';
 import {
@@ -37,7 +36,7 @@ interface EnhancedChartsProps {
 }
 
 const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
-  const _theme = useTheme();
+  // Theme available via CSS variables, no need for useTheme here
 
   // MTG Color Palette
   const MTG_COLORS = {

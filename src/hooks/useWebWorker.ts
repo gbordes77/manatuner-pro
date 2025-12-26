@@ -33,6 +33,7 @@ interface DeckForAnalysis {
   totalCards: number
 }
 
+// CalculationResult used by fallbackCalculation return type
 interface CalculationResult {
   probability: number
   meetsThreshold: boolean
@@ -241,7 +242,7 @@ export function useManaCalculatorWorker() {
 }
 
 // Fallback calculations for when Web Workers aren't supported
-function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: number, symbolsNeeded: number, onThePlay: boolean) {
+function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: number, symbolsNeeded: number, onThePlay: boolean): CalculationResult {
   // Simple fallback calculation
   const cardsSeen = 7 + turn - (onThePlay ? 1 : 0)
   const probability = Math.min(1, (sourcesInDeck * cardsSeen) / (deckSize * symbolsNeeded))

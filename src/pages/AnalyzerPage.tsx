@@ -69,7 +69,6 @@ const SAMPLE_DECK = `4 Light-Paws, Emperor's Voice (NEO) 25
 const AnalyzerPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const _isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery("(max-width:375px)");
 
   // Redux state

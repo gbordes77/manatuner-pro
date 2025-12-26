@@ -48,6 +48,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
   compactMode = false
 }) => {
   const theme = useTheme()
+  // isMobile available if needed for responsive layout
   const _isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   // Prepare distribution chart data
