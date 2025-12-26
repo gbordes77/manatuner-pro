@@ -1,17 +1,64 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-interface WorkerMessage {
+// Generic type for worker data payloads
+interface WorkerMessage<T = unknown> {
   type: string
   id: string
-  data?: any
-  error?: any
+  data?: T
+  error?: { message: string }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface WorkerRequest {
   type: string
-  data: any
+  data: unknown
   resolve: (value: any) => void
-  reject: (error: any) => void
+  reject: (error: Error) => void
+}
+
+// Card and Deck types for mana calculator
+interface CardForAnalysis {
+  name: string
+  manaCost?: {
+    colorless: number
+    symbols: Record<string, number>
+  }
+  cmc?: number
+  quantity: number
+}
+
+interface DeckForAnalysis {
+  cards: CardForAnalysis[]
+  lands: { name: string; quantity: number; producesColors?: string[] }[]
+  totalCards: number
+}
+
+interface CalculationResult {
+  probability: number
+  meetsThreshold: boolean
+  sourcesNeeded: number
+  sourcesAvailable: number
+  cardsSeen?: number
+  turn?: number
+  symbolsNeeded?: number
+  fallback?: boolean
+}
+
+interface CardAnalysisResult {
+  overall: {
+    probability: number
+    meetsThreshold: boolean
+    fallback?: boolean
+  }
+}
+
+interface BatchAnalysisResult {
+  results: Record<string, CardAnalysisResult>
+  metadata: {
+    processingTime: number
+    cardsAnalyzed: number
+    fallback?: boolean
+  }
 }
 
 export function useWebWorker(workerPath: string) {
@@ -50,7 +97,7 @@ export function useWebWorker(workerPath: string) {
             if (type === 'result') {
               request.resolve(data)
             } else if (type === 'error') {
-              request.reject(new Error(error.message || 'Worker error'))
+              request.reject(new Error(error?.message || 'Worker error'))
             }
           }
         }
@@ -79,7 +126,7 @@ export function useWebWorker(workerPath: string) {
     }
   }, [workerPath])
 
-  const postMessage = useCallback(async (type: string, data: any): Promise<any> => {
+  const postMessage = useCallback(async <T, R>(type: string, data: T): Promise<R> => {
     return new Promise((resolve, reject) => {
       if (!isSupported) {
         reject(new Error('Web Workers not supported'))
@@ -160,19 +207,19 @@ export function useManaCalculatorWorker() {
     })
   }, [worker])
 
-  const analyzeCard = useCallback(async (card: any, deck: any) => {
+  const analyzeCard = useCallback(async (card: CardForAnalysis, deck: DeckForAnalysis): Promise<CardAnalysisResult> => {
     if (!worker.isSupported) {
       // Fallback to main thread calculation
-      return fallbackCardAnalysis(card, deck)
+      return fallbackCardAnalysis()
     }
 
     return worker.postMessage('analyze_card', { card, deck })
   }, [worker])
 
-  const analyzeDeckBatch = useCallback(async (cards: any[], deck: any) => {
+  const analyzeDeckBatch = useCallback(async (cards: CardForAnalysis[], deck: DeckForAnalysis): Promise<BatchAnalysisResult> => {
     if (!worker.isSupported) {
       // Fallback to main thread calculation
-      return fallbackBatchAnalysis(cards, deck)
+      return fallbackBatchAnalysis(cards)
     }
 
     return worker.postMessage('analyze_deck_batch', { cards, deck })
@@ -211,7 +258,7 @@ function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: numb
   }
 }
 
-function fallbackCardAnalysis(_card: any, _deck: any) {
+function fallbackCardAnalysis(): CardAnalysisResult {
   return {
     overall: {
       probability: 0.75,
@@ -221,10 +268,10 @@ function fallbackCardAnalysis(_card: any, _deck: any) {
   }
 }
 
-function fallbackBatchAnalysis(cards: any[], deck: any) {
-  const results: any = {}
+function fallbackBatchAnalysis(cards: CardForAnalysis[]): BatchAnalysisResult {
+  const results: Record<string, CardAnalysisResult> = {}
   cards.forEach(card => {
-    results[card.name] = fallbackCardAnalysis(card, deck)
+    results[card.name] = fallbackCardAnalysis()
   })
 
   return {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 interface CardImageData {
   imageUrl: string | null
@@ -15,7 +15,7 @@ export const useCardImage = (cardName: string) => {
     loading: false,
     error: false
   })
-  
+
   const timeoutRef = useRef<NodeJS.Timeout>()
   const abortControllerRef = useRef<AbortController>()
 
@@ -43,15 +43,15 @@ export const useCardImage = (cardName: string) => {
         `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}`,
         { signal: abortControllerRef.current.signal }
       )
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      
+
       const card = await response.json()
-      
+
       // Priorité : image normale > image des faces de carte > image petite
-      const imageUrl = card.image_uris?.normal || 
+      const imageUrl = card.image_uris?.normal ||
                       card.card_faces?.[0]?.image_uris?.normal ||
                       card.image_uris?.small ||
                       card.card_faces?.[0]?.image_uris?.small
@@ -63,8 +63,8 @@ export const useCardImage = (cardName: string) => {
       } else {
         throw new Error('No image found')
       }
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error(`Erreur lors du chargement de l'image pour ${cardName}:`, error)
         setData({ imageUrl: null, loading: false, error: true })
       }
@@ -83,7 +83,7 @@ export const useCardImage = (cardName: string) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    
+
     // Annuler la requête en cours
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -96,5 +96,3 @@ export const useCardImage = (cardName: string) => {
     cancelFetch
   }
 }
-
- 

@@ -26,7 +26,6 @@ import {
     ManabaseFullTab,
     TabPanel,
 } from "../components/analyzer";
-import Onboarding from "../components/Onboarding";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
 import { DeckAnalyzer } from "../services/deckAnalyzer";
@@ -41,6 +40,8 @@ import {
     setIsDeckMinimized,
     showSnackbar,
 } from "../store/slices/analyzerSlice";
+// Lazy-load Onboarding (includes react-joyride ~50KB)
+const Onboarding = React.lazy(() => import("../components/Onboarding"));
 
 const SAMPLE_DECK = `4 Light-Paws, Emperor's Voice (NEO) 25
 2 Inspiring Vantage (KLR) 283
@@ -124,7 +125,9 @@ const AnalyzerPage: React.FC = () => {
 
   return (
     <>
-      <Onboarding hasAnalysisResult={!!analysisResult} />
+      <React.Suspense fallback={null}>
+        <Onboarding hasAnalysisResult={!!analysisResult} />
+      </React.Suspense>
       <Container
         maxWidth="xl"
         sx={{
