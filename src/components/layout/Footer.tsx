@@ -69,9 +69,7 @@ export const Footer: React.FC = () => {
               </Link>
             </Box>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Powered by Frank Karsten's manabase research
-            </Typography>
+
           </Grid>
         </Grid>
       </Container>
