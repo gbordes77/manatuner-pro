@@ -65,7 +65,7 @@ export interface Deck {
 }
 
 // MTG Formats
-export type MTGFormat = 
+export type MTGFormat =
   | 'standard'
   | 'modern'
   | 'legacy'
@@ -326,6 +326,13 @@ export interface DeckAnalysis {
   totalLands: number;
   colorDistribution?: Record<string, number>;
   manaCurve?: Record<string, number>;
+  mulliganAnalysis?: {
+    perfectHand: number;
+    goodHand: number;
+    averageHand: number;
+    poorHand: number;
+    terribleHand: number;
+  };
   overallScore?: number;
   consistency?: number;
   colorScrew?: number;
@@ -334,4 +341,4 @@ export interface DeckAnalysis {
   probabilities: ManabaseProbabilities;
   createdAt: string;
   updatedAt: string;
-} 
+}

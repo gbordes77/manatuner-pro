@@ -81,6 +81,16 @@ export interface AnalysisResult {
   rating: "excellent" | "good" | "average" | "poor";
   averageCMC: number;
   landRatio: number;
+  // Mana curve distribution (CMC 0-6, 7+)
+  manaCurve: Record<string, number>;
+  // Mulligan analysis - probability distribution of opening hand quality
+  mulliganAnalysis: {
+    perfectHand: number;  // 2-4 lands + early plays (keep%)
+    goodHand: number;     // 2-4 lands (keep%)
+    averageHand: number;  // 1 or 5 lands (keep%)
+    poorHand: number;     // 0 or 6 lands (mulligan%)
+    terribleHand: number; // 0 or 7 lands (mulligan%)
+  };
   // Enhanced analysis from reference project
   spellAnalysis: Record<
     string,
@@ -941,6 +951,24 @@ export class DeckAnalyzer {
         : 0;
     const landRatio = totalLands / totalCards;
 
+    // Calculate mana curve distribution
+    const manaCurve: Record<string, number> = {
+      "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7+": 0
+    };
+    nonLands.forEach((card) => {
+      const cmc = Math.floor(card.cmc);
+      if (cmc >= 7) {
+        manaCurve["7+"] += card.quantity;
+      } else {
+        manaCurve[cmc.toString()] += card.quantity;
+      }
+    });
+
+    // Calculate mulligan analysis using hypergeometric distribution
+    // P(X = k) = C(K,k) * C(N-K, n-k) / C(N,n)
+    // where N = deck size, K = lands, n = hand size (7), k = lands in hand
+    const mulliganAnalysis = this.calculateMulliganAnalysis(totalCards, totalLands, manaCurve);
+
     // Calculate spell analysis (simplified version inspired by reference project)
     const spellAnalysis: Record<
       string,
@@ -1050,6 +1078,8 @@ export class DeckAnalyzer {
       },
       averageCMC,
       landRatio,
+      manaCurve,
+      mulliganAnalysis,
       spellAnalysis,
       // NEW: Include tempo-aware analysis
       tempoSpellAnalysis: Object.keys(tempoSpellAnalysis).length > 0 ? tempoSpellAnalysis : undefined,
@@ -1070,6 +1100,89 @@ export class DeckAnalyzer {
 
     // Default: produces colorless
     return [];
+  }
+
+  /**
+   * Calculate mulligan analysis using hypergeometric distribution
+   * Determines probability distribution of opening hand quality
+   */
+  private static calculateMulliganAnalysis(
+    deckSize: number,
+    landCount: number,
+    manaCurve: Record<string, number>
+  ): {
+    perfectHand: number;
+    goodHand: number;
+    averageHand: number;
+    poorHand: number;
+    terribleHand: number;
+  } {
+    const handSize = 7;
+
+    // Helper: Calculate hypergeometric probability P(X = k)
+    // P(X = k) = C(K,k) * C(N-K, n-k) / C(N,n)
+    const hypergeometricProbability = (N: number, K: number, n: number, k: number): number => {
+      if (k > K || k > n || (n - k) > (N - K) || k < 0) return 0;
+
+      const binomial = (a: number, b: number): number => {
+        if (b > a || b < 0) return 0;
+        if (b === 0 || b === a) return 1;
+        let result = 1;
+        for (let i = 0; i < b; i++) {
+          result = result * (a - i) / (i + 1);
+        }
+        return result;
+      };
+
+      return (binomial(K, k) * binomial(N - K, n - k)) / binomial(N, n);
+    };
+
+    // Calculate probability of getting exactly k lands in opening hand
+    const landProbs: number[] = [];
+    for (let k = 0; k <= handSize; k++) {
+      landProbs[k] = hypergeometricProbability(deckSize, landCount, handSize, k);
+    }
+
+    // Count early game spells (CMC 0-2) for "perfect hand" calculation
+    const earlySpells = (manaCurve["0"] || 0) + (manaCurve["1"] || 0) + (manaCurve["2"] || 0);
+    const totalSpells = deckSize - landCount;
+
+    // Probability of having at least 1 early spell given we drew (7-k) spells
+    const probEarlySpell = (spellsDrawn: number): number => {
+      if (earlySpells === 0 || totalSpells === 0) return 0;
+      if (spellsDrawn <= 0) return 0;
+      // P(at least 1 early spell) = 1 - P(0 early spells)
+      const probNoEarly = hypergeometricProbability(totalSpells, earlySpells, spellsDrawn, 0);
+      return 1 - probNoEarly;
+    };
+
+    // Perfect Hand: 2-4 lands AND at least one early game spell (CMC 0-2)
+    let perfectHand = 0;
+    for (let k = 2; k <= 4; k++) {
+      const spellsDrawn = handSize - k;
+      perfectHand += landProbs[k] * probEarlySpell(spellsDrawn);
+    }
+
+    // Good Hand: 2-4 lands (includes perfect, so we show total keepable)
+    const goodHand = landProbs[2] + landProbs[3] + landProbs[4];
+
+    // Average Hand: 1 or 5 lands (borderline keep/mulligan)
+    const averageHand = landProbs[1] + landProbs[5];
+
+    // Poor Hand: 0 or 6 lands (usually mulligan)
+    const poorHand = landProbs[0] + landProbs[6];
+
+    // Terrible Hand: 7 lands or 0 lands with no early plays
+    const terribleHand = landProbs[7] + (landProbs[0] * (1 - probEarlySpell(7)));
+
+    // Convert to percentages and ensure they make sense
+    return {
+      perfectHand: Math.round(perfectHand * 100),
+      goodHand: Math.round(goodHand * 100),
+      averageHand: Math.round(averageHand * 100),
+      poorHand: Math.round(poorHand * 100),
+      terribleHand: Math.round(Math.min(terribleHand, poorHand) * 100), // Can't be worse than poor
+    };
   }
 
   // Analyse des implications stratégiques des lands complexes
