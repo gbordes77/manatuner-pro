@@ -340,20 +340,21 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                         >
                           {spell.percentage}
                         </Avatar>
-                        <Tooltip title={spell.fullName} arrow>
+                        <CardImageTooltip cardName={spell.fullName}>
                           <Typography
                             variant="subtitle2"
                             fontWeight="600"
                             sx={{
                               flexGrow: 1,
                               overflow: 'hidden',
+                              cursor: 'pointer',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap'
                             }}
                           >
                             {spell.name}
                           </Typography>
-                        </Tooltip>
+                        </CardImageTooltip>
                       </Box>
 
                       <Box display="flex" alignItems="center" gap={1} mb={1}>

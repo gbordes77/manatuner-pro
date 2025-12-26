@@ -12,6 +12,7 @@ import {
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
+import { CardImageTooltip } from './CardImageTooltip'
 import { ManaSequence } from './common/ManaSymbols'
 
 interface ManaCostRowProps {
@@ -465,7 +466,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
         <Grid container alignItems="center" spacing={2}>
           {/* Card Name & Quantity */}
           <Grid item xs={12} sm={3}>
-            <Tooltip title={`${cardName} - ${cardData?.type_line || 'Unknown type'}`} arrow>
+            <CardImageTooltip cardName={cardData?.name || cardName}>
               <Box>
                 <Typography
                   variant="body2"
@@ -483,7 +484,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
                   </Typography>
                 )}
               </Box>
-            </Tooltip>
+            </CardImageTooltip>
           </Grid>
 
           {/* Mana Cost */}
