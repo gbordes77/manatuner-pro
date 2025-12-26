@@ -255,7 +255,7 @@ export const HomePage: React.FC = () => {
             color="text.secondary"
             sx={{ mt: 1, maxWidth: 500, mx: "auto" }}
           >
-            Not guesswork. Real probability theory used by mathematicians and pro players.
+            Not guesswork. Real probability theory used by mathematicians and competitive players.
           </Typography>
         </Box>
 
