@@ -91,43 +91,64 @@ export const Header: React.FC = () => {
               justifyContent: "center",
             }}
           >
-            {navItems.map((item) => (
-              <Button
-                key={item.path}
-                component={RouterLink}
-                to={item.path}
-                color="inherit"
-                variant={location.pathname === item.path ? "outlined" : "text"}
-                startIcon={
-                  item.path === "/guide" ? (
-                    <GuideIcon />
-                  ) : item.path === "/mathematics" ? (
-                    <FunctionsIcon />
-                  ) : item.path === "/mes-analyses" ? (
-                    <HistoryIcon />
-                  ) : item.path === "/privacy-first" ? (
-                    <LockIcon />
-                  ) : undefined
-                }
-                sx={{
-                  borderColor:
-                    location.pathname === item.path
-                      ? "rgba(255,255,255,0.5)"
-                      : "transparent",
-                  // Style spécial pour le bouton Guide
-                  ...(item.path === "/guide" && {
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    },
-                    fontWeight: "bold",
-                    textTransform: "none",
-                  }),
-                }}
-              >
-                {item.label}
-              </Button>
-            ))}
+            {navItems.map((item) => {
+              const isAnalyzer = item.path === "/analyzer";
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Button
+                  key={item.path}
+                  component={RouterLink}
+                  to={item.path}
+                  color="inherit"
+                  variant={isAnalyzer ? "contained" : isActive ? "outlined" : "text"}
+                  startIcon={
+                    isAnalyzer ? (
+                      <AnalyticsIcon />
+                    ) : item.path === "/guide" ? (
+                      <GuideIcon />
+                    ) : item.path === "/mathematics" ? (
+                      <FunctionsIcon />
+                    ) : item.path === "/mes-analyses" ? (
+                      <HistoryIcon />
+                    ) : item.path === "/privacy-first" ? (
+                      <LockIcon />
+                    ) : undefined
+                  }
+                  sx={{
+                    borderColor: isActive ? "rgba(255,255,255,0.5)" : "transparent",
+                    // Style CTA pour Analyzer - toujours visible
+                    ...(isAnalyzer && {
+                      backgroundColor: "#FFD700",
+                      color: "#1a1a2e",
+                      fontWeight: "bold",
+                      textTransform: "none",
+                      px: 2.5,
+                      boxShadow: "0 2px 8px rgba(255, 215, 0, 0.4)",
+                      "&:hover": {
+                        backgroundColor: "#FFC107",
+                        boxShadow: "0 4px 12px rgba(255, 215, 0, 0.6)",
+                        transform: "translateY(-1px)",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        color: "#1a1a2e",
+                      },
+                    }),
+                    // Style pour Guide
+                    ...(item.path === "/guide" && {
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      },
+                      fontWeight: "bold",
+                      textTransform: "none",
+                    }),
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
           </Box>
         )}
 
@@ -224,24 +245,37 @@ export const Header: React.FC = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            const isAnalyzer = item.path === "/analyzer";
+
             return (
-              <ListItem key={item.path} disablePadding>
+              <ListItem key={item.path} disablePadding sx={{ px: isAnalyzer ? 1 : 0, py: isAnalyzer ? 0.5 : 0 }}>
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   selected={isActive}
                   sx={{
                     py: 1.5,
+                    // Style CTA pour Analyzer dans le drawer
+                    ...(isAnalyzer && {
+                      backgroundColor: "#FFD700",
+                      borderRadius: 2,
+                      my: 0.5,
+                      "&:hover": {
+                        backgroundColor: "#FFC107",
+                      },
+                    }),
                     "&.Mui-selected": {
-                      backgroundColor: muiTheme.palette.primary.main + "20",
-                      borderRight: `3px solid ${muiTheme.palette.primary.main}`,
+                      backgroundColor: isAnalyzer ? "#FFD700" : muiTheme.palette.primary.main + "20",
+                      borderRight: isAnalyzer ? "none" : `3px solid ${muiTheme.palette.primary.main}`,
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: isActive
-                        ? muiTheme.palette.primary.main
-                        : "inherit",
+                      color: isAnalyzer
+                        ? "#1a1a2e"
+                        : isActive
+                          ? muiTheme.palette.primary.main
+                          : "inherit",
                       minWidth: 40,
                     }}
                   >
@@ -250,10 +284,12 @@ export const Header: React.FC = () => {
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
-                      fontWeight: isActive ? "bold" : "normal",
-                      color: isActive
-                        ? muiTheme.palette.primary.main
-                        : "inherit",
+                      fontWeight: isAnalyzer || isActive ? "bold" : "normal",
+                      color: isAnalyzer
+                        ? "#1a1a2e"
+                        : isActive
+                          ? muiTheme.palette.primary.main
+                          : "inherit",
                     }}
                   />
                 </ListItemButton>
