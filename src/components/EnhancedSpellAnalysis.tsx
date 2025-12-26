@@ -38,6 +38,7 @@ import {
     YAxis
 } from 'recharts';
 import type { TempoImpactSummary, TempoSpellAnalysis } from '../services/deckAnalyzer';
+import { CardImageTooltip } from './CardImageTooltip';
 
 interface SpellAnalysisData {
   [spellName: string]: {

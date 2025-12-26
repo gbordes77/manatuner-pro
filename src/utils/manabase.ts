@@ -275,7 +275,7 @@ export const runManabaseSimulation = (
     keepRate: number;
   }> = [];
   let totalKeeps = 0;
-  const _totalMulligans = 0;
+  let _totalMulligans = 0;
 
   for (let turn = 1; turn <= 6; turn++) {
     let successfulCasts = 0;
