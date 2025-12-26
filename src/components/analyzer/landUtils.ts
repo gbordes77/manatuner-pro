@@ -291,18 +291,43 @@ export function categorizeLandComplete(name: string): string {
     return "Horizon Land";
   }
 
-  // Utility Lands avec mécaniques spéciales
+  // Rainbow Lands (5 colors, always untapped, life cost)
   if (
     [
-      "starting town",
       "mana confluence",
       "city of brass",
       "gemstone mine",
       "grand coliseum",
       "pillar of the paruns",
-      "unclaimed territory",
       "ancient ziggurat",
+    ].includes(lowerName)
+  ) {
+    return "Rainbow Land";
+  }
+
+  // Conditional Lands (time-based or other conditions)
+  if (
+    [
+      "starting town",
+      "elegant parlor",
+      "lush portico",
+      "meticulous archive",
+      "raucous theater",
+      "undercity sewers",
+    ].includes(lowerName)
+  ) {
+    return "Conditional Land";
+  }
+
+  // Utility Lands (special abilities, not primarily mana fixing)
+  if (
+    [
       "cavern of souls",
+      "unclaimed territory",
+      "mutavault",
+      "command tower",
+      "reflecting pool",
+      "exotic orchard",
     ].includes(lowerName)
   ) {
     return "Utility Land";

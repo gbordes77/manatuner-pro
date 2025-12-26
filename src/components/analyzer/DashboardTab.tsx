@@ -1,10 +1,11 @@
 import {
     CheckCircle as CheckIcon,
     Error as ErrorIcon,
+    HelpOutline as HelpOutlineIcon,
     Terrain as TerrainIcon,
     TrendingUp as TrendingIcon,
     ViewList as ViewListIcon,
-    Warning as WarningIcon,
+    Warning as WarningIcon
 } from "@mui/icons-material";
 import {
     Alert,
@@ -14,12 +15,14 @@ import {
     Chip,
     Divider,
     Grid,
+    IconButton,
     LinearProgress,
-    Typography,
+    Tooltip,
+    Typography
 } from "@mui/material";
-import React from "react";
+import React, { useMemo } from "react";
+import { MANA_COLORS, MANA_COLOR_STYLES, ManaColor } from "../../constants/manaColors";
 import { AnalysisResult } from "../../services/deckAnalyzer";
-import { MANA_COLORS } from "../../types";
 
 interface DashboardTabProps {
   analysisResult: AnalysisResult;
@@ -32,15 +35,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 }) => {
   const consistencyPercent = Math.round(analysisResult.consistency * 100);
 
-  // Determine health status
-  const getHealthStatus = () => {
+  // Memoized health status calculation
+  const health = useMemo(() => {
     if (consistencyPercent >= 85) return { label: "Excellent", color: "success", icon: <CheckIcon /> };
     if (consistencyPercent >= 70) return { label: "Good", color: "primary", icon: <TrendingIcon /> };
     if (consistencyPercent >= 55) return { label: "Average", color: "warning", icon: <WarningIcon /> };
     return { label: "Needs Work", color: "error", icon: <ErrorIcon /> };
-  };
-
-  const health = getHealthStatus();
+  }, [consistencyPercent]);
 
   // Top recommendations (max 3)
   const topRecommendations = analysisResult.recommendations?.slice(0, 3) || [];
@@ -85,8 +86,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             </Grid>
             <Grid item xs={12} md={8}>
               <Box sx={{ px: isMobile ? 0 : 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ display: "flex", alignItems: "center" }}>
                   Consistency Score
+                  <Tooltip title="Consistency measures the probability of having the right mana colors to cast your spells on curve. A higher score means your manabase reliably produces the colors you need." arrow>
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 16, opacity: 0.7 }} />
+                    </IconButton>
+                  </Tooltip>
                 </Typography>
                 <LinearProgress
                   variant="determinate"
@@ -102,7 +108,14 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="caption" color="text.secondary">Average CMC</Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center" }}>
+                      Average CMC
+                      <Tooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total amount of mana needed to cast a spell. For example, a spell costing {2}{U}{U} has a CMC of 4." arrow>
+                        <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                          <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {analysisResult.averageCMC.toFixed(2)}
                     </Typography>
@@ -148,8 +161,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold" color="primary">
                 {analysisResult.averageCMC.toFixed(1)}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 Avg CMC
+                <Tooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total amount of mana needed to cast a spell." arrow>
+                  <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                    <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                  </IconButton>
+                </Tooltip>
               </Typography>
             </CardContent>
           </Card>
@@ -179,14 +197,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               const count = analysisResult.colorDistribution[color] || 0;
               if (count === 0) return null;
 
-              const colorMap = {
-                W: { bg: "#FFF8DC", text: "#2C3E50", border: "#D4AF37" },
-                U: { bg: "#4A90E2", text: "#FFFFFF", border: "#2E5090" },
-                B: { bg: "#2C2C2C", text: "#FFFFFF", border: "#1a1a1a" },
-                R: { bg: "#E74C3C", text: "#FFFFFF", border: "#C0392B" },
-                G: { bg: "#27AE60", text: "#FFFFFF", border: "#1E8449" },
-              };
-
+              const style = MANA_COLOR_STYLES[color as ManaColor];
               const total = Object.values(analysisResult.colorDistribution).reduce((a, b) => a + b, 0);
               const percent = ((count / total) * 100).toFixed(0);
 
@@ -201,9 +212,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                     </Box>
                   }
                   sx={{
-                    backgroundColor: colorMap[color]?.bg,
-                    color: colorMap[color]?.text,
-                    border: `2px solid ${colorMap[color]?.border}`,
+                    backgroundColor: style.bg,
+                    color: style.text,
+                    border: `2px solid ${style.border}`,
                     fontWeight: "bold",
                     py: 2,
                     "& .MuiChip-label": { px: 1.5 },

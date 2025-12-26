@@ -34,6 +34,11 @@ import React, { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../common/NotificationProvider";
 
+// Prefetch AnalyzerPage on hover for faster navigation
+const prefetchAnalyzer = () => {
+  import("../../pages/AnalyzerPage");
+};
+
 export const Header: React.FC = () => {
   const muiTheme = useMuiTheme();
   const { isDark, toggleTheme } = useTheme();
@@ -102,6 +107,7 @@ export const Header: React.FC = () => {
                   to={item.path}
                   color="inherit"
                   variant={isAnalyzer ? "contained" : isActive ? "outlined" : "text"}
+                  onMouseEnter={isAnalyzer ? prefetchAnalyzer : undefined}
                   startIcon={
                     isAnalyzer ? (
                       <AnalyticsIcon />

@@ -12,8 +12,8 @@ import {
     Typography,
 } from "@mui/material";
 import React from "react";
+import { COLOR_NAMES, MANA_COLORS, MANA_COLOR_STYLES, ManaColor } from "../../constants/manaColors";
 import { AnalysisResult } from "../../services/deckAnalyzer";
-import { COLOR_NAMES, MANA_COLORS } from "../../types";
 
 interface OverviewTabProps {
   analysisResult: AnalysisResult;
@@ -197,13 +197,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           const count = analysisResult.colorDistribution[color] || 0;
           if (count === 0) return null;
 
-          const colorMap = {
-            W: { bg: "#FFF8DC", text: "#2C3E50" },
-            U: { bg: "#4A90E2", text: "#FFFFFF" },
-            B: { bg: "#2C2C2C", text: "#FFFFFF" },
-            R: { bg: "#E74C3C", text: "#FFFFFF" },
-            G: { bg: "#27AE60", text: "#FFFFFF" },
-          };
+          const style = MANA_COLOR_STYLES[color as ManaColor];
 
           return (
             <Chip
@@ -211,12 +205,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
               label={`${COLOR_NAMES[color]}: ${count}`}
               size={isMobile ? "small" : "medium"}
               sx={{
-                backgroundColor: colorMap[color]?.bg || "#95A5A6",
-                color: colorMap[color]?.text || "#2C3E50",
+                backgroundColor: style.bg,
+                color: style.text,
                 fontWeight: "bold",
                 fontSize: isMobile ? "0.7rem" : undefined,
                 "& .MuiChip-label": {
-                  color: colorMap[color]?.text || "#2C3E50",
+                  color: style.text,
                   fontSize: isMobile ? "0.7rem" : undefined,
                 },
               }}

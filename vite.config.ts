@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
@@ -120,7 +120,16 @@ export default defineConfig({
     sourcemap: false, // Disable for production
     rollupOptions: {
       output: {
-        manualChunks: undefined // Let Vite handle chunking automatically
+        manualChunks: {
+          // Core React - loaded first, cached long-term
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // MUI - large bundle, separate for caching
+          'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          // Charts - only needed on analyzer page
+          'vendor-charts': ['recharts'],
+          // Redux - state management
+          'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
+        }
       }
     },
     // Build optimizations
@@ -162,4 +171,4 @@ export default defineConfig({
   worker: {
     format: 'es'
   }
-}) 
+})

@@ -1,4 +1,5 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { HelpOutline as HelpOutlineIcon } from "@mui/icons-material";
+import { Box, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { AnalysisResult } from "../../services/deckAnalyzer";
 import ManaCostRow from "../ManaCostRow";
@@ -83,9 +84,33 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
         </Box>
       )}
 
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          💡 P1 = Perfect scenario (all lands on curve) | P2 = Realistic probability (accounts for mana screw)
+      <Box sx={{ mt: 3, p: 2, bgcolor: "action.hover", borderRadius: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "flex-start", flexWrap: "wrap", gap: 0.5 }}>
+          <Box component="span" sx={{ display: "inline-flex", alignItems: "center" }}>
+            <strong>P1</strong>
+            <Tooltip title="P1 (Play First): Probability of casting this spell assuming you hit all your land drops. This is the optimistic scenario where you always draw the lands you need on curve." arrow>
+              <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
+                <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+              </IconButton>
+            </Tooltip>
+            = Perfect scenario (all lands on curve)
+          </Box>
+          <Box component="span" sx={{ mx: 1 }}>|</Box>
+          <Box component="span" sx={{ display: "inline-flex", alignItems: "center" }}>
+            <strong>P2</strong>
+            <Tooltip title="P2 (Draw First): Realistic probability that accounts for mana screw (not drawing enough lands). This factors in the chance of missing land drops, giving you a more accurate picture of castability." arrow>
+              <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
+                <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+              </IconButton>
+            </Tooltip>
+            = Realistic (accounts for
+            <Tooltip title="Mana screw happens when you don't draw enough lands to cast your spells. It's one of the most frustrating experiences in Magic, and proper manabase construction helps minimize it." arrow>
+              <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
+                <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+              </IconButton>
+            </Tooltip>
+            mana screw)
+          </Box>
         </Typography>
       </Box>
     </>

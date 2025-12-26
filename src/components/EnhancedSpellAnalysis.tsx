@@ -2,6 +2,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Error as ErrorIcon,
     FlashOn as FlashOnIcon,
+    HelpOutline as HelpOutlineIcon,
     Shield as ShieldIcon,
     Speed as SpeedIcon,
     Timer as TimerIcon,
@@ -16,6 +17,7 @@ import {
     Chip,
     Divider,
     Grid,
+    IconButton,
     LinearProgress,
     Paper,
     Tooltip,
@@ -182,8 +184,13 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
       {hasTempoData && (
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
           <TimerIcon color="primary" />
-          <Typography variant="subtitle1" fontWeight="600">
+          <Typography variant="subtitle1" fontWeight="600" sx={{ display: 'flex', alignItems: 'center' }}>
             Tempo-Aware Analysis
+            <Tooltip title="Tempo loss occurs when lands enter the battlefield tapped, delaying your ability to cast spells. This analysis factors in ETB (Enter The Battlefield) tapped lands to give you a more realistic view of when you can actually cast your spells." arrow>
+              <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                <HelpOutlineIcon fontSize="small" sx={{ fontSize: 16, opacity: 0.7 }} />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <Chip
             label="ETB Considered"
@@ -212,8 +219,13 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
             <Typography variant="h4" fontWeight="700" color="var(--mtg-green)">
               {Math.round(averagePercentage)}%
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               Avg Tempo Castability
+              <Tooltip title="Castability measures how likely you are to have the right mana to cast a spell on curve. Tempo castability also accounts for lands that enter tapped, which can delay your plays." arrow>
+                <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                  <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                </IconButton>
+              </Tooltip>
             </Typography>
           </Paper>
         </Grid>

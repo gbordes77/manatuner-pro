@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material";
-import React from "react";
+import React, { useMemo } from "react";
+import { COLOR_NAMES, MANA_COLORS, MANA_COLOR_STYLES, ManaColor } from "../../constants/manaColors";
 import { AnalysisResult } from "../../services/deckAnalyzer";
-import { COLOR_NAMES, MANA_COLORS } from "../../types";
 import { LandBreakdownList } from "./LandBreakdownList";
 import { ManaDistributionChart } from "./ManaDistributionChart";
 import { ManabaseStats } from "./ManabaseStats";
@@ -42,29 +42,24 @@ export const ManabaseTab: React.FC<ManabaseTabProps> = ({
       }
     });
 
-  // Préparer les données pour le graphique
-  const colorData = MANA_COLORS.map((color) => ({
-    name: COLOR_NAMES[color],
-    value: analysisResult.colorDistribution[color] || 0,
-    color:
-      {
-        W: "#FFF8DC",
-        U: "#4A90E2",
-        B: "#2C2C2C",
-        R: "#E74C3C",
-        G: "#27AE60",
-      }[color] || "#95A5A6",
-    textColor:
-      {
-        W: "#2C3E50",
-        U: "#FFFFFF",
-        B: "#FFFFFF",
-        R: "#FFFFFF",
-        G: "#FFFFFF",
-      }[color] || "#2C3E50",
-  })).filter((item) => item.value > 0);
+  // Memoized color data for chart
+  const colorData = useMemo(() =>
+    MANA_COLORS.map((color) => {
+      const style = MANA_COLOR_STYLES[color as ManaColor];
+      return {
+        name: COLOR_NAMES[color],
+        value: analysisResult.colorDistribution[color] || 0,
+        color: style.bg,
+        textColor: style.text,
+      };
+    }).filter((item) => item.value > 0),
+    [analysisResult.colorDistribution]
+  );
 
-  const totalMana = colorData.reduce((sum, item) => sum + item.value, 0);
+  const totalMana = useMemo(() =>
+    colorData.reduce((sum, item) => sum + item.value, 0),
+    [colorData]
+  );
 
   return (
     <>

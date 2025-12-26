@@ -15,7 +15,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     AnalysisTab,
     AnalyzerSkeleton,
@@ -108,7 +108,8 @@ const AnalyzerPage: React.FC = () => {
     setActiveTab(newValue);
   };
 
-  const handleAnalyze = async () => {
+  // Memoized analyze handler to prevent unnecessary re-renders
+  const handleAnalyze = useCallback(async () => {
     if (!deckList.trim()) return;
 
     setIsAnalyzing(true);
@@ -132,7 +133,7 @@ const AnalyzerPage: React.FC = () => {
       }
       setIsAnalyzing(false);
     }, 1500);
-  };
+  }, [deckList]);
 
   const handleClear = () => {
     setDeckList("");
@@ -199,25 +200,65 @@ const AnalyzerPage: React.FC = () => {
         margin: "0 auto",
       }}
     >
-      {/* Header */}
-      <Box sx={{ mb: isMobile ? 2 : 4, textAlign: "center" }}>
-        <Typography
-          variant={isMobile ? "h4" : "h3"}
-          component="h1"
-          gutterBottom
-          sx={{ fontWeight: "bold", fontSize: isMobile ? "1.5rem" : undefined }}
+      {/* Header - Hidden when analysis is displayed */}
+      {!analysisResult && (
+        <Box sx={{ mb: isMobile ? 2 : 4, textAlign: "center" }}>
+          <Typography
+            variant={isMobile ? "h4" : "h3"}
+            component="h1"
+            gutterBottom
+            sx={{ fontWeight: "bold", fontSize: isMobile ? "1.5rem" : undefined }}
+          >
+            <AnalyticsIcon sx={{ fontSize: isMobile ? 30 : 40, mr: 1, verticalAlign: "middle" }} />
+            ManaTuner Pro
+          </Typography>
+          <Typography
+            variant={isMobile ? "body1" : "h6"}
+            color="text.secondary"
+            sx={{ fontSize: isMobile ? "0.9rem" : undefined, px: isMobile ? 1 : 0 }}
+          >
+            Analyze your manabase with the precision of Frank Karsten's mathematics
+          </Typography>
+        </Box>
+      )}
+
+      {/* Compact deck bar when minimized */}
+      {analysisResult && isDeckMinimized && (
+        <Paper
+          sx={{
+            p: 1.5,
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            border: "1px dashed",
+            borderColor: "divider",
+            "&:hover": {
+              boxShadow: 3,
+              backgroundColor: "action.hover",
+              borderColor: "primary.main",
+            },
+          }}
+          onClick={() => setIsDeckMinimized(false)}
         >
-          <AnalyticsIcon sx={{ fontSize: isMobile ? 30 : 40, mr: 1, verticalAlign: "middle" }} />
-          ManaTuner Pro
-        </Typography>
-        <Typography
-          variant={isMobile ? "body1" : "h6"}
-          color="text.secondary"
-          sx={{ fontSize: isMobile ? "0.9rem" : undefined, px: isMobile ? 1 : 0 }}
-        >
-          Analyze your manabase with the precision of Frank Karsten's mathematics
-        </Typography>
-      </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body1" fontWeight="bold">
+              📋 Your Deck
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {analysisResult.totalCards} cards • {analysisResult.totalLands} lands
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="primary" sx={{ fontWeight: "medium", display: { xs: "none", sm: "block" } }}>
+            👆 Click to edit or analyze a new deck
+          </Typography>
+          <Typography variant="body2" color="primary" sx={{ fontWeight: "medium" }}>
+            ✏️ Edit
+          </Typography>
+        </Paper>
+      )}
 
       <Grid
         container
@@ -236,26 +277,28 @@ const AnalyzerPage: React.FC = () => {
           },
         }}
       >
-        {/* Input Section */}
-        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 2 : isMobile ? 12 : 6}>
-          <DeckInputSection
-            deckList={deckList}
-            setDeckList={setDeckList}
-            isAnalyzing={isAnalyzing}
-            analysisResult={analysisResult}
-            isDeckMinimized={isDeckMinimized}
-            setIsDeckMinimized={setIsDeckMinimized}
-            onAnalyze={handleAnalyze}
-            onClear={handleClear}
-            onLoadSample={() => setDeckList(SAMPLE_DECK)}
-            onTestProbabilities={runProbabilityValidation}
-            isMobile={isMobile}
-            isSmallMobile={isSmallMobile}
-          />
-        </Grid>
+        {/* Input Section - Hidden when minimized */}
+        {!(analysisResult && isDeckMinimized) && (
+          <Grid item xs={12} lg={isMobile ? 12 : 6}>
+            <DeckInputSection
+              deckList={deckList}
+              setDeckList={setDeckList}
+              isAnalyzing={isAnalyzing}
+              analysisResult={analysisResult}
+              isDeckMinimized={isDeckMinimized}
+              setIsDeckMinimized={setIsDeckMinimized}
+              onAnalyze={handleAnalyze}
+              onClear={handleClear}
+              onLoadSample={() => setDeckList(SAMPLE_DECK)}
+              onTestProbabilities={runProbabilityValidation}
+              isMobile={isMobile}
+              isSmallMobile={isSmallMobile}
+            />
+          </Grid>
+        )}
 
-        {/* Results Section */}
-        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 10 : isMobile ? 12 : 6}>
+        {/* Results Section - Full width when minimized */}
+        <Grid item xs={12} lg={analysisResult && isDeckMinimized ? 12 : isMobile ? 12 : 6}>
           <Paper
             sx={{
               p: isMobile ? 2 : 3,

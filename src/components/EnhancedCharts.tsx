@@ -1,7 +1,10 @@
+import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material';
 import {
     Box,
     Chip,
     Grid,
+    IconButton,
+    Tooltip as MuiTooltip,
     Paper,
     Typography,
     useTheme
@@ -362,8 +365,13 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-blue)">
                   {analysis.consistency || 68}%
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   Consistency
+                  <MuiTooltip title="Consistency measures the probability of having the right mana colors to cast your spells on curve. Higher is better - aim for 80%+ for competitive play." arrow>
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                    </IconButton>
+                  </MuiTooltip>
                 </Typography>
                 <Chip
                   label="Average"
@@ -378,8 +386,13 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
                   {analysis.colorScrew || 15}%
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   Color Screw Risk
+                  <MuiTooltip title="Color screw happens when you have lands but not the right colors to cast your spells. For example, having only Mountains when you need Blue mana. Lower is better." arrow>
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                    </IconButton>
+                  </MuiTooltip>
                 </Typography>
                 <Chip
                   label="Low"
@@ -394,8 +407,13 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-gold)">
                   {analysis.avgCMC || 2.8}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   Average CMC
+                  <MuiTooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total mana needed to cast a spell. A lower average means you can play spells earlier. Aggro decks aim for ~2.0, midrange ~3.0, control can go higher." arrow>
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                    </IconButton>
+                  </MuiTooltip>
                 </Typography>
                 <Chip
                   label="Optimal"

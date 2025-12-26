@@ -1,3 +1,4 @@
+import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
 import {
     Box,
     Chip,
@@ -489,9 +490,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
           <Grid item xs={12} sm={3}>
             <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap">
               <ManaSymbols manaCost={cardData?.mana_cost || ''} />
-              <Typography variant="caption" color="text.secondary" ml={1}>
-                CMC: {cardData?.cmc || 2}
-              </Typography>
+              <Tooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total mana needed to cast this spell." arrow>
+                <Typography variant="caption" color="text.secondary" ml={1} sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
+                  CMC: {cardData?.cmc || 2}
+                  <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
+                </Typography>
+              </Tooltip>
             </Box>
           </Grid>
 
@@ -499,9 +503,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
           <Grid item xs={6} sm={3}>
             <Box>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                <Typography variant="caption" fontWeight="600">
-                  P1 (Perfect):
-                </Typography>
+                <Tooltip title="P1 (Perfect): Probability of casting this spell assuming you hit all your land drops on curve. This is the best-case scenario." arrow>
+                  <Typography variant="caption" fontWeight="600" sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
+                    P1 (Perfect):
+                    <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
+                  </Typography>
+                </Tooltip>
                 <QualityChip probability={probabilities.p1} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>
@@ -520,9 +527,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
           <Grid item xs={6} sm={3}>
             <Box>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                <Typography variant="caption" fontWeight="600">
-                  P2 (Realistic):
-                </Typography>
+                <Tooltip title="P2 (Realistic): Probability that accounts for mana screw (not drawing enough lands). This gives you a more accurate picture of how often you can actually cast this spell." arrow>
+                  <Typography variant="caption" fontWeight="600" sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
+                    P2 (Realistic):
+                    <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
+                  </Typography>
+                </Tooltip>
                 <QualityChip probability={probabilities.p2} />
               </Box>
               <Box className="mtg-progress" sx={{ height: 6 }}>

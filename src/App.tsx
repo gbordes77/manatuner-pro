@@ -42,6 +42,7 @@ const GuidePage = React.lazy(() =>
 const MathematicsPage = React.lazy(() => import("./pages/MathematicsPage"));
 const MyAnalysesPage = React.lazy(() => import("./pages/MyAnalysesPage"));
 const PrivacyFirstPage = React.lazy(() => import("./pages/PrivacyFirstPage"));
+const LandGlossaryPage = React.lazy(() => import("./pages/LandGlossaryPage"));
 
 const AboutPage = React.lazy(() =>
   import("./components/layout/StaticPages").then((m) => ({
@@ -85,6 +86,7 @@ function App() {
                 <Route path="/mathematics" element={<MathematicsPage />} />
                 <Route path="/mes-analyses" element={<MyAnalysesPage />} />
                 <Route path="/privacy-first" element={<PrivacyFirstPage />} />
+                <Route path="/land-glossary" element={<LandGlossaryPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="*" element={<HomePage />} />
