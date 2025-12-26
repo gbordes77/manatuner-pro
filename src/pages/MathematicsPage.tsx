@@ -129,9 +129,9 @@ const MathematicsPage: React.FC = () => {
           Academic Foundation
         </Typography>
         <Typography variant="body1">
-          Our calculations are based on Frank Karsten's 2022 research:{" "}
+          Our calculations starts with Frank Karsten's 2022 research:{" "}
           <Link
-            href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/"
+            href="https://www.channelfireball.com/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
             target="_blank"
             rel="noopener"
             sx={{ fontWeight: 600 }}
