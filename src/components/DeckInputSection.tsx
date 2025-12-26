@@ -46,7 +46,7 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
     }
   };
 
-  const defaultSampleDeck = `4 Light-Paws, Emperor's Voice (NEO) 25
+  const _defaultSampleDeck = `4 Light-Paws, Emperor's Voice (NEO) 25
 2 Inspiring Vantage (KLR) 283
 4 Esper Sentinel (MH2) 12
 4 Giver of Runes (MH1) 13

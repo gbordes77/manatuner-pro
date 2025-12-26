@@ -474,7 +474,7 @@ class LandService implements ILandService {
         // Shocklands: depends on strategy
         return context.assumePayLife ? 1.0 : 0.0
 
-      case 'control_lands_max':
+      case 'control_lands_max': {
         // Fastlands: untapped if ≤ threshold lands in play
         // At turn N, you have N-1 lands in play when playing this
         const landsInPlayFast = turn - 1
@@ -485,8 +485,9 @@ class LandService implements ILandService {
           return 0.3
         }
         return 0.1
+      }
 
-      case 'control_lands_min':
+      case 'control_lands_min': {
         // Slowlands: untapped if ≥ threshold lands in play
         const landsInPlaySlow = turn - 1
         if (landsInPlaySlow >= (condition.threshold || 2)) {
@@ -496,8 +497,9 @@ class LandService implements ILandService {
           return 0.4
         }
         return 0.1
+      }
 
-      case 'control_basic':
+      case 'control_basic': {
         // Checklands: depends on basic land composition
         const basicTypes = condition.basicTypes || []
         const hasMatchingBasics = basicTypes.some(type =>
@@ -513,6 +515,7 @@ class LandService implements ILandService {
         if (turn >= 3) return Math.min(0.9, basicRatio * 1.5 + 0.2)
         if (turn === 2) return Math.min(0.8, basicRatio * 1.2)
         return basicRatio * 0.7
+      }
 
       case 'control_basics_min':
         // Battle lands: need ≥ threshold basic lands
@@ -521,10 +524,11 @@ class LandService implements ILandService {
         }
         return 0.2
 
-      case 'reveal_card':
+      case 'reveal_card': {
         // Reveal lands: depends on card type ratio
         const ratio = context.getCardTypeRatio(condition.cardType || '')
         return ratio * 0.9
+      }
 
       case 'turn_threshold':
         // Turn-based (Starting Town)

@@ -231,7 +231,7 @@ export const useManaCalculationsWithWorker = ({
           }
         };
 
-        worker.onerror = (error) => {
+        worker.onerror = (_error) => {
           worker.terminate();
           reject(new Error("Worker calculation failed"));
         };

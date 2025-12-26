@@ -1,39 +1,38 @@
-import React from 'react';
 import {
-  Container,
-  Typography,
-  Paper,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Alert,
-  Link,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Functions as FunctionsIcon,
-  TrendingUp as TrendingUpIcon,
-  Calculate as CalculateIcon,
-  Science as ScienceIcon,
-  Timeline as TimelineIcon,
-  Assessment as AssessmentIcon,
+    Assessment as AssessmentIcon,
+    Calculate as CalculateIcon,
+    ExpandMore as ExpandMoreIcon,
+    Functions as FunctionsIcon,
+    Science as ScienceIcon,
+    Timeline as TimelineIcon,
+    TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Container,
+    Grid,
+    Link,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+} from '@mui/material';
+import React from 'react';
 
 const MathematicsPage: React.FC = () => {
   return (
@@ -47,8 +46,8 @@ const MathematicsPage: React.FC = () => {
           The Science of Mana Base Optimization
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
-          ManaTuner Pro is built on rigorous mathematical foundations established by 
-          <strong> Frank Karsten</strong>, Pro Tour Hall of Famer and mathematician. 
+          ManaTuner Pro is built on rigorous mathematical foundations established by
+          <strong> Frank Karsten</strong>, Pro Tour Hall of Famer and mathematician.
           Discover the statistical models that power our recommendations.
         </Typography>
       </Box>
@@ -56,7 +55,7 @@ const MathematicsPage: React.FC = () => {
       {/* Frank Karsten Reference */}
       <Alert severity="info" sx={{ mb: 4 }}>
         <Typography variant="body2">
-          <strong>Academic Foundation:</strong> Our calculations are based on Frank Karsten's 2022 research 
+          <strong>Academic Foundation:</strong> Our calculations are based on Frank Karsten's 2022 research
           published on TCGPlayer: <Link href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/" target="_blank" rel="noopener">
             "How Many Sources Do You Need to Consistently Cast Your Spells? A 2022 Update"
           </Link>
@@ -73,13 +72,13 @@ const MathematicsPage: React.FC = () => {
                 <Typography variant="h6">Hypergeometric Distribution</Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                The cornerstone of mana calculations. Determines the probability of drawing 
+                The cornerstone of mana calculations. Determines the probability of drawing
                 exactly the right number of mana sources from your deck.
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
@@ -88,7 +87,7 @@ const MathematicsPage: React.FC = () => {
                 <Typography variant="h6">Monte Carlo Simulation</Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                Advanced statistical sampling to simulate thousands of game scenarios 
+                Advanced statistical sampling to simulate thousands of game scenarios
                 and validate our probability calculations.
               </Typography>
             </CardContent>
@@ -103,7 +102,7 @@ const MathematicsPage: React.FC = () => {
                 <Typography variant="h6">Binomial Coefficients</Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                Mathematical combinations that calculate how many ways you can 
+                Mathematical combinations that calculate how many ways you can
                 draw specific numbers of cards from your deck.
               </Typography>
             </CardContent>
@@ -124,10 +123,10 @@ const MathematicsPage: React.FC = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              The hypergeometric distribution answers: "What's the probability of drawing exactly k successes 
+              The hypergeometric distribution answers: "What's the probability of drawing exactly k successes
               in n draws, without replacement, from a finite population?"
             </Typography>
-            
+
             <Box sx={{ my: 2, p: 2, bgcolor: 'grey.100', borderRadius: 2 }}>
               <Typography variant="h6" gutterBottom>Formula:</Typography>
               <Typography variant="body1" sx={{ fontFamily: 'monospace', textAlign: 'center' }}>
@@ -155,7 +154,7 @@ const MathematicsPage: React.FC = () => {
 
                          <Alert severity="success" sx={{ mt: 2 }}>
                <Typography variant="body2">
-                 <strong>Real Example:</strong> With 14 red sources in a 60-card deck, what's the probability 
+                 <strong>Real Example:</strong> With 14 red sources in a 60-card deck, what's the probability
                  of having at least 1 red source on Turn 1 (7 cards drawn)? Answer: ~90% (Karsten standard)
                </Typography>
              </Alert>
@@ -168,10 +167,10 @@ const MathematicsPage: React.FC = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              Monte Carlo methods use random sampling to solve complex probability problems 
+              Monte Carlo methods use random sampling to solve complex probability problems
               that might be difficult to calculate analytically.
             </Typography>
-            
+
             <Typography variant="body1" paragraph>
               <strong>How we use it:</strong>
             </Typography>
@@ -192,7 +191,7 @@ const MathematicsPage: React.FC = () => {
 
             <Alert severity="info" sx={{ mt: 2 }}>
               <Typography variant="body2">
-                <strong>Validation:</strong> Our Monte Carlo results consistently match 
+                <strong>Validation:</strong> Our Monte Carlo results consistently match
                 hypergeometric calculations within 0.1%, confirming our model accuracy.
               </Typography>
             </Alert>
@@ -297,7 +296,7 @@ const MathematicsPage: React.FC = () => {
                   </List>
                 </Box>
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
                 <Box sx={{ p: 2, bgcolor: 'secondary.50', borderRadius: 2 }}>
                   <Typography variant="h6" gutterBottom color="secondary">
@@ -320,7 +319,7 @@ const MathematicsPage: React.FC = () => {
 
             <Alert severity="warning" sx={{ mt: 2 }}>
               <Typography variant="body2">
-                <strong>Note:</strong> All calculations assume optimal play and do not account for 
+                <strong>Note:</strong> All calculations assume optimal play and do not account for
                 human error, opponent disruption, or complex interaction timing.
               </Typography>
             </Alert>
@@ -333,33 +332,33 @@ const MathematicsPage: React.FC = () => {
         <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
           🎯 How This Applies to Your Deck
         </Typography>
-        
+
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="h6" gutterBottom color="primary">
               Land Count Optimization
             </Typography>
             <Typography variant="body2" paragraph>
-              Based on your deck's mana curve, we calculate the exact number of lands 
+              Based on your deck's mana curve, we calculate the exact number of lands
               needed to hit your mana requirements with 90%+ consistency.
             </Typography>
-            
+
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip label="Aggro: 18-22 lands" size="small" color="error" />
               <Chip label="Midrange: 22-26 lands" size="small" color="warning" />
               <Chip label="Control: 26-28 lands" size="small" color="success" />
             </Box>
           </Grid>
-          
+
           <Grid item xs={12} md={6}>
             <Typography variant="h6" gutterBottom color="secondary">
               Color Requirements
             </Typography>
             <Typography variant="body2" paragraph>
-              For each color in your deck, we determine how many sources you need 
+              For each color in your deck, we determine how many sources you need
               to cast your spells on curve with mathematical precision.
             </Typography>
-            
+
                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                <Chip label="T1 1C: 14 sources" size="small" />
                <Chip label="T2 CC: 21 sources" size="small" />
@@ -384,4 +383,4 @@ const MathematicsPage: React.FC = () => {
   );
 };
 
-export default MathematicsPage; 
+export default MathematicsPage;

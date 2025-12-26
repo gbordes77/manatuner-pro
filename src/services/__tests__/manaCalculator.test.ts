@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  analyzeDeckConsistency,
-  calculateHypergeometric,
-  calculateOptimalLandCount,
-  calculateProbabilityByTurn,
+    analyzeDeckConsistency,
+    calculateHypergeometric,
+    calculateOptimalLandCount,
+    calculateProbabilityByTurn,
 } from "../manaCalculator";
 
 describe("ManaCalculator", () => {
@@ -213,7 +213,7 @@ describe("ManaCalculator", () => {
   describe("Frank Karsten methodology compliance", () => {
     it("should follow Karsten research for colored mana requirements", () => {
       // Test based on Frank Karsten's "How Many Colored Mana Sources Do You Need to Consistently Cast Your Spells?"
-      const deck = {
+      const _deck = {
         cards: [
           { name: "Lightning Bolt", quantity: 4, manaCost: "{R}" },
           { name: "Shock", quantity: 4, manaCost: "{R}" },

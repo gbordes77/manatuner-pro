@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import { Alert, AlertColor, CssBaseline, Snackbar } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
-import { CssBaseline } from '@mui/material'
-import { Snackbar, Alert, AlertColor } from '@mui/material'
-import { lightTheme, darkTheme } from '../../theme'
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { darkTheme, lightTheme } from '../../theme'
 
-interface Notification {
+interface _Notification {
   id: string
   type: 'success' | 'error' | 'warning' | 'info'
   message: string
@@ -63,7 +62,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('manatuner-theme')
     if (saved) return saved === 'dark'
-    
+
     // Force light theme by default for all users
     return false
   })
@@ -83,7 +82,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const toggleTheme = () => {
     setIsDark(prev => !prev)
     showNotification(
-      `Thème ${!isDark ? 'sombre' : 'clair'} activé`, 
+      `Thème ${!isDark ? 'sombre' : 'clair'} activé`,
       'success'
     )
   }
@@ -103,7 +102,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <CssBaseline />
         {children}
-        
+
         <Snackbar
           open={notification.open}
           autoHideDuration={4000}
@@ -116,8 +115,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             }
           }}
         >
-          <Alert 
-            onClose={handleClose} 
+          <Alert
+            onClose={handleClose}
             severity={notification.severity}
             variant="filled"
             sx={{
@@ -134,4 +133,4 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       </ThemeProvider>
     </CombinedContext.Provider>
   )
-} 
+}

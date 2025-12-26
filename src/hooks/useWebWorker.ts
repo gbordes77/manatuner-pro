@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface WorkerMessage {
   type: string
@@ -24,7 +24,7 @@ export function useWebWorker(workerPath: string) {
     // Check if Web Workers are supported
     if (typeof Worker !== 'undefined') {
       setIsSupported(true)
-      
+
       try {
         const worker = new Worker(workerPath)
         workerRef.current = worker
@@ -58,7 +58,7 @@ export function useWebWorker(workerPath: string) {
         worker.onerror = (error) => {
           console.error('Worker error:', error)
           setIsReady(false)
-          
+
           // Reject all pending requests
           pendingRequests.current.forEach(request => {
             request.reject(new Error('Worker error: ' + error.message))
@@ -92,7 +92,7 @@ export function useWebWorker(workerPath: string) {
       }
 
       const id = Math.random().toString(36).substr(2, 9)
-      
+
       pendingRequests.current.set(id, {
         type,
         data,
@@ -117,7 +117,7 @@ export function useWebWorker(workerPath: string) {
       workerRef.current.terminate()
       workerRef.current = null
       setIsReady(false)
-      
+
       // Reject all pending requests
       pendingRequests.current.forEach(request => {
         request.reject(new Error('Worker terminated'))
@@ -198,7 +198,7 @@ function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: numb
   // Simple fallback calculation
   const cardsSeen = 7 + turn - (onThePlay ? 1 : 0)
   const probability = Math.min(1, (sourcesInDeck * cardsSeen) / (deckSize * symbolsNeeded))
-  
+
   return {
     probability,
     meetsThreshold: probability >= 0.90,
@@ -211,12 +211,12 @@ function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: numb
   }
 }
 
-function fallbackCardAnalysis(card: any, deck: any) {
+function fallbackCardAnalysis(_card: any, _deck: any) {
   return {
-    overall: { 
-      probability: 0.75, 
+    overall: {
+      probability: 0.75,
       meetsThreshold: false,
-      fallback: true 
+      fallback: true
     }
   }
 }
@@ -226,7 +226,7 @@ function fallbackBatchAnalysis(cards: any[], deck: any) {
   cards.forEach(card => {
     results[card.name] = fallbackCardAnalysis(card, deck)
   })
-  
+
   return {
     results,
     metadata: {
@@ -235,4 +235,4 @@ function fallbackBatchAnalysis(cards: any[], deck: any) {
       fallback: true
     }
   }
-} 
+}

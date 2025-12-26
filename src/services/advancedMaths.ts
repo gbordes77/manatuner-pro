@@ -2,23 +2,22 @@
 // Based on Frank Karsten's research and hypergeometric distribution theory
 
 import {
-  type HypergeometricParams,
-  type ProbabilityResult,
-  type KarstenRecommendation,
-  type TurnAnalysis,
-  type MonteCarloParams,
-  type MonteCarloResult,
-  type DeckConfiguration,
-  type ColorRequirement,
-  type ManaColor,
-  MAGIC_CONSTANTS,
-  KARSTEN_TABLES,
-  type MultivariateAnalysis,
-  type ColorCombinationAnalysis,
-  type SimulationState,
-  type MulliganDecision,
-  type CalculationMetrics,
-  type MemoizationCache
+    KARSTEN_TABLES,
+    MAGIC_CONSTANTS,
+    type CalculationMetrics,
+    type ColorCombinationAnalysis,
+    type ColorRequirement,
+    type DeckConfiguration,
+    type HypergeometricParams,
+    type KarstenRecommendation,
+    type ManaColor,
+    type MemoizationCache,
+    type MonteCarloParams,
+    type MonteCarloResult,
+    type MulliganDecision,
+    type MultivariateAnalysis,
+    type ProbabilityResult,
+    type TurnAnalysis
 } from '../types/maths'
 
 /**
@@ -38,7 +37,7 @@ export class AdvancedMathEngine {
       maxSize: 10000,
       hitRate: 0
     }
-    
+
     this.metrics = {
       startTime: performance.now(),
       endTime: 0,
@@ -66,10 +65,10 @@ export class AdvancedMathEngine {
     }
 
     this.metrics.cacheMisses++
-    
+
     // Use symmetry property: C(n,k) = C(n,n-k)
     const actualK = Math.min(k, n - k)
-    
+
     let result = 1
     for (let i = 0; i < actualK; i++) {
       result = result * (n - i) / (i + 1)
@@ -89,7 +88,7 @@ export class AdvancedMathEngine {
    */
   hypergeometric(params: HypergeometricParams): number {
     const { populationSize: N, successStates: K, sampleSize: n, successesWanted: k } = params
-    
+
     // Validation
     if (k > n || k > K || n > N || k < 0) return 0
     if (K === 0) return k === 0 ? 1 : 0
@@ -104,7 +103,7 @@ export class AdvancedMathEngine {
 
     const numerator = this.binomial(K, k) * this.binomial(N - K, n - k)
     const denominator = this.binomial(N, n)
-    
+
     const result = denominator > 0 ? numerator / denominator : 0
 
     // Cache the result
@@ -121,10 +120,10 @@ export class AdvancedMathEngine {
    */
   cumulativeHypergeometric(params: HypergeometricParams): ProbabilityResult {
     const { populationSize: N, successStates: K, sampleSize: n, successesWanted: k } = params
-    
+
     let probability = 0
     const maxK = Math.min(n, K)
-    
+
     for (let i = k; i <= maxK; i++) {
       probability += this.hypergeometric({
         populationSize: N,
@@ -136,7 +135,7 @@ export class AdvancedMathEngine {
 
     // Ensure probability is within bounds
     probability = Math.min(1, Math.max(0, probability))
-    
+
     return {
       probability,
       percentage: probability * 100,
@@ -195,27 +194,27 @@ export class AdvancedMathEngine {
    */
   async runMonteCarloSimulation(params: MonteCarloParams): Promise<MonteCarloResult> {
     this.metrics.startTime = performance.now()
-    
+
     // Validation des paramètres
     if (params.iterations <= 0 || params.deckSize <= 0 || params.landCount < 0) {
       throw new Error('Invalid Monte Carlo parameters')
     }
-    
-    const { iterations, deckSize, landCount, targetTurn, mulliganStrategy, playFirst, maxMulligans } = params
-    
+
+    const { iterations } = params
+
     let successfulRuns = 0
     let totalTurns = 0
     const turnDistribution: number[] = new Array(11).fill(0) // Turns 0-10
-    
+
     // Use Web Worker for heavy computation if available
     if (typeof Worker !== 'undefined') {
       return this.runMonteCarloWithWorker(params)
     }
-    
+
     // Fallback to main thread
     for (let i = 0; i < iterations; i++) {
       const simulation = this.simulateSingleGame(params)
-      
+
       if (simulation.success) {
         successfulRuns++
         totalTurns += simulation.turnAchieved
@@ -223,13 +222,13 @@ export class AdvancedMathEngine {
           turnDistribution[simulation.turnAchieved]++
         }
       }
-      
+
       this.metrics.iterationsCompleted++
     }
 
     const successRate = (successfulRuns / iterations) * 100
     const averageTurn = successfulRuns > 0 ? totalTurns / successfulRuns : 0
-    
+
     // Calculate standard deviation
     let variance = 0
     for (let i = 0; i < iterations; i++) {
@@ -239,10 +238,10 @@ export class AdvancedMathEngine {
       }
     }
     const standardDeviation = Math.sqrt(variance / Math.max(1, successfulRuns))
-    
+
     // 95% confidence interval
     const margin = 1.96 * (standardDeviation / Math.sqrt(successfulRuns))
-    
+
     this.metrics.endTime = performance.now()
     this.metrics.duration = this.metrics.endTime - this.metrics.startTime
 
@@ -265,29 +264,29 @@ export class AdvancedMathEngine {
    */
   private simulateSingleGame(params: MonteCarloParams): { success: boolean; turnAchieved: number } {
     const { deckSize, landCount, targetTurn, mulliganStrategy, playFirst, maxMulligans } = params
-    
+
     // Create deck
     const deck = this.createSimulationDeck(deckSize, landCount)
-    
+
     // Simulate mulligans
     let hand = this.drawHand(deck, 7)
     let mulligans = 0
-    
+
     while (mulligans < maxMulligans) {
       const decision = this.shouldMulligan(hand, mulliganStrategy)
       if (!decision.shouldMulligan) break
-      
+
       mulligans++
       hand = this.drawHand(deck, 7 - mulligans)
     }
-    
+
     // Simulate turns
     let landsInPlay = 0
     let currentTurn = 1
-    
+
     // Count lands in opening hand
     landsInPlay = hand.filter(card => card === 'land').length
-    
+
     while (currentTurn <= targetTurn) {
       // Draw for turn (except turn 1 if on the play)
       if (currentTurn > 1 || !playFirst) {
@@ -296,15 +295,15 @@ export class AdvancedMathEngine {
           landsInPlay++
         }
       }
-      
+
       // Check if we have enough lands for target turn
       if (landsInPlay >= currentTurn) {
         return { success: true, turnAchieved: currentTurn }
       }
-      
+
       currentTurn++
     }
-    
+
     return { success: false, turnAchieved: targetTurn + 1 }
   }
 
@@ -313,17 +312,17 @@ export class AdvancedMathEngine {
    */
   private createSimulationDeck(deckSize: number, landCount: number): string[] {
     const deck: string[] = []
-    
+
     // Add lands
     for (let i = 0; i < landCount; i++) {
       deck.push('land')
     }
-    
+
     // Add spells
     for (let i = 0; i < deckSize - landCount; i++) {
       deck.push('spell')
     }
-    
+
     // Shuffle deck
     return this.shuffleDeck(deck)
   }
@@ -360,25 +359,25 @@ export class AdvancedMathEngine {
   private shouldMulligan(hand: string[], strategy: string): MulliganDecision {
     const landCount = hand.filter(card => card === 'land').length
     const handSize = hand.length
-    
+
     let shouldMulligan = false
     let reason = ''
     let handRating = 5 // 0-10 scale
-    
+
     switch (strategy) {
       case 'aggressive':
         shouldMulligan = landCount < 2 || landCount > 5
         reason = landCount < 2 ? 'Too few lands' : landCount > 5 ? 'Too many lands' : 'Good land count'
         handRating = Math.max(0, Math.min(10, 5 + (3 - Math.abs(landCount - 3))))
         break
-        
+
       case 'conservative':
         shouldMulligan = landCount < 1 || landCount > 6
         reason = landCount < 1 ? 'No lands' : landCount > 6 ? 'All lands' : 'Acceptable'
         handRating = Math.max(0, Math.min(10, 5 + (2 - Math.abs(landCount - 3))))
         break
-        
-      case 'optimal':
+
+      case 'optimal': {
         // More sophisticated logic based on curve
         const optimalLands = Math.floor(handSize * 0.4) // ~40% lands
         const deviation = Math.abs(landCount - optimalLands)
@@ -386,13 +385,14 @@ export class AdvancedMathEngine {
         reason = `Deviation from optimal: ${deviation}`
         handRating = Math.max(0, Math.min(10, 8 - deviation * 2))
         break
-        
+      }
+
       default: // 'none'
         shouldMulligan = false
         reason = 'No mulligan strategy'
         handRating = 5
     }
-    
+
     return {
       shouldMulligan,
       reason,
@@ -407,20 +407,20 @@ export class AdvancedMathEngine {
   private async runMonteCarloWithWorker(params: MonteCarloParams): Promise<MonteCarloResult> {
     return new Promise((resolve, reject) => {
       const worker = new Worker(new URL('/workers/monteCarlo.worker.js', import.meta.url))
-      
+
       worker.postMessage(params)
-      
+
       worker.onmessage = (event) => {
         const result = event.data
         worker.terminate()
         resolve(result)
       }
-      
+
       worker.onerror = (error) => {
         worker.terminate()
         reject(error)
       }
-      
+
       // Timeout after 30 seconds
       setTimeout(() => {
         worker.terminate()
@@ -440,7 +440,7 @@ export class AdvancedMathEngine {
     let overallConsistency = 1
     const bottleneckColors: ManaColor[] = []
     const recommendations: string[] = []
-    
+
     // Analyze each color requirement
     for (const requirement of colorRequirements) {
       const analysis = this.calculateKarstenProbability(
@@ -449,7 +449,7 @@ export class AdvancedMathEngine {
         requirement.criticalTurn,
         requirement.intensity
       )
-      
+
       colorCombinations.push({
         colors: [requirement.color],
         probability: analysis.castProbability,
@@ -457,10 +457,10 @@ export class AdvancedMathEngine {
         deficit: analysis.karstenRating.deficit,
         criticalTurn: requirement.criticalTurn
       })
-      
+
       // Update overall consistency (product of probabilities)
       overallConsistency *= analysis.castProbability
-      
+
       // Identify bottlenecks
       if (analysis.castProbability < 0.80) {
         bottleneckColors.push(requirement.color)
@@ -469,10 +469,10 @@ export class AdvancedMathEngine {
         )
       }
     }
-    
+
     // Generate optimal manabase
     const optimalManabase = this.generateOptimalManabase(deckConfig, colorRequirements)
-    
+
     return {
       colorCombinations,
       overallConsistency,
@@ -493,15 +493,15 @@ export class AdvancedMathEngine {
       MAGIC_CONSTANTS.MIN_LANDS_AGGRESSIVE,
       Math.min(MAGIC_CONSTANTS.MAX_LANDS_CONTROL, deckConfig.landCount)
     )
-    
+
     const colorSources: Record<ManaColor, number> = {} as Record<ManaColor, number>
-    
+
     // Calculate optimal sources for each color
     for (const requirement of colorRequirements) {
       const optimalSources = KARSTEN_TABLES[requirement.intensity]?.[requirement.criticalTurn] || 14
       colorSources[requirement.color] = optimalSources
     }
-    
+
     return {
       totalLands,
       colorSources,
@@ -526,7 +526,7 @@ export class AdvancedMathEngine {
   /**
    * Get Karsten rating based on probability and deficit
    */
-  private getKarstenRating(probability: number, deficit: number): 'excellent' | 'good' | 'acceptable' | 'poor' | 'unplayable' {
+  private getKarstenRating(probability: number, _deficit: number): 'excellent' | 'good' | 'acceptable' | 'poor' | 'unplayable' {
     if (probability >= 0.95) return 'excellent'
     if (probability >= 0.90) return 'good'
     if (probability >= 0.80) return 'acceptable'
@@ -546,11 +546,11 @@ export class AdvancedMathEngine {
     if (deficit <= 0) {
       return `Excellent! You have sufficient sources for ${symbolsNeeded} symbols by turn ${turn}.`
     }
-    
+
     if (deficit <= 2) {
       return `Consider adding ${deficit} more source${deficit > 1 ? 's' : ''} for better consistency.`
     }
-    
+
     return `Add ${deficit} more sources - currently only ${(probability * 100).toFixed(1)}% reliable.`
   }
 
@@ -573,13 +573,13 @@ export class AdvancedMathEngine {
     this.metrics.endTime = performance.now()
     this.metrics.duration = this.metrics.endTime - this.metrics.startTime
     this.metrics.calculationsPerformed = this.metrics.cacheHits + this.metrics.cacheMisses
-    this.metrics.averageCalculationTime = this.metrics.calculationsPerformed > 0 
-      ? this.metrics.duration / this.metrics.calculationsPerformed 
+    this.metrics.averageCalculationTime = this.metrics.calculationsPerformed > 0
+      ? this.metrics.duration / this.metrics.calculationsPerformed
       : 0
-    this.cache.hitRate = this.metrics.calculationsPerformed > 0 
-      ? this.metrics.cacheHits / this.metrics.calculationsPerformed 
+    this.cache.hitRate = this.metrics.calculationsPerformed > 0
+      ? this.metrics.cacheHits / this.metrics.calculationsPerformed
       : 0
-    
+
     return { ...this.metrics }
   }
 }
@@ -591,7 +591,7 @@ export const advancedMathEngine = new AdvancedMathEngine()
 ;(advancedMathEngine as any).calculateHypergeometric = advancedMathEngine.cumulativeHypergeometric.bind(advancedMathEngine)
 
 // Export compatibility methods for existing tests
-export const calculateHypergeometric = (params: HypergeometricParams) => 
+export const calculateHypergeometric = (params: HypergeometricParams) =>
   advancedMathEngine.cumulativeHypergeometric(params)
 
 export const calculateKarstenProbability = (
@@ -603,7 +603,7 @@ export const calculateKarstenProbability = (
   handSize: number = 7
 ) => advancedMathEngine.calculateKarstenProbability(deckSize, sourcesInDeck, turn, symbolsNeeded, onThePlay, handSize)
 
-export const runMonteCarloSimulation = (params: MonteCarloParams) => 
+export const runMonteCarloSimulation = (params: MonteCarloParams) =>
   advancedMathEngine.runMonteCarloSimulation(params)
 
 export const analyzeMultivariateRequirements = (
@@ -612,4 +612,4 @@ export const analyzeMultivariateRequirements = (
 ) => advancedMathEngine.analyzeMultivariateRequirements(deckConfig, colorRequirements)
 
 // Export the class as default for new implementations
-export default AdvancedMathEngine 
+export default AdvancedMathEngine

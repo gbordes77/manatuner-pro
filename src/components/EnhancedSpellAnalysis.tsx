@@ -55,7 +55,7 @@ interface EnhancedSpellAnalysisProps {
 const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
   spellAnalysis,
   tempoSpellAnalysis,
-  tempoImpactByColor
+  tempoImpactByColor: _tempoImpactByColor
 }) => {
   // Always use tempo mode - no toggle needed
   const hasTempoData = tempoSpellAnalysis && Object.keys(tempoSpellAnalysis).length > 0;
@@ -130,7 +130,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
   }));
 
   // Prepare efficiency vs total chart data
-  const efficiencyData = spellData.map(spell => ({
+  const _efficiencyData = spellData.map(spell => ({
     name: spell.name,
     efficiency: spell.efficiency,
     total: spell.total,

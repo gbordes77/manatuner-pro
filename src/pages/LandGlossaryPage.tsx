@@ -34,16 +34,26 @@ interface LandCategory {
 const LAND_CATEGORIES: LandCategory[] = [
   {
     rank: 1,
+    name: "Original Dual Land",
+    description: "The original Alpha/Beta dual lands with two basic land types and no drawback.",
+    whyPowerful: "The absolute best lands ever printed. They produce 2 colors, always enter untapped, have basic land types (fetchable!), and have ZERO downside. Reserved List means they'll never be reprinted, making them the gold standard all other duals are measured against.",
+    examples: ["Underground Sea", "Tropical Island", "Volcanic Island", "Tundra", "Bayou", "Savannah", "Scrubland", "Badlands", "Taiga", "Plateau"],
+    etbTapped: "No",
+    colorFix: "2 colors",
+    downside: "None (only price and Reserved List)",
+  },
+  {
+    rank: 2,
     name: "Fetchland",
     description: "Lands that sacrifice to search your library for another land.",
-    whyPowerful: "The most powerful lands in Magic. They thin your deck (improving draw quality), shuffle away bad cards, trigger landfall multiple times, and most importantly can find Shocklands or Dual lands giving you access to any color combination.",
+    whyPowerful: "The most versatile lands in Magic. They thin your deck (improving draw quality), shuffle away bad cards, trigger landfall multiple times, and most importantly can find Shocklands or Original Duals giving you access to any color combination.",
     examples: ["Scalding Tarn", "Flooded Strand", "Polluted Delta", "Misty Rainforest", "Arid Mesa"],
     etbTapped: "No (but fetched land might be)",
     colorFix: "Any 2 colors (via fetchable duals)",
     downside: "1 life + fetched land cost",
   },
   {
-    rank: 2,
+    rank: 3,
     name: "Rainbow Land",
     description: "Lands that produce any color of mana.",
     whyPowerful: "Perfect mana fixing for any deck. Always enters untapped, giving you immediate access to all 5 colors. Essential for aggressive multicolor decks that need to curve out perfectly.",
@@ -53,17 +63,17 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "1 life per tap (or limited uses)",
   },
   {
-    rank: 3,
+    rank: 4,
     name: "Shockland",
     description: "Dual lands with basic land types that can enter untapped for 2 life.",
-    whyPowerful: "The backbone of competitive manabases. They have basic land types (fetchable!), provide 2 colors, and you choose whether to pay life for tempo or enter tapped when life matters more.",
+    whyPowerful: "The backbone of competitive Modern/Pioneer manabases. They have basic land types (fetchable!), provide 2 colors, and you choose whether to pay life for tempo or enter tapped when life matters more.",
     examples: ["Sacred Foundry", "Hallowed Fountain", "Steam Vents", "Overgrown Tomb", "Blood Crypt"],
     etbTapped: "Optional (pay 2 life for untapped)",
     colorFix: "2 colors",
     downside: "2 life if untapped",
   },
   {
-    rank: 4,
+    rank: 5,
     name: "Horizon Land",
     description: "Dual lands that can be sacrificed to draw a card.",
     whyPowerful: "Excellent in aggressive and low-curve decks. Early game they fix your mana, late game when you're flooded you can cash them in for a card. The card draw option makes them never truly dead.",
@@ -73,7 +83,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "1 life per colored mana + no long-term mana",
   },
   {
-    rank: 5,
+    rank: 6,
     name: "Fastland",
     description: "Dual lands that enter untapped if you control 2 or fewer other lands.",
     whyPowerful: "Perfect for aggressive decks. Untapped on turns 1-3 when you need to curve out, which is exactly when tempo matters most. The downside of entering tapped late game is often irrelevant.",
@@ -83,7 +93,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "Enters tapped in late game",
   },
   {
-    rank: 6,
+    rank: 7,
     name: "Checkland",
     description: "Dual lands that enter untapped if you control a land with a basic land type.",
     whyPowerful: "Great budget option and synergize perfectly with Shocklands (which have basic types). Reliable untapped mana once you've established your manabase.",
@@ -93,7 +103,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "Unreliable turn 1, needs setup",
   },
   {
-    rank: 7,
+    rank: 8,
     name: "Painland",
     description: "Dual lands that deal 1 damage when tapped for colored mana.",
     whyPowerful: "Always untapped, always available. The 1 life cost is minimal in most matchups, and you can tap for colorless when you don't need colored mana to save life.",
@@ -103,7 +113,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "1 life per colored mana",
   },
   {
-    rank: 8,
+    rank: 9,
     name: "Conditional Land",
     description: "Lands with time-based or situational conditions for entering untapped.",
     whyPowerful: "Cards like Starting Town are excellent in aggressive decks - untapped turns 1-3 when it matters, and the 'downside' of entering tapped later rarely affects aggro strategies.",
@@ -113,7 +123,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "Conditional, may enter tapped",
   },
   {
-    rank: 9,
+    rank: 10,
     name: "Triome",
     description: "Lands that produce 3 colors but always enter tapped.",
     whyPowerful: "Excellent color fixing for 3+ color decks. Having basic land types makes them fetchable. The cycling ability provides late-game utility.",
@@ -123,7 +133,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "Always tapped, slow",
   },
   {
-    rank: 10,
+    rank: 11,
     name: "Utility Land",
     description: "Lands with special abilities beyond mana production.",
     whyPowerful: "Provide unique effects that can't be replicated by spells. Cavern of Souls makes creatures uncounterable, Mutavault is a creature land, etc.",
@@ -133,7 +143,7 @@ const LAND_CATEGORIES: LandCategory[] = [
     downside: "Often limited color production",
   },
   {
-    rank: 11,
+    rank: 12,
     name: "Basic Land",
     description: "The fundamental lands of Magic: Plains, Island, Swamp, Mountain, Forest.",
     whyPowerful: "Immune to non-basic land hate (Blood Moon, Back to Basics). Always untapped, no life cost. Essential for fetch targets and checkland enablers.",

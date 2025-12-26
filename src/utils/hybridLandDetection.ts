@@ -1,5 +1,5 @@
-import { detectLand, LandInfo } from './landDetection'
 import { getComprehensiveLandAnalysis } from './intelligentLandAnalysis'
+import { detectLand } from './landDetection'
 
 // Interface pour les données Scryfall (copiée du deckAnalyzer)
 interface ScryfallCard {
@@ -26,14 +26,14 @@ async function fetchCardFromScryfall(cardName: string): Promise<ScryfallCard | n
   try {
     const encodedName = encodeURIComponent(cardName)
     const response = await fetch(`https://api.scryfall.com/cards/named?exact=${encodedName}`)
-    
+
     if (!response.ok) {
       console.warn(`Scryfall API error for "${cardName}": ${response.status}`)
       return null
     }
 
     const data: ScryfallCard = await response.json()
-    
+
     // Mettre en cache le résultat
     scryfallCache.set(cardName, data)
     return data
@@ -136,11 +136,11 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
   try {
     // 1. Vérifier d'abord avec Scryfall
     const scryfallCard = await fetchCardFromScryfall(cardName)
-    
+
     if (scryfallCard && scryfallCard.type_line.toLowerCase().includes('land')) {
       // C'est un terrain selon Scryfall
       const landBehavior = LAND_BEHAVIORS[cardName as keyof typeof LAND_BEHAVIORS]
-      
+
       if (landBehavior) {
         // On connaît ce terrain spécifiquement
         return {
@@ -154,7 +154,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
       } else {
         // Terrain inconnu, utiliser l'analyse intelligente
         const intelligentAnalysis = getComprehensiveLandAnalysis(cardName, scryfallCard)
-        
+
         if (intelligentAnalysis.confidence >= 70) {
           // Analyse intelligente réussie
           return {
@@ -188,7 +188,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
   const localResult = detectLand(cardName)
   if (localResult.isLand) {
     const landBehavior = LAND_BEHAVIORS[cardName]
-    
+
     return {
       isLand: true,
       category: localResult.type,
@@ -207,7 +207,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
  */
 function categorizeLandFromScryfall(typeLine: string): string {
   const lower = typeLine.toLowerCase()
-  
+
   if (lower.includes('basic land')) return 'Basic Land'
   if (lower.includes('legendary land')) return 'Legendary Land'
   if (lower.includes('artifact land')) return 'Artifact Land'
@@ -221,17 +221,17 @@ function extractManaFromScryfall(card: any): string[] {
   if (card.produced_mana) {
     return card.produced_mana
   }
-  
+
   // Fallback : analyser le type_line
   const typeLine = card.type_line.toLowerCase()
   const mana: string[] = []
-  
+
   if (typeLine.includes('plains')) mana.push('W')
   if (typeLine.includes('island')) mana.push('U')
   if (typeLine.includes('swamp')) mana.push('B')
   if (typeLine.includes('mountain')) mana.push('R')
   if (typeLine.includes('forest')) mana.push('G')
-  
+
   return mana
 }
 
@@ -255,4 +255,4 @@ function getSpecialRules(behavior: string, cardName: string): string {
     default:
       return `Unknown behavior for ${cardName}`
   }
-} 
+}

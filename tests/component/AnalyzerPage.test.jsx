@@ -4,19 +4,23 @@ import { expect, describe, it, vi, beforeEach } from "vitest";
 import AnalyzerPage from "../../src/pages/AnalyzerPage";
 import { renderWithProviders } from "../test-utils";
 
-// Mock des services
-vi.mock("../../src/services/manaCalculator", () => ({
-  calculateManabase: vi.fn(() =>
-    Promise.resolve({
-      totalCards: 60,
-      totalLands: 24,
-      averageCMC: 2.5,
-      landRatio: 0.4,
-      colorDistribution: { W: 10, U: 8, B: 6, R: 0, G: 0 },
-      recommendations: ["Add more red sources"],
-    }),
-  ),
-}));
+// Mock des services - use importOriginal to include all exports
+vi.mock("../../src/services/manaCalculator", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    calculateManabase: vi.fn(() =>
+      Promise.resolve({
+        totalCards: 60,
+        totalLands: 24,
+        averageCMC: 2.5,
+        landRatio: 0.4,
+        colorDistribution: { W: 10, U: 8, B: 6, R: 0, G: 0 },
+        recommendations: ["Add more red sources"],
+      }),
+    ),
+  };
+});
 
 describe("AnalyzerPage", () => {
   beforeEach(() => {
@@ -81,13 +85,13 @@ describe("AnalyzerPage", () => {
     await waitFor(
       () => {
         expect(
-          screen.getByRole("tab", { name: /overview/i }),
+          screen.getByRole("tab", { name: /dashboard/i }),
         ).toBeInTheDocument();
         expect(
-          screen.getByRole("tab", { name: /probabilities/i }),
+          screen.getByRole("tab", { name: /castability/i }),
         ).toBeInTheDocument();
         expect(
-          screen.getByRole("tab", { name: /recommendations/i }),
+          screen.getByRole("tab", { name: /analysis/i }),
         ).toBeInTheDocument();
       },
       { timeout: 5000 },

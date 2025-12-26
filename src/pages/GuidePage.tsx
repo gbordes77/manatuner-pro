@@ -1,38 +1,36 @@
-import React from 'react';
 import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Alert,
-  Chip,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Grid
-} from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Analytics as AnalyticsIcon,
-  Speed as SpeedIcon,
-  Science as ScienceIcon,
-  School as SchoolIcon,
-  Lightbulb as LightbulbIcon,
-  CheckCircle as CheckIcon,
-  TrendingUp as TrendingUpIcon,
-  Calculate as CalculateIcon,
-  AutoGraph as AutoGraphIcon,
-  Info as InfoIcon,
-  Warning as WarningIcon,
-  Psychology as PsychologyIcon
+    Analytics as AnalyticsIcon,
+    AutoGraph as AutoGraphIcon,
+    Calculate as CalculateIcon,
+    CheckCircle as CheckIcon,
+    ExpandMore as ExpandMoreIcon,
+    Info as InfoIcon,
+    Lightbulb as LightbulbIcon,
+    Psychology as PsychologyIcon,
+    School as SchoolIcon,
+    Science as ScienceIcon,
+    Speed as SpeedIcon,
+    TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Container,
+    Grid,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    Typography
+} from '@mui/material';
+import React from 'react';
 import { AnimatedContainer } from '../components/common/AnimatedContainer';
 
 export const GuidePage: React.FC = () => {
@@ -48,16 +46,16 @@ export const GuidePage: React.FC = () => {
             Master ManaTuner Pro and optimize your MTG manabases
           </Typography>
           <Box display="flex" gap={1} justifyContent="center" flexWrap="wrap">
-            <Chip 
-              icon={<ScienceIcon />} 
-              label="Frank Karsten Research" 
-              color="primary" 
+            <Chip
+              icon={<ScienceIcon />}
+              label="Frank Karsten Research"
+              color="primary"
               component="a"
               href="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
               target="_blank"
               rel="noopener noreferrer"
               clickable
-              sx={{ 
+              sx={{
                 cursor: 'pointer',
                 '&:hover': {
                   transform: 'scale(1.05)',
@@ -73,13 +71,13 @@ export const GuidePage: React.FC = () => {
 
         {/* Quick Start Alert */}
         <Alert severity="info" sx={{ mb: 4 }}>
-          <strong>🚀 Quick Start:</strong> Paste your decklist in the Analyzer, 
+          <strong>🚀 Quick Start:</strong> Paste your decklist in the Analyzer,
           click "Analyze Manabase" and get your statistics instantly!
         </Alert>
 
         {/* Main Guide Sections */}
         <Grid container spacing={4}>
-          
+
           {/* Section 1: Qu'est-ce que ManaTuner Pro */}
           <Grid item xs={12}>
             <Card elevation={3} sx={{ bgcolor: 'background.paper' }}>
@@ -89,38 +87,38 @@ export const GuidePage: React.FC = () => {
                 </Typography>
                 <Typography variant="body1" paragraph>
                   ManaTuner Pro is an <strong>advanced manabase analyzer</strong> for Magic: The Gathering that uses{' '}
-                  <strong>Frank Karsten's</strong> mathematical research and <strong>hypergeometric analysis</strong> 
+                  <strong>Frank Karsten's</strong> mathematical research and <strong>hypergeometric analysis</strong>
                   to provide you with precise probabilities and optimal recommendations.
                 </Typography>
-                
+
                 <Box sx={{ my: 3 }}>
                   <Typography variant="h6" gutterBottom>✨ Key Features:</Typography>
                   <List>
                     <ListItem>
                       <ListItemIcon><AnalyticsIcon color="primary" /></ListItemIcon>
-                      <ListItemText 
-                        primary="Precise Probability Analysis" 
+                      <ListItemText
+                        primary="Precise Probability Analysis"
                         secondary="Hypergeometric calculations for each turn and mana cost"
                       />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><AutoGraphIcon color="primary" /></ListItemIcon>
-                      <ListItemText 
-                        primary="Interactive Visualizations" 
+                      <ListItemText
+                        primary="Interactive Visualizations"
                         secondary="Detailed charts to understand your mana curves"
                       />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><PsychologyIcon color="primary" /></ListItemIcon>
-                      <ListItemText 
-                        primary="Smart Recommendations" 
+                      <ListItemText
+                        primary="Smart Recommendations"
                         secondary="Optimization suggestions based on your metagame"
                       />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><SpeedIcon color="primary" /></ListItemIcon>
-                      <ListItemText 
-                        primary="Real-Time Analysis" 
+                      <ListItemText
+                        primary="Real-Time Analysis"
                         secondary="Web Workers for instant Monte Carlo calculations"
                       />
                     </ListItem>
@@ -153,9 +151,9 @@ export const GuidePage: React.FC = () => {
                   <ListItem><ListItemText primary="• Arena format (copy/paste from MTGA)" /></ListItem>
                   <ListItem><ListItemText primary="• Manual lists (format: '4 Lightning Bolt')" /></ListItem>
                 </List>
-                
+
                 <Alert severity="info" sx={{ mt: 2 }}>
-                  <strong>💡 Tip:</strong> Use the "Example" button to see a pre-configured deck 
+                  <strong>💡 Tip:</strong> Use the "Example" button to see a pre-configured deck
                   and understand the expected format.
                 </Alert>
               </AccordionDetails>
@@ -176,22 +174,22 @@ export const GuidePage: React.FC = () => {
                 <List>
                   <ListItem>
                     <ListItemIcon><CheckIcon color="success" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Automatic land detection" 
+                    <ListItemText
+                      primary="Automatic land detection"
                       secondary="Identification of mana sources and special lands"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemIcon><CheckIcon color="success" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Mana cost analysis" 
+                    <ListItemText
+                      primary="Mana cost analysis"
                       secondary="Smart parsing of hybrid and colorless symbols"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemIcon><CheckIcon color="success" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Probability calculations" 
+                    <ListItemText
+                      primary="Probability calculations"
                       secondary="Chances of having the right mana each turn"
                     />
                   </ListItem>
@@ -243,8 +241,8 @@ export const GuidePage: React.FC = () => {
 
                 <Grid container spacing={3}>
                   <Grid item md={6} xs={12}>
-                    <Paper sx={{ 
-                      p: 2, 
+                    <Paper sx={{
+                      p: 2,
                       height: '100%',
                       bgcolor: 'background.default',
                       border: '1px solid',
@@ -252,12 +250,12 @@ export const GuidePage: React.FC = () => {
                     }}>
                       <Typography variant="h6" gutterBottom color="primary">
                         <ScienceIcon sx={{ mr: 1 }} />
-                        <a 
+                        <a
                           href="https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ 
-                            color: 'inherit', 
+                          style={{
+                            color: 'inherit',
                             textDecoration: 'none',
                             borderBottom: '1px dotted currentColor'
                           }}
@@ -267,20 +265,20 @@ export const GuidePage: React.FC = () => {
                       </Typography>
                       <List dense>
                         <ListItem>
-                          <ListItemText 
-                            primary="≥ 90% = Excellent" 
+                          <ListItemText
+                            primary="≥ 90% = Excellent"
                             secondary="Your spell will be very reliably playable"
                           />
                         </ListItem>
                         <ListItem>
-                          <ListItemText 
-                            primary="75-89% = Good" 
+                          <ListItemText
+                            primary="75-89% = Good"
                             secondary="Acceptable for most decks"
                           />
                         </ListItem>
                         <ListItem>
-                          <ListItemText 
-                            primary="< 75% = Problematic" 
+                          <ListItemText
+                            primary="< 75% = Problematic"
                             secondary="High risk of mulligan or mana screw"
                           />
                         </ListItem>
@@ -289,8 +287,8 @@ export const GuidePage: React.FC = () => {
                   </Grid>
 
                   <Grid item md={6} xs={12}>
-                    <Paper sx={{ 
-                      p: 2, 
+                    <Paper sx={{
+                      p: 2,
                       height: '100%',
                       bgcolor: 'background.default',
                       border: '1px solid',
@@ -301,11 +299,11 @@ export const GuidePage: React.FC = () => {
                         Hypergeometric Analysis
                       </Typography>
                       <Typography variant="body2" paragraph>
-                        Calculates the exact probability of drawing the right resources 
+                        Calculates the exact probability of drawing the right resources
                         from a finite population (your 60-card deck).
                       </Typography>
                       <Typography variant="body2">
-                        <strong>Mathematical method</strong> recognized and used by 
+                        <strong>Mathematical method</strong> recognized and used by
                         professional players for manabase optimization.
                       </Typography>
                     </Paper>
@@ -329,22 +327,22 @@ export const GuidePage: React.FC = () => {
                 <List>
                   <ListItem>
                     <ListItemIcon><LightbulbIcon color="warning" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Prioritize your T1-T3 spells" 
+                    <ListItemText
+                      primary="Prioritize your T1-T3 spells"
                       secondary="Make sure you have ≥90% chance to play them on time"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemIcon><LightbulbIcon color="warning" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Balance colors and speed" 
+                    <ListItemText
+                      primary="Balance colors and speed"
                       secondary="More taplands = slower but more stable"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemIcon><LightbulbIcon color="warning" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Test different ratios" 
+                    <ListItemText
+                      primary="Test different ratios"
                       secondary="Use the Clear button to test multiple versions"
                     />
                   </ListItem>
@@ -401,8 +399,8 @@ export const GuidePage: React.FC = () => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography variant="body1">
-                      ManaTuner Pro uses <strong>exact hypergeometric analysis</strong> rather than 
-                      approximations. Our calculations are based on Frank Karsten's research, 
+                      ManaTuner Pro uses <strong>exact hypergeometric analysis</strong> rather than
+                      approximations. Our calculations are based on Frank Karsten's research,
                       the reference in MTG mathematics, which gives more accurate results.
                     </Typography>
                   </AccordionDetails>
@@ -414,7 +412,7 @@ export const GuidePage: React.FC = () => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography variant="body1">
-                      Hybrid costs like {'{W/U}'} are automatically detected and treated as 
+                      Hybrid costs like {'{W/U}'} are automatically detected and treated as
                       payable by either color, thus optimizing probability calculations.
                     </Typography>
                   </AccordionDetails>
@@ -426,8 +424,8 @@ export const GuidePage: React.FC = () => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography variant="body1">
-                      For complex analyses, we use Monte Carlo simulations 
-                      (thousands of simulated hands) that run in the background without blocking 
+                      For complex analyses, we use Monte Carlo simulations
+                      (thousands of simulated hands) that run in the background without blocking
                       the interface, ensuring a smooth experience.
                     </Typography>
                   </AccordionDetails>
@@ -438,10 +436,10 @@ export const GuidePage: React.FC = () => {
 
           {/* Footer d'appel à l'action */}
           <Grid item xs={12}>
-            <Box textAlign="center" sx={{ 
-              mt: 6, 
-              p: 4, 
-              bgcolor: 'background.paper', 
+            <Box textAlign="center" sx={{
+              mt: 6,
+              p: 4,
+              bgcolor: 'background.paper',
               borderRadius: 2,
               border: '1px solid',
               borderColor: 'divider'
@@ -453,17 +451,17 @@ export const GuidePage: React.FC = () => {
                 Use the Analyzer to transform your manabases and dominate your matches!
               </Typography>
               <Box display="flex" gap={2} justifyContent="center">
-                <Chip 
-                  icon={<SchoolIcon />} 
-                  label="Based on Frank Karsten" 
-                  color="primary" 
-                  variant="outlined" 
+                <Chip
+                  icon={<SchoolIcon />}
+                  label="Based on Frank Karsten"
+                  color="primary"
+                  variant="outlined"
                 />
-                <Chip 
-                  icon={<InfoIcon />} 
-                  label="Open Source" 
-                  color="secondary" 
-                  variant="outlined" 
+                <Chip
+                  icon={<InfoIcon />}
+                  label="Open Source"
+                  color="secondary"
+                  variant="outlined"
                 />
               </Box>
             </Box>
@@ -472,4 +470,4 @@ export const GuidePage: React.FC = () => {
       </AnimatedContainer>
     </Container>
   );
-}; 
+};

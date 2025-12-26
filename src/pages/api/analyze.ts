@@ -2,11 +2,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { AnalyzeRequestSchema } from "../../lib/validations";
 import { advancedMathEngine } from "../../services/advancedMaths";
 import type {
-  ColorRequirement,
-  DeckConfiguration,
-  MonteCarloResult,
-  MultivariateAnalysis,
-  TurnAnalysis,
+    ColorRequirement,
+    DeckConfiguration,
+    MonteCarloResult,
+    MultivariateAnalysis,
+    TurnAnalysis,
 } from "../../types/maths";
 
 // Rate limiting store (in production, use Redis)
@@ -120,7 +120,7 @@ export default async function handler(
       });
     }
 
-    const { decklist, format, analysisParams } = validationResult.data;
+    const { decklist: _decklist, format, analysisParams } = validationResult.data;
 
     // Build deck configuration from decklist
     const deckSize = 60;

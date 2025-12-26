@@ -39,7 +39,7 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
   onClear,
   onLoadSample,
   isMobile,
-  isSmallMobile,
+  isSmallMobile: _isSmallMobile,
 }) => {
   return (
     <Paper

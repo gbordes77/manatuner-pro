@@ -260,7 +260,7 @@ export class DeckAnalyzer {
   // Enhanced land logic from reference project
   private static evaluateLandProperties(
     name: string,
-    text?: string,
+    _text?: string,
   ): Partial<DeckCard> {
     const lowerName = name.toLowerCase();
     const properties: Partial<DeckCard> = {
@@ -757,8 +757,8 @@ export class DeckAnalyzer {
     analysis: Partial<AnalysisResult>,
   ): string[] {
     const recommendations: string[] = [];
-    const lands = cards.filter((card) => card.isLand);
-    const nonLands = cards.filter((card) => !card.isLand);
+    const _lands = cards.filter((card) => card.isLand);
+    const _nonLands = cards.filter((card) => !card.isLand);
 
     // Analyse des mécaniques complexes
     const complexAnalysis = this.analyzeComplexLandMechanics(cards);

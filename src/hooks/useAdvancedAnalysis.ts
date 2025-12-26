@@ -1,14 +1,14 @@
-import { useState, useCallback, useMemo } from 'react'
-import { advancedMathEngine } from '../services/advancedMaths'
+import { useCallback, useMemo, useState } from 'react'
 import { validateKarstenParameters } from '../lib/validations'
+import { advancedMathEngine } from '../services/advancedMaths'
 import type {
-  TurnAnalysis,
-  MonteCarloParams,
-  MonteCarloResult,
-  MultivariateAnalysis,
-  DeckConfiguration,
-  ColorRequirement,
-  ManaColor
+    ColorRequirement,
+    DeckConfiguration,
+    ManaColor,
+    MonteCarloParams,
+    MonteCarloResult,
+    MultivariateAnalysis,
+    TurnAnalysis
 } from '../types/maths'
 
 interface AdvancedAnalysisState {
@@ -36,7 +36,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
     metrics: null
   })
 
-  const { enableMonteCarlo = true, enableMultivariate = true, cacheResults = true } = options
+  const { enableMonteCarlo = true, enableMultivariate = true, cacheResults: _cacheResults = true } = options
 
   /**
    * Analyze mana requirements using Frank Karsten methodology
@@ -107,7 +107,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
 
     try {
       const result = await advancedMathEngine.runMonteCarloSimulation(params)
-      
+
       setState(prev => ({
         ...prev,
         monteCarloResult: result,
@@ -196,7 +196,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
     if (turnAnalysis.length === 0) return null
 
     // Find critical turn (first turn with <90% probability)
-    const criticalTurn = turnAnalysis.find(analysis => 
+    const criticalTurn = turnAnalysis.find(analysis =>
       analysis.castProbability < 0.90
     )?.turn || turnAnalysis.length
 
@@ -214,7 +214,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
       criticalTurn,
       overallRating,
       worstProbability,
-      averageProbability: turnAnalysis.reduce((sum, analysis) => 
+      averageProbability: turnAnalysis.reduce((sum, analysis) =>
         sum + analysis.castProbability, 0) / turnAnalysis.length,
       monteCarloSuccess: monteCarloResult?.successRate || null,
       multivariateConsistency: multivariateAnalysis?.overallConsistency || null,
@@ -232,7 +232,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
     if (turnAnalysis.length > 0) {
       // Check for early turn problems
       const earlyTurns = turnAnalysis.slice(0, 3) // Turns 1-3
-      const problematicTurns = earlyTurns.filter(analysis => 
+      const problematicTurns = earlyTurns.filter(analysis =>
         analysis.castProbability < 0.90
       )
 
@@ -336,4 +336,4 @@ export const useKarstenQuickAnalysis = () => {
     error,
     clearError: () => setError(null)
   }
-} 
+}

@@ -52,7 +52,7 @@ const PersistLoader = () => (
 );
 
 // Error boundary for production
-const ErrorFallback = ({ error }: { error: Error }) => (
+const ErrorFallback = ({ error: _error }: { error: Error }) => (
   <div
     style={{
       padding: "20px",

@@ -133,7 +133,7 @@ export const analyzeDeckConsistency = (
     }))
   };
 
-  const calculator = new ManaCalculator();
+  const _calculator = new ManaCalculator();
 
   try {
     // FIX: Calcul direct du score basé sur le ratio de terres et la cohérence du deck
@@ -202,7 +202,7 @@ export const analyzeDeckConsistency = (
       issues,
       recommendations
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       overallScore: 0.5,
       issues: ['Analysis failed'],
@@ -353,7 +353,7 @@ export class ManaCalculator {
     sourcesInDeck: number,
     turn: number,
     symbolsNeeded: number,
-    onThePlay: boolean = true,
+    _onThePlay: boolean = true,
     handSize: number = 7  // Support pour mulligans
   ): ProbabilityResult {
     // CORRECTION CRITIQUE: Frank Karsten utilise toujours handSize + turn - 1
@@ -792,7 +792,7 @@ function parseManaCostColors(manaCost: string): Array<{ color: LandManaColor; co
     // For hybrid, we take the color that's easier to cast (lower requirement)
     // This is a simplification - ideally we'd calculate both paths
     const color1 = match[1] as LandManaColor
-    const color2 = match[2] as LandManaColor
+    const _color2 = match[2] as LandManaColor
 
     // Just count the first for simplicity
     colors[color1]++

@@ -1,35 +1,34 @@
+import {
+    Assessment as AssessmentIcon,
+    Speed as SpeedIcon,
+    Timeline as TimelineIcon
+} from '@mui/icons-material'
+import {
+    Alert,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Divider,
+    Grid,
+    LinearProgress,
+    Typography,
+    useMediaQuery,
+    useTheme
+} from '@mui/material'
 import React, { useMemo } from 'react'
 import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
-  Grid,
-  LinearProgress,
-  useTheme,
-  useMediaQuery,
-  Alert,
-  Divider
-} from '@mui/material'
-import {
-  Timeline as TimelineIcon,
-  TrendingUp as TrendingUpIcon,
-  Speed as SpeedIcon,
-  Assessment as AssessmentIcon
-} from '@mui/icons-material'
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from 'recharts'
 import type { MonteCarloResult } from '../../types/maths'
 
@@ -49,12 +48,12 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
   compactMode = false
 }) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const _isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   // Prepare distribution chart data
   const distributionData = useMemo(() => {
     if (!result) return []
-    
+
     return result.distribution.map((count, turn) => ({
       turn: turn === 0 ? 'Failed' : `Turn ${turn}`,
       count,
@@ -65,7 +64,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
   // Prepare success/failure pie data
   const successData = useMemo(() => {
     if (!result) return []
-    
+
     const failed = result.iterations - result.successfulRuns
     return [
       { name: 'Success', value: result.successfulRuns, color: theme.palette.success.main },
@@ -255,8 +254,8 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
                         'Count'
                       ]}
                     />
-                    <Bar 
-                      dataKey="count" 
+                    <Bar
+                      dataKey="count"
                       fill={theme.palette.primary.main}
                       radius={[4, 4, 0, 0]}
                     />
@@ -306,29 +305,29 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
             Interpretation
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            This Monte Carlo simulation ran {result.iterations.toLocaleString()} games to estimate the probability 
-            of meeting your mana requirements. The success rate of {result.successRate.toFixed(1)}% means that 
+            This Monte Carlo simulation ran {result.iterations.toLocaleString()} games to estimate the probability
+            of meeting your mana requirements. The success rate of {result.successRate.toFixed(1)}% means that
             in a typical game, you have about a {Math.round(result.successRate)}% chance of having the mana you need.
           </Typography>
-          
+
           {result.successRate >= 90 && (
             <Alert severity="success" sx={{ mt: 1 }}>
               Excellent consistency! Your manabase reliably supports your strategy.
             </Alert>
           )}
-          
+
           {result.successRate >= 80 && result.successRate < 90 && (
             <Alert severity="info" sx={{ mt: 1 }}>
               Good consistency. Consider minor adjustments for competitive play.
             </Alert>
           )}
-          
+
           {result.successRate >= 70 && result.successRate < 80 && (
             <Alert severity="warning" sx={{ mt: 1 }}>
               Moderate consistency. Your manabase needs improvement for reliable performance.
             </Alert>
           )}
-          
+
           {result.successRate < 70 && (
             <Alert severity="error" sx={{ mt: 1 }}>
               Poor consistency. Significant manabase improvements needed.
@@ -338,4 +337,4 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
       </CardContent>
     </Card>
   )
-} 
+}

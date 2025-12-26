@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { DeckAnalyzer, AnalysisResult } from '../services/deckAnalyzer';
+import { useEffect, useState } from 'react';
+import { AnalysisResult, DeckAnalyzer } from '../services/deckAnalyzer';
 
 export interface DeckAnalysisState {
   deckList: string;
@@ -19,14 +19,14 @@ export const useDeckAnalysis = () => {
     const savedDeckList = localStorage.getItem('manatuner-decklist');
     const savedAnalysis = localStorage.getItem('manatuner-analysis');
     const savedMinimized = localStorage.getItem('manatuner-minimized');
-    
+
     if (savedDeckList) {
       setDeckList(savedDeckList);
     }
     if (savedAnalysis) {
       try {
         setAnalysisResult(JSON.parse(savedAnalysis));
-      } catch (e) {
+      } catch (_e) {
         console.warn('Failed to parse saved analysis');
       }
     }
@@ -34,12 +34,12 @@ export const useDeckAnalysis = () => {
       setIsDeckMinimized(savedMinimized === 'true');
     }
   }, []);
-  
+
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
     localStorage.setItem('manatuner-decklist', deckList);
   }, [deckList]);
-  
+
   useEffect(() => {
     if (analysisResult) {
       localStorage.setItem('manatuner-analysis', JSON.stringify(analysisResult));
@@ -47,7 +47,7 @@ export const useDeckAnalysis = () => {
       localStorage.removeItem('manatuner-analysis');
     }
   }, [analysisResult]);
-  
+
   useEffect(() => {
     localStorage.setItem('manatuner-minimized', isDeckMinimized.toString());
   }, [isDeckMinimized]);
@@ -58,7 +58,7 @@ export const useDeckAnalysis = () => {
     }
 
     setIsAnalyzing(true);
-    
+
     setTimeout(async () => {
       try {
         const result = await DeckAnalyzer.analyzeDeck(deckList);
@@ -88,4 +88,4 @@ export const useDeckAnalysis = () => {
     analyzeDeck,
     clearAnalysis
   };
-}; 
+};

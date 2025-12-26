@@ -1,6 +1,3 @@
-import { Link } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-
 /**
  * Utilitaires pour référencer la page Mathematics
  * À utiliser chaque fois qu'on mentionne des concepts mathématiques
@@ -15,30 +12,30 @@ export const createMathReference = (text: string, anchor?: string) => {
 
 export const MATH_REFERENCES = {
   hypergeometric: () => createMathReference(
-    'hypergeometric distribution', 
+    'hypergeometric distribution',
     'hypergeometric'
   ),
-  
+
   monteCarlo: () => createMathReference(
     'Monte Carlo simulation',
     'monte-carlo'
   ),
-  
+
   frankKarsten: () => createMathReference(
     'Frank Karsten 2022 standards',
     'frank-karsten'
   ),
-  
+
   binomial: () => createMathReference(
     'binomial coefficients',
     'implementation'
   ),
-  
+
   probability: () => createMathReference(
     'probability calculations',
     'mathematics'
   ),
-  
+
   landOptimization: () => createMathReference(
     'land count optimization',
     'practical'
@@ -50,11 +47,11 @@ export const MATH_REFERENCES = {
  */
 export const MATH_MESSAGES = {
   analysisComplete: "Analysis complete using Frank Karsten's mathematical models. 📐 [View the mathematics](/mathematics)",
-  
+
   probabilityBased: "Recommendations based on hypergeometric distribution calculations. 🔢 [Learn more](/mathematics)",
-  
+
   monteCarloBased: "Results validated through Monte Carlo simulation. 🎲 [See the science](/mathematics)",
-  
+
   optimizationNote: "Land counts optimized using proven statistical methods. ⚡ [Understanding the math](/mathematics)"
 };
 
@@ -63,4 +60,4 @@ export default {
   createMathReference,
   MATH_REFERENCES,
   MATH_MESSAGES
-}; 
+};

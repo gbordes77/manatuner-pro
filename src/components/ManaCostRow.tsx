@@ -26,7 +26,7 @@ interface ManaSymbolProps {
   symbol: string
 }
 
-const ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
+const _ManaSymbol: React.FC<ManaSymbolProps> = ({ symbol }) => {
   const getSymbolStyle = (sym: string) => {
     const baseStyle = {
       display: 'inline-flex',
