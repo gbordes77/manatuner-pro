@@ -517,7 +517,6 @@ const AnalyzerPage: React.FC = () => {
                     <ManaBlueprint
                       analysisResult={analysisResult}
                       deckName={`Deck ${new Date().toLocaleDateString()}`}
-                      format="Modern"
                     />
                   </TabPanel>
                 </div>

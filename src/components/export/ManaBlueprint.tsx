@@ -96,7 +96,7 @@ interface ManaBlueprintProps {
 export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
   analysisResult,
   deckName = "Unnamed Deck",
-  format = "Modern",
+  format,
 }) => {
   const blueprintRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -104,6 +104,13 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
 
   const stabilityScore = calculateStabilityScore(analysisResult);
   const stability = getStabilityLevel(stabilityScore);
+
+  // Auto-detect format based on deck size
+  const detectedFormat = format || (
+    analysisResult.totalCards <= 45 ? "Limited" :
+    analysisResult.totalCards >= 99 ? "Commander" :
+    "Constructed"
+  );
 
   // Get active colors from the deck
   const activeColors = (Object.keys(analysisResult.colorDistribution) as ManaColor[])
@@ -196,7 +203,7 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
     handleClose();
     const data = {
       deckName,
-      format,
+      format: detectedFormat,
       generatedAt: new Date().toISOString(),
       stabilityScore,
       analysis: analysisResult,
@@ -296,7 +303,7 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
               </Typography>
               <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                 <Chip
-                  label={format}
+                  label={detectedFormat}
                   size="small"
                   sx={{
                     bgcolor: BLUEPRINT_COLORS.cyanLight,

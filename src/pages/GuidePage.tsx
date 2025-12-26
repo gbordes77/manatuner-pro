@@ -542,6 +542,7 @@ export const GuidePage: React.FC = () => {
 
         <Grid container spacing={2}>
           {[
+            { name: "Limited", lands: "16-18", tips: ["40-card deck", "17 lands is default"], color: "#4caf50" },
             { name: "Standard", lands: "24-26", tips: ["Minimize taplands", "Curve peaks T3-T4"], color: "#2196f3" },
             { name: "Pioneer", lands: "22-25", tips: ["Shocks + checks", "Fast mana matters"], color: "#9c27b0" },
             { name: "Modern", lands: "19-23", tips: ["Fetches essential", "T1-T3 critical"], color: "#f44336" },
