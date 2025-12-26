@@ -3,13 +3,14 @@ import {
     Error as ErrorIcon,
     FlashOn as FlashOnIcon,
     HelpOutline as HelpOutlineIcon,
-    Shield as ShieldIcon,
+    Science as ScienceIcon,
     Speed as SpeedIcon,
     Timer as TimerIcon,
     TrendingUp as TrendingUpIcon,
     Warning as WarningIcon
 } from '@mui/icons-material';
 import {
+    Alert,
     Avatar,
     Box,
     Card,
@@ -129,14 +130,6 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
     fill: getCategoryColor(category)
   }));
 
-  // Prepare efficiency vs total chart data
-  const _efficiencyData = spellData.map(spell => ({
-    name: spell.name,
-    efficiency: spell.efficiency,
-    total: spell.total,
-    percentage: spell.percentage
-  }));
-
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -160,7 +153,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                 Tempo Impact: {data.tempoImpact > 0 ? '-' : '+'}{Math.abs(data.tempoImpact)}%
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-                ⚡ Aggro: {data.scenarios.aggressive}% | 🛡️ Control: {data.scenarios.conservative}%
+                Aggro: {data.scenarios.aggressive}% | Control: {data.scenarios.conservative}%
               </Typography>
             </>
           )}
@@ -180,85 +173,57 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
 
   return (
     <Box className="animate-fadeIn">
-      {/* Tempo Analysis Header */}
-      {hasTempoData && (
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <TimerIcon color="primary" />
-          <Typography variant="subtitle1" fontWeight="600" sx={{ display: 'flex', alignItems: 'center' }}>
-            Tempo-Aware Analysis
-            <Tooltip title="Tempo loss occurs when lands enter the battlefield tapped, delaying your ability to cast spells. This analysis factors in ETB (Enter The Battlefield) tapped lands to give you a more realistic view of when you can actually cast your spells." arrow>
-              <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
-                <HelpOutlineIcon fontSize="small" sx={{ fontSize: 16, opacity: 0.7 }} />
-              </IconButton>
-            </Tooltip>
-          </Typography>
-          <Chip
-            label="ETB Considered"
-            size="small"
-            color="primary"
-            icon={<FlashOnIcon />}
-          />
-        </Box>
-      )}
+      {/* Performance Insights - FIRST (reliable) */}
+      <Paper className="mtg-card" sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
+          Performance Insights
+        </Typography>
 
-      {/* Overview Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h4" fontWeight="700" color="var(--mtg-blue)">
-              {spellData.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Total Spells
-            </Typography>
-          </Paper>
-        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <Box textAlign="center" p={2}>
+              <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--mtg-green)', mb: 1 }} />
+              <Typography variant="h6" fontWeight="600">
+                Strong Spells
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {spellData.filter(s => s.percentage >= 80).length} spells with 80%+ castability
+              </Typography>
+            </Box>
+          </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h4" fontWeight="700" color="var(--mtg-green)">
-              {Math.round(averagePercentage)}%
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              Avg Tempo Castability
-              <Tooltip title="Castability measures how likely you are to have the right mana to cast a spell on curve. Tempo castability also accounts for lands that enter tapped, which can delay your plays." arrow>
-                <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
-                  <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
-                </IconButton>
-              </Tooltip>
-            </Typography>
-          </Paper>
-        </Grid>
+          <Grid item xs={12} md={4}>
+            <Box textAlign="center" p={2}>
+              <WarningIcon sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
+              <Typography variant="h6" fontWeight="600">
+                Risky Spells
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {spellData.filter(s => s.percentage < 70 && s.percentage >= 60).length} spells need mana fixing
+              </Typography>
+            </Box>
+          </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h4" fontWeight="700" color="var(--mtg-gold)">
-              {categoryDistribution['Excellent'] || 0}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Excellent Spells
-            </Typography>
-          </Paper>
+          <Grid item xs={12} md={4}>
+            <Box textAlign="center" p={2}>
+              <ErrorIcon sx={{ fontSize: 48, color: 'var(--mtg-red)', mb: 1 }} />
+              <Typography variant="h6" fontWeight="600">
+                Critical Issues
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {spellData.filter(s => s.percentage < 60).length} spells with severe mana problems
+              </Typography>
+            </Box>
+          </Grid>
         </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
-              {(categoryDistribution['Critical'] || 0) + (categoryDistribution['Weak'] || 0)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Problem Spells
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      </Paper>
 
       <Grid container spacing={3}>
         {/* Spell Castability Chart */}
         <Grid item xs={12} lg={8}>
           <Paper className="mtg-card" sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
-              📊 Spell Castability Analysis
+              Spell Castability Analysis
             </Typography>
             <ResponsiveContainer width="100%" height="85%">
               <BarChart data={spellData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
@@ -294,7 +259,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
         <Grid item xs={12} lg={4}>
           <Paper className="mtg-card" sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
-              🎯 Category Distribution
+              Category Distribution
             </Typography>
             <ResponsiveContainer width="100%" height="70%">
               <PieChart>
@@ -314,7 +279,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                   ))}
                 </Pie>
                 <RechartsTooltip
-                  formatter={(value, name, props) => [
+                  formatter={(value, _name, props) => [
                     `${value} spells (${props.payload.percentage}%)`,
                     props.payload.category
                   ]}
@@ -345,7 +310,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
         <Grid item xs={12}>
           <Paper className="mtg-card" sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
-              📋 Detailed Spell Analysis
+              Detailed Spell Analysis
             </Typography>
 
             <Grid container spacing={2}>
@@ -402,23 +367,6 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                             fontSize: '0.7rem'
                           }}
                         />
-                        {/* Tempo Impact Badge */}
-                        {hasTempoData && spell.tempoImpact !== 0 && (
-                          <Tooltip title={`Tempo impact: ${spell.tempoImpact > 0 ? '-' : '+'}${Math.abs(spell.tempoImpact)}%`}>
-                            <Chip
-                              label={`${spell.tempoImpact > 0 ? '-' : '+'}${Math.abs(spell.tempoImpact)}%`}
-                              size="small"
-                              icon={<TimerIcon sx={{ fontSize: '0.9rem !important' }} />}
-                              sx={{
-                                backgroundColor: spell.tempoImpact > 5 ? 'var(--mtg-red)' : spell.tempoImpact > 0 ? '#ff9800' : 'var(--mtg-green)',
-                                color: 'white',
-                                fontSize: '0.65rem',
-                                height: 20,
-                                '& .MuiChip-icon': { color: 'white' }
-                              }}
-                            />
-                          </Tooltip>
-                        )}
                       </Box>
 
                       <Typography variant="body2" color="text.secondary" mb={1}>
@@ -443,32 +391,8 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                         color="text.secondary"
                         sx={{ mt: 0.5, display: 'block' }}
                       >
-                        {spell.percentage}% tempo castability
+                        {spell.percentage}% castability
                       </Typography>
-
-                      {/* Scenario comparison */}
-                      {hasTempoData && (
-                        <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                          <Tooltip title="Aggressive: Pay life, play fast">
-                            <Chip
-                              icon={<FlashOnIcon sx={{ fontSize: '0.8rem !important' }} />}
-                              label={`${spell.scenarios.aggressive}%`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontSize: '0.6rem', height: 18 }}
-                            />
-                          </Tooltip>
-                          <Tooltip title="Conservative: Preserve life total">
-                            <Chip
-                              icon={<ShieldIcon sx={{ fontSize: '0.8rem !important' }} />}
-                              label={`${spell.scenarios.conservative}%`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontSize: '0.6rem', height: 18 }}
-                            />
-                          </Tooltip>
-                        </Box>
-                      )}
                     </CardContent>
                   </Card>
                 </Grid>
@@ -477,52 +401,137 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
           </Paper>
         </Grid>
 
-        {/* Performance Insights */}
-        <Grid item xs={12}>
-          <Paper className="mtg-card" sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
-              💡 Performance Insights
-            </Typography>
+        {/* Tempo-Aware Analysis - LAST (experimental) */}
+        {hasTempoData && (
+          <Grid item xs={12}>
+            <Paper className="mtg-card" sx={{ p: 3, border: '1px dashed', borderColor: 'warning.main' }}>
+              {/* BETA Warning Header */}
+              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <ScienceIcon color="warning" />
+                <Typography variant="h6" fontWeight="600" color="warning.main" sx={{ display: 'flex', alignItems: 'center' }}>
+                  Tempo-Aware Analysis
+                  <Tooltip title="This analysis factors in ETB (Enter The Battlefield) tapped lands. It calculates the probability that your lands will be untapped when you need to cast spells." arrow>
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 16, opacity: 0.7 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Typography>
+                <Chip
+                  label="BETA"
+                  size="small"
+                  color="warning"
+                  icon={<ScienceIcon />}
+                />
+                <Chip
+                  label="ETB Considered"
+                  size="small"
+                  variant="outlined"
+                  color="warning"
+                  icon={<FlashOnIcon />}
+                />
+              </Box>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <Box textAlign="center" p={2}>
-                  <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--mtg-green)', mb: 1 }} />
-                  <Typography variant="h6" fontWeight="600">
-                    Strong Spells
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {spellData.filter(s => s.percentage >= 80).length} spells with 80%+ castability
-                  </Typography>
-                </Box>
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                <Typography variant="body2">
+                  <strong>Experimental Feature:</strong> This tempo analysis is still being validated.
+                  The calculations consider ETB tapped lands but may not reflect all real-game scenarios.
+                  Use as a rough indicator, not as definitive data.
+                </Typography>
+              </Alert>
+
+              {/* Tempo Overview Cards */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
+                    <Typography variant="h4" fontWeight="700" color="var(--mtg-blue)">
+                      {spellData.length}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Spells
+                    </Typography>
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
+                    <Typography variant="h4" fontWeight="700" color="var(--mtg-green)">
+                      {Math.round(averagePercentage)}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      Avg Tempo Castability
+                      <Tooltip title="Average probability of casting spells on curve, accounting for ETB tapped lands." arrow>
+                        <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                          <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Typography>
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
+                    <Typography variant="h4" fontWeight="700" color="var(--mtg-gold)">
+                      {categoryDistribution['Excellent'] || 0}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Excellent Spells
+                    </Typography>
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'action.hover' }}>
+                    <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
+                      {(categoryDistribution['Critical'] || 0) + (categoryDistribution['Weak'] || 0)}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Problem Spells
+                    </Typography>
+                  </Paper>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Box textAlign="center" p={2}>
-                  <WarningIcon sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
-                  <Typography variant="h6" fontWeight="600">
-                    Risky Spells
+              {/* Tempo Impact Details */}
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="subtitle2" fontWeight="600" mb={2}>
+                  Spells with Tempo Impact
+                </Typography>
+                <Grid container spacing={1}>
+                  {spellData.filter(s => s.tempoImpact !== 0).slice(0, 8).map((spell, index) => (
+                    <Grid item xs={6} sm={4} md={3} key={index}>
+                      <Box sx={{
+                        p: 1.5,
+                        borderRadius: 1,
+                        bgcolor: 'action.hover',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}>
+                        <TimerIcon sx={{
+                          fontSize: 16,
+                          color: spell.tempoImpact > 5 ? 'var(--mtg-red)' : '#ff9800'
+                        }} />
+                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                          <Typography variant="caption" fontWeight="600" noWrap>
+                            {spell.name}
+                          </Typography>
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            -{spell.tempoImpact}% tempo loss
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+                {spellData.filter(s => s.tempoImpact !== 0).length === 0 && (
+                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                    No significant tempo impact detected - your manabase has good untapped land density.
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {spellData.filter(s => s.percentage < 70 && s.percentage >= 60).length} spells need mana fixing
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Box textAlign="center" p={2}>
-                  <ErrorIcon sx={{ fontSize: 48, color: 'var(--mtg-red)', mb: 1 }} />
-                  <Typography variant="h6" fontWeight="600">
-                    Critical Issues
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {spellData.filter(s => s.percentage < 60).length} spells with severe mana problems
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
