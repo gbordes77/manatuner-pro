@@ -473,14 +473,14 @@ export const HomePage: React.FC = () => {
           </Typography>
         </Box>
         <Button
-          onClick={() => navigate("/guide")}
+          onClick={() => navigate("/mathematics")}
           endIcon={<ArrowForwardIcon />}
           sx={{
             fontWeight: 600,
             color: "#7b1fa2",
           }}
         >
-          Read Guide
+          Learn the Math
         </Button>
       </Paper>
 
