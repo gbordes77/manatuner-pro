@@ -1,10 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
+import type { AnalysisResult } from "../services/deckAnalyzer";
+
+// Stored analysis result - serializable subset of AnalysisResult
+type StoredAnalysisResult = Omit<AnalysisResult, 'cards' | 'landMetadata'> & {
+  // Cards stored without functions (etbTapped removed during serialization)
+  cards?: Array<{
+    name: string;
+    quantity: number;
+    manaCost: string;
+    colors: string[];
+    isLand: boolean;
+    producedMana?: string[];
+    cmc: number;
+  }>;
+};
 
 interface SavedAnalysis {
   id: string;
   name: string | null;
   deck_list: string;
-  analysis_result: any;
+  analysis_result: StoredAnalysisResult;
   created_at: string;
   format: string | null;
 }
@@ -18,7 +33,7 @@ interface UseAnalysisStorageReturn {
   // Actions
   saveAnalysis: (
     deckList: string,
-    analysisResult: any,
+    analysisResult: StoredAnalysisResult,
     name?: string,
     format?: string,
   ) => Promise<SavedAnalysis | null>;
@@ -27,7 +42,7 @@ interface UseAnalysisStorageReturn {
   clearError: () => void;
 
   // Local storage
-  saveToLocal: (deckList: string, analysisResult: any, name?: string) => void;
+  saveToLocal: (deckList: string, analysisResult: StoredAnalysisResult, name?: string) => void;
   loadFromLocal: () => SavedAnalysis[];
 }
 
@@ -45,7 +60,7 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
 
   // Local storage helpers
   const saveToLocal = useCallback(
-    (deckList: string, analysisResult: any, name?: string) => {
+    (deckList: string, analysisResult: StoredAnalysisResult, name?: string) => {
       try {
         const existing = loadFromLocalInternal();
         const newAnalysis: SavedAnalysis = {
@@ -102,7 +117,7 @@ export const useAnalysisStorage = (): UseAnalysisStorageReturn => {
   const saveAnalysis = useCallback(
     async (
       deckList: string,
-      analysisResult: any,
+      analysisResult: StoredAnalysisResult,
       name?: string,
       format?: string,
     ): Promise<SavedAnalysis | null> => {

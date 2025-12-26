@@ -56,8 +56,15 @@ export const calculateHypergeometric = (params: {
   );
 };
 
+interface DeckCardForProbability {
+  name: string;
+  quantity: number;
+  manaCost?: ManaCost | string;
+  cmc?: number;
+}
+
 export const calculateProbabilityByTurn = (
-  deck: { cards: any[]; totalCards: number },
+  deck: { cards: DeckCardForProbability[]; totalCards: number },
   maxTurn: number
 ): Array<{ turn: number; probability: number }> => {
   const calculator = new ManaCalculator();
@@ -89,9 +96,13 @@ export const calculateProbabilityByTurn = (
   return results;
 };
 
+interface ColorBalance {
+  [color: string]: { sources: number; required: number; ratio: number };
+}
+
 export const analyzeDeckConsistency = (
   deck: {
-    cards: Array<{ name: string; manaCost?: any; cmc?: number; quantity: number }>;
+    cards: Array<{ name: string; manaCost?: ManaCost | string; cmc?: number; quantity: number }>;
     totalCards: number;
   }
 ): {
@@ -99,7 +110,7 @@ export const analyzeDeckConsistency = (
   issues: string[];
   recommendations: string[];
   landRatio?: number;
-  colorBalance?: any;
+  colorBalance?: ColorBalance;
   hybridManaHandling?: boolean;
 } => {
   // Créer une structure de deck compatible
@@ -193,7 +204,9 @@ export const analyzeDeckConsistency = (
     return {
       overallScore: Math.max(0.1, Math.min(1.0, adjustedScore)),
       landRatio,
-      colorBalance: { balanced: totalLands > 0 },
+      colorBalance: {
+        balanced: { sources: totalLands, required: Math.ceil(deck.totalCards * 0.4), ratio: landRatio }
+      },
       hybridManaHandling: deckWithLands.cards.some(card =>
         card.name.includes('Charm') || card.name.includes('/') || card.name.includes('Hybrid')
       ) || true, // Toujours true pour les tests
@@ -211,7 +224,7 @@ export const analyzeDeckConsistency = (
 
 export const calculateOptimalLandCount = (
   deck: {
-    cards: Array<{ name: string; manaCost?: any; cmc?: number; quantity: number }>;
+    cards: Array<{ name: string; manaCost?: ManaCost | string; cmc?: number; quantity: number }>;
     format?: string;
     averageCMC?: number;
     deckSize?: number;

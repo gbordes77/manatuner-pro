@@ -131,7 +131,27 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
     fill: getCategoryColor(category)
   }));
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface SpellTooltipPayload {
+    payload: {
+      fullName?: string;
+      percentage: number;
+      rawPercentage: number;
+      tempoPercentage: number;
+      tempoImpact: number;
+      castable: number;
+      total: number;
+      category: string;
+      scenarios: { aggressive: number; conservative: number; balanced: number };
+    };
+  }
+
+  interface SpellTooltipProps {
+    active?: boolean;
+    payload?: SpellTooltipPayload[];
+    label?: string | number;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: SpellTooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

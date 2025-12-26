@@ -1,6 +1,6 @@
 import { Box, CircularProgress } from "@mui/material";
 import React, { Suspense } from "react";
-import { AnalysisResult } from "../../services/deckAnalyzer";
+import { AnalysisResult, DeckCard } from "../../services/deckAnalyzer";
 
 // Lazy-load heavy Recharts component
 const EnhancedCharts = React.lazy(() => import("../EnhancedCharts"));

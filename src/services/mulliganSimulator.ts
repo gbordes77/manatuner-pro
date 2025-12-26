@@ -74,6 +74,7 @@ export interface MulliganAnalysisResult {
   }
   recommendations: string[]
   deckQuality: 'excellent' | 'good' | 'average' | 'poor'
+  iterations: number                 // Number of simulations run
 }
 
 // =============================================================================
@@ -96,17 +97,51 @@ export function prepareDeckForSimulation(cards: DeckCard[]): SimulatedCard[] {
 
   for (const card of cards) {
     for (let i = 0; i < card.quantity; i++) {
+      // Parse manaCost - it can be a string like "{2}{R}" or already an object
+      let parsedManaCost: { colorless: number; symbols: Record<string, number> }
+
+      if (typeof card.manaCost === 'string') {
+        parsedManaCost = parseManaCostString(card.manaCost)
+      } else if (card.manaCost && typeof card.manaCost === 'object') {
+        parsedManaCost = card.manaCost as { colorless: number; symbols: Record<string, number> }
+      } else {
+        parsedManaCost = { colorless: 0, symbols: {} }
+      }
+
       simulatedDeck.push({
         name: card.name,
         cmc: card.cmc,
         isLand: card.isLand,
-        manaCost: card.manaCost || { colorless: 0, symbols: {} },
+        manaCost: parsedManaCost,
         quantity: 1
       })
     }
   }
 
   return simulatedDeck
+}
+
+/**
+ * Parse a mana cost string like "{2}{R}{R}" into structured format
+ */
+function parseManaCostString(cost: string): { colorless: number; symbols: Record<string, number> } {
+  const result = { colorless: 0, symbols: {} as Record<string, number> }
+
+  if (!cost) return result
+
+  const matches = cost.match(/\{([^}]+)\}/g) || []
+
+  for (const match of matches) {
+    const symbol = match.slice(1, -1) // Remove { }
+
+    if (/^\d+$/.test(symbol)) {
+      result.colorless += parseInt(symbol, 10)
+    } else if (['W', 'U', 'B', 'R', 'G'].includes(symbol)) {
+      result.symbols[symbol] = (result.symbols[symbol] || 0) + 1
+    }
+  }
+
+  return result
 }
 
 /**
@@ -526,7 +561,8 @@ export function analyzeMulliganStrategy(
     },
     distributions,
     recommendations,
-    deckQuality
+    deckQuality,
+    iterations
   }
 }
 
@@ -552,26 +588,33 @@ export function evaluateHand(
   recommendation: 'KEEP' | 'MULLIGAN'
   reasoning: string
 } {
+  // Helper to convert DeckCard manaCost to SimulatedCard manaCost
+  const convertManaCost = (manaCost: string | undefined): { colorless: number; symbols: Record<string, number> } => {
+    if (!manaCost) return { colorless: 0, symbols: {} }
+    if (typeof manaCost === 'string') return parseManaCostString(manaCost)
+    return { colorless: 0, symbols: {} }
+  }
+
   const simulatedHand: SimulatedHand = {
     cards: hand.map(c => ({
       name: c.name,
       cmc: c.cmc,
       isLand: c.isLand,
-      manaCost: c.manaCost || { colorless: 0, symbols: {} },
+      manaCost: convertManaCost(c.manaCost),
       quantity: 1
     })),
     lands: hand.filter(c => c.isLand).map(c => ({
       name: c.name,
       cmc: c.cmc,
       isLand: true,
-      manaCost: c.manaCost || { colorless: 0, symbols: {} },
+      manaCost: convertManaCost(c.manaCost),
       quantity: 1
     })),
     spells: hand.filter(c => !c.isLand).map(c => ({
       name: c.name,
       cmc: c.cmc,
       isLand: false,
-      manaCost: c.manaCost || { colorless: 0, symbols: {} },
+      manaCost: convertManaCost(c.manaCost),
       quantity: 1
     })),
     landCount: hand.filter(c => c.isLand).length,
@@ -582,7 +625,7 @@ export function evaluateHand(
     name: c.name,
     cmc: c.cmc,
     isLand: c.isLand,
-    manaCost: c.manaCost || { colorless: 0, symbols: {} },
+    manaCost: convertManaCost(c.manaCost),
     quantity: 1
   }))
 

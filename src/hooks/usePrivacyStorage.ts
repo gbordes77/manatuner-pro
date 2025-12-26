@@ -1,6 +1,15 @@
 import { useCallback, useState } from "react";
 import { AnalysisRecord, PrivacyStorage } from "../lib/privacy";
 
+// Generic analysis result type for storage
+interface StorableAnalysisResult {
+  totalCards: number;
+  totalLands: number;
+  consistency?: number;
+  rating?: string;
+  [key: string]: unknown;
+}
+
 interface SavedAnalysis {
   shareId: string;
   name: string;
@@ -11,12 +20,12 @@ interface UsePrivacyStorageReturn {
   // Analysis management
   saveAnalysis: (
     deckList: string,
-    analysisResult: any,
+    analysisResult: StorableAnalysisResult,
     options?: { name?: string },
   ) => Promise<{ shareId: string; success: boolean }>;
 
   getAnalysis: (shareId: string) => Promise<{
-    analysisResult: any;
+    analysisResult: StorableAnalysisResult;
     deckList: string | null;
     name: string | null;
     createdAt: string;
@@ -41,7 +50,7 @@ export const usePrivacyStorage = (): UsePrivacyStorageReturn => {
   const saveAnalysis = useCallback(
     async (
       deckList: string,
-      analysisResult: any,
+      analysisResult: StorableAnalysisResult,
       options: { name?: string } = {},
     ) => {
       setIsLoading(true);

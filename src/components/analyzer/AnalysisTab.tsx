@@ -5,7 +5,7 @@ import {
 } from "@mui/icons-material";
 import { Box, CircularProgress, Tab, Tabs } from "@mui/material";
 import React, { Suspense, useState } from "react";
-import { AnalysisResult } from "../../services/deckAnalyzer";
+import { AnalysisResult, DeckCard } from "../../services/deckAnalyzer";
 import EnhancedRecommendations from "../EnhancedRecommendations";
 
 // Lazy-load heavy Recharts components to reduce initial bundle size

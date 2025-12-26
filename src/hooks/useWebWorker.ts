@@ -8,11 +8,10 @@ interface WorkerMessage<T = unknown> {
   error?: { message: string }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface WorkerRequest {
+interface WorkerRequest<T = unknown> {
   type: string
   data: unknown
-  resolve: (value: any) => void
+  resolve: (value: T) => void
   reject: (error: Error) => void
 }
 
@@ -64,7 +63,7 @@ interface BatchAnalysisResult {
 
 export function useWebWorker(workerPath: string) {
   const workerRef = useRef<Worker | null>(null)
-  const pendingRequests = useRef<Map<string, WorkerRequest>>(new Map())
+  const pendingRequests = useRef<Map<string, WorkerRequest<unknown>>>(new Map())
   const [isReady, setIsReady] = useState(false)
   const [isSupported, setIsSupported] = useState(false)
 
@@ -144,7 +143,7 @@ export function useWebWorker(workerPath: string) {
       pendingRequests.current.set(id, {
         type,
         data,
-        resolve,
+        resolve: resolve as (value: unknown) => void,
         reject
       })
 

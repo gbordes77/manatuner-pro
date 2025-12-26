@@ -260,9 +260,23 @@ export const useManaCalculationsWithWorker = ({
   };
 };
 
+// ManaCost type for card analysis
+interface CardManaCost {
+  colorless?: number;
+  symbols?: Record<string, number>;
+}
+
+// Result type for probability calculation
+interface ColorProbabilityResult {
+  probability: number;
+  meetsThreshold: boolean;
+  sourcesNeeded: number;
+  sourcesAvailable: number;
+}
+
 // 🎯 Hook for Single Card Analysis (Ultra Fast)
 export const useQuickCardAnalysis = (
-  card: { name: string; manaCost: any; cmc: number },
+  card: { name: string; manaCost: CardManaCost | null; cmc: number },
   sources: Record<string, number>,
   deckSize: number = 60,
 ) => {
@@ -271,7 +285,7 @@ export const useQuickCardAnalysis = (
 
     if (!card.manaCost?.symbols) return null;
 
-    const results: Record<string, any> = {};
+    const results: Record<string, ColorProbabilityResult> = {};
 
     Object.entries(card.manaCost.symbols).forEach(([color, count]) => {
       const symbolCount = Number(count);

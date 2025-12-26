@@ -95,15 +95,29 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
     ];
   };
 
+  // Recharts tooltip types
+  interface TooltipPayloadEntry {
+    color: string;
+    name: string;
+    value: number;
+    payload?: Record<string, unknown>;
+  }
+
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayloadEntry[];
+    label?: string | number;
+  }
+
   // Custom tooltip components
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <Paper className="mtg-card" sx={{ p: 2, maxWidth: 250 }}>
           <Typography variant="subtitle2" fontWeight="600" mb={1}>
             {label}
           </Typography>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry: TooltipPayloadEntry, index: number) => (
             <Box key={index} display="flex" alignItems="center" gap={1}>
               <Box
                 sx={{
@@ -125,7 +139,20 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
     return null;
   };
 
-  const CustomPieTooltip = ({ active, payload }: any) => {
+  interface PiePayloadEntry {
+    payload: {
+      color: string;
+      count: number;
+      percentage: number;
+    };
+  }
+
+  interface CustomPieTooltipProps {
+    active?: boolean;
+    payload?: PiePayloadEntry[];
+  }
+
+  const CustomPieTooltip = ({ active, payload }: CustomPieTooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -216,9 +243,9 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                 <Legend
                   verticalAlign="bottom"
                   height={36}
-                  formatter={(value, entry: any) => (
+                  formatter={(value, entry) => (
                     <span style={{ color: entry.color, fontWeight: 600 }}>
-                      {value} ({entry.payload.percentage}%)
+                      {value} ({(entry.payload as { percentage?: number })?.percentage ?? 0}%)
                     </span>
                   )}
                 />
