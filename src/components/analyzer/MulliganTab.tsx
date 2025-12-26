@@ -713,7 +713,7 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
 // MAIN COMPONENT
 // =============================================================================
 
-export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile = false }) => {
+export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile: _isMobile = false }) => {
   const [archetype, setArchetype] = useState<Archetype>('midrange')
   const [result, setResult] = useState<AdvancedMulliganResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)

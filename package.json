@@ -104,17 +104,30 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/project-manabase/manabase-analyzer.git"
+    "url": "https://github.com/gbordes77/manatuner-pro.git"
+  },
+  "homepage": "https://manatuner-pro.vercel.app",
+  "bugs": {
+    "url": "https://github.com/gbordes77/manatuner-pro/issues"
   },
   "keywords": [
     "mtg",
-    "magic",
+    "magic-the-gathering",
     "manabase",
-    "analysis",
+    "deck-analysis",
     "probability",
-    "deck"
+    "hypergeometric",
+    "monte-carlo",
+    "frank-karsten",
+    "mulligan",
+    "deckbuilding",
+    "react",
+    "typescript"
   ],
-  "author": "ManaTuner Pro Team",
+  "author": {
+    "name": "Guillaume Bordes",
+    "url": "https://github.com/gbordes77"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",

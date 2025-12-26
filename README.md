@@ -3,7 +3,7 @@
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://manatuner-pro.vercel.app)
 [![React](https://img.shields.io/badge/React-18.2.0-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9.3-blue)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/Tests-9%2F9%20Passing-green)](https://github.com/gbordes77/manatuner-pro)
+[![Tests](https://img.shields.io/badge/Tests-86%2F88%20Passing-green)](https://github.com/gbordes77/manatuner-pro)
 
 **🔗 Live Application**: [https://manatuner-pro.vercel.app](https://manatuner-pro.vercel.app) ✅ **LIVE**
 
@@ -48,7 +48,7 @@ npm install
 
 # Start development server
 npm run dev
-# → Open http://localhost:3000
+# → Open http://localhost:5173
 
 # Run tests (validates Frank Karsten math)
 npm run test:unit
@@ -321,7 +321,7 @@ cd manatuner-pro
 npm install
 
 # 3. Verify everything works
-npm run dev      # → http://localhost:3000
+npm run dev      # → http://localhost:5173
 npm run test     # → 9/9 tests should pass
 npm run build    # → Should complete without errors
 
@@ -330,7 +330,7 @@ npm run build    # → Should complete without errors
 ```
 
 ### Validation Checklist
-- ✅ **Local**: App loads on http://localhost:3000
+- ✅ **Local**: App loads on http://localhost:5173
 - ✅ **Analyzer**: Can analyze a test deck
 - ✅ **Math**: Tests pass (validates Frank Karsten formulas)
 - ✅ **Build**: Production build completes
@@ -364,4 +364,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **🎉 Ready to optimize your manabase with mathematical precision? [Start analyzing now!](https://manatuner-pro.vercel.app)**
 
-// Trigger redeploy: 2025-06-28 
+// Trigger redeploy: 2025-06-28

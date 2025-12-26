@@ -83,7 +83,7 @@ export interface MulliganAnalysisResult {
 
 const SIMULATION_ITERATIONS = 10000
 const MAX_TURNS = 4
-const HAND_SIZES = [4, 5, 6, 7]
+// Hand sizes for reference: 4, 5, 6, 7 cards after mulligans
 
 // =============================================================================
 // DECK PREPARATION
