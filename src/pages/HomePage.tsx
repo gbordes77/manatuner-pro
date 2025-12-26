@@ -56,11 +56,18 @@ export const HomePage: React.FC = () => {
     },
   ];
 
-  // Les fondations mathématiques avec couleurs
+  // Les fondations mathématiques avec couleurs - Karsten en premier
   const mathFoundations = [
     {
+      title: "Karsten Tables",
+      desc: "Mana source requirements",
+      formula: "90%",
+      color: "#e8f5e9",
+      borderColor: "#4caf50",
+    },
+    {
       title: "Hypergeometric",
-      desc: "Exact probability, not approximations",
+      desc: "Exact probability calculation",
       formula: "P(X≥k)",
       color: "#e3f2fd",
       borderColor: "#1976d2",
@@ -79,20 +86,13 @@ export const HomePage: React.FC = () => {
       color: "#fff3e0",
       borderColor: "#ff9800",
     },
-    {
-      title: "Karsten Tables",
-      desc: "Pro-level requirements",
-      formula: "90%",
-      color: "#e8f5e9",
-      borderColor: "#4caf50",
-    },
   ];
 
   return (
     <Container maxWidth="lg">
       {/* Hero Section */}
       <AnimatedContainer animation="fadeInUp">
-        <Box sx={{ textAlign: "center", py: 4 }}>
+        <Box sx={{ textAlign: "center", py: 3 }}>
           <Typography
             variant="h2"
             component="h1"
@@ -116,7 +116,7 @@ export const HomePage: React.FC = () => {
             sx={{
               maxWidth: 650,
               mx: "auto",
-              mb: 3,
+              mb: 2,
               fontWeight: 400,
               lineHeight: 1.6,
             }}
@@ -131,7 +131,7 @@ export const HomePage: React.FC = () => {
               display: "flex",
               gap: 1,
               justifyContent: "center",
-              mb: 4,
+              mb: 2.5,
               flexWrap: "wrap",
             }}
           >
@@ -230,8 +230,8 @@ export const HomePage: React.FC = () => {
       </AnimatedContainer>
 
       {/* Math Foundations - Design sexy */}
-      <Box sx={{ my: 5 }}>
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+      <Box sx={{ my: 3 }}>
+        <Box sx={{ textAlign: "center", mb: 2.5 }}>
           <Typography
             variant="overline"
             sx={{
@@ -273,6 +273,10 @@ export const HomePage: React.FC = () => {
                     border: "2px solid",
                     borderColor: foundation.borderColor,
                     height: "100%",
+                    minHeight: 140,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
                     transition: "all 0.3s ease",
                     "&:hover": {
                       transform: "translateY(-4px)",
@@ -281,23 +285,27 @@ export const HomePage: React.FC = () => {
                   }}
                 >
                   <Typography
-                    variant="h3"
+                    variant="h5"
                     fontWeight={800}
+                    sx={{
+                      color: foundation.borderColor,
+                      lineHeight: 1,
+                      mb: 0.5,
+                    }}
+                  >
+                    {foundation.title}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    fontWeight={600}
                     sx={{
                       fontFamily: "monospace",
                       color: foundation.borderColor,
-                      lineHeight: 1,
-                      mb: 1.5,
+                      opacity: 0.8,
+                      mb: 1,
                     }}
                   >
                     {foundation.formula}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={700}
-                    sx={{ color: foundation.borderColor }}
-                  >
-                    {foundation.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                     {foundation.desc}
@@ -310,11 +318,11 @@ export const HomePage: React.FC = () => {
       </Box>
 
       {/* Features Grid - Cards colorées */}
-      <Box sx={{ my: 5 }}>
+      <Box sx={{ my: 3 }}>
         <Typography
           variant="h4"
           fontWeight={700}
-          sx={{ mb: 4, textAlign: "center" }}
+          sx={{ mb: 2.5, textAlign: "center" }}
         >
           What You Get
         </Typography>
@@ -336,7 +344,7 @@ export const HomePage: React.FC = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ textAlign: "center", py: 4 }}>
+                  <CardContent sx={{ textAlign: "center", py: 3 }}>
                     <Box
                       sx={{
                         width: 72,
@@ -389,22 +397,22 @@ export const HomePage: React.FC = () => {
       {/* How It Works - Style moderne */}
       <Card
         sx={{
-          my: 5,
+          my: 3,
           borderRadius: 4,
           background: "linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)",
           border: "1px solid",
           borderColor: "divider",
         }}
       >
-        <CardContent sx={{ py: 5, px: 4 }}>
+        <CardContent sx={{ py: 3, px: 4 }}>
           <Typography
             variant="h4"
             fontWeight={700}
-            sx={{ mb: 4, textAlign: "center" }}
+            sx={{ mb: 2.5, textAlign: "center" }}
           >
             How It Works
           </Typography>
-          <Grid container spacing={4} alignItems="center">
+          <Grid container spacing={3} alignItems="center">
             {[
               { num: "1", title: "Paste Your Deck", desc: "MTGO, MTGA, Moxfield or any format" },
               { num: "2", title: "Get Probabilities", desc: "Cast chances for every spell, every turn" },
@@ -449,9 +457,9 @@ export const HomePage: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          px: 4,
-          py: 2.5,
-          mb: 3,
+          px: 3,
+          py: 2,
+          mb: 2,
           borderRadius: 3,
           background: "linear-gradient(135deg, #f3e5f5 0%, #e8eaf6 100%)",
           flexWrap: "wrap",
@@ -481,8 +489,8 @@ export const HomePage: React.FC = () => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          gap: 4,
-          py: 2,
+          gap: 3,
+          py: 1.5,
           flexWrap: "wrap",
         }}
       >
@@ -500,9 +508,9 @@ export const HomePage: React.FC = () => {
       {/* Final CTA */}
       <Paper
         sx={{
-          p: 4,
-          mt: 3,
-          mb: 4,
+          p: 3,
+          mt: 2,
+          mb: 3,
           borderRadius: 4,
           background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #9c27b0 100%)",
           color: "white",
@@ -510,7 +518,7 @@ export const HomePage: React.FC = () => {
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 3,
+          gap: 2,
           boxShadow: "0 16px 48px rgba(25, 118, 210, 0.3)",
         }}
       >
