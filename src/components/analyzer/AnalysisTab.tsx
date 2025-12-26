@@ -3,12 +3,21 @@ import {
     Bolt as BoltIcon,
     Lightbulb as LightbulbIcon,
 } from "@mui/icons-material";
-import { Box, Tab, Tabs } from "@mui/material";
-import React, { useState } from "react";
+import { Box, CircularProgress, Tab, Tabs } from "@mui/material";
+import React, { Suspense, useState } from "react";
 import { AnalysisResult } from "../../services/deckAnalyzer";
-import EnhancedCharts from "../EnhancedCharts";
 import EnhancedRecommendations from "../EnhancedRecommendations";
-import EnhancedSpellAnalysis from "../EnhancedSpellAnalysis";
+
+// Lazy-load heavy Recharts components to reduce initial bundle size
+const EnhancedCharts = React.lazy(() => import("../EnhancedCharts"));
+const EnhancedSpellAnalysis = React.lazy(() => import("../EnhancedSpellAnalysis"));
+
+// Loading fallback for lazy components
+const ChartLoader = () => (
+  <Box display="flex" justifyContent="center" alignItems="center" minHeight={300}>
+    <CircularProgress size={40} />
+  </Box>
+);
 
 interface AnalysisTabProps {
   analysisResult: AnalysisResult;
@@ -46,17 +55,20 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = ({
 
       {/* Spells & Tempo */}
       {subTab === 0 && (
-        <EnhancedSpellAnalysis
-          spellAnalysis={analysisResult.spellAnalysis}
-          tempoSpellAnalysis={analysisResult.tempoSpellAnalysis}
-          tempoImpactByColor={analysisResult.tempoImpactByColor}
-        />
+        <Suspense fallback={<ChartLoader />}>
+          <EnhancedSpellAnalysis
+            spellAnalysis={analysisResult.spellAnalysis}
+            tempoSpellAnalysis={analysisResult.tempoSpellAnalysis}
+            tempoImpactByColor={analysisResult.tempoImpactByColor}
+          />
+        </Suspense>
       )}
 
       {/* Probabilities */}
       {subTab === 1 && (
-        <EnhancedCharts
-          analysis={{
+        <Suspense fallback={<ChartLoader />}>
+          <EnhancedCharts
+            analysis={{
             id: "current-analysis",
             deckId: "current-deck",
             format: "modern",
@@ -101,8 +113,9 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = ({
             },
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-          }}
-        />
+            }}
+          />
+        </Suspense>
       )}
 
       {/* All Recommendations */}

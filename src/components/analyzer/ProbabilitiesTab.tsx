@@ -1,6 +1,15 @@
-import React from "react";
+import { Box, CircularProgress } from "@mui/material";
+import React, { Suspense } from "react";
 import { AnalysisResult } from "../../services/deckAnalyzer";
-import EnhancedCharts from "../EnhancedCharts";
+
+// Lazy-load heavy Recharts component
+const EnhancedCharts = React.lazy(() => import("../EnhancedCharts"));
+
+const ChartLoader = () => (
+  <Box display="flex" justifyContent="center" alignItems="center" minHeight={300}>
+    <CircularProgress size={40} />
+  </Box>
+);
 
 interface ProbabilitiesTabProps {
   analysisResult: AnalysisResult;
@@ -10,7 +19,8 @@ export const ProbabilitiesTab: React.FC<ProbabilitiesTabProps> = ({
   analysisResult,
 }) => {
   return (
-    <EnhancedCharts
+    <Suspense fallback={<ChartLoader />}>
+      <EnhancedCharts
       analysis={{
         id: "current-analysis",
         deckId: "current-deck",
@@ -65,5 +75,6 @@ export const ProbabilitiesTab: React.FC<ProbabilitiesTabProps> = ({
         updatedAt: new Date().toISOString(),
       }}
     />
+    </Suspense>
   );
 };
