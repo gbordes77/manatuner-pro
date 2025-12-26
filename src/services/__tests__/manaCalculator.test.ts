@@ -213,13 +213,7 @@ describe("ManaCalculator", () => {
   describe("Frank Karsten methodology compliance", () => {
     it("should follow Karsten research for colored mana requirements", () => {
       // Test based on Frank Karsten's "How Many Colored Mana Sources Do You Need to Consistently Cast Your Spells?"
-      const _deck = {
-        cards: [
-          { name: "Lightning Bolt", quantity: 4, manaCost: "{R}" },
-          { name: "Shock", quantity: 4, manaCost: "{R}" },
-        ],
-        redSources: 14, // 14 red sources in 60 card deck
-      };
+      // Example deck: 4x Lightning Bolt, 4x Shock with 14 red sources in 60 card deck
 
       // According to Karsten: 14 red sources gives ~90% chance for R on turn 1
       const turn1RedProbability = calculateHypergeometric({

@@ -73,8 +73,6 @@ const ensureRateLimit = async (): Promise<void> => {
  * Convertit une carte Scryfall en format interne
  */
 const convertScryfallCard = (scryfallCard: ScryfallCard): Card => {
-  const _isLand = scryfallCard.type_line.toLowerCase().includes('land')
-
   return {
     id: scryfallCard.id,
     name: scryfallCard.name,
@@ -143,7 +141,7 @@ export const searchCardByName = async (name: string): Promise<Card | null> => {
 
       console.log(`✅ Trouvé: "${variant}" → ${card.name}`)
       return card
-    } catch (_error) {
+    } catch {
       console.log(`❌ Échec: "${variant}"`)
       continue
     }

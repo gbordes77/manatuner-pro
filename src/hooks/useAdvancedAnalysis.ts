@@ -36,7 +36,7 @@ export const useAdvancedAnalysis = (options: AdvancedAnalysisOptions = {}) => {
     metrics: null
   })
 
-  const { enableMonteCarlo = true, enableMultivariate = true, cacheResults: _cacheResults = true } = options
+  const { enableMonteCarlo = true, enableMultivariate = true } = options
 
   /**
    * Analyze mana requirements using Frank Karsten methodology

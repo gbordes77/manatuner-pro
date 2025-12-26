@@ -29,13 +29,16 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
+import type { DeckCard } from '../services/deckAnalyzer';
 import { DeckAnalysis } from '../types';
+import { MulliganDecisionChart } from './MulliganDecisionChart';
 
 interface EnhancedChartsProps {
   analysis: DeckAnalysis;
+  cards?: DeckCard[];
 }
 
-const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
+const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
   // Theme available via CSS variables, no need for useTheme here
 
   // MTG Color Palette
@@ -89,22 +92,6 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
       { metric: 'Land Ratio', value: 68, max: 100 },
       { metric: 'Mana Efficiency', value: 78, max: 100 },
       { metric: 'Consistency', value: 75, max: 100 }
-    ];
-  };
-
-  // Prepare mulligan data from analysis
-  const prepareMulliganData = () => {
-    const mulligan = analysis.mulliganAnalysis;
-    if (!mulligan) {
-      // Fallback if no data available
-      return [];
-    }
-    return [
-      { scenario: 'Perfect Hand', keep: mulligan.perfectHand, mulligan: 100 - mulligan.perfectHand },
-      { scenario: 'Good Hand', keep: mulligan.goodHand, mulligan: 100 - mulligan.goodHand },
-      { scenario: 'Average Hand', keep: Math.round(mulligan.averageHand * 0.6), mulligan: Math.round(mulligan.averageHand * 0.4) + (100 - mulligan.averageHand) },
-      { scenario: 'Poor Hand', keep: Math.round(mulligan.poorHand * 0.2), mulligan: Math.round(mulligan.poorHand * 0.8) + (100 - mulligan.poorHand) },
-      { scenario: 'Terrible Hand', keep: 0, mulligan: 100 }
     ];
   };
 
@@ -308,66 +295,10 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis }) => {
           </Paper>
         </Grid>
 
-        {/* Mulligan Decision Chart - Based on hypergeometric probability */}
-        {analysis.mulliganAnalysis && (
+        {/* Advanced Mulligan Decision Chart - Monte Carlo + Dynamic Programming */}
+        {cards && cards.length > 0 && (
           <Grid item xs={12}>
-            <Paper className="mtg-card" sx={{ p: 3, height: 350 }}>
-              <Box display="flex" alignItems="center" mb={2}>
-                <Typography variant="h6" fontWeight="600" color="var(--mtg-blue-dark)">
-                  🔄 Opening Hand Quality Distribution
-                </Typography>
-                <MuiTooltip
-                  title={
-                    <Box sx={{ p: 1 }}>
-                      <Typography variant="subtitle2" fontWeight="600" mb={1}>Hand Quality Definitions:</Typography>
-                      <Typography variant="body2" mb={0.5}><strong>Perfect Hand:</strong> 2-4 lands AND at least one spell you can cast on turns 1-2</Typography>
-                      <Typography variant="body2" mb={0.5}><strong>Good Hand:</strong> 2-4 lands (ideal land count for most decks)</Typography>
-                      <Typography variant="body2" mb={0.5}><strong>Average Hand:</strong> 1 or 5 lands (keepable but risky)</Typography>
-                      <Typography variant="body2" mb={0.5}><strong>Poor Hand:</strong> 0 or 6 lands (usually should mulligan)</Typography>
-                      <Typography variant="body2"><strong>Terrible Hand:</strong> 0 lands with no early plays, or 7 lands</Typography>
-                      <Typography variant="caption" display="block" mt={1} sx={{ opacity: 0.8 }}>
-                        Based on hypergeometric probability distribution
-                      </Typography>
-                    </Box>
-                  }
-                  arrow
-                  placement="right"
-                >
-                  <IconButton size="small" sx={{ ml: 1 }}>
-                    <HelpOutlineIcon fontSize="small" />
-                  </IconButton>
-                </MuiTooltip>
-              </Box>
-              <ResponsiveContainer width="100%" height="85%">
-                <BarChart data={prepareMulliganData()} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={12} tickFormatter={(v) => `${v}%`} />
-                  <YAxis
-                    type="category"
-                    dataKey="scenario"
-                    stroke="#64748b"
-                    fontSize={11}
-                    width={90}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar
-                    dataKey="keep"
-                    stackId="decision"
-                    fill="var(--mtg-green)"
-                    name="Keep %"
-                    radius={[0, 4, 4, 0]}
-                  />
-                  <Bar
-                    dataKey="mulligan"
-                    stackId="decision"
-                    fill="var(--mtg-red)"
-                    name="Mulligan %"
-                    radius={[4, 0, 0, 4]}
-                  />
-                  <Legend />
-                </BarChart>
-              </ResponsiveContainer>
-            </Paper>
+            <MulliganDecisionChart cards={cards} />
           </Grid>
         )}
 

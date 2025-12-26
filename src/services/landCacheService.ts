@@ -370,7 +370,7 @@ class LandCacheService implements ILandCacheService {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify(storage))
       console.debug(`[LandCacheService] Emergency cleanup kept ${entries.length} entries`)
-    } catch (_e) {
+    } catch {
       // If still failing, just clear everything
       console.error('[LandCacheService] Emergency cleanup failed, clearing all')
       localStorage.removeItem(CACHE_KEY)

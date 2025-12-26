@@ -22,11 +22,13 @@ const ChartLoader = () => (
 interface AnalysisTabProps {
   analysisResult: AnalysisResult;
   isMobile: boolean;
+  cards?: DeckCard[];
 }
 
 export const AnalysisTab: React.FC<AnalysisTabProps> = ({
   analysisResult,
   isMobile,
+  cards,
 }) => {
   const [subTab, setSubTab] = useState(0);
 
@@ -68,6 +70,7 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = ({
       {subTab === 1 && (
         <Suspense fallback={<ChartLoader />}>
           <EnhancedCharts
+            cards={cards}
             analysis={{
             id: "current-analysis",
             deckId: "current-deck",

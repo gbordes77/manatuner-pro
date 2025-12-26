@@ -3,12 +3,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { darkTheme, lightTheme } from '../../theme'
 
-interface _Notification {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  message: string
-  autoHideDuration?: number
-}
+
 
 interface NotificationContextType {
   showNotification: (message: string, severity?: AlertColor) => void

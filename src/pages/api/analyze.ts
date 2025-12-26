@@ -120,7 +120,7 @@ export default async function handler(
       });
     }
 
-    const { decklist: _decklist, format, analysisParams } = validationResult.data;
+    const { format, analysisParams } = validationResult.data;
 
     // Build deck configuration from decklist
     const deckSize = 60;

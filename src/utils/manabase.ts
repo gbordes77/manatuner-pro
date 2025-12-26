@@ -275,7 +275,6 @@ export const runManabaseSimulation = (
     keepRate: number;
   }> = [];
   let totalKeeps = 0;
-  let _totalMulligans = 0;
 
   for (let turn = 1; turn <= 6; turn++) {
     let successfulCasts = 0;
@@ -297,7 +296,6 @@ export const runManabaseSimulation = (
         validGames++;
 
         // Simule la pioche jusqu'au tour T
-        const _cardsDrawn = 7 - mulligans + (turn - 1);
         const landsInPlay = Math.min(
           hand.lands + Math.floor((turn - 1) * 0.4),
           turn,
@@ -312,7 +310,6 @@ export const runManabaseSimulation = (
         }
       }
 
-      _totalMulligans += mulligans;
     }
 
     results.push({

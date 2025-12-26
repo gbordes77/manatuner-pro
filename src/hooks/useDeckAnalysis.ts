@@ -26,7 +26,7 @@ export const useDeckAnalysis = () => {
     if (savedAnalysis) {
       try {
         setAnalysisResult(JSON.parse(savedAnalysis));
-      } catch (_e) {
+      } catch {
         console.warn('Failed to parse saved analysis');
       }
     }

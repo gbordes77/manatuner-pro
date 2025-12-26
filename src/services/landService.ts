@@ -31,14 +31,7 @@ const MANA_SYMBOL_MAP: Record<string, LandManaColor> = {
   'W': 'W', 'U': 'U', 'B': 'B', 'R': 'R', 'G': 'G', 'C': 'C'
 }
 
-/** Basic land type to color mapping */
-const _BASIC_TYPE_COLOR: Record<string, LandManaColor> = {
-  'Plains': 'W',
-  'Island': 'U',
-  'Swamp': 'B',
-  'Mountain': 'R',
-  'Forest': 'G'
-}
+
 
 // =============================================================================
 // ETB DETECTION PATTERNS

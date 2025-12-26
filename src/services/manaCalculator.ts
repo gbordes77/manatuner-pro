@@ -133,8 +133,6 @@ export const analyzeDeckConsistency = (
     }))
   };
 
-  const _calculator = new ManaCalculator();
-
   try {
     // FIX: Calcul direct du score basé sur le ratio de terres et la cohérence du deck
     const totalLands = deckWithLands.lands.reduce((sum, land) => sum + land.quantity, 0);
@@ -202,7 +200,7 @@ export const analyzeDeckConsistency = (
       issues,
       recommendations
     };
-  } catch (_error) {
+  } catch {
     return {
       overallScore: 0.5,
       issues: ['Analysis failed'],
@@ -792,7 +790,7 @@ function parseManaCostColors(manaCost: string): Array<{ color: LandManaColor; co
     // For hybrid, we take the color that's easier to cast (lower requirement)
     // This is a simplification - ideally we'd calculate both paths
     const color1 = match[1] as LandManaColor
-    const _color2 = match[2] as LandManaColor
+    // Note: color2 (match[2]) available for future hybrid mana path calculation
 
     // Just count the first for simplicity
     colors[color1]++

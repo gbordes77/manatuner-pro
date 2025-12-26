@@ -316,7 +316,7 @@ const AnalyzerPage: React.FC = () => {
 
                 {/* Tab 2: Analysis - Spells + Probabilities + Full Recommendations */}
                 <TabPanel value={activeTab} index={2}>
-                  <AnalysisTab analysisResult={analysisResult} isMobile={isMobile} />
+                  <AnalysisTab analysisResult={analysisResult} isMobile={isMobile} cards={analysisResult.cards} />
                 </TabPanel>
 
                 {/* Tab 3: Manabase - Lands + Full Deck List */}

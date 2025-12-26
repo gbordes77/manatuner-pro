@@ -13,14 +13,17 @@ const ChartLoader = () => (
 
 interface ProbabilitiesTabProps {
   analysisResult: AnalysisResult;
+  cards?: DeckCard[];
 }
 
 export const ProbabilitiesTab: React.FC<ProbabilitiesTabProps> = ({
   analysisResult,
+  cards,
 }) => {
   return (
     <Suspense fallback={<ChartLoader />}>
       <EnhancedCharts
+      cards={cards}
       analysis={{
         id: "current-analysis",
         deckId: "current-deck",

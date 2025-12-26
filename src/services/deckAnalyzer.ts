@@ -100,6 +100,8 @@ export interface AnalysisResult {
   tempoSpellAnalysis?: Record<string, TempoSpellAnalysis>;
   tempoImpactByColor?: Record<string, TempoImpactSummary>;
   landMetadata?: LandMetadata[];
+  // Cards for advanced analysis (mulligan simulator)
+  cards: DeckCard[];
 }
 
 export class DeckAnalyzer {
@@ -767,8 +769,6 @@ export class DeckAnalyzer {
     analysis: Partial<AnalysisResult>,
   ): string[] {
     const recommendations: string[] = [];
-    const _lands = cards.filter((card) => card.isLand);
-    const _nonLands = cards.filter((card) => !card.isLand);
 
     // Analyse des mécaniques complexes
     const complexAnalysis = this.analyzeComplexLandMechanics(cards);
@@ -1085,6 +1085,8 @@ export class DeckAnalyzer {
       tempoSpellAnalysis: Object.keys(tempoSpellAnalysis).length > 0 ? tempoSpellAnalysis : undefined,
       tempoImpactByColor,
       landMetadata: landMetadataList.length > 0 ? landMetadataList : undefined,
+      // Cards for advanced mulligan analysis
+      cards,
     };
   }
 
