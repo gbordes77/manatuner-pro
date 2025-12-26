@@ -26,6 +26,8 @@ export interface DeckCard {
   isLand: boolean;
   producedMana?: ManaColor[];
   cmc: number;
+  // Sideboard detection
+  isSideboard?: boolean;
   // Enhanced land properties from reference project
   etbTapped?: (lands: DeckCard[], cmc?: number, turn?: number) => boolean;
   fetchland?: string[];
@@ -411,10 +413,36 @@ export class DeckAnalyzer {
 
   // Enhanced card parsing with better mana cost handling and LandService integration
   private static async parseDeckList(deckList: string): Promise<DeckCard[]> {
-    const lines = deckList.split("\n").filter((line) => line.trim());
+    const lines = deckList.split("\n");
     const cards: DeckCard[] = [];
+    let isSideboardSection = false;
 
     for (const line of lines) {
+      const trimmedLine = line.trim();
+
+      // Skip empty lines but don't change sideboard state
+      if (!trimmedLine) continue;
+
+      // Detect sideboard section markers
+      // Common formats: "Sideboard", "Sideboard:", "// Sideboard", "SB:", etc.
+      const sideboardMarkers = [
+        /^sideboard:?$/i,
+        /^\/\/\s*sideboard/i,
+        /^sb:?$/i,
+        /^#\s*sideboard/i,
+      ];
+
+      if (sideboardMarkers.some(marker => marker.test(trimmedLine))) {
+        isSideboardSection = true;
+        continue; // Skip the marker line itself
+      }
+
+      // Skip other section markers (Deck, Maybeboard, etc.)
+      if (/^(deck|maybeboard|commander|companion):?$/i.test(trimmedLine) ||
+          /^\/\/\s*(deck|maybeboard)/i.test(trimmedLine)) {
+        continue;
+      }
+
       const patterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/, /^(.+)\s+x(\d+)$/];
 
       let match: RegExpMatchArray | null = null;
@@ -422,7 +450,7 @@ export class DeckAnalyzer {
       let name = "";
 
       for (const pattern of patterns) {
-        match = line.match(pattern);
+        match = trimmedLine.match(pattern);
         if (match) {
           if (pattern === patterns[2]) {
             quantity = parseInt(match[2]);
@@ -485,6 +513,7 @@ export class DeckAnalyzer {
           isLand,
           producedMana,
           cmc,
+          isSideboard: isSideboardSection,
           ...landProperties,
           // NEW: Include full LandMetadata for tempo analysis
           landMetadata: landMetadata || undefined,

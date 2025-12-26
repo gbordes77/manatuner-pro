@@ -186,12 +186,21 @@ export const AboutPage: React.FC = () => {
             }}
           >
             <Typography variant="h6" fontWeight={700} sx={{ color: "#7b1fa2", mb: 2 }}>
-              🚀 Continuing Innovation
+              🙏 Special Thanks
             </Typography>
             <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-              Built as a modern continuation of <strong>Charles Wickham's</strong> original
-              <em> "Project Manabase"</em>, extending and modernizing his comprehensive analysis
-              framework with Monte Carlo simulations and Bellman equation optimization.
+              Inspired by <strong>Charles Wickham's</strong> pioneering{" "}
+              <a
+                href="https://project-manabase.firebaseapp.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#7b1fa2", textDecoration: "underline" }}
+              >
+                Project Manabase
+              </a>
+              . ManaTuner Pro extends his vision with Monte Carlo simulations,
+              Bellman equation optimization, and a modern UI. Thank you Charles for
+              lighting the path! 🔥
             </Typography>
           </Paper>
         </Grid>

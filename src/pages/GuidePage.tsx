@@ -72,6 +72,13 @@ export const GuidePage: React.FC = () => {
       description: "Complete breakdown of your lands: basics, duals, fetches, utility.",
       color: "#00bcd4",
     },
+    {
+      icon: "📋",
+      title: "Blueprint",
+      description: "Export your complete analysis as PNG, PDF, or JSON. Share on Discord or archive your progress.",
+      color: "#00D9FF",
+      badge: "NEW",
+    },
   ];
 
   const mathFoundations = [
@@ -589,6 +596,10 @@ export const GuidePage: React.FC = () => {
           {
             q: "What do P1 and P2 mean in Castability?",
             a: "P1 (Play First): Optimistic probability assuming perfect land drops. P2 (Draw First): Realistic probability accounting for mana screw. Focus on P2.",
+          },
+          {
+            q: "Can I export or share my analysis?",
+            a: "Yes! The Blueprint tab lets you export your complete analysis as PNG (shareable image), PDF (print-ready document), or JSON (raw data). Perfect for sharing on Discord, Reddit, or archiving your deck tuning progress.",
           },
           {
             q: "Is my deck data saved anywhere?",

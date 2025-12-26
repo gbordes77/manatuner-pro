@@ -599,7 +599,7 @@ const MathematicsPage: React.FC = () => {
             Ready to Apply the Math?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>
-            Optimize your manabase with mathematical precision
+            Analyze your manabase and export your results as a shareable Blueprint (PNG/PDF/JSON)
           </Typography>
         </Box>
         <Button

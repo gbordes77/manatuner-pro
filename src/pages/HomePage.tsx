@@ -7,7 +7,7 @@ import {
     MenuBook as MenuBookIcon,
     Psychology as PsychologyIcon,
     ShowChart as ShowChartIcon,
-    Timeline as TimelineIcon,
+    Timeline as TimelineIcon
 } from "@mui/icons-material";
 import {
     Box,
@@ -49,9 +49,10 @@ export const HomePage: React.FC = () => {
     },
     {
       icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
-      title: "4 Archetypes",
-      description: "Aggro, Midrange, Control, Combo - tailored analysis for each.",
-      color: "#ff9800",
+      title: "Export Blueprint",
+      description: "Download your analysis as PNG, PDF or JSON. Share on Discord or archive.",
+      color: "#00D9FF",
+      isNew: true,
     },
   ];
 
@@ -352,9 +353,28 @@ export const HomePage: React.FC = () => {
                     >
                       {feature.icon}
                     </Box>
-                    <Typography variant="h6" fontWeight={700} gutterBottom>
-                      {feature.title}
-                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                      <Typography variant="h6" fontWeight={700}>
+                        {feature.title}
+                      </Typography>
+                      {(feature as { isNew?: boolean }).isNew && (
+                        <Box
+                          component="span"
+                          sx={{
+                            bgcolor: "#00D9FF",
+                            color: "#0A1628",
+                            fontSize: "0.6rem",
+                            fontWeight: 800,
+                            px: 0.8,
+                            py: 0.2,
+                            borderRadius: 1,
+                            letterSpacing: 0.5,
+                          }}
+                        >
+                          NEW
+                        </Box>
+                      )}
+                    </Box>
                     <Typography variant="body2" color="text.secondary">
                       {feature.description}
                     </Typography>

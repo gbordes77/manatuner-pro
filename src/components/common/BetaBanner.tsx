@@ -1,19 +1,19 @@
-import React from 'react';
-import { 
-  Alert, 
-  Box, 
-  Typography, 
-  Chip,
-  Link,
-  Container
-} from '@mui/material';
-import { 
-  Feedback as FeedbackIcon 
+import {
+    Feedback as FeedbackIcon
 } from '@mui/icons-material';
+import {
+    Alert,
+    Box,
+    Chip,
+    Container,
+    Link,
+    Typography
+} from '@mui/material';
+import React from 'react';
 
 export const BetaBanner: React.FC = () => {
   return (
-    <Box sx={{ 
+    <Box sx={{
       bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
       borderBottom: '1px solid',
       borderColor: (theme) => theme.palette.mode === 'dark' ? 'grey.700' : 'grey.300',
@@ -23,9 +23,9 @@ export const BetaBanner: React.FC = () => {
       zIndex: 1100
     }}>
       <Container maxWidth="lg">
-        <Alert 
-          severity="info" 
-          sx={{ 
+        <Alert
+          severity="info"
+          sx={{
             bgcolor: 'transparent',
             border: 'none',
             py: 0.25,
@@ -42,25 +42,26 @@ export const BetaBanner: React.FC = () => {
         >
           <Box display="flex" alignItems="center" justifyContent="center" gap={1} flexWrap="wrap">
             <Typography variant="body2" component="span" sx={{ fontWeight: 'medium', fontSize: '0.8rem' }}>
-              🚧 <strong>Beta Version</strong> - We're testing ManaTuner Pro and would love your feedback!
+              🚧 <strong>Beta Version</strong> - Help us improve ManaTuner Pro!
             </Typography>
-            <Chip 
+            <Chip
               icon={<FeedbackIcon />}
-              label="Join our Discord"
+              label="Give Feedback"
               variant="outlined"
               size="small"
               clickable
               component={Link}
-              href="https://discord.gg/manatuner-pro"
+              href="https://tally.so/r/A7KRkN"
               target="_blank"
               rel="noopener noreferrer"
-              sx={{ 
+              sx={{
                 color: 'primary.main',
                 borderColor: 'primary.main',
-                height: '20px',
-                fontSize: '0.7rem',
+                height: '22px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
                 '& .MuiChip-icon': {
-                  fontSize: '0.7rem'
+                  fontSize: '0.85rem'
                 },
                 '&:hover': {
                   bgcolor: 'primary.main',
@@ -68,12 +69,9 @@ export const BetaBanner: React.FC = () => {
                 }
               }}
             />
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-              Help us improve!
-            </Typography>
           </Box>
         </Alert>
       </Container>
     </Box>
   );
-}; 
+};

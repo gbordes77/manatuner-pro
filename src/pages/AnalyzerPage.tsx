@@ -31,6 +31,7 @@ import {
     MulliganTab,
     TabPanel,
 } from "../components/analyzer";
+import ManaBlueprint from "../components/export/ManaBlueprint";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
 import { DeckAnalyzer } from "../services/deckAnalyzer";
@@ -455,6 +456,30 @@ const AnalyzerPage: React.FC = () => {
                     <Tab label="🎲 Mulligan" />
                     <Tab label="⚡ Analysis" />
                     <Tab label="🏔️ Manabase" />
+                    <Tab
+                      label={
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          📋 Blueprint
+                          <Box
+                            component="span"
+                            sx={{
+                              bgcolor: "#00D9FF",
+                              color: "#0A1628",
+                              fontSize: "0.6rem",
+                              fontWeight: 800,
+                              px: 0.8,
+                              py: 0.2,
+                              borderRadius: 1,
+                              letterSpacing: 0.5,
+                              boxShadow: "0 0 8px rgba(0, 217, 255, 0.5)",
+                            }}
+                          >
+                            NEW
+                          </Box>
+                        </Box>
+                      }
+                      sx={{ color: "#00D9FF" }}
+                    />
                   </Tabs>
 
                   {/* Tab 0: Dashboard - Overview + Top Recommendations */}
@@ -484,6 +509,15 @@ const AnalyzerPage: React.FC = () => {
                       analysisResult={analysisResult}
                       isMobile={isMobile}
                       isSmallMobile={isSmallMobile}
+                    />
+                  </TabPanel>
+
+                  {/* Tab 5: Blueprint - Exportable Analysis Summary */}
+                  <TabPanel value={activeTab} index={5}>
+                    <ManaBlueprint
+                      analysisResult={analysisResult}
+                      deckName={`Deck ${new Date().toLocaleDateString()}`}
+                      format="Modern"
                     />
                   </TabPanel>
                 </div>
