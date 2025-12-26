@@ -69,6 +69,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.5",
     "react-hotkeys-hook": "^4.3.7",
+    "react-joyride": "^2.9.3",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
     "react-virtualized-auto-sizer": "^1.0.15",

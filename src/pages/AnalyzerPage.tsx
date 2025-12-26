@@ -15,7 +15,8 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
     AnalysisTab,
     AnalyzerSkeleton,
@@ -25,10 +26,21 @@ import {
     ManabaseFullTab,
     TabPanel,
 } from "../components/analyzer";
+import Onboarding from "../components/Onboarding";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
-import { AnalysisResult, DeckAnalyzer } from "../services/deckAnalyzer";
-import { ManaCalculator } from "../services/manaCalculator";
+import { DeckAnalyzer } from "../services/deckAnalyzer";
+import { AppDispatch, RootState } from "../store";
+import {
+    clearAnalyzer,
+    hideSnackbar,
+    setActiveTab,
+    setAnalysisResult,
+    setDeckList,
+    setIsAnalyzing,
+    setIsDeckMinimized,
+    showSnackbar,
+} from "../store/slices/analyzerSlice";
 
 const SAMPLE_DECK = `4 Light-Paws, Emperor's Voice (NEO) 25
 2 Inspiring Vantage (KLR) 283
@@ -59,68 +71,33 @@ const AnalyzerPage: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery("(max-width:375px)");
 
-  const [activeTab, setActiveTab] = useState(0);
-  const [deckList, setDeckList] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isDeckMinimized, setIsDeckMinimized] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-
-  // Load state from localStorage on mount
-  useEffect(() => {
-    const savedDeckList = localStorage.getItem("manatuner-decklist");
-    const savedAnalysis = localStorage.getItem("manatuner-analysis");
-    const savedMinimized = localStorage.getItem("manatuner-minimized");
-
-    if (savedDeckList) setDeckList(savedDeckList);
-    if (savedAnalysis) {
-      try {
-        setAnalysisResult(JSON.parse(savedAnalysis));
-      } catch (e) {
-        console.warn("Failed to parse saved analysis");
-      }
-    }
-    if (savedMinimized) setIsDeckMinimized(savedMinimized === "true");
-  }, []);
-
-  // Save state to localStorage
-  useEffect(() => {
-    localStorage.setItem("manatuner-decklist", deckList);
-  }, [deckList]);
-
-  useEffect(() => {
-    if (analysisResult) {
-      localStorage.setItem("manatuner-analysis", JSON.stringify(analysisResult));
-    } else {
-      localStorage.removeItem("manatuner-analysis");
-    }
-  }, [analysisResult]);
-
-  useEffect(() => {
-    localStorage.setItem("manatuner-minimized", isDeckMinimized.toString());
-  }, [isDeckMinimized]);
+  // Redux state
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    deckList,
+    analysisResult,
+    isAnalyzing,
+    isDeckMinimized,
+    activeTab,
+    snackbar,
+  } = useSelector((state: RootState) => state.analyzer);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
+    dispatch(setActiveTab(newValue));
   };
 
   // Memoized analyze handler to prevent unnecessary re-renders
   const handleAnalyze = useCallback(async () => {
     if (!deckList.trim()) return;
 
-    setIsAnalyzing(true);
+    dispatch(setIsAnalyzing(true));
 
     setTimeout(async () => {
       try {
         const result = await DeckAnalyzer.analyzeDeck(deckList);
-        setAnalysisResult(result);
-        setIsDeckMinimized(true);
+        dispatch(setAnalysisResult(result));
 
-        // Auto-save
+        // Auto-save to PrivacyStorage
         try {
           const deckName = `Deck ${new Date().toLocaleDateString()}`;
           PrivacyStorage.saveAnalysis({ deckName, deckList, analysis: result });
@@ -129,68 +106,30 @@ const AnalyzerPage: React.FC = () => {
         }
       } catch (error) {
         console.error("Analysis error:", error);
-        setAnalysisResult(null);
+        dispatch(setAnalysisResult(null));
       }
-      setIsAnalyzing(false);
+      dispatch(setIsAnalyzing(false));
     }, 1500);
-  }, [deckList]);
+  }, [deckList, dispatch]);
 
-  const handleClear = () => {
-    setDeckList("");
-    setAnalysisResult(null);
-    setIsDeckMinimized(false);
-    localStorage.removeItem("manatuner-decklist");
-    localStorage.removeItem("manatuner-analysis");
-    localStorage.removeItem("manatuner-minimized");
-    setSnackbar({
-      open: true,
+  const handleClear = useCallback(() => {
+    dispatch(clearAnalyzer());
+    dispatch(showSnackbar({
       message: "🗑️ Interface cleared! Ready for new deck analysis.",
       severity: "info",
-    });
-  };
+    }));
+  }, [dispatch]);
 
-  const runProbabilityValidation = () => {
-    const calculator = new ManaCalculator();
-    const tests = [
-      { name: "Thoughtseize T1 (1B)", deckSize: 60, sources: 14, turn: 1, symbols: 1, expected: 0.904 },
-      { name: "Counterspell T2 (UU)", deckSize: 60, sources: 20, turn: 2, symbols: 2, expected: 0.9 },
-      { name: "Lightning Bolt T1 (R)", deckSize: 60, sources: 14, turn: 1, symbols: 1, expected: 0.904 },
-    ];
-
-    console.log("🧪 PROBABILITY VALIDATION");
-    console.log("=".repeat(50));
-
-    let passed = 0;
-    tests.forEach((test) => {
-      const result = calculator.calculateManaProbability(
-        test.deckSize, test.sources, test.turn, test.symbols, true
-      );
-      const actual = result.probability;
-      const tolerance = 0.02;
-      const isValid = Math.abs(actual - test.expected) <= tolerance;
-
-      console.log(`${isValid ? "✅" : "❌"} ${test.name}`);
-      console.log(`   Expected: ${(test.expected * 100).toFixed(1)}%`);
-      console.log(`   Calculated: ${(actual * 100).toFixed(1)}%`);
-
-      if (isValid) passed++;
-    });
-
-    console.log(`\n📈 RESULTS: ${passed}/${tests.length} tests passed`);
-
-    setSnackbar({
-      open: true,
-      message: passed === tests.length
-        ? `✅ Validation successful! ${passed}/${tests.length} tests passed.`
-        : `⚠️ Partial validation: ${passed}/${tests.length} tests passed.`,
-      severity: passed === tests.length ? "success" : "warning",
-    });
-  };
+  const handleLoadSample = useCallback(() => {
+    dispatch(setDeckList(SAMPLE_DECK));
+  }, [dispatch]);
 
   return (
-    <Container
-      maxWidth="xl"
-      sx={{
+    <>
+      <Onboarding hasAnalysisResult={!!analysisResult} />
+      <Container
+        maxWidth="xl"
+        sx={{
         py: isSmallMobile ? 1 : isMobile ? 2 : 4,
         px: isSmallMobile ? 0.5 : isMobile ? 1 : 3,
         width: "100%",
@@ -241,7 +180,7 @@ const AnalyzerPage: React.FC = () => {
               borderColor: "primary.main",
             },
           }}
-          onClick={() => setIsDeckMinimized(false)}
+          onClick={() => dispatch(setIsDeckMinimized(false))}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Typography variant="body1" fontWeight="bold">
@@ -282,15 +221,14 @@ const AnalyzerPage: React.FC = () => {
           <Grid item xs={12} lg={isMobile ? 12 : 6}>
             <DeckInputSection
               deckList={deckList}
-              setDeckList={setDeckList}
+              setDeckList={(value: string) => dispatch(setDeckList(value))}
               isAnalyzing={isAnalyzing}
               analysisResult={analysisResult}
               isDeckMinimized={isDeckMinimized}
-              setIsDeckMinimized={setIsDeckMinimized}
+              setIsDeckMinimized={(value: boolean) => dispatch(setIsDeckMinimized(value))}
               onAnalyze={handleAnalyze}
               onClear={handleClear}
-              onLoadSample={() => setDeckList(SAMPLE_DECK)}
-              onTestProbabilities={runProbabilityValidation}
+              onLoadSample={handleLoadSample}
               isMobile={isMobile}
               isSmallMobile={isSmallMobile}
             />
@@ -311,7 +249,7 @@ const AnalyzerPage: React.FC = () => {
             }}
             onClick={() => {
               if (analysisResult && !isDeckMinimized && !isMobile) {
-                setIsDeckMinimized(true);
+                dispatch(setIsDeckMinimized(true));
               }
             }}
           >
@@ -405,18 +343,19 @@ const AnalyzerPage: React.FC = () => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        onClose={() => dispatch(hideSnackbar())}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity as "success" | "warning" | "error" | "info"}
+          onClose={() => dispatch(hideSnackbar())}
+          severity={snackbar.severity}
           sx={{ width: "100%" }}
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+      </Container>
+    </>
   );
 };
 

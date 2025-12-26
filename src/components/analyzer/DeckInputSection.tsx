@@ -24,7 +24,6 @@ interface DeckInputSectionProps {
   onAnalyze: () => void;
   onClear: () => void;
   onLoadSample: () => void;
-  onTestProbabilities: () => void;
   isMobile: boolean;
   isSmallMobile: boolean;
 }
@@ -39,7 +38,6 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
   onAnalyze,
   onClear,
   onLoadSample,
-  onTestProbabilities,
   isMobile,
   isSmallMobile,
 }) => {
@@ -153,23 +151,7 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
                 🗑️ Clear
               </Button>
 
-              <Button
-                variant="outlined"
-                size={isMobile ? "small" : "medium"}
-                onClick={onTestProbabilities}
-                sx={{
-                  color: "var(--mtg-blue)",
-                  borderColor: "var(--mtg-blue)",
-                  minWidth: isMobile ? "auto" : "140px",
-                  fontSize: isMobile ? "0.75rem" : undefined,
-                  "&:hover": {
-                    borderColor: "var(--mtg-blue)",
-                    backgroundColor: "rgba(0, 123, 255, 0.1)",
-                  },
-                }}
-              >
-                Test Probabilities
-              </Button>
+
             </Box>
           </Box>
 
