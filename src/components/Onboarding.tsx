@@ -28,14 +28,14 @@ const steps: Step[] = [
 const preAnalysisSteps: Step[] = [
   {
     target: 'textarea[placeholder*="Paste your decklist"]',
-    content: 'Welcome to ManaTuner Pro! Paste your MTG decklist here. We support MTGA, Moxfield, and TappedOut formats.',
+    content: 'Welcome to ManaTuner Pro! Paste your MTG decklist here.',
     disableBeacon: true,
     placement: 'bottom',
     title: '📝 Step 1: Your Deck',
   },
   {
     target: 'button[class*="MuiButton"][class*="contained"]',
-    content: 'Once your deck is pasted, click here to run Frank Karsten\'s mathematical analysis. You\'ll see probability calculations for casting each spell on curve.',
+    content: 'Click here to analyze your deck. You\'ll see the probability of casting each spell on curve, manabase health score, land breakdown by type, and personalized recommendations.',
     placement: 'bottom',
     title: '🔬 Step 2: Analyze',
   },

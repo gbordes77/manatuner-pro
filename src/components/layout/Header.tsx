@@ -108,19 +108,7 @@ export const Header: React.FC = () => {
                   color="inherit"
                   variant={isAnalyzer ? "contained" : isActive ? "outlined" : "text"}
                   onMouseEnter={isAnalyzer ? prefetchAnalyzer : undefined}
-                  startIcon={
-                    isAnalyzer ? (
-                      <AnalyticsIcon />
-                    ) : item.path === "/guide" ? (
-                      <GuideIcon />
-                    ) : item.path === "/mathematics" ? (
-                      <FunctionsIcon />
-                    ) : item.path === "/mes-analyses" ? (
-                      <HistoryIcon />
-                    ) : item.path === "/privacy-first" ? (
-                      <LockIcon />
-                    ) : undefined
-                  }
+                  startIcon={<item.icon />}
                   sx={{
                     borderColor: isActive ? "rgba(255,255,255,0.5)" : "transparent",
                     // Style CTA pour Analyzer - toujours visible
