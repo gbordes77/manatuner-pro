@@ -253,15 +253,16 @@ VITE_VERCEL_ANALYTICS_ID=your-analytics-id
 
 | Tag | Description |
 |-----|-------------|
+| `v2.0-stable-complete` | **VERSION STABLE ACTUELLE** - Tout fonctionne |
 | `v1.4-pre-final-polish` | Version stable avant polish UI |
 | `v1.3-ux-overhaul` | Refonte UX 4 onglets |
 | `v1.2-analyzer-cta` | CTA Analyzer dore |
 | `v1.1-pre-refactoring` | Avant refactoring -80% |
 | `v1.0-pre-optimization` | Avant optimisations majeures |
 
-Pour rollback:
+Pour rollback vers version stable:
 ```bash
-git reset --hard v1.4-pre-final-polish
+git reset --hard v2.0-stable-complete
 ```
 
 ---
