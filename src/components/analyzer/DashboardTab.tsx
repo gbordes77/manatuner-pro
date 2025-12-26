@@ -237,15 +237,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             {topRecommendations.map((rec, index) => (
               <Alert
                 key={index}
-                severity={rec.priority === "high" ? "warning" : rec.priority === "medium" ? "info" : "success"}
+                severity={index === 0 ? "warning" : "info"}
                 sx={{ mb: index < topRecommendations.length - 1 ? 1.5 : 0 }}
-                icon={
-                  rec.priority === "high" ? <WarningIcon /> :
-                  rec.priority === "medium" ? <TrendingIcon /> : <CheckIcon />
-                }
+                icon={index === 0 ? <WarningIcon /> : <TrendingIcon />}
               >
                 <Typography variant="body2">
-                  <strong>{rec.category}:</strong> {rec.message}
+                  {rec}
                 </Typography>
               </Alert>
             ))}

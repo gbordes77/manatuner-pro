@@ -92,24 +92,22 @@ const AnalyzerPage: React.FC = () => {
 
     dispatch(setIsAnalyzing(true));
 
-    setTimeout(async () => {
-      try {
-        const result = await DeckAnalyzer.analyzeDeck(deckList);
-        dispatch(setAnalysisResult(result));
+    try {
+      const result = await DeckAnalyzer.analyzeDeck(deckList);
+      dispatch(setAnalysisResult(result));
 
-        // Auto-save to PrivacyStorage
-        try {
-          const deckName = `Deck ${new Date().toLocaleDateString()}`;
-          PrivacyStorage.saveAnalysis({ deckName, deckList, analysis: result });
-        } catch (saveError) {
-          console.warn("Auto-save failed:", saveError);
-        }
-      } catch (error) {
-        console.error("Analysis error:", error);
-        dispatch(setAnalysisResult(null));
+      // Auto-save to PrivacyStorage
+      try {
+        const deckName = `Deck ${new Date().toLocaleDateString()}`;
+        PrivacyStorage.saveAnalysis({ deckName, deckList, analysis: result });
+      } catch {
+        // Silent fail for auto-save
       }
+    } catch {
+      dispatch(setAnalysisResult(null));
+    } finally {
       dispatch(setIsAnalyzing(false));
-    }, 1500);
+    }
   }, [deckList, dispatch]);
 
   const handleClear = useCallback(() => {

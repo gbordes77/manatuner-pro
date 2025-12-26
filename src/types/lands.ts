@@ -43,6 +43,7 @@ export type LandCategory =
   | 'creature'   // Celestial Colonnade, Creeping Tar Pit, etc. (Creature lands)
   | 'bounce'     // Azorius Chancery, Dimir Aqueduct, etc. (Bounce lands)
   | 'utility'    // Misc utility lands (Field of Ruin, etc.)
+  | 'dual'       // Original dual lands (Underground Sea, Volcanic Island, etc.)
   | 'unknown'    // Unrecognized lands (fallback)
 
 /** Human-readable names for land categories */
@@ -63,6 +64,7 @@ export const LAND_CATEGORY_NAMES: Record<LandCategory, string> = {
   creature: 'Creature Land',
   bounce: 'Bounce Land',
   utility: 'Utility Land',
+  dual: 'Dual Land',
   unknown: 'Unknown Land'
 }
 
