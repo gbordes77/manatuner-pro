@@ -123,10 +123,14 @@ export interface ManaProducerDef {
   oneShot: boolean
 
   /**
-   * Base survival rate (0-1)
-   * - Dorks: affected by removal rate
-   * - Rocks: typically 0.98+
-   * - Rituals/One-shots: 1.0
+   * @deprecated v1.1 - No longer used by acceleratedAnalyticEngine
+   * Survival is now calculated dynamically using:
+   * - ctx.removalRate (format-specific removal pressure)
+   * - ctx.rockRemovalFactor (artifacts 30% as vulnerable as creatures)
+   * - Formula: P_survive(n) = (1 - r_effective)^n
+   *
+   * Kept for backward compatibility with seed data.
+   * Will be removed in v2.0.
    */
   survivalBase?: number
 
@@ -264,9 +268,11 @@ export interface AccelContext {
   rockRemovalFactor?: number
 
   /**
-   * @deprecated Use rockRemovalFactor instead
-   * Default survival rate for non-creatures
-   * Used when survivalBase not set on producer
+   * @deprecated v1.1 - Use rockRemovalFactor instead
+   * Was: Default survival rate for non-creatures
+   * Now: Artifacts use removalRate * rockRemovalFactor (default 0.3)
+   *
+   * Kept for backward compatibility. Will be removed in v2.0.
    */
   defaultRockSurvival: number
 }

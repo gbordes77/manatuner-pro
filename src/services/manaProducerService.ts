@@ -227,8 +227,9 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
           activationTax: 0,
           producesMask: p.producesAny ? 0b111111 : (match[1] ? colorMaskFromLetters([match[1] as any]) : 0b100000),
           producesAny: p.producesAny ?? false,
-          oneShot: p.type === 'RITUAL',
-          survivalBase: isCreature ? 0.75 : 0.98
+          oneShot: p.type === 'RITUAL'
+          // Note: survivalBase deprecated in v1.1
+          // Survival now calculated dynamically via ctx.removalRate * rockRemovalFactor
         }
       }
     }

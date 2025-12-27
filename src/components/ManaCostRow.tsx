@@ -19,6 +19,13 @@ import type { AccelContext, DeckManaProfile, ManaCost, ProducerInDeck } from '..
 import { CardImageTooltip } from './CardImageTooltip'
 import { SegmentedProbabilityBar } from './SegmentedProbabilityBar'
 
+/** v1.1: Unconditional multi-mana land group */
+interface UnconditionalMultiManaGroup {
+  count: number
+  delta: number
+  producesMask?: number
+}
+
 interface ManaCostRowProps {
   cardName: string
   quantity: number
@@ -35,9 +42,8 @@ interface ManaCostRowProps {
   }
   /** Whether to show acceleration data */
   showAcceleration?: boolean
-  // v1.1: bonusManaFromLands and bonusColoredMana removed
-  // Multi-mana lands are now handled probabilistically in the engine
-  // via unconditionalMultiMana in DeckManaProfile
+  /** v1.1: Unconditional multi-mana lands (Ancient Tomb, Bounce lands, etc.) */
+  unconditionalMultiMana?: UnconditionalMultiManaGroup
 }
 
 // Keyrune mana symbol component
@@ -343,18 +349,18 @@ const useProbabilityCalculation = (
       const baseCmc = getCmcFromCard(cardData) || 2
       const effectiveCmc = hasX && xInfo ? xInfo.targetTurn : baseCmc
 
+      // Hypergeometric: P(X >= k) where X ~ Hypergeom(N, K, n)
+      // N = population, K = successes in population, n = draws, k = min successes needed
       const hypergeometric = (N: number, K: number, n: number, k: number): number => {
         const combination = (a: number, b: number): number => {
           if (b > a || b < 0) return 0
           if (b === 0 || b === a) return 1
-
           let result = 1
           for (let i = 0; i < b; i++) {
             result = result * (a - i) / (i + 1)
           }
           return result
         }
-
         let probability = 0
         for (let i = k; i <= Math.min(n, K); i++) {
           probability += combination(K, i) * combination(N - K, n - i) / combination(N, n)
@@ -365,36 +371,41 @@ const useProbabilityCalculation = (
       const turn = Math.max(1, Math.min(effectiveCmc, 10))
       const cardsSeen = 7 + (turn - 1)
 
+      // P1: "Perfect scenario" = assuming we have exactly `turn` lands in hand
+      // What's the probability those lands have the right colors?
+      // = P(at least pipsNeeded sources among turn lands drawn from landsInDeck pool)
       let p1Probability = 1
 
-      // Calculate probability for regular (non-hybrid) color requirements
-      for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
-        const actualSourcesForColor = deckSources?.[color] || 0
-        const realSources = actualSourcesForColor > 0 ? actualSourcesForColor : 0
+      for (const [color, pipsNeeded] of Object.entries(colorCounts)) {
+        const colorSources = deckSources?.[color] || 0
 
-        const p1Color = realSources > 0
-          ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded)
-          : 0
+        if (colorSources === 0) {
+          p1Probability = 0
+          break
+        }
+
+        // P(at least pipsNeeded of this color among turn lands)
+        // Hypergeom(landsInDeck, colorSources, turn, pipsNeeded)
+        const p1Color = hypergeometric(landsInDeck, colorSources, turn, pipsNeeded)
         p1Probability = Math.min(p1Probability, p1Color)
       }
 
-      // Calculate probability for hybrid mana - use the BETTER of the two colors
+      // Handle hybrid mana - use the BETTER of the two colors
       for (const hybrid of hybridMana) {
         const sources1 = deckSources?.[hybrid.color1] || 0
         const sources2 = deckSources?.[hybrid.color2] || 0
 
-        const p1Color1 = sources1 > 0
-          ? hypergeometric(landsInDeck, sources1, turn, 1)
-          : 0
-        const p1Color2 = sources2 > 0
-          ? hypergeometric(landsInDeck, sources2, turn, 1)
-          : 0
+        // For hybrid, we need at least 1 of either color
+        const p1Color1 = sources1 > 0 ? hypergeometric(landsInDeck, sources1, turn, 1) : 0
+        const p1Color2 = sources2 > 0 ? hypergeometric(landsInDeck, sources2, turn, 1) : 0
 
-        // For hybrid, take the MAX (best option) since player can choose
+        // Player can choose either color, so take MAX
         const p1Hybrid = Math.max(p1Color1, p1Color2)
         p1Probability = Math.min(p1Probability, p1Hybrid)
       }
 
+      // P2: Realistic = P1 × P(having at least `turn` lands among cardsSeen cards)
+      // This accounts for mana screw (not drawing enough lands)
       const probHavingEnoughLands = hypergeometric(deckSize, landsInDeck, cardsSeen, turn)
       const p2Probability = p1Probability * probHavingEnoughLands
 
@@ -484,7 +495,7 @@ const getProbabilityColor = (prob: number, theme: Theme) => {
 };
 
 // Hook for accelerated castability calculation
-// v1.1: Removed bonusManaFromLands/bonusColoredMana - now handled in engine
+// v1.1: Uses unconditionalMultiMana for probabilistic multi-mana land handling
 const useAcceleratedCastability = (
   cardData: MTGCard | null,
   cardName: string,
@@ -494,7 +505,8 @@ const useAcceleratedCastability = (
   totalCards?: number,
   producers?: ProducerInDeck[],
   accelContext?: ManaCostRowProps['accelContext'],
-  showAcceleration?: boolean
+  showAcceleration?: boolean,
+  unconditionalMultiMana?: UnconditionalMultiManaGroup
 ) => {
   return useMemo(() => {
     // Return null if acceleration is disabled or no producers
@@ -553,8 +565,9 @@ const useAcceleratedCastability = (
           R: deckSources?.R || 0,
           G: deckSources?.G || 0,
           C: deckSources?.C || 0
-        }
-        // TODO P1.1: Add unconditionalMultiMana here once extracted from deck analysis
+        },
+        // v1.1: Probabilistic multi-mana land handling
+        unconditionalMultiMana: unconditionalMultiMana
       }
 
       // Build acceleration context
@@ -577,7 +590,7 @@ const useAcceleratedCastability = (
       console.error('Error calculating accelerated castability:', error)
       return null
     }
-  }, [cardData, cardName, baseProbability, deckSources, totalLands, totalCards, producers, accelContext, showAcceleration])
+  }, [cardData, cardName, baseProbability, deckSources, totalLands, totalCards, producers, accelContext, showAcceleration, unconditionalMultiMana])
 }
 
 const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
@@ -588,7 +601,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   totalCards,
   producers,
   accelContext,
-  showAcceleration = false
+  showAcceleration = false,
+  unconditionalMultiMana
 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -609,7 +623,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
     totalCards,
     producers,
     accelContext,
-    showAcceleration
+    showAcceleration,
+    unconditionalMultiMana
   )
 
   useEffect(() => {

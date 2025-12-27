@@ -4,8 +4,7 @@ import React, { useMemo } from "react";
 import { useAcceleration } from "../../contexts/AccelerationContext";
 import { AnalysisResult } from "../../services/deckAnalyzer";
 import { producerCacheService } from "../../services/manaProducerService";
-import type { ProducerInDeck } from "../../types/manaProducers";
-// Note: LandManaColor removed - no longer needed for deterministic bonus calculation
+import type { ProducerInDeck, UnconditionalMultiManaGroup } from "../../types/manaProducers";
 import ManaCostRow from "../ManaCostRow";
 import { AccelerationSettings } from "./AccelerationSettings";
 
@@ -54,11 +53,37 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
     return producers;
   }, [analysisResult?.cards]);
 
-  // v1.1: Multi-mana lands are now handled probabilistically inside the engine
-  // via unconditionalMultiMana in DeckManaProfile. No need for deterministic bonuses.
-  //
-  // TODO P1.1: Extract unconditionalMultiMana from analysisResult.cards
-  // and pass to DeckManaProfile in ManaCostRow
+  // v1.1: Extract unconditional multi-mana lands for probabilistic handling
+  // Groups lands by their delta (bonus mana per land)
+  // e.g., Ancient Tomb (δ=1), Bounce lands (δ=1)
+  const unconditionalMultiMana = useMemo<UnconditionalMultiManaGroup | undefined>(() => {
+    if (!analysisResult?.cards) return undefined;
+
+    let totalCount = 0;
+    let totalDelta = 0;
+
+    for (const card of analysisResult.cards) {
+      if (!card.isLand || !card.landMetadata) continue;
+
+      const producesAmount = card.landMetadata.producesAmount ?? 1;
+      if (producesAmount > 1) {
+        const delta = producesAmount - 1;
+        const quantity = card.quantity || 1;
+        totalCount += quantity;
+        totalDelta += delta * quantity;
+      }
+    }
+
+    if (totalCount === 0) return undefined;
+
+    // Weighted average delta for the group
+    const avgDelta = totalDelta / totalCount;
+
+    return {
+      count: totalCount,
+      delta: avgDelta
+    };
+  }, [analysisResult?.cards]);
 
   return (
     <>
@@ -107,6 +132,7 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
               producers={producersInDeck}
               accelContext={accelContext}
               showAcceleration={settings.showAcceleration && producersInDeck.length > 0}
+              unconditionalMultiMana={unconditionalMultiMana}
             />
           ))}
         </Box>
