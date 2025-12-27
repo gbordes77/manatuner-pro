@@ -1,0 +1,235 @@
+{
+  "Llanowar Elves": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "G"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.75
+  },
+  "Elvish Mystic": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "G"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.75
+  },
+  "Birds of Paradise": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "producesAny": true,
+    "oneShot": false,
+    "survivalBase": 0.8
+  },
+  "Noble Hierarch": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "W",
+      "U",
+      "G"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.78
+  },
+  "Ignoble Hierarch": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "B",
+      "R",
+      "G"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.78
+  },
+  "Delighted Halfling": {
+    "type": "DORK",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "G": 1
+    },
+    "delay": 1,
+    "isCreature": true,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "C",
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "producesAny": true,
+    "oneShot": false,
+    "survivalBase": 0.8
+  },
+  "Sol Ring": {
+    "type": "ROCK",
+    "castCostGeneric": 1,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 2,
+    "activationTax": 0,
+    "produces": [
+      "C"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.99
+  },
+  "Mana Crypt": {
+    "type": "ROCK",
+    "castCostGeneric": 0,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 2,
+    "activationTax": 0,
+    "produces": [
+      "C"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.99
+  },
+  "Arcane Signet": {
+    "type": "ROCK",
+    "castCostGeneric": 2,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "producesAny": true,
+    "oneShot": false,
+    "survivalBase": 0.98
+  },
+  "Talisman of Dominance": {
+    "type": "ROCK",
+    "castCostGeneric": 2,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "U",
+      "B",
+      "C"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.98
+  },
+  "Izzet Signet": {
+    "type": "ROCK",
+    "castCostGeneric": 2,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 2,
+    "activationTax": 1,
+    "produces": [
+      "U",
+      "R"
+    ],
+    "producesAny": false,
+    "oneShot": false,
+    "survivalBase": 0.98
+  },
+  "Lotus Petal": {
+    "type": "ONE_SHOT",
+    "castCostGeneric": 0,
+    "castCostColors": {},
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 1,
+    "activationTax": 0,
+    "produces": [
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "producesAny": true,
+    "oneShot": true,
+    "survivalBase": 1.0
+  },
+  "Dark Ritual": {
+    "type": "RITUAL",
+    "castCostGeneric": 0,
+    "castCostColors": {
+      "B": 1
+    },
+    "delay": 0,
+    "isCreature": false,
+    "producesAmount": 3,
+    "activationTax": 0,
+    "produces": [
+      "B"
+    ],
+    "producesAny": false,
+    "oneShot": true,
+    "survivalBase": 1.0
+  }
+}

@@ -6,6 +6,7 @@ import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import { NotificationProvider } from "./components/common/NotificationProvider";
 import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
+import { AccelerationProvider } from "./contexts/AccelerationContext";
 
 // Only HomePage is loaded immediately (landing page)
 import { HomePage } from "./pages/HomePage";
@@ -95,6 +96,7 @@ function App() {
   return (
     <ErrorBoundary>
       <NotificationProvider>
+        <AccelerationProvider>
         <Box
           sx={{
             display: "flex",
@@ -131,6 +133,7 @@ function App() {
 
           <Footer />
         </Box>
+        </AccelerationProvider>
       </NotificationProvider>
     </ErrorBoundary>
   );

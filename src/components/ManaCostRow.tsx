@@ -10,10 +10,14 @@ import {
     Typography,
     useTheme
 } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
 import React, { memo, useEffect, useMemo, useState } from 'react'
+import { computeAcceleratedCastability } from '../services/castability'
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
+import type { AccelContext, DeckManaProfile, ManaCost, ProducerInDeck } from '../types/manaProducers'
 import { CardImageTooltip } from './CardImageTooltip'
+import { SegmentedProbabilityBar } from './SegmentedProbabilityBar'
 
 interface ManaCostRowProps {
   cardName: string
@@ -21,6 +25,20 @@ interface ManaCostRowProps {
   deckSources?: Record<string, number>
   totalLands?: number
   totalCards?: number
+  /** Mana producers in the deck */
+  producers?: ProducerInDeck[]
+  /** Acceleration context settings */
+  accelContext?: {
+    playDraw: 'PLAY' | 'DRAW'
+    removalRate: number
+    defaultRockSurvival: number
+  }
+  /** Whether to show acceleration data */
+  showAcceleration?: boolean
+  /** Bonus mana from multi-mana lands (Ancient Tomb, etc.) */
+  bonusManaFromLands?: number
+  /** Bonus colored mana from multi-mana lands */
+  bonusColoredMana?: Partial<Record<string, number>>
 }
 
 // Keyrune mana symbol component
@@ -459,19 +477,130 @@ const getSimulatedManaCost = (cardName: string): string => {
 }
 
 // Get color based on probability
-const getProbabilityColor = (prob: number, theme: ReturnType<typeof useTheme>) => {
+const getProbabilityColor = (prob: number, theme: Theme) => {
   if (prob >= 80) return theme.palette.success.main;
   if (prob >= 65) return theme.palette.info.main;
   if (prob >= 45) return theme.palette.warning.main;
   return theme.palette.error.main;
 };
 
+// Hook for accelerated castability calculation
+const useAcceleratedCastability = (
+  cardData: MTGCard | null,
+  cardName: string,
+  baseProbability: number,
+  deckSources?: Record<string, number>,
+  totalLands?: number,
+  totalCards?: number,
+  producers?: ProducerInDeck[],
+  accelContext?: ManaCostRowProps['accelContext'],
+  showAcceleration?: boolean,
+  bonusManaFromLands?: number,
+  bonusColoredMana?: Partial<Record<string, number>>
+) => {
+  return useMemo(() => {
+    // Return null if acceleration is disabled or no producers
+    if (!showAcceleration || !producers || producers.length === 0 || !accelContext) {
+      return null
+    }
+
+    const manaCost = getManaCostFromCard(cardData) || getSimulatedManaCost(cardName)
+    if (!manaCost) return null
+
+    try {
+      // Parse mana cost into ManaCost format
+      const colorCounts: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 }
+      let generic = 0
+
+      const symbols = manaCost.match(/\{[^}]+\}/g) || []
+      symbols.forEach(symbol => {
+        const clean = symbol.replace(/[{}]/g, '')
+        if (/^\d+$/.test(clean)) {
+          generic += parseInt(clean)
+        } else if (clean === 'X') {
+          // For X spells, assume X=2 for calculation
+          generic += 2
+        } else if (['W', 'U', 'B', 'R', 'G'].includes(clean)) {
+          colorCounts[clean]++
+        } else if (clean.includes('/')) {
+          // Hybrid - count as needing one of either color
+          const parts = clean.split('/')
+          const colorPart = parts.find(p => ['W', 'U', 'B', 'R', 'G'].includes(p))
+          if (colorPart) colorCounts[colorPart]++
+        }
+      })
+
+      const totalPips = Object.values(colorCounts).reduce((a, b) => a + b, 0)
+      const spellCost: ManaCost = {
+        mv: getCmcFromCard(cardData) || (generic + totalPips),
+        generic,
+        pips: {
+          W: colorCounts.W || undefined,
+          U: colorCounts.U || undefined,
+          B: colorCounts.B || undefined,
+          R: colorCounts.R || undefined,
+          G: colorCounts.G || undefined
+        }
+      }
+
+      // Build deck mana profile from sources (including multi-mana land bonuses)
+      const deckProfile: DeckManaProfile = {
+        deckSize: totalCards || 60,
+        totalLands: totalLands || 24,
+        landColorSources: {
+          W: deckSources?.W || 0,
+          U: deckSources?.U || 0,
+          B: deckSources?.B || 0,
+          R: deckSources?.R || 0,
+          G: deckSources?.G || 0,
+          C: deckSources?.C || 0
+        },
+        // Include bonus mana from multi-mana lands (Ancient Tomb, Bounce lands, etc.)
+        bonusManaFromLands: bonusManaFromLands || 0,
+        bonusColoredMana: bonusColoredMana ? {
+          W: bonusColoredMana.W || 0,
+          U: bonusColoredMana.U || 0,
+          B: bonusColoredMana.B || 0,
+          R: bonusColoredMana.R || 0,
+          G: bonusColoredMana.G || 0,
+          C: bonusColoredMana.C || 0
+        } : undefined
+      }
+
+      // Build acceleration context
+      const ctx: AccelContext = {
+        playDraw: accelContext.playDraw,
+        removalRate: accelContext.removalRate,
+        defaultRockSurvival: accelContext.defaultRockSurvival
+      }
+
+      // Compute accelerated castability
+      const result = computeAcceleratedCastability(
+        deckProfile,
+        spellCost,
+        producers,
+        ctx
+      )
+
+      return result
+    } catch (error) {
+      console.error('Error calculating accelerated castability:', error)
+      return null
+    }
+  }, [cardData, cardName, baseProbability, deckSources, totalLands, totalCards, producers, accelContext, showAcceleration, bonusManaFromLands, bonusColoredMana])
+}
+
 const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   cardName,
   quantity,
   deckSources,
   totalLands,
-  totalCards
+  totalCards,
+  producers,
+  accelContext,
+  showAcceleration = false,
+  bonusManaFromLands,
+  bonusColoredMana
 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -480,6 +609,21 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   const [error, setError] = useState<string | null>(null)
 
   const probabilities = useProbabilityCalculation(cardData, cardName, deckSources, totalLands, totalCards)
+
+  // Calculate accelerated castability if enabled (includes multi-mana land bonuses)
+  const acceleratedResult = useAcceleratedCastability(
+    cardData,
+    cardName,
+    probabilities.p2,
+    deckSources,
+    totalLands,
+    totalCards,
+    producers,
+    accelContext,
+    showAcceleration,
+    bonusManaFromLands,
+    bonusColoredMana
+  )
 
   useEffect(() => {
     if (!cardName) return
@@ -710,45 +854,79 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
             </Box>
           </Grid>
 
-          {/* P2 (Realistic) with progress bar */}
+          {/* P2 (Realistic) with progress bar - uses SegmentedProbabilityBar when acceleration enabled */}
           <Grid item xs={4} md={3}>
-            <Box>
-              <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-                <Typography variant="caption" color="text.secondary">
-                  P2 (Realistic):
-                </Typography>
-                <Tooltip title="Realistic probability accounting for mana screw" arrow>
-                  <HelpOutlineIcon sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
-                </Tooltip>
-                <Box
-                  sx={{
-                    bgcolor: getProbabilityColor(probabilities.p2, theme),
-                    color: '#fff',
-                    px: 1,
-                    py: 0.25,
-                    borderRadius: 1,
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    ml: 'auto',
-                  }}
-                >
-                  {probabilities.p2}%
-                </Box>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={probabilities.p2}
-                sx={{
-                  height: 6,
-                  borderRadius: 3,
-                  bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                  '& .MuiLinearProgress-bar': {
-                    borderRadius: 3,
-                    bgcolor: getProbabilityColor(probabilities.p2, theme),
-                  },
-                }}
+            {showAcceleration && acceleratedResult ? (
+              <SegmentedProbabilityBar
+                baseProbability={Math.round(acceleratedResult.base.p2 * 100)}
+                totalProbability={Math.round(acceleratedResult.withAcceleration.p2 * 100)}
+                height={6}
+                showLabels={true}
+                label="P2 (w/ Ramp):"
+                tooltipContent={
+                  <Box sx={{ p: 0.5 }}>
+                    <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      Accelerated Castability
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                      Probability accounting for mana acceleration (dorks, rocks, rituals).
+                    </Typography>
+                    <Typography variant="caption" component="div">
+                      • Lands only: {Math.round(acceleratedResult.base.p2 * 100)}%
+                    </Typography>
+                    <Typography variant="caption" component="div">
+                      • With ramp: {Math.round(acceleratedResult.withAcceleration.p2 * 100)}%
+                    </Typography>
+                    <Typography variant="caption" component="div">
+                      • Bonus: +{Math.round(acceleratedResult.accelerationImpact * 100)}%
+                    </Typography>
+                    {acceleratedResult.acceleratedTurn !== null && (
+                      <Typography variant="caption" component="div" sx={{ mt: 1, color: 'success.light' }}>
+                        Accelerated turn: {acceleratedResult.acceleratedTurn}
+                      </Typography>
+                    )}
+                  </Box>
+                }
               />
-            </Box>
+            ) : (
+              <Box>
+                <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
+                  <Typography variant="caption" color="text.secondary">
+                    P2 (Realistic):
+                  </Typography>
+                  <Tooltip title="Realistic probability accounting for mana screw" arrow>
+                    <HelpOutlineIcon sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
+                  </Tooltip>
+                  <Box
+                    sx={{
+                      bgcolor: getProbabilityColor(probabilities.p2, theme),
+                      color: '#fff',
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 1,
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      ml: 'auto',
+                    }}
+                  >
+                    {probabilities.p2}%
+                  </Box>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={probabilities.p2}
+                  sx={{
+                    height: 6,
+                    borderRadius: 3,
+                    bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 3,
+                      bgcolor: getProbabilityColor(probabilities.p2, theme),
+                    },
+                  }}
+                />
+              </Box>
+            )}
           </Grid>
         </Grid>
 

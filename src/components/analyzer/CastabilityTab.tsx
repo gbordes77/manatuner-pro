@@ -1,8 +1,13 @@
 import { HelpOutline as HelpOutlineIcon } from "@mui/icons-material";
 import { Box, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import React, { useMemo } from "react";
+import { useAcceleration } from "../../contexts/AccelerationContext";
 import { AnalysisResult } from "../../services/deckAnalyzer";
+import { producerCacheService } from "../../services/manaProducerService";
+import type { LandManaColor } from "../../types/lands";
+import type { ProducerInDeck } from "../../types/manaProducers";
 import ManaCostRow from "../ManaCostRow";
+import { AccelerationSettings } from "./AccelerationSettings";
 
 interface CastabilityTabProps {
   deckList: string;
@@ -13,26 +18,73 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
   deckList,
   analysisResult,
 }) => {
+  // Get acceleration context
+  const { settings, accelContext } = useAcceleration();
+
   // Filter out lands using Scryfall metadata from analysisResult
-  // This is more accurate than keyword matching
   const nonLandCards = useMemo(() => {
     if (!analysisResult?.cards) return [];
 
     return analysisResult.cards.filter(card => {
-      // Use Scryfall's isLand flag - most reliable
-      if (card.isLand === true) return false;
-
-      // For DFC cards, check if front face is castable (has mana cost)
-      // MDFC lands like Turntimber Symbiosis have a spell side we want to show
-      if (card.card_faces && card.card_faces.length > 0) {
-        const frontFace = card.card_faces[0];
-        // If front face has a mana cost, it's castable
-        if (frontFace.mana_cost) return true;
-      }
-
-      // Regular non-land cards
-      return true;
+      // Use isLand flag - lands are handled separately
+      return card.isLand !== true;
     });
+  }, [analysisResult?.cards]);
+
+  // Detect mana producers in the deck
+  const producersInDeck = useMemo<ProducerInDeck[]>(() => {
+    if (!analysisResult?.cards) return [];
+
+    const producers: ProducerInDeck[] = [];
+
+    for (const card of analysisResult.cards) {
+      // Skip lands - they're handled separately
+      if (card.isLand) continue;
+
+      // Check if this card is a known mana producer (sync lookup from cache/seed)
+      const producerDef = producerCacheService.get(card.name);
+      if (producerDef) {
+        producers.push({
+          def: producerDef,
+          copies: card.quantity || 1
+        });
+      }
+    }
+
+    return producers;
+  }, [analysisResult?.cards]);
+
+  // Calculate bonus mana from multi-mana lands (Ancient Tomb, Bounce lands, etc.)
+  const landBonuses = useMemo(() => {
+    let bonusManaFromLands = 0;
+    const bonusColoredMana: Partial<Record<LandManaColor, number>> = {};
+
+    if (!analysisResult?.cards) {
+      return { bonusManaFromLands, bonusColoredMana };
+    }
+
+    for (const card of analysisResult.cards) {
+      if (!card.isLand || !card.landMetadata) continue;
+
+      const metadata = card.landMetadata;
+      const quantity = card.quantity || 1;
+      const producesAmount = metadata.producesAmount ?? 1;
+
+      // If land produces more than 1 mana, calculate bonus
+      if (producesAmount > 1) {
+        const bonusPerLand = producesAmount - 1; // Extra mana beyond the base 1
+        bonusManaFromLands += bonusPerLand * quantity;
+
+        // Track colored bonus for each color this land produces
+        for (const color of metadata.produces) {
+          if (color !== 'C') {
+            bonusColoredMana[color] = (bonusColoredMana[color] ?? 0) + bonusPerLand * quantity;
+          }
+        }
+      }
+    }
+
+    return { bonusManaFromLands, bonusColoredMana };
   }, [analysisResult?.cards]);
 
   return (
@@ -43,10 +95,13 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
       <Typography
         variant="body2"
         color="text.secondary"
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       >
         Real-time mana costs from Scryfall with probability calculations
       </Typography>
+
+      {/* Acceleration Settings Panel */}
+      <AccelerationSettings producersInDeck={producersInDeck} />
 
       {nonLandCards.length > 0 ? (
         <Box>
@@ -76,6 +131,11 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
               deckSources={analysisResult?.colorDistribution}
               totalLands={analysisResult?.totalLands || 0}
               totalCards={analysisResult?.totalCards || 60}
+              producers={producersInDeck}
+              accelContext={accelContext}
+              showAcceleration={settings.showAcceleration && producersInDeck.length > 0}
+              bonusManaFromLands={landBonuses.bonusManaFromLands}
+              bonusColoredMana={landBonuses.bonusColoredMana}
             />
           ))}
         </Box>

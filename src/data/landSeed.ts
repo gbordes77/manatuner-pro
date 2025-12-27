@@ -1651,6 +1651,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'utility',
     produces: ['C'],
     producesAny: false,
+    producesAmount: 2, // Taps for 2 colorless
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1929,6 +1930,124 @@ const SEED_DATA: Record<string, SeedLandData> = {
   },
 
   // ===========================================================================
+  // MULTI-MANA LANDS - Lands that produce 2+ mana
+  // ===========================================================================
+
+  // Temple of the False God - 2 colorless but requires 5+ lands
+  'Temple of the False God': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    producesAmount: 2,
+    etbBehavior: {
+      type: 'conditional',
+      condition: { type: 'control_lands_min', threshold: 5 }
+    },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Nykthos - produces X based on devotion (estimated at 3 average)
+  'Nykthos, Shrine to Nyx': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: true, // Can produce any color based on devotion
+    producesAmount: 3, // Conservative estimate for devotion decks
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Gaea's Cradle - produces X green based on creatures (estimated at 3)
+  "Gaea's Cradle": {
+    category: 'utility',
+    produces: ['G'],
+    producesAny: false,
+    producesAmount: 3, // Conservative estimate for creature decks
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Serra's Sanctum - produces X white based on enchantments
+  "Serra's Sanctum": {
+    category: 'utility',
+    produces: ['W'],
+    producesAny: false,
+    producesAmount: 3, // Conservative estimate for enchantment decks
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Tolarian Academy - produces X blue based on artifacts
+  'Tolarian Academy': {
+    category: 'utility',
+    produces: ['U'],
+    producesAny: false,
+    producesAmount: 3, // Conservative estimate for artifact decks
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Cabal Coffers - produces X black based on swamps (needs Urborg usually)
+  'Cabal Coffers': {
+    category: 'utility',
+    produces: ['B'],
+    producesAny: false,
+    producesAmount: 4, // Estimate with several swamps
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Itlimoc, Cradle of the Sun (flipped Growing Rites)
+  'Itlimoc, Cradle of the Sun': {
+    category: 'utility',
+    produces: ['G'],
+    producesAny: false,
+    producesAmount: 3, // Based on creatures
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Lotus Field - 3 mana but sacrifices 2 lands on ETB
+  'Lotus Field': {
+    category: 'utility',
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
+    producesAmount: 3,
+    etbBehavior: { type: 'always_tapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // Castle Garenbrig can produce 6 green for creatures
+  // Already in seed but adding producesAmount for creature casting
+
+  // Eldrazi Temple - 2 colorless for Eldrazi spells
+  'Eldrazi Temple': {
+    category: 'utility',
+    produces: ['C'],
+    producesAny: false,
+    producesAmount: 2, // For Eldrazi spells
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false
+  },
+
+  // ===========================================================================
   // BOUNCE LANDS (10) - Ravnica
   // ===========================================================================
 
@@ -1936,6 +2055,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['W', 'U'],
     producesAny: false,
+    producesAmount: 2, // Bounce lands produce 2 mana
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1946,6 +2066,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['U', 'B'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1956,6 +2077,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['B', 'R'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1966,6 +2088,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['R', 'G'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1976,6 +2099,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['G', 'W'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1986,6 +2110,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['W', 'B'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1996,6 +2121,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['U', 'R'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -2006,6 +2132,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['B', 'G'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -2016,6 +2143,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['R', 'W'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -2026,6 +2154,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'bounce',
     produces: ['G', 'U'],
     producesAny: false,
+    producesAmount: 2,
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,

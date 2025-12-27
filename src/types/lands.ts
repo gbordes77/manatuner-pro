@@ -144,6 +144,15 @@ export interface LandMetadata {
   /** Whether this land can produce any color of mana */
   producesAny: boolean
 
+  /**
+   * Amount of mana produced per tap (default: 1)
+   * - Ancient Tomb: 2
+   * - Temple of the False God: 2 (conditional)
+   * - Bounce lands: 2
+   * - Most lands: 1 (default, can be omitted)
+   */
+  producesAmount?: number
+
   /** ETB behavior specification */
   etbBehavior: ETBBehavior
 
