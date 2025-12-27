@@ -63,8 +63,32 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
               <Box sx={{ textAlign: "center" }}>
-                <Typography variant="overline" color="text.secondary">
+                <Typography variant="overline" color="text.secondary" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                   Manabase Health
+                  <Tooltip
+                    title={
+                      <Box sx={{ p: 0.5 }}>
+                        <Typography variant="body2" fontWeight="bold" gutterBottom>How is this calculated?</Typography>
+                        <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                          This score uses hypergeometric probability to measure your deck's ability to cast spells on curve. The same math behind Frank Karsten's famous mana tables.
+                        </Typography>
+                        <Typography variant="caption" component="div" sx={{ mb: 0.5 }}>
+                          <strong>Factors:</strong>
+                        </Typography>
+                        <Typography variant="caption" component="div">• Color sources vs requirements</Typography>
+                        <Typography variant="caption" component="div">• Land ratio for your CMC</Typography>
+                        <Typography variant="caption" component="div">• Multi-color consistency</Typography>
+                        <Typography variant="caption" component="div" sx={{ mt: 1 }}>
+                          <strong>≥85%</strong> Excellent | <strong>≥70%</strong> Good | <strong>≥55%</strong> Average
+                        </Typography>
+                      </Box>
+                    }
+                    arrow
+                  >
+                    <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                      <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
+                    </IconButton>
+                  </Tooltip>
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, my: 1 }}>
                   <Typography variant={isMobile ? "h3" : "h2"} fontWeight="bold" color={`${health.color}.main`}>
