@@ -181,6 +181,48 @@ const KeyruneManaCost: React.FC<{ manaCost: string; size?: number }> = memo(({ m
 
 KeyruneManaCost.displayName = 'KeyruneManaCost';
 
+// Helper to get mana cost from card data, handling DFCs (double-faced cards)
+const getManaCostFromCard = (cardData: MTGCard | null): string | null => {
+  if (!cardData) return null
+
+  // If card has a direct mana_cost, use it
+  if (cardData.mana_cost) return cardData.mana_cost
+
+  // For DFCs (transform, modal_dfc, etc.), get mana cost from front face
+  if (cardData.card_faces && cardData.card_faces.length > 0) {
+    const frontFace = cardData.card_faces[0]
+    if (frontFace.mana_cost) return frontFace.mana_cost
+  }
+
+  return null
+}
+
+// Helper to get CMC from card data, handling DFCs
+const getCmcFromCard = (cardData: MTGCard | null): number => {
+  if (!cardData) return 0
+
+  // CMC is usually at root level even for DFCs
+  if (cardData.cmc !== undefined) return cardData.cmc
+
+  // Fallback: calculate from mana cost if needed
+  const manaCost = getManaCostFromCard(cardData)
+  if (manaCost) {
+    let cmc = 0
+    const symbols = manaCost.match(/\{[^}]+\}/g) || []
+    symbols.forEach(symbol => {
+      const clean = symbol.replace(/[{}]/g, '')
+      if (/^\d+$/.test(clean)) {
+        cmc += parseInt(clean)
+      } else if (clean !== 'X') {
+        cmc += 1 // Each colored/hybrid symbol adds 1
+      }
+    })
+    return cmc
+  }
+
+  return 0
+}
+
 // Probability calculation hook
 const useProbabilityCalculation = (
   cardData: MTGCard | null,
@@ -190,30 +232,45 @@ const useProbabilityCalculation = (
   totalCards?: number
 ) => {
   return useMemo(() => {
-    if (!cardData?.mana_cost && !cardName) {
+    if (!cardData?.mana_cost && !cardData?.card_faces && !cardName) {
       return { p1: 95, p2: 90 }
     }
 
-    const actualManaCost = cardData?.mana_cost || getSimulatedManaCost(cardName)
+    const actualManaCost = getManaCostFromCard(cardData) || getSimulatedManaCost(cardName)
 
     if (!actualManaCost) return { p1: 95, p2: 90 }
 
     try {
+      // Match regular mana symbols like {W}, {U}, etc.
       const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
+      // Match hybrid mana symbols like {W/R}, {U/B}, etc.
+      const hybridSymbols = actualManaCost.match(/\{([WUBRG])\/([WUBRG])\}/g) || []
+
       const colorCounts: { [color: string]: number } = {}
+      // Track hybrid mana separately - each hybrid can be paid by either color
+      const hybridMana: Array<{ color1: string; color2: string }> = []
 
       manaCostSymbols.forEach(symbol => {
         const color = symbol.replace(/[{}]/g, '')
         colorCounts[color] = (colorCounts[color] || 0) + 1
       })
 
-      if (Object.keys(colorCounts).length === 0) {
+      // Parse hybrid symbols
+      hybridSymbols.forEach(symbol => {
+        const match = symbol.match(/\{([WUBRG])\/([WUBRG])\}/)
+        if (match) {
+          hybridMana.push({ color1: match[1], color2: match[2] })
+        }
+      })
+
+      // If no regular colors AND no hybrid, it's colorless
+      if (Object.keys(colorCounts).length === 0 && hybridMana.length === 0) {
         return { p1: 99, p2: 98 }
       }
 
       const deckSize = totalCards || 60
       const landsInDeck = totalLands || 24
-      const cmc = cardData?.cmc || 2
+      const cmc = getCmcFromCard(cardData) || 2
 
       const hypergeometric = (N: number, K: number, n: number, k: number): number => {
         const combination = (a: number, b: number): number => {
@@ -239,6 +296,7 @@ const useProbabilityCalculation = (
 
       let p1Probability = 1
 
+      // Calculate probability for regular (non-hybrid) color requirements
       for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
         const actualSourcesForColor = deckSources?.[color] || 0
         const realSources = actualSourcesForColor > 0 ? actualSourcesForColor : 0
@@ -247,6 +305,23 @@ const useProbabilityCalculation = (
           ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded)
           : 0
         p1Probability = Math.min(p1Probability, p1Color)
+      }
+
+      // Calculate probability for hybrid mana - use the BETTER of the two colors
+      for (const hybrid of hybridMana) {
+        const sources1 = deckSources?.[hybrid.color1] || 0
+        const sources2 = deckSources?.[hybrid.color2] || 0
+
+        const p1Color1 = sources1 > 0
+          ? hypergeometric(landsInDeck, sources1, turn, 1)
+          : 0
+        const p1Color2 = sources2 > 0
+          ? hypergeometric(landsInDeck, sources2, turn, 1)
+          : 0
+
+        // For hybrid, take the MAX (best option) since player can choose
+        const p1Hybrid = Math.max(p1Color1, p1Color2)
+        p1Probability = Math.min(p1Probability, p1Hybrid)
       }
 
       const probHavingEnoughLands = hypergeometric(deckSize, landsInDeck, cardsSeen, turn)
@@ -454,7 +529,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
                   {quantity}x {cardData?.name || cardName}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Cost: {cardData?.mana_cost || '—'}
+                  Cost: {getManaCostFromCard(cardData) || '—'}
                 </Typography>
               </Box>
             </CardImageTooltip>
@@ -463,7 +538,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
           {/* Mana Cost with Keyrune + CMC */}
           <Grid item xs={4} md={2}>
             <Box display="flex" alignItems="center" gap={1.5}>
-              <KeyruneManaCost manaCost={cardData?.mana_cost || ''} size={20} />
+              <KeyruneManaCost manaCost={getManaCostFromCard(cardData) || ''} size={20} />
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -475,7 +550,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
                   fontSize: '0.75rem',
                 }}
               >
-                CMC: {cardData?.cmc || 0}
+                CMC: {getCmcFromCard(cardData)}
               </Typography>
             </Box>
           </Grid>

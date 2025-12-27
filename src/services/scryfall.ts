@@ -86,7 +86,16 @@ const convertScryfallCard = (scryfallCard: ScryfallCard): Card => {
     set_name: scryfallCard.set || 'Unknown',
     legalities: {},
     imageUris: scryfallCard.image_uris,
-    layout: scryfallCard.layout
+    layout: scryfallCard.layout,
+    // Include card_faces for DFCs (double-faced cards, transform, modal_dfc, etc.)
+    card_faces: scryfallCard.card_faces?.map(face => ({
+      name: face.name,
+      mana_cost: face.mana_cost,
+      type_line: face.type_line,
+      oracle_text: face.oracle_text,
+      colors: face.colors || [],
+      image_uris: face.image_uris
+    }))
   } as Card
 }
 

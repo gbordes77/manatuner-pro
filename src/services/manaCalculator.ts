@@ -733,7 +733,10 @@ export async function analyzeSpellCastability(
     }
   }> = []
 
-  for (const { color, count } of colorRequirements) {
+  for (const req of colorRequirements) {
+    const { color, count, isHybrid, altColor } = req
+
+    // Calculate probability for the primary color
     const tempoResult = calculateTempoAwareProbability({
       deck: { lands, totalCards },
       targetTurn: spell.cmc,
@@ -742,13 +745,34 @@ export async function analyzeSpellCastability(
       strategy: 'balanced'
     })
 
+    let bestResult = tempoResult
+    let bestColor = color
+
+    // For hybrid mana, calculate probability for the alternate color too
+    // and use the BETTER of the two (since player can choose either)
+    if (isHybrid && altColor) {
+      const altTempoResult = calculateTempoAwareProbability({
+        deck: { lands, totalCards },
+        targetTurn: spell.cmc,
+        colorNeeded: altColor,
+        symbolsNeeded: count,
+        strategy: 'balanced'
+      })
+
+      // Use the color with higher probability (easier to cast)
+      if (altTempoResult.tempoAdjusted > tempoResult.tempoAdjusted) {
+        bestResult = altTempoResult
+        bestColor = altColor
+      }
+    }
+
     results.push({
-      color,
+      color: bestColor,
       symbolsNeeded: count,
-      rawProbability: tempoResult.raw,
-      tempoAdjustedProbability: tempoResult.tempoAdjusted,
-      tempoImpact: tempoResult.tempoImpact,
-      scenarios: tempoResult.scenarios
+      rawProbability: bestResult.raw,
+      tempoAdjustedProbability: bestResult.tempoAdjusted,
+      tempoImpact: bestResult.tempoImpact,
+      scenarios: bestResult.scenarios
     })
   }
 
@@ -781,12 +805,23 @@ export async function analyzeSpellCastability(
 }
 
 /**
- * Parse a mana cost string to extract color requirements.
+ * Hybrid mana requirement - can be paid by either color
  */
-function parseManaCostColors(manaCost: string): Array<{ color: LandManaColor; count: number }> {
+interface HybridManaRequirement {
+  color1: LandManaColor
+  color2: LandManaColor
+  count: number
+}
+
+/**
+ * Parse a mana cost string to extract color requirements.
+ * Now properly handles hybrid mana by returning it separately.
+ */
+function parseManaCostColors(manaCost: string): Array<{ color: LandManaColor; count: number; isHybrid?: boolean; altColor?: LandManaColor }> {
   const colors: Record<LandManaColor, number> = {
     'W': 0, 'U': 0, 'B': 0, 'R': 0, 'G': 0, 'C': 0
   }
+  const hybridRequirements: HybridManaRequirement[] = []
 
   // Match mana symbols like {W}, {U}, {B}, {R}, {G}, {C}
   const symbolPattern = /\{([WUBRGC])\}/g
@@ -797,22 +832,36 @@ function parseManaCostColors(manaCost: string): Array<{ color: LandManaColor; co
     colors[color]++
   }
 
-  // Also handle hybrid mana like {W/U} - count as needing either
+  // Handle hybrid mana like {W/U}, {W/R}, etc.
+  // These can be paid by EITHER color, so we track them separately
   const hybridPattern = /\{([WUBRGC])\/([WUBRGC])\}/g
   while ((match = hybridPattern.exec(manaCost)) !== null) {
-    // For hybrid, we take the color that's easier to cast (lower requirement)
-    // This is a simplification - ideally we'd calculate both paths
     const color1 = match[1] as LandManaColor
-    // Note: color2 (match[2]) available for future hybrid mana path calculation
-
-    // Just count the first for simplicity
-    colors[color1]++
+    const color2 = match[2] as LandManaColor
+    hybridRequirements.push({ color1, color2, count: 1 })
   }
 
-  // Return only colors with requirements
-  return Object.entries(colors)
-    .filter(([_, count]) => count > 0)
-    .map(([color, count]) => ({ color: color as LandManaColor, count }))
+  // Build result array
+  const result: Array<{ color: LandManaColor; count: number; isHybrid?: boolean; altColor?: LandManaColor }> = []
+
+  // Add regular color requirements
+  for (const [color, count] of Object.entries(colors)) {
+    if (count > 0) {
+      result.push({ color: color as LandManaColor, count })
+    }
+  }
+
+  // Add hybrid requirements - mark them so probability calculation can use best option
+  for (const hybrid of hybridRequirements) {
+    result.push({
+      color: hybrid.color1,
+      count: hybrid.count,
+      isHybrid: true,
+      altColor: hybrid.color2
+    })
+  }
+
+  return result
 }
 
 /**
