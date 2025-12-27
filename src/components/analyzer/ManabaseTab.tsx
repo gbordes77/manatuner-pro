@@ -5,7 +5,7 @@ import { AnalysisResult } from "../../services/deckAnalyzer";
 import { LandBreakdownList } from "./LandBreakdownList";
 import { ManaDistributionChart } from "./ManaDistributionChart";
 import { ManabaseStats } from "./ManabaseStats";
-import { categorizeLandComplete, isLandCardComplete } from "./landUtils";
+import { categorizeLandFromMetadata } from "./landUtils";
 
 interface ManabaseTabProps {
   deckList: string;
@@ -20,27 +20,22 @@ export const ManabaseTab: React.FC<ManabaseTabProps> = ({
   isMobile,
   isSmallMobile,
 }) => {
-  // Analyser les terrains du deck
-  const landTypes: Record<string, string[]> = {};
+  // Use analysisResult.cards which has accurate Scryfall-based land detection
+  const landTypes = useMemo(() => {
+    const types: Record<string, string[]> = {};
 
-  deckList
-    .split("\n")
-    .filter((line) => line.trim())
-    .forEach((line) => {
-      const match = line.match(/^(\d+)\s+(.+?)(?:\s*\([A-Z0-9]+\)\s*\d*)?$/);
-      if (!match) return;
+    // Filter lands from analysisResult.cards (verified via Scryfall API)
+    const lands = analysisResult.cards.filter(card => card.isLand);
 
-      const quantity = parseInt(match[1]);
-      const cardName = match[2].replace(/^A-/, "").trim();
-
-      const isLand = isLandCardComplete(cardName);
-
-      if (isLand) {
-        const type = categorizeLandComplete(cardName);
-        if (!landTypes[type]) landTypes[type] = [];
-        landTypes[type].push(`${quantity}x ${cardName}`);
-      }
+    lands.forEach(card => {
+      // Use landMetadata if available for accurate categorization
+      const category = categorizeLandFromMetadata(card.name, card.landMetadata);
+      if (!types[category]) types[category] = [];
+      types[category].push(`${card.quantity}x ${card.name}`);
     });
+
+    return types;
+  }, [analysisResult.cards]);
 
   // Memoized color data for chart
   const colorData = useMemo(() =>

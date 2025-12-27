@@ -1,4 +1,42 @@
+import { LAND_CATEGORY_NAMES, LandMetadata } from "../../types/lands";
+
+/**
+ * Categorize a land using Scryfall-verified metadata.
+ * This replaces keyword-based detection which caused false positives
+ * (e.g., "Swampsnare Trap" matching "swamp" keyword).
+ *
+ * @param name - Card name
+ * @param landMetadata - Optional LandMetadata from Scryfall API
+ * @returns Human-readable category string
+ */
+export function categorizeLandFromMetadata(
+  name: string,
+  landMetadata?: LandMetadata | null
+): string {
+  // If we have verified metadata, use it
+  if (landMetadata) {
+    return LAND_CATEGORY_NAMES[landMetadata.category] || "Other Land";
+  }
+
+  // Fallback to the original categorization for backwards compatibility
+  // This should rarely be used since analysisResult.cards has metadata
+  return categorizeLandComplete(name);
+}
+
+/**
+ * Check if a card is a land using metadata.
+ * Prefer this over isLandCardComplete when metadata is available.
+ *
+ * @param card - Card object with isLand boolean from Scryfall
+ * @returns true if card is a land
+ */
+export function isLandFromMetadata(card: { isLand?: boolean }): boolean {
+  return card.isLand === true;
+}
+
 // Fonction de détection complète utilisant notre base de données
+// WARNING: This function uses keyword matching which can cause false positives!
+// Use isLandFromMetadata or check card.isLand from Scryfall data when possible.
 export function isLandCardComplete(name: string): boolean {
   const lowerName = name.toLowerCase();
 
