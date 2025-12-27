@@ -334,27 +334,27 @@ const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
   const metrics = [
     {
       label: 'Average Score (7 cards)',
-      shortLabel: 'Avg. 7 cards',
+      shortLabel: 'Expected (7 cards)',
       value: result.expectedScores.hand7,
       highlight: true,
       tooltip: TOOLTIPS.expectedScore7
     },
     {
       label: 'Average Score (6 cards)',
-      shortLabel: 'Avg. 6 cards',
+      shortLabel: 'Expected (6 cards)',
       value: result.expectedScores.hand6,
       tooltip: TOOLTIPS.expectedScore6
     },
     {
       label: 'Keep 7 Threshold',
-      shortLabel: 'Thresh. 7',
+      shortLabel: 'Mull if below',
       value: result.thresholds.keep7,
       isThreshold: true,
       tooltip: TOOLTIPS.threshold7
     },
     {
       label: 'Keep 6 Threshold',
-      shortLabel: 'Thresh. 6',
+      shortLabel: 'Mull to 5 if below',
       value: result.thresholds.keep6,
       isThreshold: true,
       tooltip: TOOLTIPS.threshold6
@@ -404,22 +404,30 @@ interface OptimalStrategyProps {
 
 const OptimalStrategy: React.FC<OptimalStrategyProps> = ({ result }) => {
   const strategies = [
-    { label: 'Keep 7 cards if:', threshold: result.thresholds.keep7, color: '#4caf50' },
-    { label: 'Keep 6 cards if:', threshold: result.thresholds.keep6, color: '#2196f3' },
-    { label: 'Keep 5 cards if:', threshold: result.thresholds.keep5, color: '#ff9800' },
+    { label: 'Keep 7 cards', description: 'Your hand is good enough', threshold: result.thresholds.keep7, color: '#4caf50' },
+    { label: 'Keep 6 cards', description: 'After one mulligan', threshold: result.thresholds.keep6, color: '#2196f3' },
+    { label: 'Keep 5 cards', description: 'After two mulligans', threshold: result.thresholds.keep5, color: '#ff9800' },
   ]
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-        <Typography variant="subtitle2">🎯 Optimal Strategy</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+        <Typography variant="subtitle2">🎯 Decision Thresholds</Typography>
         <InfoTooltip title={TOOLTIPS.optimalStrategy} />
       </Box>
+      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+        Keep your hand if its score meets or exceeds these minimums:
+      </Typography>
       {strategies.map((s, i) => (
         <Box key={i} sx={{ mb: 1.5 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-            <Typography variant="body2">{s.label}</Typography>
-            <Typography variant="body2" fontWeight="bold">Score ≥ {s.threshold}</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 0.5 }}>
+            <Box>
+              <Typography variant="body2" component="span" fontWeight="medium">{s.label}</Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                ({s.description})
+              </Typography>
+            </Box>
+            <Typography variant="body2" fontWeight="bold">≥ {s.threshold}</Typography>
           </Box>
           <LinearProgress
             variant="determinate"
@@ -826,6 +834,47 @@ export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile: _isMo
               {result.deckQuality.toUpperCase()} (Score: {result.qualityScore}/100)
             </Typography>
           </Alert>
+
+          {/* Pedagogical Introduction */}
+          <Accordion defaultExpanded sx={{ mb: 3 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="subtitle2">📖 How to use this analysis</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box>
+                  <Typography variant="body2" fontWeight="bold" gutterBottom>
+                    🎮 What is a Mulligan?
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    At game start, you draw 7 cards. If your hand is bad (wrong lands, no playable spells),
+                    you can shuffle it back and draw a new hand with 1 fewer card. This is called a "mulligan".
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography variant="body2" fontWeight="bold" gutterBottom>
+                    🎯 Understanding the Scores (0-100)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Each hand gets a score based on how well you can play your first turns.
+                    <strong> 90+</strong> = excellent hand, <strong>70-89</strong> = good,
+                    <strong> 55-69</strong> = playable but risky, <strong>&lt;55</strong> = consider mulligan.
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography variant="body2" fontWeight="bold" gutterBottom>
+                    ⚖️ The Key Decision
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Compare your hand's score to the <strong>"Mull if below"</strong> threshold.
+                    If your hand scores lower, statistically you'll get a better 6-card hand by mulliganing.
+                  </Typography>
+                </Box>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
 
           {/* Expected Values */}
           <ExpectedValues result={result} />
