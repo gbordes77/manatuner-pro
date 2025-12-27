@@ -19,7 +19,7 @@ import {
     Typography
 } from "@mui/material";
 import React, { useMemo } from "react";
-import { MANA_COLORS, MANA_COLOR_STYLES, ManaColor } from "../../constants/manaColors";
+import { MANA_COLORS } from "../../constants/manaColors";
 import { AnalysisResult } from "../../services/deckAnalyzer";
 
 interface DashboardTabProps {
@@ -185,36 +185,54 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            🎨 Color Distribution
+            <i className="ms ms-c ms-cost" style={{ fontSize: 24 }} /> Color Distribution
           </Typography>
-          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
+          <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mt: 2 }}>
             {MANA_COLORS.map((color) => {
               const count = analysisResult.colorDistribution[color] || 0;
               if (count === 0) return null;
 
-              const style = MANA_COLOR_STYLES[color as ManaColor];
               const total = Object.values(analysisResult.colorDistribution).reduce((a, b) => a + b, 0);
               const percent = ((count / total) * 100).toFixed(0);
+              const manaClass = color.toLowerCase(); // W -> w, U -> u, etc.
 
               return (
-                <Chip
+                <Box
                   key={color}
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                      <strong>{color}</strong>
-                      <span>{count} sources</span>
-                      <Typography variant="caption" sx={{ opacity: 0.8 }}>({percent}%)</Typography>
-                    </Box>
-                  }
                   sx={{
-                    backgroundColor: style.bg,
-                    color: style.text,
-                    border: `2px solid ${style.border}`,
-                    fontWeight: "bold",
-                    py: 2,
-                    "& .MuiChip-label": { px: 1.5 },
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    backgroundColor: "background.paper",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    px: 2,
+                    py: 1,
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                    },
                   }}
-                />
+                >
+                  <i
+                    className={`ms ms-${manaClass} ms-cost`}
+                    style={{
+                      fontSize: 28,
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))",
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="body2" fontWeight="bold" lineHeight={1.2} color="text.primary">
+                      {count} sources
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {percent}%
+                    </Typography>
+                  </Box>
+                </Box>
               );
             })}
           </Box>

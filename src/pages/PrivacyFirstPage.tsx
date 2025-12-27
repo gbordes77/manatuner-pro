@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { FloatingManaSymbols } from "../components/common/FloatingManaSymbols";
 
 const PrivacyFirstPage: React.FC = () => {
   const theme = useTheme();
@@ -83,7 +84,10 @@ const PrivacyFirstPage: React.FC = () => {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      {/* Floating mana symbols background */}
+      <FloatingManaSymbols />
+
       {/* Hero Section */}
       <Card
         sx={{

@@ -29,6 +29,7 @@ import {
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedContainer } from '../components/common/AnimatedContainer';
+import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols';
 
 export const GuidePage: React.FC = () => {
   const navigate = useNavigate();
@@ -133,7 +134,10 @@ export const GuidePage: React.FC = () => {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      {/* Floating mana symbols background */}
+      <FloatingManaSymbols />
+
       {/* Hero Section */}
       <AnimatedContainer animation="fadeInUp">
         <Box sx={{ textAlign: "center", mb: 5 }}>

@@ -20,6 +20,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedContainer } from '../components/common/AnimatedContainer';
+import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols';
 import { clearAllLocalData, exportAnalyses, getMyAnalyses } from '../lib/privacy';
 
 const MyAnalysesPage: React.FC = () => {
@@ -52,7 +53,10 @@ const MyAnalysesPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      {/* Floating mana symbols background */}
+      <FloatingManaSymbols />
+
       {/* Header */}
       <AnimatedContainer animation="fadeInUp">
         <Box sx={{ textAlign: "center", mb: 5 }}>

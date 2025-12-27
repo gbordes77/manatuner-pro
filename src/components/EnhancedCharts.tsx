@@ -31,7 +31,6 @@ import {
 } from 'recharts';
 import type { DeckCard } from '../services/deckAnalyzer';
 import { DeckAnalysis } from '../types';
-import { MulliganDecisionChart } from './MulliganDecisionChart';
 
 interface EnhancedChartsProps {
   analysis: DeckAnalysis;
@@ -321,13 +320,6 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
             </ResponsiveContainer>
           </Paper>
         </Grid>
-
-        {/* Advanced Mulligan Decision Chart - Monte Carlo + Dynamic Programming */}
-        {cards && cards.length > 0 && (
-          <Grid item xs={12}>
-            <MulliganDecisionChart cards={cards} />
-          </Grid>
-        )}
 
         {/* Summary Cards */}
         <Grid item xs={12}>

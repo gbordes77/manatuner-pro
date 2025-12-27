@@ -1,59 +1,158 @@
 import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
 import {
     Box,
-    Chip,
     CircularProgress,
     Fade,
     Grid,
+    LinearProgress,
     Paper,
     Tooltip,
-    Typography
+    Typography,
+    useTheme
 } from '@mui/material'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
 import { CardImageTooltip } from './CardImageTooltip'
-import { ManaSequence } from './common/ManaSymbols'
 
 interface ManaCostRowProps {
   cardName: string
   quantity: number
-  deckSources?: Record<string, number>  // Sources par couleur dans le deck
-  totalLands?: number                    // Nombre total de terrains
-  totalCards?: number                    // Nombre total de cartes
+  deckSources?: Record<string, number>
+  totalLands?: number
+  totalCards?: number
 }
 
-// Parse Scryfall mana cost et crée une séquence pour nos symboles légaux
-const parseManaCostToSymbols = (manaCost: string): Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> => {
-  if (!manaCost) return [];
+// Keyrune mana symbol component
+const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol, size = 18 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
-  const sequence: Array<'W' | 'U' | 'B' | 'R' | 'G' | 'C'> = [];
-  const matches = manaCost.match(/\{[^}]+\}/g) || [];
+  const symbolMap: Record<string, string> = {
+    'W': 'w',
+    'U': 'u',
+    'B': 'b',
+    'R': 'r',
+    'G': 'g',
+    'C': 'c',
+    'S': 's',
+    'X': 'x',
+  };
 
-  matches.forEach(symbol => {
-    const cleanSymbol = symbol.replace(/[{}]/g, '');
+  const cleanSymbol = symbol.replace(/[{}]/g, '');
 
-    if (['W', 'U', 'B', 'R', 'G'].includes(cleanSymbol)) {
-      sequence.push(cleanSymbol as 'W' | 'U' | 'B' | 'R' | 'G');
-    } else if (/^\d+$/.test(cleanSymbol)) {
-      // Pour les coûts génériques, ajouter des symboles colorless
-      const count = parseInt(cleanSymbol);
-      for (let i = 0; i < count; i++) {
-        sequence.push('C');
-      }
-    } else if (cleanSymbol === 'X') {
-      sequence.push('C'); // X compte comme colorless
+  // Generic mana (numbers) - display as numbered circle
+  if (/^\d+$/.test(cleanSymbol)) {
+    const num = parseInt(cleanSymbol);
+    return (
+      <Box
+        component="span"
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          bgcolor: isDark ? '#4a4a4a' : '#CAC5C0',
+          color: isDark ? '#e0e0e0' : '#333',
+          fontSize: size * 0.55,
+          fontWeight: 'bold',
+          fontFamily: 'monospace',
+          border: `1px solid ${isDark ? '#666' : '#999'}`,
+          boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        }}
+      >
+        {num}
+      </Box>
+    );
+  }
+
+  // X cost
+  if (cleanSymbol === 'X') {
+    return (
+      <Box
+        component="span"
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          bgcolor: isDark ? '#4a4a4a' : '#CAC5C0',
+          color: isDark ? '#e0e0e0' : '#333',
+          fontSize: size * 0.55,
+          fontWeight: 'bold',
+          fontFamily: 'monospace',
+          border: `1px solid ${isDark ? '#666' : '#999'}`,
+          boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        }}
+      >
+        X
+      </Box>
+    );
+  }
+
+  // Hybrid mana (e.g., "W/U", "2/W")
+  if (cleanSymbol.includes('/')) {
+    const parts = cleanSymbol.split('/');
+    const firstPart = parts[0];
+    const secondPart = parts[1];
+
+    // Try to use the color part
+    const colorPart = symbolMap[firstPart] || symbolMap[secondPart];
+    if (colorPart) {
+      return (
+        <i
+          className={`ms ms-${colorPart} ms-cost`}
+          style={{
+            fontSize: size,
+            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+          }}
+        />
+      );
     }
-  });
+  }
 
-  return sequence;
+  // Standard color symbols with Keyrune
+  if (symbolMap[cleanSymbol]) {
+    return (
+      <i
+        className={`ms ms-${symbolMap[cleanSymbol]} ms-cost`}
+        style={{
+          fontSize: size,
+          filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+        }}
+      />
+    );
+  }
+
+  // Fallback
+  return (
+    <Box
+      component="span"
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        bgcolor: '#888',
+        color: '#fff',
+        fontSize: size * 0.5,
+        fontWeight: 'bold',
+      }}
+    >
+      ?
+    </Box>
+  );
 };
 
-// Composant amélioré avec nos symboles légaux
-const ScryfallManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
-  const symbols = useMemo(() => parseManaCostToSymbols(manaCost), [manaCost]);
-
-  if (symbols.length === 0) {
+// Parse and render full mana cost string with Keyrune
+const KeyruneManaCost: React.FC<{ manaCost: string; size?: number }> = memo(({ manaCost, size = 18 }) => {
+  if (!manaCost) {
     return (
       <Typography variant="body2" color="text.secondary" component="span">
         No cost
@@ -61,28 +160,28 @@ const ScryfallManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
     );
   }
 
-  return <ManaSequence sequence={symbols} size="small" />;
+  const matches = manaCost.match(/\{[^}]+\}/g) || [];
+
+  if (matches.length === 0) {
+    return (
+      <Typography variant="body2" color="text.secondary" component="span">
+        {manaCost}
+      </Typography>
+    );
+  }
+
+  return (
+    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3 }}>
+      {matches.map((symbol, index) => (
+        <KeyruneManaSymbol key={index} symbol={symbol} size={size} />
+      ))}
+    </Box>
+  );
 });
 
-// Memoized mana symbols renderer (legacy pour compatibilité)
-const ManaSymbols = memo(({ manaCost }: { manaCost: string }) => {
-  // Utiliser nos nouveaux symboles légaux
-  return <ScryfallManaSymbols manaCost={manaCost} />;
-})
+KeyruneManaCost.displayName = 'KeyruneManaCost';
 
-ScryfallManaSymbols.displayName = 'ScryfallManaSymbols'
-ManaSymbols.displayName = 'ManaSymbols'
-
-// Memoized probability calculator
-// Basé sur la méthodologie du site original (project-manabase)
-//
-// P1 = Probabilité CONDITIONNELLE avec TES sources (assume land drops OK)
-//      "Assuming you hit all your landdrops"
-//      Parmi N lands, quelle proba d'avoir les bonnes couleurs?
-//
-// P2 = P1 × Probabilité d'avoir N lands au tour N
-//      "Realistic probability" - inclut le risque de mana screw
-//      P2 ≤ P1 toujours
+// Probability calculation hook
 const useProbabilityCalculation = (
   cardData: MTGCard | null,
   cardName: string,
@@ -100,7 +199,6 @@ const useProbabilityCalculation = (
     if (!actualManaCost) return { p1: 95, p2: 90 }
 
     try {
-      // Parser le coût de mana pour extraire les symboles colorés
       const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
       const colorCounts: { [color: string]: number } = {}
 
@@ -109,7 +207,6 @@ const useProbabilityCalculation = (
         colorCounts[color] = (colorCounts[color] || 0) + 1
       })
 
-      // Si pas de symboles colorés (colorless spell), très haute probabilité
       if (Object.keys(colorCounts).length === 0) {
         return { p1: 99, p2: 98 }
       }
@@ -118,7 +215,6 @@ const useProbabilityCalculation = (
       const landsInDeck = totalLands || 24
       const cmc = cardData?.cmc || 2
 
-      // Fonction hypergeométrique cumulative (au moins k succès)
       const hypergeometric = (N: number, K: number, n: number, k: number): number => {
         const combination = (a: number, b: number): number => {
           if (b > a || b < 0) return 0
@@ -138,43 +234,30 @@ const useProbabilityCalculation = (
         return probability
       }
 
-      // Tour où on veut jouer = CMC (plafonné à 10)
       const turn = Math.max(1, Math.min(cmc, 10))
-      // Cartes vues = 7 (main) + (turn - 1) pioches
       const cardsSeen = 7 + (turn - 1)
 
-      // ═══════════════════════════════════════════════════════════
-      // P1: Probabilité CONDITIONNELLE (assume qu'on a 'turn' lands)
-      // ═══════════════════════════════════════════════════════════
       let p1Probability = 1
 
       for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
         const actualSourcesForColor = deckSources?.[color] || 0
         const realSources = actualSourcesForColor > 0 ? actualSourcesForColor : 0
 
-        // Parmi 'turn' terrains piochés du deck, proba d'avoir assez de cette couleur
         const p1Color = realSources > 0
           ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded)
           : 0
         p1Probability = Math.min(p1Probability, p1Color)
       }
 
-      // ═══════════════════════════════════════════════════════════
-      // Probabilité d'avoir au moins 'turn' lands parmi 'cardsSeen' cartes
-      // ═══════════════════════════════════════════════════════════
       const probHavingEnoughLands = hypergeometric(deckSize, landsInDeck, cardsSeen, turn)
-
-      // ═══════════════════════════════════════════════════════════
-      // P2 = P1 × Probabilité d'avoir assez de lands (RÉALISTE)
-      // ═══════════════════════════════════════════════════════════
       const p2Probability = p1Probability * probHavingEnoughLands
 
       const finalP1 = Math.round(Math.max(Math.min(p1Probability * 100, 99), 0))
       const finalP2 = Math.round(Math.max(Math.min(p2Probability * 100, 99), 0))
 
       return {
-        p1: finalP1,  // Optimiste (assume lands OK)
-        p2: finalP2   // Réaliste (inclut mana screw)
+        p1: finalP1,
+        p2: finalP2
       }
 
     } catch (error) {
@@ -184,7 +267,7 @@ const useProbabilityCalculation = (
   }, [cardData, cardName, deckSources, totalLands, totalCards])
 }
 
-// Fonction helper pour simuler les coûts de mana
+// Helper function for simulated mana costs
 const getSimulatedManaCost = (cardName: string): string => {
   const commonCosts: { [key: string]: string } = {
     'Lightning Bolt': '{R}',
@@ -235,11 +318,6 @@ const getSimulatedManaCost = (cardName: string): string => {
     'Ancestral Recall': '{U}',
     'Black Lotus': '{0}',
     'Time Walk': '{1}{U}',
-    'Mox Pearl': '{0}',
-    'Mox Ruby': '{0}',
-    'Mox Sapphire': '{0}',
-    'Mox Jet': '{0}',
-    'Mox Emerald': '{0}',
     'Sol Ring': '{1}',
     'Mana Crypt': '{0}',
     'Birds of Paradise': '{G}',
@@ -249,25 +327,13 @@ const getSimulatedManaCost = (cardName: string): string => {
   return commonCosts[cardName] || '{2}'
 }
 
-// Memoized quality chip component
-const QualityChip = memo(({ probability }: { probability: number }) => {
-  const chipData = useMemo(() => {
-    if (probability >= 80) return { label: 'Excellent', class: 'excellent' }
-    if (probability >= 65) return { label: 'Good', class: 'good' }
-    if (probability >= 45) return { label: 'Average', class: 'average' }
-    return { label: 'Poor', class: 'poor' }
-  }, [probability])
-
-  return (
-    <Chip
-      label={`${probability}%`}
-      size="small"
-      className={`mtg-chip ${chipData.class}`}
-    />
-  )
-})
-
-QualityChip.displayName = 'QualityChip'
+// Get color based on probability
+const getProbabilityColor = (prob: number, theme: ReturnType<typeof useTheme>) => {
+  if (prob >= 80) return theme.palette.success.main;
+  if (prob >= 65) return theme.palette.info.main;
+  if (prob >= 45) return theme.palette.warning.main;
+  return theme.palette.error.main;
+};
 
 const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   cardName,
@@ -276,11 +342,12 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   totalLands,
   totalCards
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [cardData, setCardData] = useState<MTGCard | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Memoized probability calculation with actual deck sources
   const probabilities = useProbabilityCalculation(cardData, cardName, deckSources, totalLands, totalCards)
 
   useEffect(() => {
@@ -291,17 +358,11 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
       setError(null)
 
       try {
-        console.log(`🔍 Recherche Scryfall pour: "${cardName}"`)
         const data = await searchCardByName(cardName)
-        console.log(`📋 Résultat Scryfall:`, data)
         setCardData(data)
-
-        if (!data) {
-          console.warn(`⚠️ Aucune donnée trouvée pour: "${cardName}"`)
-        }
       } catch (err) {
         setError('Failed to fetch card data')
-        console.error('❌ Erreur lors de la récupération des données de carte:', err)
+        console.error('Error fetching card:', err)
       } finally {
         setLoading(false)
       }
@@ -312,28 +373,24 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
 
   if (loading) {
     return (
-      <Paper className="mtg-card animate-pulse" sx={{ p: 2, mb: 1 }}>
+      <Paper sx={{ p: 2, mb: 1.5 }}>
         <Grid container alignItems="center" spacing={2}>
-          <Grid item xs={3}>
-            <Typography variant="body2" fontWeight="600">
+          <Grid item xs={4}>
+            <Typography variant="body1" fontWeight="600">
               {quantity}x {cardName}
             </Typography>
           </Grid>
-          <Grid item xs={3} display="flex" alignItems="center" gap={1}>
-            <CircularProgress size={20} />
+          <Grid item xs={4} display="flex" alignItems="center" gap={1}>
+            <CircularProgress size={18} />
             <Typography variant="body2" color="text.secondary">
               Loading...
             </Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Box className="mtg-progress" sx={{ height: 8 }}>
-              <Box className="mtg-progress-bar animate-pulse" sx={{ width: '60%' }} />
-            </Box>
+          <Grid item xs={2}>
+            <Typography variant="body2" color="text.secondary">—</Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Box className="mtg-progress" sx={{ height: 8 }}>
-              <Box className="mtg-progress-bar animate-pulse" sx={{ width: '40%' }} />
-            </Box>
+          <Grid item xs={2}>
+            <Typography variant="body2" color="text.secondary">—</Typography>
           </Grid>
         </Grid>
       </Paper>
@@ -342,152 +399,192 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
 
   if (error) {
     return (
-      <Paper className="mtg-card" sx={{ p: 2, mb: 1, borderColor: 'var(--mtg-red)' }}>
+      <Paper sx={{ p: 2, mb: 1.5, borderLeft: `3px solid ${theme.palette.error.main}` }}>
         <Grid container alignItems="center" spacing={2}>
-          <Grid item xs={3}>
-            <Typography variant="body2" fontWeight="600">
+          <Grid item xs={4}>
+            <Typography variant="body1" fontWeight="600">
               {quantity}x {cardName}
             </Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <span className="mana-symbol generic">2</span>
-              <Typography variant="caption" color="error">
-                API Error
-              </Typography>
-            </Box>
+          <Grid item xs={4}>
+            <Typography variant="caption" color="error">
+              Card not found
+            </Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Chip
-              label="Unknown"
-              size="small"
-              sx={{
-                background: 'linear-gradient(135deg, #95a5a6, #7f8c8d)',
-                color: 'white',
-                fontWeight: 600
-              }}
-            />
+          <Grid item xs={2}>
+            <Typography variant="body2" color="text.secondary">—</Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Chip
-              label="Unknown"
-              size="small"
-              sx={{
-                background: 'linear-gradient(135deg, #95a5a6, #7f8c8d)',
-                color: 'white',
-                fontWeight: 600
-              }}
-            />
+          <Grid item xs={2}>
+            <Typography variant="body2" color="text.secondary">—</Typography>
           </Grid>
         </Grid>
       </Paper>
     )
   }
 
+  // Extract set code from card data
+  const setCode = cardData?.set?.toUpperCase() || '';
+
   return (
-    <Fade in={true} timeout={500}>
-      <Paper className="mtg-card animate-fadeIn" sx={{ p: 2, mb: 1 }}>
+    <Fade in={true} timeout={300}>
+      <Paper
+        sx={{
+          p: 2,
+          mb: 1.5,
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
+          },
+        }}
+      >
+        {/* Row 1: Card name, mana cost, CMC, P1, P2 */}
         <Grid container alignItems="center" spacing={2}>
           {/* Card Name & Quantity */}
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} md={4}>
             <CardImageTooltip cardName={cardData?.name || cardName}>
               <Box>
                 <Typography
-                  variant="body2"
+                  variant="body1"
                   fontWeight="600"
                   sx={{
                     cursor: 'pointer',
-                    '&:hover': { color: 'var(--mtg-blue)' }
+                    '&:hover': { color: theme.palette.primary.main }
                   }}
                 >
                   {quantity}x {cardData?.name || cardName}
                 </Typography>
-                {cardData?.mana_cost && (
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    Cost: {cardData.mana_cost}
-                  </Typography>
-                )}
+                <Typography variant="caption" color="text.secondary">
+                  Cost: {cardData?.mana_cost || '—'}
+                </Typography>
               </Box>
             </CardImageTooltip>
           </Grid>
 
-          {/* Mana Cost */}
-          <Grid item xs={12} sm={3}>
-            <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap">
-              <ManaSymbols manaCost={cardData?.mana_cost || ''} />
-              <Tooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total mana needed to cast this spell." arrow>
-                <Typography variant="caption" color="text.secondary" ml={1} sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
-                  CMC: {cardData?.cmc || 2}
-                  <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
+          {/* Mana Cost with Keyrune + CMC */}
+          <Grid item xs={4} md={2}>
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <KeyruneManaCost manaCost={cardData?.mana_cost || ''} size={20} />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  fontSize: '0.75rem',
+                }}
+              >
+                CMC: {cardData?.cmc || 0}
+              </Typography>
+            </Box>
+          </Grid>
+
+          {/* P1 (Perfect) with progress bar */}
+          <Grid item xs={4} md={3}>
+            <Box>
+              <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
+                <Typography variant="caption" color="text.secondary">
+                  P1 (Perfect):
                 </Typography>
-              </Tooltip>
+                <Tooltip title="Probability assuming you hit all land drops on curve" arrow>
+                  <HelpOutlineIcon sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
+                </Tooltip>
+                <Box
+                  sx={{
+                    bgcolor: getProbabilityColor(probabilities.p1, theme),
+                    color: '#fff',
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    ml: 'auto',
+                  }}
+                >
+                  {probabilities.p1}%
+                </Box>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={probabilities.p1}
+                sx={{
+                  height: 6,
+                  borderRadius: 3,
+                  bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 3,
+                    bgcolor: getProbabilityColor(probabilities.p1, theme),
+                  },
+                }}
+              />
             </Box>
           </Grid>
 
-          {/* P1 Probability */}
-          <Grid item xs={6} sm={3}>
+          {/* P2 (Realistic) with progress bar */}
+          <Grid item xs={4} md={3}>
             <Box>
-              <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                <Tooltip title="P1 (Perfect): Probability of casting this spell assuming you hit all your land drops on curve. This is the best-case scenario." arrow>
-                  <Typography variant="caption" fontWeight="600" sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
-                    P1 (Perfect):
-                    <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
-                  </Typography>
+              <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
+                <Typography variant="caption" color="text.secondary">
+                  P2 (Realistic):
+                </Typography>
+                <Tooltip title="Realistic probability accounting for mana screw" arrow>
+                  <HelpOutlineIcon sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
                 </Tooltip>
-                <QualityChip probability={probabilities.p1} />
-              </Box>
-              <Box className="mtg-progress" sx={{ height: 6 }}>
                 <Box
-                  className="mtg-progress-bar"
                   sx={{
-                    width: `${probabilities.p1}%`,
-                    background: `linear-gradient(90deg, var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p1 >= 80 ? 'green' : probabilities.p1 >= 65 ? 'blue' : probabilities.p1 >= 45 ? 'gold' : 'red'}-light))`
+                    bgcolor: getProbabilityColor(probabilities.p2, theme),
+                    color: '#fff',
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    ml: 'auto',
                   }}
-                />
+                >
+                  {probabilities.p2}%
+                </Box>
               </Box>
-            </Box>
-          </Grid>
-
-          {/* P2 Probability */}
-          <Grid item xs={6} sm={3}>
-            <Box>
-              <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                <Tooltip title="P2 (Realistic): Probability that accounts for mana screw (not drawing enough lands). This gives you a more accurate picture of how often you can actually cast this spell." arrow>
-                  <Typography variant="caption" fontWeight="600" sx={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}>
-                    P2 (Realistic):
-                    <HelpOutlineIcon sx={{ fontSize: 12, ml: 0.3, opacity: 0.7 }} />
-                  </Typography>
-                </Tooltip>
-                <QualityChip probability={probabilities.p2} />
-              </Box>
-              <Box className="mtg-progress" sx={{ height: 6 }}>
-                <Box
-                  className="mtg-progress-bar"
-                  sx={{
-                    width: `${probabilities.p2}%`,
-                    background: `linear-gradient(90deg, var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}), var(--mtg-${probabilities.p2 >= 80 ? 'green' : probabilities.p2 >= 65 ? 'blue' : probabilities.p2 >= 45 ? 'gold' : 'red'}-light))`
-                  }}
-                />
-              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={probabilities.p2}
+                sx={{
+                  height: 6,
+                  borderRadius: 3,
+                  bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 3,
+                    bgcolor: getProbabilityColor(probabilities.p2, theme),
+                  },
+                }}
+              />
             </Box>
           </Grid>
         </Grid>
 
-        {/* Additional Card Info */}
-        {cardData && (
-          <Box mt={1} pt={1} borderTop="1px solid #e2e8f0">
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" color="text.secondary">
-                  <strong>Type:</strong> {cardData.type_line}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" color="text.secondary">
-                  <strong>Set:</strong> {cardData.set_name} ({(cardData.set || 'unknown').toUpperCase()})
-                </Typography>
-              </Grid>
-            </Grid>
+        {/* Row 2: Type line and Set */}
+        {(cardData?.type_line || setCode) && (
+          <Box
+            sx={{
+              mt: 1.5,
+              pt: 1.5,
+              borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            {cardData?.type_line && (
+              <Typography variant="caption" color="text.secondary">
+                Type: {cardData.type_line}
+              </Typography>
+            )}
+            {setCode && (
+              <Typography variant="caption" color="text.secondary">
+                Set: {cardData?.set_name || setCode} ({setCode})
+              </Typography>
+            )}
           </Box>
         )}
       </Paper>

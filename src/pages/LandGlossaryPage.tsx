@@ -19,6 +19,7 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatedContainer } from "../components/common/AnimatedContainer";
+import { FloatingManaSymbols } from "../components/common/FloatingManaSymbols";
 
 interface LandCategory {
   rank: number;
@@ -189,7 +190,10 @@ export const LandGlossaryPage: React.FC = () => {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      {/* Floating mana symbols background */}
+      <FloatingManaSymbols />
+
       {/* Header */}
       <AnimatedContainer animation="fadeInUp">
         <Box sx={{ mb: 5 }}>

@@ -33,6 +33,43 @@ import React, { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../common/NotificationProvider";
 
+// Mana symbol component using Keyrune font
+const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }> = ({ color, size = 18 }) => (
+  <i
+    className={`ms ms-${color} ms-cost`}
+    style={{
+      fontSize: size,
+      filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+    }}
+  />
+);
+
+// WUBRG mana bar component
+const ManaBar: React.FC = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: 0.5,
+      alignItems: 'center',
+      opacity: 0.9,
+      '& i': {
+        transition: 'transform 0.2s ease, filter 0.2s ease',
+        cursor: 'default',
+        '&:hover': {
+          transform: 'scale(1.2)',
+          filter: 'drop-shadow(0 0 6px currentColor) !important',
+        },
+      },
+    }}
+  >
+    <ManaSymbol color="w" size={16} />
+    <ManaSymbol color="u" size={16} />
+    <ManaSymbol color="b" size={16} />
+    <ManaSymbol color="r" size={16} />
+    <ManaSymbol color="g" size={16} />
+  </Box>
+);
+
 // Prefetch AnalyzerPage on hover for faster navigation
 const prefetchAnalyzer = () => {
   import("../../pages/AnalyzerPage");
@@ -65,23 +102,62 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <AppBar position="sticky" elevation={2}>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        background: isDark
+          ? 'linear-gradient(180deg, rgba(13,13,15,0.95) 0%, rgba(26,26,30,0.9) 100%)'
+          : 'linear-gradient(180deg, rgba(21,101,192,1) 0%, rgba(13,71,161,1) 100%)',
+        borderBottom: '1px solid',
+        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+      }}
+    >
       <Toolbar>
-        {/* Logo */}
-        <Box display="flex" alignItems="center">
-          <AnalyticsIcon sx={{ mr: 1 }} />
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/"
+        {/* Logo with WUBRG */}
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
             sx={{
-              textDecoration: "none",
-              color: "inherit",
-              fontWeight: "bold",
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              cursor: 'pointer',
             }}
+            onClick={() => navigate('/')}
           >
-            ManaTuner Pro
-          </Typography>
+            {/* Mana symbols as logo accent */}
+            <ManaBar />
+
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{
+                textDecoration: "none",
+                color: "inherit",
+                fontWeight: 700,
+                fontFamily: '"Cinzel", serif',
+                letterSpacing: '0.05em',
+                ml: 0.5,
+              }}
+            >
+              ManaTuner
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                bgcolor: isDark ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.2)',
+                color: isDark ? '#FFD700' : 'white',
+                px: 0.8,
+                py: 0.2,
+                borderRadius: 1,
+                fontWeight: 700,
+                fontSize: '0.65rem',
+                letterSpacing: '0.05em',
+              }}
+            >
+              PRO
+            </Typography>
+          </Box>
         </Box>
 
         {/* Navigation - Centré */}
@@ -109,17 +185,18 @@ export const Header: React.FC = () => {
                   startIcon={<item.icon />}
                   sx={{
                     borderColor: isActive ? "rgba(255,255,255,0.5)" : "transparent",
-                    // Style CTA pour Analyzer - toujours visible
+                    // Style CTA pour Analyzer - gold multicolor style
                     ...(isAnalyzer && {
-                      backgroundColor: "#FFD700",
+                      background: 'linear-gradient(135deg, #E9B54C 0%, #FFD700 50%, #E9B54C 100%)',
                       color: "#1a1a2e",
                       fontWeight: "bold",
                       textTransform: "none",
                       px: 2.5,
-                      boxShadow: "0 2px 8px rgba(255, 215, 0, 0.4)",
+                      boxShadow: "0 2px 12px rgba(233, 181, 76, 0.5)",
+                      border: '1px solid rgba(255,255,255,0.3)',
                       "&:hover": {
-                        backgroundColor: "#FFC107",
-                        boxShadow: "0 4px 12px rgba(255, 215, 0, 0.6)",
+                        background: 'linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FFD700 100%)',
+                        boxShadow: "0 4px 20px rgba(255, 215, 0, 0.6)",
                         transform: "translateY(-1px)",
                       },
                       "& .MuiSvgIcon-root": {
@@ -204,30 +281,35 @@ export const Header: React.FC = () => {
           },
         }}
       >
-        {/* Drawer Header */}
+        {/* Drawer Header with WUBRG */}
         <Box
           sx={{
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
             p: 2,
-            backgroundColor: muiTheme.palette.primary.main,
-            color: muiTheme.palette.primary.contrastText,
+            background: isDark
+              ? 'linear-gradient(135deg, #1a1a1e 0%, #2d2d35 100%)'
+              : 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
+            color: "white",
           }}
         >
-          <Box display="flex" alignItems="center">
-            <AnalyticsIcon sx={{ mr: 1 }} />
-            <Typography variant="h6" fontWeight="bold">
+          <Box display="flex" alignItems="center" gap={1} mb={1}>
+            <ManaBar />
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+            <Typography variant="h6" fontWeight="bold" fontFamily='"Cinzel", serif'>
               ManaTuner Pro
             </Typography>
+            <IconButton
+              color="inherit"
+              onClick={handleMobileMenuToggle}
+              aria-label="Close navigation menu"
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
-          <IconButton
-            color="inherit"
-            onClick={handleMobileMenuToggle}
-            aria-label="Close navigation menu"
-          >
-            <CloseIcon />
-          </IconButton>
         </Box>
 
         <Divider />
@@ -248,15 +330,15 @@ export const Header: React.FC = () => {
                     py: 1.5,
                     // Style CTA pour Analyzer dans le drawer
                     ...(isAnalyzer && {
-                      backgroundColor: "#FFD700",
+                      background: 'linear-gradient(135deg, #E9B54C 0%, #FFD700 100%)',
                       borderRadius: 2,
                       my: 0.5,
                       "&:hover": {
-                        backgroundColor: "#FFC107",
+                        background: 'linear-gradient(135deg, #FFD700 0%, #FFC107 100%)',
                       },
                     }),
                     "&.Mui-selected": {
-                      backgroundColor: isAnalyzer ? "#FFD700" : muiTheme.palette.primary.main + "20",
+                      backgroundColor: isAnalyzer ? undefined : muiTheme.palette.primary.main + "20",
                       borderRight: isAnalyzer ? "none" : `3px solid ${muiTheme.palette.primary.main}`,
                     },
                   }}

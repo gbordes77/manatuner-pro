@@ -23,9 +23,9 @@ import { AnalysisResult } from "../../services/deckAnalyzer";
 
 // Blueprint color palette - signature design
 const BLUEPRINT_COLORS = {
-  background: "#0A1628",
-  backgroundLight: "#0F1E32",
-  grid: "#1A3A5C",
+  background: "#1A2A3E",
+  backgroundLight: "#243448",
+  grid: "#2A4A6C",
   cyan: "#00D9FF",
   cyanLight: "#00D9FF33",
   gold: "#FFB800",
@@ -701,13 +701,11 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Box
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: "50%",
-                      bgcolor: colorStyle.bg,
-                      border: `2px solid ${colorStyle.text}`,
+                  <i
+                    className={`ms ms-${color.toLowerCase()} ms-cost`}
+                    style={{
+                      fontSize: 20,
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
                     }}
                   />
                   <Typography

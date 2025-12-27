@@ -31,6 +31,7 @@ import {
     MulliganTab,
     TabPanel,
 } from "../components/analyzer";
+import { FloatingManaSymbols } from "../components/common/FloatingManaSymbols";
 import ManaBlueprint from "../components/export/ManaBlueprint";
 import PrivacySettings from "../components/PrivacySettings";
 import { PrivacyStorage } from "../lib/privacy";
@@ -143,8 +144,11 @@ const AnalyzerPage: React.FC = () => {
           overflowX: "hidden",
           boxSizing: "border-box",
           margin: "0 auto",
+          position: "relative",
         }}
       >
+        {/* Floating mana symbols background */}
+        <FloatingManaSymbols />
         {/* Header - Hidden when analysis is displayed */}
         {!analysisResult && (
           <Box sx={{ mb: isMobile ? 3 : 4, textAlign: "center" }}>
@@ -280,6 +284,14 @@ const AnalyzerPage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
+
+            {/* Center instruction text */}
+            <Box sx={{ display: { xs: "none", md: "block" }, textAlign: "center", flex: 1 }}>
+              <Typography variant="body1" color="primary.main" fontWeight={500}>
+                Click to edit your deck or start a new analysis
+              </Typography>
+            </Box>
+
             <Chip
               label="✏️ Edit Deck"
               size="small"
