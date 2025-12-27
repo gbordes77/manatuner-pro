@@ -1,0 +1,174 @@
+Bonjour à tous,
+
+Bienvenue dans l'équipe ManaTuner Pro !
+
+══════════════════════════════════════════════════════════════════════
+
+LE PROJET
+─────────
+ManaTuner Pro est un analyseur de manabase pour Magic: The Gathering.
+L'app est en PRODUCTION et stable (score audit : 85/100).
+
+→ Production : https://manatuner-pro.vercel.app
+→ Repository : https://github.com/gbordes77/manatuner-pro
+
+Ce que fait l'app :
+• Calcule les probabilités exactes de cast (hypergeométrique)
+• Simule 3000+ mains pour les décisions de mulligan (Monte Carlo)
+• Exporte les analyses en PNG/PDF/JSON
+• 100% client-side, privacy-first (aucune donnée côté serveur)
+
+══════════════════════════════════════════════════════════════════════
+
+VOTRE MISSION : PHASE FEEDBACK & DEBUG
+──────────────────────────────────────
+On passe maintenant à la prise en compte des retours utilisateurs.
+
+Vos priorités :
+1. Monitorer les retours via Tally.so (intégré dans l'app)
+2. Corriger les bugs remontés par les utilisateurs
+3. Améliorer l'UX basé sur le feedback réel
+4. Maintenir la qualité (tests, lint, build)
+
+══════════════════════════════════════════════════════════════════════
+
+DÉMARRAGE RAPIDE
+────────────────
+
+1. Cloner et installer :
+
+   git clone https://github.com/gbordes77/manatuner-pro.git
+   cd manatuner-pro
+   npm install
+
+2. Lancer le serveur dev :
+
+   npm run dev
+   → http://localhost:5173
+
+3. Vérifier que tout marche :
+
+   npm run lint        # 0 errors attendu
+   npm run test:unit   # 86/88 passing attendu
+
+══════════════════════════════════════════════════════════════════════
+
+STACK TECHNIQUE
+───────────────
+• Frontend : React 18 + TypeScript + Vite
+• UI : Material-UI (MUI)
+• State : Redux Toolkit
+• Tests : Vitest (unit) + Playwright (E2E)
+• Hosting : Vercel (déploiement auto sur push main)
+
+Note : Supabase est DÉSACTIVÉ. Toutes les données restent en localStorage.
+
+══════════════════════════════════════════════════════════════════════
+
+DOCUMENTATION À LIRE EN PRIORITÉ
+────────────────────────────────
+
+Dans l'ordre :
+
+1. ONBOARDING_NOUVELLE_EQUIPE.md  → Guide complet d'onboarding (15 min)
+2. TEAM_HANDOFF.md                → Passation technique (10 min)
+3. README.md                      → Vue d'ensemble (5 min)
+4. PRE_PRODUCTION_AUDIT.md        → Audit complet, focus section P1 (20 min)
+
+Documentation technique dans /docs/ :
+• ARCHITECTURE.md           → Architecture technique détaillée
+• MATHEMATICAL_REFERENCE.md → Formules hypergeométriques
+• MULLIGAN_SYSTEM.md        → Système de mulligan
+• LAND_SYSTEM_REDESIGN.md   → Détection des terrains
+• MTG_VISUAL_IDENTITY.md    → Identité visuelle (mana icons)
+
+══════════════════════════════════════════════════════════════════════
+
+ÉTAT ACTUEL
+───────────
+
+Ce qui fonctionne :
+✓ Toutes les features core complètes
+✓ Tests : 86/88 passing
+✓ ESLint : 0 errors, 40 warnings
+✓ Bundle : 202KB gzipped
+✓ Déployé et stable en production
+
+P1 à traiter (Semaine 1) :
+1. Ajouter headers CSP dans vercel.json
+2. Ajouter aria-labels aux onglets emoji
+3. Installer Sentry pour error tracking
+4. Navigation clavier sur les cartes
+5. Fixer dépendances vides useCallback
+
+══════════════════════════════════════════════════════════════════════
+
+WORKFLOW GIT
+────────────
+
+1. Créer une branche : git checkout -b fix/description-courte
+2. Développer et tester : npm run lint && npm run test:unit
+3. Commit : git commit -m "fix: description claire"
+4. Push : git push origin fix/description-courte
+5. Créer une PR sur GitHub
+6. Merge sur main → déploiement automatique Vercel
+
+══════════════════════════════════════════════════════════════════════
+
+FICHIERS CLÉS
+─────────────
+
+Pages principales :
+• src/pages/AnalyzerPage.tsx      → Page principale
+• src/pages/HomePage.tsx          → Landing page
+
+Composants :
+• src/components/analyzer/DeckInputSection.tsx  → Saisie deck
+• src/components/analyzer/DashboardTab.tsx      → Résultats
+• src/components/analysis/EnhancedCharts.tsx    → Graphiques
+
+Services (logique métier) :
+• src/services/manaCalculator.ts  → Calculs hypergeométriques
+• src/services/advancedMaths.ts   → Monte Carlo engine
+• src/services/deckAnalyzer.ts    → Parsing decklists
+
+══════════════════════════════════════════════════════════════════════
+
+CHECKLIST PREMIER JOUR
+──────────────────────
+
+[ ] Cloner le repo et npm install
+[ ] Lancer npm run dev et explorer l'app
+[ ] Lire ONBOARDING_NOUVELLE_EQUIPE.md
+[ ] Lire TEAM_HANDOFF.md
+[ ] Analyser un deck exemple sur /analyzer
+[ ] Lire PRE_PRODUCTION_AUDIT.md (sections P1)
+[ ] Identifier votre premier ticket
+
+══════════════════════════════════════════════════════════════════════
+
+COMMANDES UTILES
+────────────────
+
+npm run dev          # Serveur dev (port 5173)
+npm run build        # Build production
+npm run lint         # Check ESLint
+npm run lint:fix     # Auto-fix ESLint
+npm run test:unit    # Tests unitaires
+npm run test:e2e     # Tests E2E
+npm run type-check   # Validation TypeScript
+
+══════════════════════════════════════════════════════════════════════
+
+L'app est solide et en production. Votre mission est de l'améliorer
+grâce aux retours des vrais utilisateurs.
+
+Bonne prise en main !
+
+══════════════════════════════════════════════════════════════════════
+
+TL;DR :
+1. git clone + npm install + npm run dev
+2. Lire ONBOARDING_NOUVELLE_EQUIPE.md
+3. Explorer https://manatuner-pro.vercel.app
+4. Commencer par les P1 dans PRE_PRODUCTION_AUDIT.md

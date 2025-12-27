@@ -399,27 +399,9 @@ export const HomePage: React.FC = () => {
                     "&:hover": {
                       transform: "translateY(-4px)",
                       boxShadow: `0 8px 24px ${foundation.borderColor}40`,
-                      '& .mana-icon': {
-                        transform: 'scale(1.2)',
-                        filter: 'drop-shadow(0 0 8px currentColor)',
-                      },
                     },
                   }}
                 >
-                  {/* Mana symbol accent */}
-                  <Box
-                    className="mana-icon"
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      opacity: 0.6,
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    <ManaSymbol color={foundation.manaColor} size={20} />
-                  </Box>
-
                   <Typography
                     variant="h5"
                     fontWeight={800}
