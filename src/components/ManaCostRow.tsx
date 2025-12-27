@@ -42,6 +42,9 @@ const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol
   const cleanSymbol = symbol.replace(/[{}]/g, '');
 
   // Generic mana (numbers) - display as numbered circle
+  // Keyrune icons render larger than their fontSize, so we scale up generic symbols to match
+  const scaledSize = size * 1.2;
+
   if (/^\d+$/.test(cleanSymbol)) {
     const num = parseInt(cleanSymbol);
     return (
@@ -51,12 +54,12 @@ const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: size,
-          height: size,
+          width: scaledSize,
+          height: scaledSize,
           borderRadius: '50%',
           bgcolor: isDark ? '#4a4a4a' : '#CAC5C0',
           color: isDark ? '#e0e0e0' : '#333',
-          fontSize: size * 0.55,
+          fontSize: scaledSize * 0.55,
           fontWeight: 'bold',
           fontFamily: 'monospace',
           border: `1px solid ${isDark ? '#666' : '#999'}`,
@@ -77,12 +80,12 @@ const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: size,
-          height: size,
+          width: scaledSize,
+          height: scaledSize,
           borderRadius: '50%',
           bgcolor: isDark ? '#4a4a4a' : '#CAC5C0',
           color: isDark ? '#e0e0e0' : '#333',
-          fontSize: size * 0.55,
+          fontSize: scaledSize * 0.55,
           fontWeight: 'bold',
           fontFamily: 'monospace',
           border: `1px solid ${isDark ? '#666' : '#999'}`,
@@ -223,6 +226,40 @@ const getCmcFromCard = (cardData: MTGCard | null): number => {
   return 0
 }
 
+// Check if card has X in mana cost and return X count
+const getXCountFromManaCost = (manaCost: string | null): number => {
+  if (!manaCost) return 0
+  const xMatches = manaCost.match(/\{X\}/g) || []
+  return xMatches.length
+}
+
+// Get the fixed (non-X) portion of CMC
+const getFixedCmcFromManaCost = (manaCost: string | null): number => {
+  if (!manaCost) return 0
+  let cmc = 0
+  const symbols = manaCost.match(/\{[^}]+\}/g) || []
+  symbols.forEach(symbol => {
+    const clean = symbol.replace(/[{}]/g, '')
+    if (/^\d+$/.test(clean)) {
+      cmc += parseInt(clean)
+    } else if (clean !== 'X') {
+      cmc += 1 // Each colored/hybrid symbol adds 1
+    }
+  })
+  return cmc
+}
+
+// Calculate effective X value based on target turn
+const calculateEffectiveX = (fixedCmc: number, xCount: number): { xValue: number; targetTurn: number } => {
+  // We want X to be at least 1 to make the spell worthwhile
+  // Target turn = fixed CMC + X (we use X=2 as a reasonable default for "useful" X spells)
+  const minUsefulX = 1
+  const reasonableX = 2
+  const xValue = Math.max(minUsefulX, reasonableX)
+  const targetTurn = fixedCmc + (xValue * xCount)
+  return { xValue, targetTurn }
+}
+
 // Probability calculation hook
 const useProbabilityCalculation = (
   cardData: MTGCard | null,
@@ -233,14 +270,27 @@ const useProbabilityCalculation = (
 ) => {
   return useMemo(() => {
     if (!cardData?.mana_cost && !cardData?.card_faces && !cardName) {
-      return { p1: 95, p2: 90 }
+      return { p1: 95, p2: 90, hasX: false, xInfo: null }
     }
 
     const actualManaCost = getManaCostFromCard(cardData) || getSimulatedManaCost(cardName)
 
-    if (!actualManaCost) return { p1: 95, p2: 90 }
+    if (!actualManaCost) return { p1: 95, p2: 90, hasX: false, xInfo: null }
 
     try {
+      // Check for X in mana cost
+      const xCount = getXCountFromManaCost(actualManaCost)
+      const hasX = xCount > 0
+      const fixedCmc = getFixedCmcFromManaCost(actualManaCost)
+
+      let xInfo: { xValue: number; targetTurn: number; fixedCost: string } | null = null
+      if (hasX) {
+        const { xValue, targetTurn } = calculateEffectiveX(fixedCmc, xCount)
+        // Extract the fixed colored portion for the tooltip
+        const colorSymbols = actualManaCost.replace(/\{X\}/g, '').replace(/\{\d+\}/g, '').trim()
+        xInfo = { xValue, targetTurn, fixedCost: colorSymbols || 'colorless' }
+      }
+
       // Match regular mana symbols like {W}, {U}, etc.
       const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
       // Match hybrid mana symbols like {W/R}, {U/B}, etc.
@@ -265,12 +315,16 @@ const useProbabilityCalculation = (
 
       // If no regular colors AND no hybrid, it's colorless
       if (Object.keys(colorCounts).length === 0 && hybridMana.length === 0) {
-        return { p1: 99, p2: 98 }
+        return { p1: 99, p2: 98, hasX, xInfo }
       }
 
       const deckSize = totalCards || 60
       const landsInDeck = totalLands || 24
-      const cmc = getCmcFromCard(cardData) || 2
+
+      // For X spells, use the effective turn (fixed cost + X value)
+      // For regular spells, use CMC
+      const baseCmc = getCmcFromCard(cardData) || 2
+      const effectiveCmc = hasX && xInfo ? xInfo.targetTurn : baseCmc
 
       const hypergeometric = (N: number, K: number, n: number, k: number): number => {
         const combination = (a: number, b: number): number => {
@@ -291,7 +345,7 @@ const useProbabilityCalculation = (
         return probability
       }
 
-      const turn = Math.max(1, Math.min(cmc, 10))
+      const turn = Math.max(1, Math.min(effectiveCmc, 10))
       const cardsSeen = 7 + (turn - 1)
 
       let p1Probability = 1
@@ -332,12 +386,14 @@ const useProbabilityCalculation = (
 
       return {
         p1: finalP1,
-        p2: finalP2
+        p2: finalP2,
+        hasX,
+        xInfo
       }
 
     } catch (error) {
       console.error('Error calculating probabilities:', error)
-      return { p1: 85, p2: 75 }
+      return { p1: 85, p2: 75, hasX: false, xInfo: null }
     }
   }, [cardData, cardName, deckSources, totalLands, totalCards])
 }
@@ -539,19 +595,77 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
           <Grid item xs={4} md={2}>
             <Box display="flex" alignItems="center" gap={1.5}>
               <KeyruneManaCost manaCost={getManaCostFromCard(cardData) || ''} size={20} />
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                  px: 1,
-                  py: 0.25,
-                  borderRadius: 1,
-                  fontSize: '0.75rem',
-                }}
-              >
-                CMC: {getCmcFromCard(cardData)}
-              </Typography>
+              {probabilities.hasX && probabilities.xInfo ? (
+                <Tooltip
+                  title={
+                    <Box sx={{ p: 0.5 }}>
+                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                        Variable Cost (X spell)
+                      </Typography>
+                      <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                        This spell has X in its cost. We calculate castability assuming you want a meaningful X value.
+                      </Typography>
+                      <Typography variant="caption" component="div">
+                        • Fixed cost: {probabilities.xInfo.fixedCost}
+                      </Typography>
+                      <Typography variant="caption" component="div">
+                        • Calculated with X = {probabilities.xInfo.xValue}
+                      </Typography>
+                      <Typography variant="caption" component="div">
+                        • Target turn: {probabilities.xInfo.targetTurn}
+                      </Typography>
+                      <Typography variant="caption" component="div" sx={{ mt: 1, fontStyle: 'italic' }}>
+                        At turn {probabilities.xInfo.targetTurn}, you'd have {probabilities.xInfo.targetTurn} mana, spending {getFixedCmcFromManaCost(getManaCostFromCard(cardData))} on fixed costs and {probabilities.xInfo.xValue} on X.
+                      </Typography>
+                    </Box>
+                  }
+                  arrow
+                >
+                  <Box display="flex" alignItems="center" gap={0.5}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                        px: 1,
+                        py: 0.25,
+                        borderRadius: 1,
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      CMC: {getFixedCmcFromManaCost(getManaCostFromCard(cardData))}+X
+                    </Typography>
+                    <Box
+                      sx={{
+                        bgcolor: theme.palette.warning.main,
+                        color: '#fff',
+                        px: 0.75,
+                        py: 0.25,
+                        borderRadius: 1,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        cursor: 'help',
+                      }}
+                    >
+                      X={probabilities.xInfo.xValue}
+                    </Box>
+                  </Box>
+                </Tooltip>
+              ) : (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 1,
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  CMC: {getCmcFromCard(cardData)}
+                </Typography>
+              )}
             </Box>
           </Grid>
 
