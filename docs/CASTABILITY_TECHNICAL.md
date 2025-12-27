@@ -1,7 +1,7 @@
 # ManaTuner Pro - Castability System Technical Documentation
 
 > **Version**: 1.0  
-> **Last Updated**: December 2024  
+> **Last Updated**: December 2025  
 > **Audience**: Developers, MTG enthusiasts, mathematicians
 
 ---
@@ -732,7 +732,7 @@ Result: P1=65%, P2=62%
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | Dec 2024 | ManaTuner Team | Initial comprehensive documentation |
+| 1.0 | Dec 2025 | ManaTuner Team | Initial comprehensive documentation |
 
 ---
 

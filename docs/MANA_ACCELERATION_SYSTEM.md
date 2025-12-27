@@ -1,7 +1,7 @@
 # ManaTuner Pro — Mana Acceleration System
 
 **Version: 1.1 (Corrected)**  
-**Last Updated: December 2024**  
+**Last Updated: December 2025**  
 **Scope: Client-side TS/React, <100ms (instant mode), Simple UX**
 
 ---
@@ -767,5 +767,5 @@ The result is a mathematically rigorous system that answers the real question pl
 ---
 
 *Document Version: 1.1*  
-*Last Updated: December 2024*  
+*Last Updated: December 2025*  
 *ManaTuner Pro v2.1*
