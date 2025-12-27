@@ -127,7 +127,7 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
   const categoryData = Object.entries(categoryDistribution).map(([category, count]) => ({
     category,
     count,
-    percentage: Math.round((count / spellData.length) * 100),
+    percentage: spellData.length > 0 ? Math.round((count / spellData.length) * 100) : 0,
     fill: getCategoryColor(category)
   }));
 
@@ -190,7 +190,9 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
     return null;
   };
 
-  const averagePercentage = spellData.reduce((sum, spell) => sum + spell.percentage, 0) / spellData.length;
+  const averagePercentage = spellData.length > 0
+    ? spellData.reduce((sum, spell) => sum + spell.percentage, 0) / spellData.length
+    : 0;
 
   return (
     <Box className="animate-fadeIn">
@@ -278,18 +280,18 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
 
         {/* Category Distribution */}
         <Grid item xs={12} lg={4}>
-          <Paper className="mtg-card" sx={{ p: 3, height: 400 }}>
+          <Paper className="mtg-card" sx={{ p: 3, minHeight: 400 }}>
             <Typography variant="h6" fontWeight="600" mb={2} color="var(--mtg-blue-dark)">
               Category Distribution
             </Typography>
-            <ResponsiveContainer width="100%" height="70%">
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={categoryData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
-                  innerRadius={40}
+                  outerRadius={70}
+                  innerRadius={35}
                   paddingAngle={2}
                   dataKey="count"
                   animationBegin={0}
@@ -315,7 +317,8 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
                       width: 12,
                       height: 12,
                       backgroundColor: cat.fill,
-                      borderRadius: '50%'
+                      borderRadius: '50%',
+                      flexShrink: 0
                     }}
                   />
                   <Typography variant="body2" fontSize="0.8rem">
