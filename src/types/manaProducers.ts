@@ -164,6 +164,19 @@ export interface ProducerInDeck {
 // =============================================================================
 
 /**
+ * Unconditional multi-mana land group
+ * Used for lands that always produce more than 1 mana (no board state dependency)
+ */
+export interface UnconditionalMultiManaGroup {
+  /** Number of copies of this type in deck */
+  count: number
+  /** Bonus mana per land (e.g., Ancient Tomb produces 2, so delta=1) */
+  delta: number
+  /** Color mask of produced mana (for color fixing calculations) */
+  producesMask?: number
+}
+
+/**
  * Mana profile of a deck for castability calculations
  */
 export interface DeckManaProfile {
@@ -177,15 +190,28 @@ export interface DeckManaProfile {
   landColorSources: Partial<Record<LandManaColor, number>>
 
   /**
-   * Bonus mana from multi-mana lands (optional)
-   * e.g., Ancient Tomb adds +1 colorless per copy, Bounce lands add +1 per copy
-   * This is the EXTRA mana beyond the base "1 mana per land"
+   * Unconditional multi-mana lands (v1.1)
+   * Modeled as random variable - we don't assume all copies are in play
+   *
+   * Example: 4x Ancient Tomb = { count: 4, delta: 1 }
+   *
+   * Note: For v1.1, we support a single group for simplicity.
+   * Multiple groups (Ancient Tomb + Bounce lands) would require
+   * combinatorial sum which is expensive. Use simulation for complex cases.
+   */
+  unconditionalMultiMana?: UnconditionalMultiManaGroup
+
+  /**
+   * @deprecated v1.0 - Removed in v1.1
+   * Was: deterministic bonus assuming all copies in play
+   * Use unconditionalMultiMana instead for proper probabilistic model
    */
   bonusManaFromLands?: number
 
   /**
-   * Bonus colored mana from multi-mana lands (optional)
-   * e.g., Gaea's Cradle adds extra G, Cabal Coffers adds extra B
+   * @deprecated v1.0 - Removed in v1.1
+   * Was: deterministic colored bonus assuming all copies in play
+   * Use unconditionalMultiMana.producesMask instead
    */
   bonusColoredMana?: Partial<Record<LandManaColor, number>>
 }
@@ -226,11 +252,19 @@ export interface AccelContext {
 
   /**
    * Removal attrition rate per exposed turn (0-1)
-   * Used for creature survival calculation
+   * Used for creature survival calculation: P_survive(n) = (1-r)^n
    */
   removalRate: number
 
   /**
+   * Factor applied to removalRate for artifacts (default: 0.3)
+   * Rocks are ~30% as likely to be removed as creatures
+   * r_rock = removalRate * rockRemovalFactor
+   */
+  rockRemovalFactor?: number
+
+  /**
+   * @deprecated Use rockRemovalFactor instead
    * Default survival rate for non-creatures
    * Used when survivalBase not set on producer
    */

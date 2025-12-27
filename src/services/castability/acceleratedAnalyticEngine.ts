@@ -1,11 +1,18 @@
 /**
- * Accelerated Castability Engine
+ * Accelerated Castability Engine v1.1
  *
  * Calculates castability probabilities with mana accelerators (dorks, rocks, rituals).
  * Uses disjoint scenarios approach (K=0,1,2 accelerators online) for O(1) performance.
  *
- * @version 1.0
- * @see docs/EXPERT_ANALYSES.md
+ * v1.1 Changes:
+ * - Proper conditioning: P(colors|l) summed over all possible land counts
+ * - Unified survival model: P_survive(n) = (1-r)^n with rockRemovalFactor
+ * - Multi-mana lands as random variable (unconditionalMultiManaGroups)
+ * - No magic numbers or hardcoded deck sizes
+ * - ENHANCERs disabled in instant mode (simulation only)
+ *
+ * @version 1.1
+ * @see docs/MANA_ACCELERATION_SYSTEM.md
  */
 
 import type {
@@ -15,15 +22,34 @@ import type {
     DeckManaProfile,
     LandManaColor,
     ManaCost,
-    ManaProducerType,
     ProducerInDeck
 } from '../../types/manaProducers'
 import { colorsFromMask, maskHasColor, netManaPerTurn } from '../../types/manaProducers'
 import { Hypergeom, cardsSeenByTurn } from './hypergeom'
 
 // =============================================================================
+// CONSTANTS (no magic numbers in calculations)
+// =============================================================================
+
+/** Maximum producers to consider for K-disjoint (performance cap) */
+const MAX_PRODUCER_CANDIDATES = 18
+
+/** Default rock removal factor (rocks are ~30% as likely to be removed as creatures) */
+const DEFAULT_ROCK_REMOVAL_FACTOR = 0.3
+
+/** Minimum probability threshold for acceleration detection */
+const DEFAULT_ACCELERATION_THRESHOLD = 0.05
+
+// =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
+
+/**
+ * Clamp a value between 0 and 1
+ */
+function clamp01(x: number): number {
+  return Math.max(0, Math.min(1, x))
+}
 
 /**
  * Get color options that a producer can contribute for a spell cost
@@ -45,40 +71,197 @@ function producerOptionsForCost(
 }
 
 /**
- * Estimate probability of casting a cost by a turn using only lands
+ * Calculate survival probability using unified model
+ *
+ * P_survive(n) = (1 - r_effective)^n
+ *
+ * Where r_effective = r for creatures, r * rockRemovalFactor for artifacts
  */
-function estimateCanCastCostByTurn(
+function calculateSurvivalProbability(
+  isCreature: boolean,
+  exposureTurns: number,
+  ctx: AccelContext
+): number {
+  if (exposureTurns <= 0) return 1
+
+  const rEffective = isCreature
+    ? ctx.removalRate
+    : ctx.removalRate * (ctx.rockRemovalFactor ?? DEFAULT_ROCK_REMOVAL_FACTOR)
+
+  return Math.pow(1 - rEffective, exposureTurns)
+}
+
+// =============================================================================
+// BASE CASTABILITY (v1.1 - Sum over l)
+// =============================================================================
+
+/**
+ * Calculate P(colors OK | l lands in hand)
+ *
+ * For each color c with Sᶜ sources and needᶜ pips:
+ * P(pipᶜ OK | l) = P(Xᶜ >= needᶜ), where Xᶜ ~ Hypergeom(L, Sᶜ, l)
+ *
+ * Conservative approximation: P(colors OK | l) ≈ min_c P(Xᶜ >= needᶜ)
+ */
+function colorsOkGivenLands(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  costGeneric: number,
-  costColors: Partial<Record<LandManaColor, number>>,
+  spell: ManaCost,
+  landsInHand: number
+): number {
+  if (landsInHand <= 0) return 0
+
+  const colors = Object.keys(spell.pips) as LandManaColor[]
+  if (colors.length === 0) return 1 // Colorless spell
+
+  let minP = 1
+  for (const color of colors) {
+    const need = spell.pips[color] ?? 0
+    if (need <= 0) continue
+
+    const sources = deck.landColorSources[color] ?? 0
+    if (sources <= 0) {
+      minP = 0
+      break
+    }
+
+    // P(at least 'need' sources of color 'c' among 'landsInHand' lands)
+    // Population = total lands (L), successes = sources for this color (Sᶜ)
+    // Draws = lands in hand (l), need = pips required
+    const p = hg.atLeast(deck.totalLands, sources, landsInHand, need)
+    minP = Math.min(minP, p)
+
+    if (minP === 0) break
+  }
+
+  return minP
+}
+
+/**
+ * Calculate P(mana OK | l lands in hand) for unconditional multi-mana lands
+ *
+ * Without multi-mana lands: simply l >= MV
+ * With multi-mana lands: sum over possible m multi-mana lands among l
+ *
+ * mana(l, m) = l + m * delta
+ * P(mana OK | l) = Σₘ P(M=m | l) × 𝟙[l + m×Δ >= MV]
+ */
+function manaOkGivenLands(
+  hg: Hypergeom,
+  deck: DeckManaProfile,
+  mvNeeded: number,
+  landsInHand: number
+): number {
+  // Simple case: enough lands without multi-mana
+  if (landsInHand >= mvNeeded) return 1
+  if (landsInHand <= 0) return 0
+
+  // No multi-mana lands configured
+  if (!deck.unconditionalMultiMana || deck.unconditionalMultiMana.count <= 0) {
+    return landsInHand >= mvNeeded ? 1 : 0
+  }
+
+  const { count: U, delta } = deck.unconditionalMultiMana
+
+  // Sum over possible number of multi-mana lands in hand
+  let sum = 0
+  const maxM = Math.min(U, landsInHand)
+
+  for (let m = 0; m <= maxM; m++) {
+    // P(M = m multi-mana lands among l lands in hand)
+    const pM = hg.pmf(deck.totalLands, U, landsInHand, m)
+    if (pM <= 0) continue
+
+    // Total mana = lands + bonus from multi-mana
+    const totalMana = landsInHand + m * delta
+
+    if (totalMana >= mvNeeded) {
+      sum += pM
+    }
+  }
+
+  return clamp01(sum)
+}
+
+/**
+ * Compute base castability (lands only) - v1.1 rigorous version
+ *
+ * Proper conditioning: sum over all possible values of lands drawn
+ *
+ * P(castable at T) = Σₗ P(lands=l) × P(colors OK | l) × P(mana OK | l)
+ *
+ * P1 (legacy): P(colors OK | l=T) assuming perfect land drops
+ * P2 (realistic): full sum above
+ */
+function computeBaseCastability(
+  hg: Hypergeom,
+  deck: DeckManaProfile,
+  spell: ManaCost,
+  turn: number,
+  ctx: AccelContext
+): CastabilityResult {
+  const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
+
+  // P1 "legacy" (perfect drops): colors given l=turn
+  // This maintains UX compatibility with the original P1/P2 display
+  const p1 = colorsOkGivenLands(hg, deck, spell, turn)
+
+  // P2: Sum over all possible land counts
+  let p2 = 0
+
+  const maxLands = Math.min(deck.totalLands, cardsSeen)
+  for (let l = 0; l <= maxLands; l++) {
+    // P(exactly l lands in hand by turn T)
+    const pL = hg.pmf(deck.deckSize, deck.totalLands, cardsSeen, l)
+    if (pL <= 0) continue
+
+    // P(have required colors among those l lands)
+    const pColors = colorsOkGivenLands(hg, deck, spell, l)
+    if (pColors <= 0) continue
+
+    // P(have enough total mana from l lands)
+    const pMana = manaOkGivenLands(hg, deck, spell.mv, l)
+    if (pMana <= 0) continue
+
+    p2 += pL * pColors * pMana
+  }
+
+  return { p1: clamp01(p1), p2: clamp01(p2) }
+}
+
+/**
+ * Compute base castability for a producer's casting cost
+ * Used to determine P(can cast producer by T_latest)
+ */
+function computeProducerCastability(
+  hg: Hypergeom,
+  deck: DeckManaProfile,
+  producer: ProducerInDeck,
   turn: number,
   ctx: AccelContext
 ): number {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw)
+  const def = producer.def
+  const mv = def.castCostGeneric + Object.values(def.castCostColors).reduce((a, b) => a + (b ?? 0), 0)
 
-  // Check each colored requirement
-  const colorLetters = Object.keys(costColors) as LandManaColor[]
-  const pColor = colorLetters.map((cl) => {
-    const need = costColors[cl] ?? 0
-    if (need <= 0) return 1
-    const K = deck.landColorSources[cl] ?? 0
-    return hg.atLeast(deck.deckSize, K, seen, need)
-  })
+  const producerSpell: ManaCost = {
+    mv,
+    generic: def.castCostGeneric,
+    pips: def.castCostColors
+  }
 
-  // Check total mana requirement
-  const totalNeededMana = costGeneric + colorLetters.reduce((a, cl) => a + (costColors[cl] ?? 0), 0)
-  const pLands = hg.atLeast(deck.deckSize, deck.totalLands, seen, totalNeededMana)
-
-  // Minimum of all constraints
-  const pMin = Math.min(pLands, ...pColor)
-  return Math.max(0, Math.min(1, pMin))
+  return computeBaseCastability(hg, deck, producerSpell, turn, ctx).p2
 }
+
+// =============================================================================
+// PRODUCER ONLINE PROBABILITY
+// =============================================================================
 
 /**
  * Calculate probability of a producer being online by target turn
  *
- * P(online) = P(draw) × P(castable) × P(survive)
+ * P(online at T) = P(draw by T_latest) × P(castable at T_latest) × P(survive until T)
+ *
+ * Where T_latest = T - delay - 1 (must be cast with time to remove summoning sickness)
  */
 export function producerOnlineProbByTurn(
   hg: Hypergeom,
@@ -89,90 +272,39 @@ export function producerOnlineProbByTurn(
 ): number {
   const def = producer.def
 
+  // Skip ENHANCERs in instant mode - they require simulation
+  if (def.type === 'ENHANCER') {
+    return 0
+  }
+
   // Latest turn we can cast to have it online by turnTarget
-  // Must account for delay (summoning sickness for dorks)
   const tLatest = turnTarget - def.delay - 1
   if (tLatest < 1) return 0
 
   const seenLatest = cardsSeenByTurn(tLatest, ctx.playDraw)
 
-  // P(draw at least one copy)
+  // P(draw at least one copy by T_latest)
   const pDraw = hg.atLeastOneCopy(deck.deckSize, producer.copies, seenLatest)
+  if (pDraw <= 0) return 0
 
-  // P(can cast it by tLatest)
-  const pCastable = estimateCanCastCostByTurn(
-    hg,
-    deck,
-    def.castCostGeneric,
-    def.castCostColors,
-    tLatest,
-    ctx
-  )
+  // P(can cast producer by T_latest) - uses new rigorous baseCastability
+  const pCastable = computeProducerCastability(hg, deck, producer, tLatest, ctx)
+  if (pCastable <= 0) return 0
 
-  // P(survives until turnTarget)
-  const exposure = Math.max(0, turnTarget - tLatest)
-  const pSurvive = def.isCreature
-    ? Math.pow(1 - ctx.removalRate, exposure)
-    : (def.survivalBase ?? ctx.defaultRockSurvival)
+  // P(survives from T_latest until turnTarget) - unified model
+  const exposureTurns = turnTarget - tLatest
+  const pSurvive = calculateSurvivalProbability(def.isCreature, exposureTurns, ctx)
 
-  const p = pDraw * pCastable * pSurvive
-  return Math.max(0, Math.min(1, p))
+  return clamp01(pDraw * pCastable * pSurvive)
 }
 
-/**
- * Compute base castability (lands only)
- *
- * Takes into account multi-mana lands via bonusManaFromLands and bonusColoredMana.
- * For example, with 4x Ancient Tomb (each producing 2C), we have +4 bonus colorless mana,
- * meaning we need fewer land drops to reach the same total mana.
- */
-function computeBaseCastability(
-  hg: Hypergeom,
-  deck: DeckManaProfile,
-  spell: ManaCost,
-  turn: number,
-  ctx: AccelContext
-): CastabilityResult {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw)
-
-  // Calculate effective mana available considering multi-mana lands
-  // bonusManaFromLands represents EXTRA mana beyond 1-per-land
-  const bonusMana = deck.bonusManaFromLands ?? 0
-  const bonusColored = deck.bonusColoredMana ?? {}
-
-  // P1: for each required color, have at least that many sources
-  // Bonus colored mana reduces the number of sources needed from lands
-  const colors = Object.keys(spell.pips) as LandManaColor[]
-  const pColors = colors.map((cl) => {
-    const need = spell.pips[cl] ?? 0
-    if (need <= 0) return 1
-
-    // Reduce requirement by bonus colored mana from multi-mana lands
-    const bonusForColor = bonusColored[cl] ?? 0
-    const effectiveNeed = Math.max(0, need - bonusForColor)
-
-    if (effectiveNeed <= 0) return 1
-
-    const K = deck.landColorSources[cl] ?? 0
-    return hg.atLeast(deck.deckSize, K, seen, effectiveNeed)
-  })
-  const p1 = Math.min(...pColors, 1)
-
-  // P2: multiply by probability to have enough lands for land drops
-  // With bonus mana, we need fewer lands to reach spell.mv mana
-  // Example: spell costs 4, we have +2 bonus mana → need only 2 land drops
-  const effectiveLandsNeeded = Math.max(1, turn - Math.floor(bonusMana / 2))
-  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, effectiveLandsNeeded)
-  const p2 = p1 * pLandsEnough
-
-  return { p1, p2 }
-}
+// =============================================================================
+// CASTABILITY WITH PRODUCERS ONLINE
+// =============================================================================
 
 /**
  * Find best P1 given a set of online producers
  * Brute-force assignment since k <= 2 means tiny search space
- *
- * @param bonusColorSources - Extra color sources from ENHANCERs (e.g., Badgermole Cub)
  */
 function bestP1GivenOnlineProducers(
   hg: Hypergeom,
@@ -180,27 +312,28 @@ function bestP1GivenOnlineProducers(
   spell: ManaCost,
   turn: number,
   ctx: AccelContext,
-  onlineProducers: ProducerInDeck[],
-  bonusColorSources: Partial<Record<LandManaColor, number>> = {}
+  onlineProducers: ProducerInDeck[]
 ): number {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw)
+  const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
 
   const neededColors = (Object.keys(spell.pips) as LandManaColor[])
     .filter((c) => (spell.pips[c] ?? 0) > 0)
 
   if (neededColors.length === 0) return 1
 
-  // Base remaining pips after producers contribute
-  // First, subtract bonus color sources from enhancers
+  // Base remaining pips
   const baseRemaining: Record<LandManaColor, number> = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
   for (const c of neededColors) {
-    const needed = spell.pips[c] ?? 0
-    const bonusFromEnhancers = bonusColorSources[c] ?? 0
-    baseRemaining[c] = Math.max(0, needed - bonusFromEnhancers)
+    baseRemaining[c] = spell.pips[c] ?? 0
   }
 
-  // Filter to non-enhancer producers (enhancers don't produce mana directly)
+  // Filter to non-ENHANCER producers (ENHANCERs don't produce mana in instant mode)
   const manaProducers = onlineProducers.filter(p => p.def.type !== 'ENHANCER')
+
+  if (manaProducers.length === 0) {
+    // No producers, just use base land probability
+    return colorsOkGivenLands(hg, deck, spell, turn)
+  }
 
   // Each producer can cover at most 1 pip per turn
   const prodOptions: Array<(LandManaColor | null)[]> = manaProducers.map((p) => {
@@ -221,7 +354,8 @@ function bestP1GivenOnlineProducers(
       const need = rem[c]
       if (need <= 0) continue
       const K = deck.landColorSources[c] ?? 0
-      const p = hg.atLeast(deck.deckSize, K, seen, need)
+      // Use turn as proxy for lands (P1 assumption)
+      const p = hg.atLeast(deck.totalLands, K, turn, need)
       minP = Math.min(minP, p)
       if (minP === 0) break
     }
@@ -245,64 +379,8 @@ function bestP1GivenOnlineProducers(
 }
 
 /**
- * Calculate enhanced mana production considering ENHANCERs like Badgermole Cub
- *
- * ENHANCERs add bonus mana when other dorks tap for mana.
- * e.g., Badgermole Cub: "Whenever you tap a creature for mana, add an additional {G}"
- *
- * @param onlineSet - Set of producers that are online
- * @returns Object with total extra mana and bonus color sources
- */
-function calculateEnhancedManaProduction(
-  onlineSet: ProducerInDeck[]
-): { extraMana: number; bonusColorSources: Partial<Record<LandManaColor, number>> } {
-  // Separate enhancers from regular producers
-  const enhancers = onlineSet.filter(p => p.def.type === 'ENHANCER')
-  const regularProducers = onlineSet.filter(p => p.def.type !== 'ENHANCER')
-
-  // Base mana from regular producers
-  let extraMana = regularProducers.reduce((s, p) => s + netManaPerTurn(p.def), 0)
-
-  // Bonus color sources from enhancers
-  const bonusColorSources: Partial<Record<LandManaColor, number>> = {}
-
-  // Count dorks that can be enhanced
-  const enhanceableDorks = regularProducers.filter(p => {
-    // Check if any enhancer can enhance this producer type
-    return enhancers.some(e => {
-      const enhancesTypes = e.def.enhancesTypes ?? ['DORK']
-      return enhancesTypes.includes(p.def.type as ManaProducerType)
-    })
-  })
-
-  // For each enhancer, calculate bonus mana
-  for (const enhancer of enhancers) {
-    const enhancesTypes = enhancer.def.enhancesTypes ?? ['DORK']
-    const bonus = enhancer.def.enhancerBonus ?? 0
-    const bonusMask = enhancer.def.enhancerBonusMask ?? 0
-
-    if (bonus <= 0 || bonusMask === 0) continue
-
-    // Count how many producers this enhancer boosts
-    const boostedCount = regularProducers.filter(p =>
-      enhancesTypes.includes(p.def.type as ManaProducerType)
-    ).length
-
-    // Add bonus mana (bonus per dork that taps)
-    extraMana += bonus * boostedCount
-
-    // Track bonus color sources for P1 calculation
-    const bonusColors = colorsFromMask(bonusMask)
-    for (const color of bonusColors) {
-      bonusColorSources[color] = (bonusColorSources[color] ?? 0) + boostedCount
-    }
-  }
-
-  return { extraMana, bonusColorSources }
-}
-
-/**
  * Calculate castability given a specific set of online producers
+ * Uses v1.1 rigorous base castability with reduced spell cost
  */
 function castabilityGivenOnlineSet(
   hg: Hypergeom,
@@ -312,29 +390,72 @@ function castabilityGivenOnlineSet(
   ctx: AccelContext,
   onlineSet: ProducerInDeck[]
 ): CastabilityResult {
-  // Calculate enhanced mana production (includes ENHANCER bonuses)
-  const { extraMana, bonusColorSources } = calculateEnhancedManaProduction(onlineSet)
+  // Filter out ENHANCERs (disabled in instant mode)
+  const activeProducers = onlineSet.filter(p => p.def.type !== 'ENHANCER')
+
+  // Calculate extra mana from online producers
+  const extraMana = activeProducers.reduce((s, p) => s + netManaPerTurn(p.def), 0)
   const landsNeeded = Math.max(0, spell.mv - extraMana)
 
   if (landsNeeded > turn) return { p1: 0, p2: 0 }
 
-  const seen = cardsSeenByTurn(turn, ctx.playDraw)
+  const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
 
-  // Best P1 considering producer color contributions (including enhancer bonuses)
-  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, onlineSet, bonusColorSources)
+  // Create reduced spell for calculation
+  const reducedSpell: ManaCost = {
+    mv: landsNeeded,
+    generic: Math.max(0, spell.generic - extraMana),
+    pips: { ...spell.pips }
+  }
 
-  // P2 = P1 * P(enough lands)
-  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, landsNeeded)
-  const p2 = p1 * pLandsEnough
+  // Allocate producer colors to reduce pip requirements
+  // (each producer can cover 1 pip of a color it produces)
+  for (const producer of activeProducers) {
+    const colors = colorsFromMask(producer.def.producesMask)
+    for (const color of colors) {
+      if (producer.def.producesAny || colors.includes(color)) {
+        const current = reducedSpell.pips[color] ?? 0
+        if (current > 0) {
+          reducedSpell.pips[color] = current - 1
+          break // One pip per producer
+        }
+      }
+    }
+  }
 
-  return { p1, p2 }
+  // Best P1 considering producer color contributions
+  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, activeProducers)
+
+  // P2 = sum over possible land counts with reduced requirements
+  let p2 = 0
+  const maxLands = Math.min(deck.totalLands, cardsSeen)
+
+  for (let l = 0; l <= maxLands; l++) {
+    const pL = hg.pmf(deck.deckSize, deck.totalLands, cardsSeen, l)
+    if (pL <= 0) continue
+
+    const pColors = colorsOkGivenLands(hg, deck, reducedSpell, l)
+    if (pColors <= 0) continue
+
+    const pMana = manaOkGivenLands(hg, deck, landsNeeded, l)
+    if (pMana <= 0) continue
+
+    p2 += pL * pColors * pMana
+  }
+
+  return { p1: clamp01(p1), p2: clamp01(p2) }
 }
+
+// =============================================================================
+// DISJOINT K=0/1/2 SCENARIOS
+// =============================================================================
 
 /**
  * Compute accelerated castability using disjoint scenarios (K=0,1,2)
  *
- * This is the core algorithm that sums over scenarios where
- * exactly 0, 1, or 2 accelerators are online.
+ * P(cast at T) = Σₖ₌₀² P(K=k) × P(cast at T | K=k)
+ *
+ * Where K = number of producers online and useful (truncated to 2 for performance)
  */
 export function computeAcceleratedCastabilityAtTurn(
   hg: Hypergeom,
@@ -345,34 +466,37 @@ export function computeAcceleratedCastabilityAtTurn(
   ctx: AccelContext,
   kMax: 0 | 1 | 2 = 2
 ): CastabilityResult {
-  // Filter to producers with copies and calculate online probabilities
-  const p = producers
-    .filter((pd) => pd.copies > 0)
+  // Filter to producers with copies and non-zero online probability
+  const candidatesRaw = producers
+    .filter((pd) => pd.copies > 0 && pd.def.type !== 'ENHANCER') // Skip ENHANCERs
     .map((pd) => ({
       pd,
-      pOnline: producerOnlineProbByTurn(hg, deck, pd, turn, ctx)
+      pOnline: producerOnlineProbByTurn(hg, deck, pd, turn, ctx),
+      netMana: netManaPerTurn(pd.def)
     }))
-    .filter((x) => x.pOnline > 0)
+    .filter((x) => x.pOnline > 0 && x.netMana > 0)
 
   // No producers or kMax=0: just return base
-  if (p.length === 0 || kMax === 0) {
+  if (candidatesRaw.length === 0 || kMax === 0) {
     return computeBaseCastability(hg, deck, spell, turn, ctx)
   }
 
-  // Sort by impact (pOnline * net mana)
-  p.sort((a, b) => (b.pOnline * netManaPerTurn(b.pd.def)) - (a.pOnline * netManaPerTurn(a.pd.def)))
+  // Sort by impact (pOnline * net mana) and cap for performance
+  candidatesRaw.sort((a, b) => (b.pOnline * b.netMana) - (a.pOnline * a.netMana))
+  const candidates = candidatesRaw.slice(0, MAX_PRODUCER_CANDIDATES)
 
-  // Cap candidates for performance
-  const candidates = p.slice(0, 18)
   const probs = candidates.map((x) => x.pOnline)
   const list = candidates.map((x) => x.pd)
 
-  // P(0 online) = Π(1 - pi)
+  // P(K=0) = Π(1 - pᵢ)
   let p0 = 1
-  for (const pi of probs) p0 *= (1 - pi)
-  p0 = Math.max(0, Math.min(1, p0))
+  for (const pi of probs) {
+    p0 *= (1 - pi)
+  }
+  p0 = clamp01(p0)
 
-  // P(exactly 1 online): sum of wi = pi * p0 / (1 - pi)
+  // P(K=1) = Σⱼ pⱼ × Π_{i≠j}(1 - pᵢ)
+  // Simplified: wⱼ = pⱼ × p0 / (1 - pⱼ)
   const w1: number[] = []
   let p1Sum = 0
   for (let i = 0; i < probs.length; i++) {
@@ -381,25 +505,26 @@ export function computeAcceleratedCastabilityAtTurn(
     w1.push(wi)
     p1Sum += wi
   }
-  p1Sum = Math.max(0, Math.min(1, p1Sum))
+  p1Sum = clamp01(p1Sum)
 
-  // P(2+ online) = 1 - p0 - p1
+  // P(K≥2) = 1 - P(K=0) - P(K=1), truncated to P(K=2)
   let p2Sum = 0
   if (kMax >= 2) {
-    p2Sum = Math.max(0, Math.min(1, 1 - p0 - p1Sum))
+    p2Sum = clamp01(1 - p0 - p1Sum)
   }
 
-  // Scenario K=0: no producers online
+  // === Scenario K=0: no producers online ===
   const k0 = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [])
   let outP1 = p0 * k0.p1
   let outP2 = p0 * k0.p2
 
-  // Scenario K=1: exactly one producer online
+  // === Scenario K=1: exactly one producer online ===
   if (kMax >= 1 && p1Sum > 0) {
     let accP1 = 0
     let accP2 = 0
     for (let i = 0; i < list.length; i++) {
       const wi = w1[i] / p1Sum
+      if (wi <= 0) continue
       const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[i]])
       accP1 += wi * res.p1
       accP2 += wi * res.p2
@@ -408,7 +533,7 @@ export function computeAcceleratedCastabilityAtTurn(
     outP2 += p1Sum * accP2
   }
 
-  // Scenario K=2: two producers online
+  // === Scenario K=2: two producers online ===
   if (kMax >= 2 && p2Sum > 0 && list.length >= 2) {
     let sumPairs = 0
     const pairWeights: Array<{ i: number; j: number; w: number }> = []
@@ -442,13 +567,19 @@ export function computeAcceleratedCastabilityAtTurn(
   }
 
   return {
-    p1: Math.max(0, Math.min(1, outP1)),
-    p2: Math.max(0, Math.min(1, outP2))
+    p1: clamp01(outP1),
+    p2: clamp01(outP2)
   }
 }
 
+// =============================================================================
+// ACCELERATION DETECTION
+// =============================================================================
+
 /**
  * Find the earliest turn where accelerated casting becomes viable
+ *
+ * @param threshold - Minimum probability to consider viable (default 5%)
  */
 export function findAcceleratedTurn(
   hg: Hypergeom,
@@ -456,19 +587,23 @@ export function findAcceleratedTurn(
   spell: ManaCost,
   producers: ProducerInDeck[],
   ctx: AccelContext,
-  minProb: number = 0.05
+  threshold: number = DEFAULT_ACCELERATION_THRESHOLD
 ): { acceleratedTurn: number | null; withAccelAtTurn?: CastabilityResult } {
   const naturalTurn = spell.mv
 
   for (let t = 1; t < naturalTurn; t++) {
     const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, t, producers, ctx, 2)
-    if (res.p2 >= minProb) {
+    if (res.p2 >= threshold) {
       return { acceleratedTurn: t, withAccelAtTurn: res }
     }
   }
 
   return { acceleratedTurn: null }
 }
+
+// =============================================================================
+// PUBLIC API
+// =============================================================================
 
 /**
  * Main entry point: compute full accelerated castability result
@@ -493,13 +628,16 @@ export function computeAcceleratedCastability(
     2
   )
 
-  const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, 0.05)
+  const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, DEFAULT_ACCELERATION_THRESHOLD)
 
-  // Key accelerators: top by marginal impact
-  const scored = producers.map((pd) => {
-    const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx)
-    return { name: pd.def.name, score: pOnline * netManaPerTurn(pd.def) }
-  }).sort((a, b) => b.score - a.score)
+  // Key accelerators: top by marginal impact (excluding ENHANCERs)
+  const scored = producers
+    .filter(pd => pd.def.type !== 'ENHANCER')
+    .map((pd) => {
+      const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx)
+      return { name: pd.def.name, score: pOnline * netManaPerTurn(pd.def) }
+    })
+    .sort((a, b) => b.score - a.score)
 
   return {
     base,
@@ -511,7 +649,21 @@ export function computeAcceleratedCastability(
 }
 
 /**
- * Compute castability for multiple turns
+ * Compute base castability at a specific turn (lands only, no acceleration)
+ * Exported for direct use in UI components
+ */
+export function computeBaseCastabilityAtTurn(
+  deck: DeckManaProfile,
+  spell: ManaCost,
+  turn: number,
+  ctx: AccelContext
+): CastabilityResult {
+  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
+  return computeBaseCastability(hg, deck, spell, turn, ctx)
+}
+
+/**
+ * Compute castability for multiple turns (for charts/visualization)
  */
 export function computeCastabilityByTurn(
   deck: DeckManaProfile,

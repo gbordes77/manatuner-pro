@@ -4,8 +4,8 @@ import React, { useMemo } from "react";
 import { useAcceleration } from "../../contexts/AccelerationContext";
 import { AnalysisResult } from "../../services/deckAnalyzer";
 import { producerCacheService } from "../../services/manaProducerService";
-import type { LandManaColor } from "../../types/lands";
 import type { ProducerInDeck } from "../../types/manaProducers";
+// Note: LandManaColor removed - no longer needed for deterministic bonus calculation
 import ManaCostRow from "../ManaCostRow";
 import { AccelerationSettings } from "./AccelerationSettings";
 
@@ -54,38 +54,11 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
     return producers;
   }, [analysisResult?.cards]);
 
-  // Calculate bonus mana from multi-mana lands (Ancient Tomb, Bounce lands, etc.)
-  const landBonuses = useMemo(() => {
-    let bonusManaFromLands = 0;
-    const bonusColoredMana: Partial<Record<LandManaColor, number>> = {};
-
-    if (!analysisResult?.cards) {
-      return { bonusManaFromLands, bonusColoredMana };
-    }
-
-    for (const card of analysisResult.cards) {
-      if (!card.isLand || !card.landMetadata) continue;
-
-      const metadata = card.landMetadata;
-      const quantity = card.quantity || 1;
-      const producesAmount = metadata.producesAmount ?? 1;
-
-      // If land produces more than 1 mana, calculate bonus
-      if (producesAmount > 1) {
-        const bonusPerLand = producesAmount - 1; // Extra mana beyond the base 1
-        bonusManaFromLands += bonusPerLand * quantity;
-
-        // Track colored bonus for each color this land produces
-        for (const color of metadata.produces) {
-          if (color !== 'C') {
-            bonusColoredMana[color] = (bonusColoredMana[color] ?? 0) + bonusPerLand * quantity;
-          }
-        }
-      }
-    }
-
-    return { bonusManaFromLands, bonusColoredMana };
-  }, [analysisResult?.cards]);
+  // v1.1: Multi-mana lands are now handled probabilistically inside the engine
+  // via unconditionalMultiMana in DeckManaProfile. No need for deterministic bonuses.
+  //
+  // TODO P1.1: Extract unconditionalMultiMana from analysisResult.cards
+  // and pass to DeckManaProfile in ManaCostRow
 
   return (
     <>
@@ -134,8 +107,6 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = ({
               producers={producersInDeck}
               accelContext={accelContext}
               showAcceleration={settings.showAcceleration && producersInDeck.length > 0}
-              bonusManaFromLands={landBonuses.bonusManaFromLands}
-              bonusColoredMana={landBonuses.bonusColoredMana}
             />
           ))}
         </Box>

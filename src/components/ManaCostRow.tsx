@@ -35,10 +35,9 @@ interface ManaCostRowProps {
   }
   /** Whether to show acceleration data */
   showAcceleration?: boolean
-  /** Bonus mana from multi-mana lands (Ancient Tomb, etc.) */
-  bonusManaFromLands?: number
-  /** Bonus colored mana from multi-mana lands */
-  bonusColoredMana?: Partial<Record<string, number>>
+  // v1.1: bonusManaFromLands and bonusColoredMana removed
+  // Multi-mana lands are now handled probabilistically in the engine
+  // via unconditionalMultiMana in DeckManaProfile
 }
 
 // Keyrune mana symbol component
@@ -485,6 +484,7 @@ const getProbabilityColor = (prob: number, theme: Theme) => {
 };
 
 // Hook for accelerated castability calculation
+// v1.1: Removed bonusManaFromLands/bonusColoredMana - now handled in engine
 const useAcceleratedCastability = (
   cardData: MTGCard | null,
   cardName: string,
@@ -494,9 +494,7 @@ const useAcceleratedCastability = (
   totalCards?: number,
   producers?: ProducerInDeck[],
   accelContext?: ManaCostRowProps['accelContext'],
-  showAcceleration?: boolean,
-  bonusManaFromLands?: number,
-  bonusColoredMana?: Partial<Record<string, number>>
+  showAcceleration?: boolean
 ) => {
   return useMemo(() => {
     // Return null if acceleration is disabled or no producers
@@ -543,7 +541,8 @@ const useAcceleratedCastability = (
         }
       }
 
-      // Build deck mana profile from sources (including multi-mana land bonuses)
+      // Build deck mana profile from sources
+      // v1.1: Multi-mana lands handled probabilistically via unconditionalMultiMana
       const deckProfile: DeckManaProfile = {
         deckSize: totalCards || 60,
         totalLands: totalLands || 24,
@@ -554,17 +553,8 @@ const useAcceleratedCastability = (
           R: deckSources?.R || 0,
           G: deckSources?.G || 0,
           C: deckSources?.C || 0
-        },
-        // Include bonus mana from multi-mana lands (Ancient Tomb, Bounce lands, etc.)
-        bonusManaFromLands: bonusManaFromLands || 0,
-        bonusColoredMana: bonusColoredMana ? {
-          W: bonusColoredMana.W || 0,
-          U: bonusColoredMana.U || 0,
-          B: bonusColoredMana.B || 0,
-          R: bonusColoredMana.R || 0,
-          G: bonusColoredMana.G || 0,
-          C: bonusColoredMana.C || 0
-        } : undefined
+        }
+        // TODO P1.1: Add unconditionalMultiMana here once extracted from deck analysis
       }
 
       // Build acceleration context
@@ -587,7 +577,7 @@ const useAcceleratedCastability = (
       console.error('Error calculating accelerated castability:', error)
       return null
     }
-  }, [cardData, cardName, baseProbability, deckSources, totalLands, totalCards, producers, accelContext, showAcceleration, bonusManaFromLands, bonusColoredMana])
+  }, [cardData, cardName, baseProbability, deckSources, totalLands, totalCards, producers, accelContext, showAcceleration])
 }
 
 const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
@@ -598,9 +588,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
   totalCards,
   producers,
   accelContext,
-  showAcceleration = false,
-  bonusManaFromLands,
-  bonusColoredMana
+  showAcceleration = false
 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -610,7 +598,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
 
   const probabilities = useProbabilityCalculation(cardData, cardName, deckSources, totalLands, totalCards)
 
-  // Calculate accelerated castability if enabled (includes multi-mana land bonuses)
+  // Calculate accelerated castability if enabled
+  // v1.1: Multi-mana lands now handled probabilistically in engine
   const acceleratedResult = useAcceleratedCastability(
     cardData,
     cardName,
@@ -620,9 +609,7 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(({
     totalCards,
     producers,
     accelContext,
-    showAcceleration,
-    bonusManaFromLands,
-    bonusColoredMana
+    showAcceleration
   )
 
   useEffect(() => {
