@@ -1,248 +1,242 @@
-# Team Handoff - ManaTuner Pro
+# ManaTuner Pro - Document de Passation
 
-**Date**: December 26, 2025  
-**From**: Development Session  
-**To**: Next Development Team  
-**Project Status**: Production Ready ✅
+## Bienvenue dans l'équipe !
+
+Ce document vous permettra de prendre en main le projet rapidement.
 
 ---
 
-## Quick Start (5 minutes)
+## 1. Vue d'ensemble
+
+**ManaTuner Pro** est un analyseur de manabase pour Magic: The Gathering.
+
+| Info | Valeur |
+|------|--------|
+| **URL Production** | https://manatuner-pro.vercel.app |
+| **Stack** | React 18 + TypeScript + Vite + MUI |
+| **Hébergement** | Vercel |
+| **Tests** | Vitest (unit) + Playwright (E2E) |
+| **Score Prod** | 85/100 - Prêt production |
+
+### Ce que fait l'app
+- Calcule les probabilités exactes de cast de chaque sort (hypergeométrique)
+- Simule 3000+ mains pour les décisions de mulligan (Monte Carlo)
+- Analyse tour par tour la castabilité
+- 100% client-side, privacy-first
+
+---
+
+## 2. Démarrage rapide
 
 ```bash
-# 1. Clone and install
-git clone https://github.com/gbordes77/manatuner-pro
+# Cloner et installer
+git clone https://github.com/gbordes77/manatuner-pro.git
 cd manatuner-pro
 npm install
 
-# 2. Run locally
+# Lancer le serveur dev
 npm run dev
-# Open http://localhost:5173
+# → http://localhost:5173
 
-# 3. Verify everything works
-npm run type-check   # Should pass with 0 errors
-npm run test:unit    # All tests should pass
-npm run build        # Should build successfully
+# Tests
+npm run test:unit    # 86/88 passing
+npm run lint         # 0 errors, 40 warnings
+
+# Build production
+npm run build
 ```
 
 ---
 
-## What is ManaTuner Pro?
+## 3. Structure du projet
 
-A **Magic: The Gathering manabase analyzer** that helps players optimize their decks using Frank Karsten's mathematical formulas.
-
-### Core Value Proposition
-> "Can I cast my spells on time with this manabase?"
-
-### Key Features
-1. **Castability Analysis** - Probability tables for casting spells on curve
-2. **Mulligan Strategy** - Monte Carlo simulation with archetype support
-3. **Manabase Health** - Overall deck consistency score
-4. **Color Distribution** - Visual breakdown of mana sources
+```
+src/
+├── components/
+│   ├── analyzer/        # Interface saisie deck
+│   │   ├── DeckInputSection.tsx   # Zone de texte + boutons
+│   │   ├── DashboardTab.tsx       # Onglet principal résultats
+│   │   └── ...
+│   ├── analysis/        # Visualisation résultats
+│   │   ├── EnhancedCharts.tsx     # Graphiques
+│   │   └── ...
+│   ├── common/          # Composants partagés
+│   │   ├── FloatingManaSymbols.tsx # Mana flottants en fond
+│   │   └── ...
+│   └── export/          # Export PDF/PNG
+│       └── ManaBlueprint.tsx      # Blueprint visuel
+├── pages/               # Pages de l'app
+│   ├── HomePage.tsx
+│   ├── AnalyzerPage.tsx
+│   ├── GuidePage.tsx
+│   ├── MathematicsPage.tsx
+│   ├── LandGlossaryPage.tsx
+│   └── ...
+├── services/            # Logique métier
+│   ├── manaCalculator.ts   # Calculs hypergeométriques
+│   ├── advancedMaths.ts    # Monte Carlo
+│   ├── deckAnalyzer.ts     # Parsing deck
+│   └── landService.ts      # Détection terrains
+├── hooks/               # Hooks React custom
+├── store/               # Redux slices
+├── types/               # Types TypeScript
+└── utils/               # Utilitaires
+```
 
 ---
 
-## Architecture Overview
+## 4. Routes de l'application
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    AnalyzerPage.tsx                      │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
-│  │Dashboard│ │Castabil.│ │Mulligan │ │Analysis │ │Manabase │
-│  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘
-└───────┼──────────┼──────────┼──────────┼──────────┼─────┘
-        │          │          │          │          │
-        ▼          ▼          ▼          ▼          ▼
-┌─────────────────────────────────────────────────────────┐
-│                     Services Layer                       │
-│  deckAnalyzer.ts  │  manaCalculator.ts  │  mulligan*.ts │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Tech Stack
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 18 + TypeScript |
-| UI | Material-UI (MUI) v5 |
-| State | Redux Toolkit |
-| Charts | Recharts |
-| Build | Vite 7.3 |
-| Tests | Vitest + Playwright |
-| Hosting | Vercel |
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | HomePage | Landing page avec mana flottants |
+| `/analyzer` | AnalyzerPage | Analyseur principal |
+| `/guide` | GuidePage | Guide utilisateur |
+| `/mathematics` | MathematicsPage | Explications mathématiques |
+| `/land-glossary` | LandGlossaryPage | Glossaire des terrains |
+| `/my-analyses` | MyAnalysesPage | Historique local |
+| `/privacy-first` | PrivacyFirstPage | Politique privacy |
+| `/about` | AboutPage | À propos |
 
 ---
 
-## Files You Need to Know
+## 5. Fonctionnalités clés
 
-### Critical Files (read these first)
+### Mana Font (icônes MTG)
+```html
+<!-- CDN dans index.html -->
+<link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css" rel="stylesheet" />
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `src/pages/AnalyzerPage.tsx` | Main page, 5 tabs orchestration | ~400 |
-| `src/services/deckAnalyzer.ts` | Core analysis engine | ~500 |
-| `src/services/mulliganSimulatorAdvanced.ts` | Mulligan Monte Carlo | ~600 |
-| `src/components/analyzer/MulliganTab.tsx` | Mulligan UI | ~860 |
-| `src/services/manaCalculator.ts` | Karsten math formulas | ~300 |
+<!-- Usage -->
+<i className="ms ms-w ms-cost" />  <!-- Mana blanc -->
+<i className="ms ms-u ms-cost" />  <!-- Mana bleu -->
+<i className="ms ms-b ms-cost" />  <!-- Mana noir -->
+<i className="ms ms-r ms-cost" />  <!-- Mana rouge -->
+<i className="ms ms-g ms-cost" />  <!-- Mana vert -->
+```
+
+### FloatingManaSymbols
+Composant partagé pour les mana flottants en arrière-plan (toutes les pages).
+```tsx
+import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols';
+
+// Dans le JSX de la page
+<FloatingManaSymbols />
+```
+
+### Theme WUBRG
+```tsx
+// Couleurs dans le theme MUI
+theme.palette.mana.white      // #F8E7B9
+theme.palette.mana.blue       // #0E68AB
+theme.palette.mana.black      // #150B00
+theme.palette.mana.red        // #D3202A
+theme.palette.mana.green      // #00733E
+theme.palette.mana.multicolor // #C9A32E (gold)
+```
+
+---
+
+## 6. Tests
+
+### Unit Tests (Vitest)
+```bash
+npm run test:unit
+# 86/88 passing, 2 skipped
+```
+
+Tests critiques :
+- `manaCalculator.test.ts` - Formules hypergeométriques
+- `deckAnalyzer.test.ts` - Parsing de decklists
+- `AnalyzerPage.test.jsx` - Interface principale
+
+### E2E Tests (Playwright)
+```bash
+npm run test:e2e
+```
+
+---
+
+## 7. Déploiement
+
+### Vercel (automatique)
+Push sur `main` → déploiement automatique sur Vercel.
+
+```bash
+# Commit et push
+git add .
+git commit -m "feat: description"
+git push origin main
+```
+
+### Variables d'environnement
+Aucune requise - l'app est 100% client-side.
+
+Supabase est **désactivé** (mocké). Toutes les données restent en localStorage.
+
+---
+
+## 8. État actuel
+
+### Session 2025-12-27 - Dernières modifications
+
+**Visual Identity MTG**
+- ✅ Mana font CDN corrigé (keyrune → mana-font)
+- ✅ Color Distribution avec icônes mana
+- ✅ ManaBlueprint fond éclairci + icônes mana
+- ✅ FloatingManaSymbols sur TOUTES les pages
+- ✅ HomePage title gradient gold
+- ✅ Footer avec coeur emoji
+- ✅ Boutons Clear/Example inversés (Clear gros à gauche)
+
+**Qualité**
+- ✅ 0 erreurs ESLint
+- ✅ 40 warnings ESLint (non-bloquants)
+- ✅ 86/88 tests passing
+
+### P1 - À faire (semaine 1 post-launch)
+1. Ajouter headers CSP dans `vercel.json`
+2. Ajouter aria-labels aux onglets emoji
+3. Installer Sentry error tracking
+4. Ajouter navigation clavier aux cartes
+5. Fixer les dépendances vides useCallback
+
+---
+
+## 9. Contacts & Ressources
 
 ### Documentation
+- `README.md` - Vue d'ensemble projet
+- `docs/ARCHITECTURE.md` - Architecture technique
+- `HANDOFF.md` - Notes de session
+- `PRE_PRODUCTION_AUDIT.md` - Rapport d'audit
 
-| File | Content |
-|------|---------|
-| `HANDOFF.md` | Project state, scores, features |
-| `docs/MULLIGAN_SYSTEM.md` | Mulligan technical deep-dive |
-| `docs/SESSION_2025_12_26.md` | Latest session notes |
-| `docs/MATHEMATICAL_REFERENCE.md` | Math foundations |
-
----
-
-## Current Quality Scores
-
-| Domain | Score | Notes |
-|--------|-------|-------|
-| UI | 8.8/10 | MUI, tooltips, responsive |
-| UX | 8.2/10 | 5 tabs, onboarding, clear flow |
-| Performance | 7.8/10 | Lazy loading, Monte Carlo optimized |
-| Code Quality | 9.0/10 | Strict TS, 0 `any` types |
-| **Overall** | **8.6/10** | Up from 7.2 this session |
-
----
-
-## Recent Changes (December 26, 2025)
-
-### Added
-- ✅ **Mulligan Strategy Tab** - Full Monte Carlo with 4 archetypes
-- ✅ **Tooltips** - All technical terms explained
-- ✅ **Strict TypeScript** - `noImplicitAny: true`, 0 errors
-
-### Changed
-- 🔄 **Dashboard** - Removed subjective recommendations
-- 🔄 **Tab Order** - Dashboard → Castability → Mulligan → Analysis → Manabase
-
-### Fixed
-- 🐛 Card counting bug (was counting unique entries, not quantities)
-- 🐛 French text accidentally added, reverted to English
-
----
-
-## Key Algorithms
-
-### 1. Frank Karsten Formula (Castability)
-```
-P(casting on turn T) = Hypergeometric distribution
-- Population: 60 cards
-- Successes in population: N sources of color X
-- Sample size: 7 + (T-1) draws
-- Required successes: Pips of color X in mana cost
-```
-
-### 2. Bellman Equation (Mulligan)
-```
-E[V₇] = (1/N) × Σ max(score₇ᵢ, E[V₆])
-
-Threshold to keep 7 = E[V₆]
-→ Keep 7 if hand score ≥ E[V₆], else mulligan
-```
-
-### 3. Monte Carlo Simulation
-```
-- 3000 iterations per analysis
-- Simulates T1-T4 goldfish play
-- 5 metrics: Mana Efficiency, Curve, Colors, Early Game, Land Balance
-- Archetype-specific weights
-```
-
----
-
-## Known Limitations
-
-| Issue | Impact | Workaround |
-|-------|--------|------------|
-| Non-basic lands assume all colors | Color score inflated | Manual check |
-| No card synergy detection | Combo hands undervalued | Future: card tagging |
-| Single format logic | Same for Standard/Modern | Future: format presets |
-
----
-
-## Testing Checklist
-
-Before any deployment:
-
-```bash
-# Must all pass
-npm run type-check      # TypeScript
-npm run lint            # ESLint
-npm run test:unit       # Unit tests
-npm run build           # Production build
-
-# Manual testing
-1. Load sample deck
-2. Check all 5 tabs load
-3. Change mulligan archetype
-4. Verify tooltips appear on hover
-5. Test on mobile viewport
-```
-
----
-
-## Deployment
-
-```bash
-# Automatic on push to main
-git push origin main
-
-# Vercel auto-deploys to:
-# https://manatuner-pro.vercel.app
-```
-
----
-
-## Potential Next Steps
-
-### High Value / Low Effort
-1. Add more mulligan archetypes (Tempo, Ramp)
-2. Save/load analysis history
-3. Share analysis via URL
-
-### High Value / Medium Effort
-1. Sideboard mulligan mode
-2. Card tagging for combo decks
-3. Format-specific presets
-
-### Future Ideas
-1. Scryfall integration for card images
-2. Deck comparison mode
-3. Community deck sharing
-
----
-
-## Contacts & Resources
-
-### Repository
-- **GitHub**: https://github.com/gbordes77/manatuner-pro
-- **Live**: https://manatuner-pro.vercel.app
-
-### External References
-- [Frank Karsten's Articles](https://strategy.channelfireball.com/all-strategy/author/frank-karsten/)
+### Références externes
+- [Frank Karsten - Manabase Theory](https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/)
+- [Mana Font Documentation](https://mana.andrewgioia.com/)
 - [Scryfall API](https://scryfall.com/docs/api)
-- [London Mulligan Rules](https://magic.wizards.com/en/news/announcements/london-mulligan)
 
 ---
 
-## Summary
+## 10. Commandes utiles
 
-ManaTuner Pro is a **production-ready** MTG manabase analyzer with:
+```bash
+# Développement
+npm run dev              # Serveur dev (port 5173)
+npm run build            # Build production
+npm run preview          # Preview du build
 
-- ✅ Solid mathematical foundation (Karsten formulas)
-- ✅ Advanced mulligan simulation (Monte Carlo + Bellman)
-- ✅ Clean codebase (8.6/10 quality score)
-- ✅ Good test coverage
-- ✅ Responsive design
-- ✅ Deployed and working
+# Qualité
+npm run lint             # Check ESLint
+npm run lint:fix         # Auto-fix ESLint
+npm run type-check       # Validation TypeScript
 
-The codebase is well-documented and ready for continued development. Start with `HANDOFF.md` for project state, `docs/MULLIGAN_SYSTEM.md` for the newest feature's technical details.
-
-**Good luck! 🎴**
+# Tests
+npm run test:unit        # Tests unitaires
+npm run test:e2e         # Tests E2E
+npm run test:coverage    # Rapport de couverture
+```
 
 ---
 
-*Generated: December 26, 2025*
+**Bonne prise en main !** 🎴

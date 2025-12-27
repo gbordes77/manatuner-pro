@@ -1,7 +1,6 @@
 import {
-    Add as AddIcon,
     Analytics as AnalyticsIcon,
-    Speed as SpeedIcon,
+    Speed as SpeedIcon
 } from "@mui/icons-material";
 import {
     Box,
@@ -122,26 +121,14 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
             >
               <Button
                 variant="outlined"
-                size={isMobile ? "small" : "medium"}
-                onClick={onLoadSample}
-                startIcon={<AddIcon />}
-                sx={{
-                  minWidth: isMobile ? "auto" : "100px",
-                  fontSize: isMobile ? "0.75rem" : undefined,
-                }}
-              >
-                Example
-              </Button>
-
-              <Button
-                variant="outlined"
-                size={isMobile ? "small" : "medium"}
+                size={isMobile ? "medium" : "large"}
                 onClick={onClear}
                 sx={{
                   color: "var(--mtg-red)",
                   borderColor: "var(--mtg-red)",
-                  minWidth: isMobile ? "auto" : "80px",
-                  fontSize: isMobile ? "0.75rem" : undefined,
+                  minWidth: isMobile ? "auto" : "120px",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontWeight: 600,
                   "&:hover": {
                     borderColor: "var(--mtg-red)",
                     backgroundColor: "rgba(220, 53, 69, 0.1)",
@@ -151,7 +138,17 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = ({
                 🗑️ Clear
               </Button>
 
-
+              <Button
+                variant="outlined"
+                size={isMobile ? "small" : "small"}
+                onClick={onLoadSample}
+                sx={{
+                  minWidth: isMobile ? "auto" : "90px",
+                  fontSize: isMobile ? "0.7rem" : "0.8rem",
+                }}
+              >
+                Example
+              </Button>
             </Box>
           </Box>
 

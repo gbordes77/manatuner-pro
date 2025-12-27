@@ -6,6 +6,25 @@
 
 ---
 
+## Session 2025-12-27
+
+### Visual Identity MTG Refresh
+- ✅ Mana font CDN corrigé (keyrune → mana-font)
+- ✅ Color Distribution avec icônes mana (fond neutre)
+- ✅ ManaBlueprint fond éclairci (#0A1628 → #1A2A3E) + icônes mana légende
+- ✅ FloatingManaSymbols sur TOUTES les pages (position fixed)
+- ✅ HomePage title gradient gold (C de "Can" plus visible)
+- ✅ Footer avec coeur emoji (remplace mana symbols)
+- ✅ Boutons Clear/Example inversés (Clear gros à gauche, Example petit à droite)
+- ✅ Texte "MTGO, MTGA, Moxfield & more" (remplace "any format")
+- ✅ Instruction deck bar "Click to edit your deck or start a new analysis"
+- ✅ Mulligan Analysis retiré de EnhancedCharts (doublon avec onglet dédié)
+
+### Document de Passation
+- ✅ `TEAM_HANDOFF.md` créé pour onboarding nouvelle équipe
+
+---
+
 ## Session 2025-12-26
 
 ### Audit Pré-Production (8 agents parallèles)
@@ -39,8 +58,10 @@
 
 ---
 
-## Documents Générés
+## Documents Projet
+- `TEAM_HANDOFF.md` - Document de passation équipe
 - `PRE_PRODUCTION_AUDIT.md` - Rapport complet des 8 agents
+- `docs/ARCHITECTURE.md` - Architecture technique
 
 ---
 
