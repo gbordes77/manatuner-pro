@@ -41,3 +41,30 @@ echo "Rafraîchis http://localhost:5173/[page-modifiée]"
 
 ### Supabase
 **Status: DISABLED** - Service entièrement mocké (`isConfigured: () => false`). Toutes les données restent en localStorage. App 100% privacy-first.
+
+### PWA Cache Fix (Janvier 2025)
+
+**Problème résolu**: Après déploiement sur Vercel, les navigateurs ayant déjà visité le site restaient bloqués sur l'ancienne version (cache Service Worker).
+
+**Cause racine**:
+- `vite-plugin-pwa` était configuré mais ne générait pas de SW fonctionnel
+- Les anciens Service Workers restaient actifs dans les navigateurs des utilisateurs
+- Ces anciens SW servaient les fichiers depuis leur cache local
+
+**Solution déployée** - SW Killer (`public/sw.js`):
+
+```javascript
+// Ce SW remplace l'ancien, vide les caches, et se désinstalle
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', async () => {
+  await Promise.all((await caches.keys()).map(name => caches.delete(name)));
+  await self.registration.unregister();
+  (await self.clients.matchAll({type: 'window'})).forEach(c => c.navigate(c.url));
+});
+```
+
+**Configuration Vercel** (`vercel.json`):
+- Exclut `/sw.js` du rewrite SPA
+- Headers `no-cache, no-store` sur `/sw.js`
+
+**Résultat**: Les navigateurs téléchargent le nouveau SW killer qui nettoie tout et se désinstalle, garantissant que les utilisateurs voient toujours la dernière version.
