@@ -12,12 +12,30 @@ import "./styles/contrast-fixes.css";
 import "./styles/index.css";
 import "./styles/ux-improvements.css";
 
-// PWA: Force reload when new Service Worker takes control
-// This ensures users always see the latest version after deployment
+// PWA Cleanup: Unregister all old Service Workers and clear caches
+// This fixes the issue where old cached versions persist after deployment
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    window.location.reload();
+  // Unregister all Service Workers
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => {
+      registration.unregister().then((success) => {
+        if (success) {
+          console.log("[SW] Unregistered old Service Worker");
+        }
+      });
+    });
   });
+
+  // Clear all caches
+  if ("caches" in window) {
+    caches.keys().then((cacheNames) => {
+      cacheNames.forEach((cacheName) => {
+        caches.delete(cacheName).then(() => {
+          console.log(`[Cache] Deleted cache: ${cacheName}`);
+        });
+      });
+    });
+  }
 }
 
 // Configure React Query client with performance optimizations
