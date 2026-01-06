@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 
 /**
@@ -46,7 +46,6 @@ export const ManaSymbol: React.FC<ManaSymbolProps> = ({
   glow = false,
   animated = false,
 }) => {
-  const theme = useTheme();
   const colorConfig = COLOR_CONFIGS[color];
   const fontSize = typeof size === 'number' ? size : SIZE_CONFIGS[size];
   const keyruneClass = KEYRUNE_CLASSES[color];
@@ -179,7 +178,7 @@ export const WUBRGBar: React.FC<WUBRGBarProps> = ({
         },
       }}
     >
-      {colors.map((color, index) => (
+      {colors.map((color) => (
         <ManaSymbol
           key={color}
           color={color}

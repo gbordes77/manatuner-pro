@@ -6,6 +6,31 @@
 
 ---
 
+## Session 2026-01-06
+
+### Sécurité & Accessibilité (P1 items)
+- ✅ **CSP Headers ajoutés** à `vercel.json`:
+  - `Content-Security-Policy` (default-src, script-src, style-src, font-src, img-src, connect-src)
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `X-XSS-Protection: 1; mode=block`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy` (camera, microphone, geolocation disabled)
+- ✅ **aria-labels ajoutés** aux 6 tabs emoji dans `AnalyzerPage.tsx`
+- ✅ **aria-label** sur le container `<Tabs>`
+
+### Nettoyage Code
+- ✅ **Supprimé** `temp_accel_starter/` (fichiers orphelins qui cassaient les tests)
+- ✅ **Supprimé** `mana_tuner_pro_accel_starter.zip`
+- ✅ **ESLint warnings réduits** de 40 → 22 (imports/variables inutilisés nettoyés)
+
+### Tests Status
+- Unit: 95/99 passing (2 flaky timing tests, 2 skipped)
+- ESLint: 0 errors, 22 warnings
+- Build: ✅ OK (4.67s)
+
+---
+
 ## Session 2025-12-27
 
 ### Visual Identity MTG Refresh
@@ -66,11 +91,11 @@
 ---
 
 ## Next Steps (P1 - Week 1 Post-Launch)
-1. Add CSP headers to `vercel.json`
-2. Add aria-labels to emoji tabs
+1. ~~Add CSP headers to `vercel.json`~~ ✅ DONE (2026-01-06)
+2. ~~Add aria-labels to emoji tabs~~ ✅ DONE (2026-01-06)
 3. Install Sentry error tracking
 4. Add keyboard navigation to cards
-5. Fix empty useCallback dependencies
+5. Fix empty useCallback dependencies (22 warnings remaining)
 
 ---
 

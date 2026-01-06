@@ -440,6 +440,7 @@ const AnalyzerPage: React.FC = () => {
                     variant="scrollable"
                     scrollButtons="auto"
                     allowScrollButtonsMobile
+                    aria-label="Analysis results tabs"
                     sx={{
                       mb: isMobile ? 2 : 3,
                       "& .MuiTab-root": {
@@ -463,11 +464,11 @@ const AnalyzerPage: React.FC = () => {
                       },
                     }}
                   >
-                    <Tab label="📊 Dashboard" />
-                    <Tab label="🎯 Castability" />
-                    <Tab label="🎲 Mulligan" />
-                    <Tab label="⚡ Analysis" />
-                    <Tab label="🏔️ Manabase" />
+                    <Tab label="📊 Dashboard" aria-label="Dashboard - Overview and health score" />
+                    <Tab label="🎯 Castability" aria-label="Castability - Spell casting probabilities" />
+                    <Tab label="🎲 Mulligan" aria-label="Mulligan - Hand simulation and strategy" />
+                    <Tab label="⚡ Analysis" aria-label="Analysis - Detailed spell analysis" />
+                    <Tab label="🏔️ Manabase" aria-label="Manabase - Land breakdown" />
                     <Tab
                       label={
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -490,6 +491,7 @@ const AnalyzerPage: React.FC = () => {
                           </Box>
                         </Box>
                       }
+                      aria-label="Blueprint - Export analysis as PNG, PDF or JSON"
                       sx={{ color: "#00D9FF" }}
                     />
                   </Tabs>

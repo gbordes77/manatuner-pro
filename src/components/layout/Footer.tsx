@@ -10,20 +10,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-// Mana symbol component using Keyrune font
-const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }> = ({ color, size = 16 }) => (
-  <i
-    className={`ms ms-${color} ms-cost`}
-    style={{
-      fontSize: size,
-      filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-    }}
-  />
-);
-
 // WUBRG signature row
 const WUBRGSignature: React.FC = () => {
-  const theme = useTheme();
 
   return (
     <Box
