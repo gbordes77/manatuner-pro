@@ -7,19 +7,27 @@
 
 ## Résumé
 
+### Issues Actives
+
 | ID | Écran | Type | Priorité | Status |
 |----|-------|------|----------|--------|
-| FB-001 | Castability | UX/Documentation | - | RESOLVED |
-| FB-002 | Dashboard | UX/Documentation | P2 | TODO |
-| FB-003 | Mulligan | UX/Documentation | P1 | TODO |
-| FB-004 | Analysis | Bug | P1 | TODO |
-| FB-005 | Analysis | Feature | P3 | TODO |
-| FB-006 | Manabase | Bug | P0 | TODO |
+| *Aucune issue active* | - | - | - | - |
+
+### Issues Résolues (v2.0)
+
+| ID | Écran | Type | Priorité | Status |
+|----|-------|------|----------|--------|
+| FB-001 | Castability | UX/Documentation | - | ✅ RESOLVED |
+| FB-002 | Dashboard | UX/Documentation | P2 | ✅ RESOLVED |
+| FB-003 | Mulligan | UX/Documentation | P1 | ✅ RESOLVED |
+| FB-004 | Analysis | Bug | P1 | ✅ RESOLVED |
+| FB-005 | Analysis | Feature | P3 | ✅ RESOLVED |
+| FB-006 | Manabase | Bug | P0 | ✅ RESOLVED |
 | FB-007 | Blueprint | Positif | - | N/A |
-| FB-008 | Castability | Feature/Design | P2 | TODO |
-| FB-009 | Dashboard | Bug/UI | P1 | TODO |
-| FB-010 | Manabase | Bug | P0 | TODO |
-| FB-011 | Castability | Bug | P1 | TODO |
+| FB-008 | Castability | Feature/Design | P2 | ✅ RESOLVED |
+| FB-009 | Dashboard | Bug/UI | P1 | ✅ RESOLVED |
+| FB-010 | Manabase | Bug | P0 | ✅ RESOLVED |
+| FB-011 | Castability | Bug | P1 | ✅ RESOLVED |
 
 ---
 
@@ -439,11 +447,11 @@ Le bug est plus subtil : la carte "Foggy Bottom Swamp" (TLA) 269 (un vrai terrai
 - Parser qui tronque/modifie le nom de la carte
 
 ### Prochaines étapes
-1. **P0**: Fixer le bug Swampsnare Trap (FB-006)
-2. **P1**: Investiguer le crash Analysis (FB-004)
-3. **P1**: Clarifier l'onglet Mulligan (FB-003)
-4. **P2**: Ajouter documentation P1/P2 et Health Score (FB-001, FB-002)
+
+✅ Toutes les issues v2.0 ont été résolues.
+
+Prochains feedbacks à ajouter à partir de FB-012.
 
 ---
 
-*Dernière mise à jour: 2025-12-27*
+*Dernière mise à jour: 2026-01-07*
