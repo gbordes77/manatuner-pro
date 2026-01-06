@@ -12,6 +12,14 @@ import "./styles/contrast-fixes.css";
 import "./styles/index.css";
 import "./styles/ux-improvements.css";
 
+// PWA: Force reload when new Service Worker takes control
+// This ensures users always see the latest version after deployment
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+}
+
 // Configure React Query client with performance optimizations
 const queryClient = new QueryClient({
   defaultOptions: {
