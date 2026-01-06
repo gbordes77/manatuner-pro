@@ -1,62 +1,169 @@
 # ManaTuner Pro - Architecture Documentation
 
-This document provides a comprehensive overview of the ManaTuner Pro system architecture, data flows, and key implementation patterns.
+> **Last Updated**: 2026-01-06
+> **Version**: 2.0.0
+> **Status**: Production Ready (85/100)
 
 ---
 
 ## Table of Contents
 
-1. [System Overview](#system-overview)
-2. [Directory Structure](#directory-structure)
-3. [Data Flow](#data-flow)
-4. [Core Services](#core-services)
-5. [React Patterns](#react-patterns)
-6. [State Management](#state-management)
-7. [Performance Optimizations](#performance-optimizations)
-8. [Testing Strategy](#testing-strategy)
+1. [Executive Summary](#executive-summary)
+2. [System Overview](#system-overview)
+3. [Architecture Principles](#architecture-principles)
+4. [High-Level Architecture](#high-level-architecture)
+5. [Directory Structure](#directory-structure)
+6. [Core Services](#core-services)
+7. [Data Flow](#data-flow)
+8. [State Management](#state-management)
+9. [Component Architecture](#component-architecture)
+10. [External Integrations](#external-integrations)
+11. [Performance Optimizations](#performance-optimizations)
+12. [Security Architecture](#security-architecture)
+13. [Testing Strategy](#testing-strategy)
+14. [Deployment Architecture](#deployment-architecture)
+15. [Technical Decisions](#technical-decisions)
+16. [Future Considerations](#future-considerations)
+
+---
+
+## Executive Summary
+
+**ManaTuner Pro** is a client-side Magic: The Gathering manabase analyzer built on Frank Karsten's mathematical research. The application calculates exact hypergeometric probabilities for spell castability and provides Monte Carlo-based mulligan simulations.
+
+### Key Characteristics
+
+| Attribute | Value |
+|-----------|-------|
+| **Architecture Style** | Single Page Application (SPA) |
+| **Deployment Model** | 100% Client-Side (Privacy-First) |
+| **Primary Framework** | React 18 + TypeScript |
+| **State Management** | Redux Toolkit + React Query |
+| **Build System** | Vite 7.3 |
+| **Hosting** | Vercel Edge Network |
+
+### Core Value Proposition
+
+> "Can I cast my spells on curve?"
+
+The application answers this fundamental deckbuilding question with mathematical precision, providing:
+- Exact hypergeometric probability calculations
+- Monte Carlo mulligan simulations (3,000+ hands)
+- Turn-by-turn castability analysis
+- Optimal land count recommendations
 
 ---
 
 ## System Overview
 
-ManaTuner Pro is a client-side React application that analyzes Magic: The Gathering decklists using mathematical probability theory. The application runs entirely in the browser with no backend dependencies for core functionality.
-
-### Architecture Principles
-
-| Principle | Implementation |
-|-----------|----------------|
-| **Privacy-First** | All calculations client-side, localStorage with AES-256 |
-| **Performance** | Web Workers for Monte Carlo, lazy loading, memoization |
-| **Accuracy** | Frank Karsten methodology, validated test suite |
-| **Accessibility** | Material-UI, WCAG AA compliance, responsive design |
-
-### High-Level Architecture
+### Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Browser (Client)                          │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │   React     │  │   Redux     │  │    Web Workers          │  │
-│  │   Pages     │◄─┤   Store     │◄─┤    (Monte Carlo)        │  │
-│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
-│         │                │                      │                │
-│  ┌──────▼──────────────────▼──────────────────────▼─────────┐   │
-│  │                    Services Layer                         │   │
-│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐  │   │
-│  │  │ DeckAnalyzer │ │ManaCalculator│ │AdvancedMathEngine│  │   │
-│  │  └──────────────┘ └──────────────┘ └──────────────────┘  │   │
-│  └───────────────────────────┬───────────────────────────────┘   │
-│                              │                                   │
-│  ┌───────────────────────────▼───────────────────────────────┐   │
-│  │                   External APIs (Optional)                 │   │
-│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐   │   │
-│  │  │   Scryfall   │ │   Supabase   │ │   localStorage   │   │   │
-│  │  │  (Card Data) │ │ (Cloud Sync) │ │  (Persistence)   │   │   │
-│  │  └──────────────┘ └──────────────┘ └──────────────────┘   │   │
-│  └───────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           BROWSER (Client)                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                        PRESENTATION LAYER                          │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────────┐ │ │
+│  │  │  HomePage   │  │AnalyzerPage │  │  GuidePage  │  │ Other...  │ │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └───────────┘ │ │
+│  │         │                │                │               │        │ │
+│  │  ┌──────▼────────────────▼────────────────▼───────────────▼──────┐ │ │
+│  │  │                    COMPONENT LIBRARY                          │ │ │
+│  │  │  analyzer/ │ common/ │ layout/ │ analysis/ │ export/          │ │ │
+│  │  └───────────────────────────────────────────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                     │
+│  ┌─────────────────────────────────▼────────────────────────────────┐   │
+│  │                         STATE LAYER                               │   │
+│  │  ┌─────────────┐  ┌─────────────────┐  ┌───────────────────────┐ │   │
+│  │  │   Redux     │  │  React Query    │  │    React Context      │ │   │
+│  │  │   Toolkit   │  │  (Scryfall)     │  │  (Acceleration)       │ │   │
+│  │  └─────────────┘  └─────────────────┘  └───────────────────────┘ │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                    │                                     │
+│  ┌─────────────────────────────────▼────────────────────────────────┐   │
+│  │                       SERVICES LAYER                              │   │
+│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────┐ │   │
+│  │  │DeckAnalyzer  │ │ManaCalculator│ │ LandService  │ │ Scryfall │ │   │
+│  │  │   (42KB)     │ │   (28KB)     │ │   (21KB)     │ │  (14KB)  │ │   │
+│  │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────┘ │   │
+│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────────┐  │   │
+│  │  │AdvancedMaths │ │  Mulligan    │ │  ManaProducerService     │  │   │
+│  │  │   (18KB)     │ │ Simulator    │ │       (11KB)             │  │   │
+│  │  └──────────────┘ └──────────────┘ └──────────────────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                    │                                     │
+│  ┌─────────────────────────────────▼────────────────────────────────┐   │
+│  │                      PERSISTENCE LAYER                            │   │
+│  │  ┌───────────────────┐  ┌─────────────────────────────────────┐  │   │
+│  │  │   localStorage    │  │        IndexedDB (future)           │  │   │
+│  │  │  AES-256 Encrypted│  │                                     │  │   │
+│  │  └───────────────────┘  └─────────────────────────────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+                                     │
+                    ┌────────────────┴────────────────┐
+                    ▼                                 ▼
+            ┌──────────────┐                 ┌──────────────┐
+            │  Scryfall    │                 │   Vercel     │
+            │    API       │                 │   (CDN)      │
+            └──────────────┘                 └──────────────┘
 ```
+
+---
+
+## Architecture Principles
+
+### 1. Privacy-First Design
+
+All calculations happen client-side. User data never leaves the browser.
+
+```typescript
+// Pattern: All sensitive operations are local
+class PrivacyStorage {
+  private static ENCRYPTION_KEY = generateUserKey(); // Per-device key
+
+  static saveAnalysis(data: Analysis): void {
+    const encrypted = CryptoJS.AES.encrypt(
+      JSON.stringify(data),
+      this.ENCRYPTION_KEY
+    );
+    localStorage.setItem('analysis', encrypted.toString());
+  }
+}
+```
+
+### 2. Mathematical Accuracy
+
+Every probability calculation is validated against Frank Karsten's published tables.
+
+```typescript
+// Karsten Tables for 90% probability threshold
+const KARSTEN_TABLES = {
+  1: { 1: 14, 2: 13, 3: 12, 4: 11 }, // 1 colored symbol
+  2: { 2: 20, 3: 18, 4: 16, 5: 15 }, // 2 colored symbols
+  3: { 3: 23, 4: 20, 5: 19, 6: 18 }, // 3 colored symbols
+};
+```
+
+### 3. Performance by Default
+
+Heavy calculations are offloaded to Web Workers; UI remains responsive.
+
+```typescript
+// Monte Carlo runs in dedicated worker
+const worker = new Worker(
+  new URL('../workers/monteCarlo.worker.ts', import.meta.url)
+);
+worker.postMessage({ iterations: 3000, deck: deckData });
+```
+
+### 4. Progressive Enhancement
+
+Core functionality works without JavaScript advanced features; enhanced features degrade gracefully.
 
 ---
 
@@ -64,344 +171,263 @@ ManaTuner Pro is a client-side React application that analyzes Magic: The Gather
 
 ```
 src/
-├── App.tsx                    # Root component with routing
-├── main.tsx                   # Application entry point
-├── index.css                  # Global styles
+├── App.tsx                     # Root component with React Router
+├── main.tsx                    # Application bootstrap
+├── index.css                   # Global styles + animations
 │
-├── components/                # React components
+├── components/                 # UI Components (23 files)
 │   ├── analyzer/              # Deck analysis interface
-│   │   ├── DeckInputSection   # Decklist textarea
-│   │   ├── OverviewTab        # Summary dashboard
-│   │   ├── CastabilityTab     # Spell probabilities
-│   │   ├── ManabaseTab        # Land analysis
-│   │   ├── MulliganTab        # Mulligan simulator
-│   │   └── ProbabilitiesTab   # Detailed probabilities
+│   │   ├── DeckInputSection   # Textarea with format support
+│   │   ├── DashboardTab       # Health score overview
+│   │   ├── CastabilityTab     # Per-spell probabilities
+│   │   ├── MulliganTab        # Monte Carlo simulation UI
+│   │   ├── ManabaseTab        # Land breakdown
+│   │   └── AnalysisTab        # Detailed recommendations
+│   │
+│   ├── common/                # Shared components
+│   │   ├── ErrorBoundary      # React error handling
+│   │   ├── ManaSymbols        # Mana icon rendering (Keyrune)
+│   │   ├── FloatingManaSymbols # Background animation
+│   │   ├── VirtualList        # react-window integration
+│   │   └── NotificationProvider
+│   │
+│   ├── layout/                # Layout components
+│   │   ├── Header             # Navigation + theme toggle
+│   │   ├── Footer             # Credits + links
+│   │   └── StaticPages        # About, Privacy pages
 │   │
 │   ├── analysis/              # Visualization components
 │   │   ├── TurnByTurnAnalysis # Turn progression charts
-│   │   └── MonteCarloResults  # Simulation results
+│   │   └── MonteCarloResults  # Simulation histogram
 │   │
-│   ├── common/                # Shared UI components
-│   │   ├── ErrorBoundary      # Error handling
-│   │   ├── AnimatedContainer  # Animation wrapper
-│   │   ├── ManaSymbols        # Mana icon rendering
-│   │   ├── NotificationProvider
-│   │   └── VirtualList        # Virtualized scrolling
-│   │
-│   ├── layout/                # Layout components
-│   │   ├── Header             # Navigation header
-│   │   ├── Footer             # Site footer
-│   │   └── StaticPages        # About, Privacy pages
-│   │
-│   └── performance/           # Performance-optimized components
-│       └── OptimizedComponents
+│   └── export/                # Export functionality
+│       └── ManaBlueprint      # PNG/PDF/JSON export
 │
-├── hooks/                     # Custom React hooks
+├── pages/                     # Route pages (8 files)
+│   ├── HomePage               # Landing (eager loaded)
+│   ├── AnalyzerPage           # Main analyzer (lazy)
+│   ├── GuidePage              # User guide (lazy)
+│   ├── MathematicsPage        # Math explanations (lazy)
+│   ├── LandGlossaryPage       # Land reference (lazy)
+│   ├── MyAnalysesPage         # Saved analyses (lazy)
+│   └── PrivacyFirstPage       # Privacy info (lazy)
+│
+├── services/                  # Business logic (15 files, ~175KB)
+│   ├── manaCalculator.ts      # Core hypergeometric math
+│   ├── advancedMaths.ts       # Monte Carlo engine
+│   ├── deckAnalyzer.ts        # Deck parsing + orchestration
+│   ├── landService.ts         # Land detection + ETB logic
+│   ├── landCacheService.ts    # Land metadata caching
+│   ├── mulliganSimulator.ts   # Mulligan decision engine
+│   ├── manaProducerService.ts # Mana production analysis
+│   ├── scryfall.ts            # Scryfall API client
+│   └── supabase.ts            # DISABLED (mocked)
+│
+├── hooks/                     # Custom React hooks (10 files)
 │   ├── useDeckAnalysis        # Main analysis orchestration
-│   ├── useManaCalculations    # Probability calculations
+│   ├── useManaCalculations    # Probability computations
 │   ├── useAdvancedAnalysis    # Advanced math integration
 │   ├── useMonteCarloWorker    # Web Worker management
 │   ├── useAnalysisStorage     # localStorage persistence
+│   ├── usePrivacyStorage      # Encrypted storage
 │   └── useCardImage           # Scryfall image loading
-│
-├── pages/                     # Route pages
-│   ├── HomePage               # Landing page
-│   ├── AnalyzerPage           # Main analyzer (lazy loaded)
-│   ├── GuidePage              # User guide
-│   ├── MathematicsPage        # Math explanations
-│   ├── LandGlossaryPage       # Land reference
-│   └── MyAnalysesPage         # Saved analyses
-│
-├── services/                  # Business logic
-│   ├── manaCalculator.ts      # Core hypergeometric math
-│   ├── advancedMaths.ts       # Monte Carlo engine
-│   ├── deckAnalyzer.ts        # Deck parsing & analysis
-│   ├── landService.ts         # Land detection & ETB
-│   ├── mulliganSimulator.ts   # Mulligan logic
-│   ├── scryfall.ts            # Card data API
-│   └── supabase.ts            # Optional cloud sync
 │
 ├── store/                     # Redux state
 │   ├── index.ts               # Store configuration
 │   └── slices/
-│       ├── deckSlice          # Deck state
-│       ├── uiSlice            # UI preferences
-│       └── analysisSlice      # Analysis results
+│       └── analyzerSlice.ts   # Analyzer state management
 │
-├── types/                     # TypeScript definitions
-│   ├── index.ts               # Core types
+├── types/                     # TypeScript definitions (7 files)
+│   ├── index.ts               # Core types (345 lines)
 │   ├── lands.ts               # Land metadata types
 │   ├── maths.ts               # Math calculation types
+│   ├── manaProducers.ts       # Mana producer types
 │   └── scryfall.ts            # API response types
 │
-├── utils/                     # Utility functions
+├── utils/                     # Utilities (9 files)
 │   ├── landDetection.ts       # Land identification
 │   ├── hybridLandDetection.ts # Hybrid mana handling
+│   ├── intelligentLandAnalysis.ts
 │   └── manabase.ts            # Manabase utilities
 │
-├── lib/                       # Custom libraries
-│   ├── privacy.ts             # Encryption utilities
-│   └── validations.ts         # Input validation
+├── contexts/                  # React contexts
+│   └── AccelerationContext.tsx # Mana acceleration state
 │
 ├── constants/                 # Application constants
-│   └── manaColors.ts          # Color definitions
+│   └── manaColors.ts          # WUBRG definitions
 │
-├── theme/                     # MUI theme configuration
-│   └── index.ts
+├── lib/                       # Custom libraries
+│   ├── privacy.ts             # AES-256 encryption
+│   └── validations.ts         # Input sanitization
 │
-└── data/                      # Static data
-    └── landSeed.ts            # Known land database
+└── theme/                     # MUI theme
+    └── index.ts               # Custom palette + mana colors
+```
+
+---
+
+## Core Services
+
+### ManaCalculator (`manaCalculator.ts`)
+
+The mathematical core implementing hypergeometric distribution.
+
+```typescript
+class ManaCalculator {
+  /**
+   * Hypergeometric probability: P(X ≥ k)
+   *
+   * P(X = k) = C(K,k) × C(N-K,n-k) / C(N,n)
+   *
+   * Where:
+   * - N = Population (deck size, typically 60)
+   * - K = Success states (mana sources of color)
+   * - n = Sample size (cards seen by turn T)
+   * - k = Successes needed (colored symbols required)
+   */
+  cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number;
+
+  /**
+   * Calculate probability considering on-the-play vs on-the-draw
+   * Cards seen = 7 + turn - 1 (play) or 7 + turn (draw)
+   */
+  calculateManaProbability(params: ProbabilityParams): ProbabilityResult;
+}
+```
+
+### DeckAnalyzer (`deckAnalyzer.ts`)
+
+Deck parsing and analysis orchestration (42KB, largest service).
+
+```typescript
+class DeckAnalyzer {
+  /**
+   * Parse multiple deck formats:
+   * - MTGO: "4 Lightning Bolt"
+   * - MTGA: "4 Lightning Bolt (M21) 199"
+   * - Moxfield: "4x Lightning Bolt"
+   */
+  static async parseDeckList(text: string): Promise<DeckCard[]>;
+
+  /**
+   * Full deck analysis pipeline:
+   * 1. Parse deck text → DeckCard[]
+   * 2. Enrich with Scryfall data
+   * 3. Detect land properties (ETB, fetchlands, etc.)
+   * 4. Calculate probabilities per turn
+   * 5. Generate recommendations
+   */
+  static async analyzeDeck(deckList: string): Promise<AnalysisResult>;
+}
+```
+
+### LandService (`landService.ts`)
+
+Intelligent land detection with ETB (Enter The Battlefield) analysis.
+
+```typescript
+class LandService {
+  /**
+   * Detect land properties:
+   * - Fetchlands (can find specific land types)
+   * - Shocklands (pay 2 life for untapped)
+   * - Checklands (check for basic land types)
+   * - Fastlands (untapped if ≤2 other lands)
+   * - Triomes (3-color tap lands)
+   */
+  async detectLand(cardName: string): Promise<LandMetadata | null>;
+
+  /**
+   * Calculate probability of land entering untapped
+   * considering deck composition and turn number
+   */
+  getUntappedProbability(land: LandMetadata, turn: number, context: DeckContext): number;
+}
+```
+
+### AdvancedMathEngine (`advancedMaths.ts`)
+
+Monte Carlo simulation engine.
+
+```typescript
+class AdvancedMathEngine {
+  /**
+   * Run Monte Carlo simulation
+   * Default: 3,000 iterations for statistical significance
+   */
+  async runMonteCarloSimulation(params: {
+    deck: DeckCard[];
+    iterations: number;
+    mulliganStrategy: 'aggressive' | 'conservative' | 'balanced';
+  }): Promise<MonteCarloResult>;
+
+  /**
+   * Multivariate analysis for multi-color requirements
+   * e.g., "WW on turn 2 AND UU on turn 4"
+   */
+  analyzeMultivariateRequirements(colorRequirements: ColorRequirement[]): MultivariateAnalysis;
+}
 ```
 
 ---
 
 ## Data Flow
 
-### Primary Analysis Flow
+### Analysis Pipeline
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  User Input  │────►│ DeckAnalyzer │────►│   Analysis   │
-│  (Decklist)  │     │   Service    │     │   Result     │
-└──────────────┘     └──────┬───────┘     └──────────────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-       ┌───────────┐ ┌───────────┐ ┌───────────┐
-       │  Parser   │ │ Scryfall  │ │   Land    │
-       │           │ │   API     │ │  Service  │
-       └─────┬─────┘ └─────┬─────┘ └─────┬─────┘
-             │             │             │
-             └─────────────┼─────────────┘
-                           ▼
-                    ┌─────────────┐
-                    │  DeckCard[] │
-                    │   Array     │
-                    └──────┬──────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-       ┌───────────┐ ┌───────────┐ ┌───────────┐
-       │   Mana    │ │  Karsten  │ │  Monte    │
-       │Calculator │ │  Tables   │ │  Carlo    │
-       └─────┬─────┘ └─────┬─────┘ └─────┬─────┘
-             │             │             │
-             └─────────────┼─────────────┘
-                           ▼
-                    ┌─────────────┐
-                    │ AnalysisResult│
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │    UI       │
-                    │  Display    │
-                    └─────────────┘
-```
-
-### Step-by-Step Flow
-
-1. **Input**: User pastes decklist in textarea
-2. **Parsing**: `DeckAnalyzer.parseDeckList()` extracts cards
-3. **Enrichment**: Scryfall API provides mana costs, types
-4. **Land Detection**: `LandService` identifies lands and ETB conditions
-5. **Analysis**: `ManaCalculator` computes hypergeometric probabilities
-6. **Monte Carlo**: Web Worker runs 3,000+ hand simulations
-7. **Results**: Aggregated `AnalysisResult` displayed in tabs
-
----
-
-## Core Services
-
-### ManaCalculator
-
-The mathematical core implementing Frank Karsten's methodology.
-
-```typescript
-// Location: src/services/manaCalculator.ts
-
-class ManaCalculator {
-  // Memoized binomial coefficient
-  private binomial(n: number, k: number): number;
-  
-  // Exact hypergeometric probability
-  hypergeometric(N: number, K: number, n: number, k: number): number;
-  
-  // Cumulative probability (at least k successes)
-  cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number;
-  
-  // Main calculation with Karsten recommendations
-  calculateManaProbability(
-    deckSize: number,
-    sourcesInDeck: number,
-    turn: number,
-    symbolsNeeded: number,
-    onThePlay: boolean,
-    handSize: number
-  ): ProbabilityResult;
-}
-```
-
-**Key Formula**:
-```
-P(X = k) = C(K,k) * C(N-K,n-k) / C(N,n)
-
-Where:
-- N = Population (deck size)
-- K = Success states (mana sources)
-- n = Sample size (cards seen)
-- k = Successes wanted (sources needed)
-```
-
-### AdvancedMathEngine
-
-Extended calculations including Monte Carlo simulations.
-
-```typescript
-// Location: src/services/advancedMaths.ts
-
-class AdvancedMathEngine {
-  // Performance-optimized with memoization cache
-  private cache: MemoizationCache;
-  
-  // Monte Carlo simulation for complex scenarios
-  async runMonteCarloSimulation(params: MonteCarloParams): Promise<MonteCarloResult>;
-  
-  // Multivariate color requirement analysis
-  analyzeMultivariateRequirements(
-    deckConfig: DeckConfiguration,
-    colorRequirements: ColorRequirement[]
-  ): MultivariateAnalysis;
-  
-  // Optimal manabase generation
-  generateOptimalManabase(config: DeckConfiguration): ManabaseRecommendation;
-}
-```
-
-### DeckAnalyzer
-
-Deck parsing and comprehensive analysis orchestration.
-
-```typescript
-// Location: src/services/deckAnalyzer.ts
-
-class DeckAnalyzer {
-  // Parse various deck formats
-  static async parseDeckList(deckList: string): Promise<DeckCard[]>;
-  
-  // Scryfall integration with caching
-  private static async fetchCardFromScryfall(name: string): Promise<ScryfallCard>;
-  
-  // Main analysis entry point
-  static async analyzeDeck(deckList: string): Promise<AnalysisResult>;
-  
-  // Complex land mechanics evaluation
-  private static evaluateLandProperties(name: string): Partial<DeckCard>;
-  
-  // Mulligan probability distribution
-  private static calculateMulliganAnalysis(
-    deckSize: number,
-    landCount: number,
-    manaCurve: Record<string, number>
-  ): MulliganAnalysis;
-}
-```
-
-### LandService
-
-Intelligent land detection with ETB (Enter The Battlefield) analysis.
-
-```typescript
-// Location: src/services/landService.ts
-
-class LandService {
-  // Detect if card is a land with full metadata
-  async detectLand(cardName: string): Promise<LandMetadata | null>;
-  
-  // Calculate untapped probability by turn
-  getUntappedProbability(
-    land: LandMetadata,
-    turn: number,
-    context: DeckContext
-  ): number;
-  
-  // Tempo-aware probability adjustments
-  calculateTempoAwareProbability(params: TempoCalculationParams): TempoAwareProbability;
-}
-```
-
----
-
-## React Patterns
-
-### Lazy Loading
-
-Pages are lazy-loaded to minimize initial bundle size.
-
-```typescript
-// src/App.tsx
-const AnalyzerPage = React.lazy(() => import("./pages/AnalyzerPage"));
-const GuidePage = React.lazy(() => 
-  import("./pages/GuidePage").then((m) => ({ default: m.GuidePage }))
-);
-
-// Wrapped in Suspense with loading fallback
-<Suspense fallback={<PageLoader />}>
-  <Routes>
-    <Route path="/analyzer" element={<AnalyzerPage />} />
-  </Routes>
-</Suspense>
-```
-
-### Custom Hooks
-
-Analysis logic encapsulated in reusable hooks.
-
-```typescript
-// src/hooks/useDeckAnalysis.ts
-export const useDeckAnalysis = () => {
-  const [deckList, setDeckList] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  
-  // Auto-persist to localStorage
-  useEffect(() => {
-    localStorage.setItem('manatuner-decklist', deckList);
-  }, [deckList]);
-  
-  const analyzeDeck = async () => {
-    setIsAnalyzing(true);
-    const result = await DeckAnalyzer.analyzeDeck(deckList);
-    setAnalysisResult(result);
-    setIsAnalyzing(false);
-  };
-  
-  return { deckList, setDeckList, isAnalyzing, analysisResult, analyzeDeck };
-};
-```
-
-### Error Boundaries
-
-Graceful error handling with recovery options.
-
-```typescript
-// src/components/common/ErrorBoundary.tsx
-export class ErrorBoundary extends Component<Props, State> {
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-  
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, errorInfo);
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback error={this.state.error} />;
-    }
-    return this.props.children;
-  }
-}
+User Input (Deck Text)
+        │
+        ▼
+┌───────────────────┐
+│  DeckAnalyzer     │
+│  parseDeckList()  │
+└───────┬───────────┘
+        │ DeckCard[]
+        ▼
+┌───────────────────┐     ┌─────────────────┐
+│  Scryfall API     │────►│  LandService    │
+│  (card data)      │     │  (land metadata)│
+└───────┬───────────┘     └────────┬────────┘
+        │                          │
+        └──────────┬───────────────┘
+                   │
+                   ▼
+        ┌───────────────────┐
+        │  ManaCalculator   │
+        │  (hypergeometric) │
+        └───────┬───────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │ AdvancedMathEngine│
+        │ (Monte Carlo)     │◄──── Web Worker
+        └───────┬───────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │  AnalysisResult   │
+        │  {                │
+        │    totalCards     │
+        │    probabilities  │
+        │    recommendations│
+        │    mulliganAnalysis│
+        │  }                │
+        └───────┬───────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │  Redux Store      │
+        │  analyzerSlice    │
+        └───────┬───────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │  React Components │
+        │  (Tabs: Dashboard,│
+        │   Castability,    │
+        │   Mulligan, etc.) │
+        └───────────────────┘
 ```
 
 ---
@@ -411,151 +437,276 @@ export class ErrorBoundary extends Component<Props, State> {
 ### Redux Store Structure
 
 ```typescript
-// src/store/index.ts
+// store/index.ts
 const store = configureStore({
   reducer: {
-    deck: deckReducer,      // Current deck and saved decks
-    ui: uiReducer,          // Theme, preferences, UI state
-    analysis: analysisReducer  // Analysis results cache
+    analyzer: analyzerReducer,  // Main deck analysis state
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false  // Allow Date objects
-    })
+      serializableCheck: false, // Allow non-serializable values
+    }),
 });
-```
 
-### Deck Slice
-
-```typescript
-// src/store/slices/deckSlice.ts
-interface DeckState {
-  currentDeck: Deck | null;
-  savedDecks: Deck[];
-  analysis: ManabaseAnalysis | null;
-  isAnalyzing: boolean;
-  error: string | null;
+// store/slices/analyzerSlice.ts
+interface AnalyzerState {
+  deckList: string;              // Raw deck text
+  analysisResult: AnalysisResult | null;
+  isAnalyzing: boolean;          // Loading state
+  isDeckMinimized: boolean;      // UI state
+  activeTab: number;             // Current tab index
+  snackbar: SnackbarState;       // Notifications
 }
+```
 
-const deckSlice = createSlice({
-  name: 'deck',
-  initialState,
-  reducers: {
-    setCurrentDeck,
-    addCardToDeck,
-    removeCardFromDeck,
-    updateCardQuantity,
-    saveDeck,
-    loadDeck,
-    deleteDeck,
-    setAnalysis,
-    clearAnalysis
-  }
+### State Flow
+
+```
+Component ──dispatch──► Redux Action ──► Reducer ──► New State
+                                              │
+                                              ▼
+                                        useSelector()
+                                              │
+                                              ▼
+                                    Component Re-render
+```
+
+### React Query (Scryfall)
+
+```typescript
+// Card data is fetched and cached with React Query
+const { data: cardData } = useQuery({
+  queryKey: ['card', cardName],
+  queryFn: () => scryfallService.getCard(cardName),
+  staleTime: 1000 * 60 * 60, // 1 hour
+  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
 });
 ```
 
-### Persistence
+---
 
-Redux state persisted with `redux-persist` to localStorage.
+## Component Architecture
+
+### Page Hierarchy
+
+```
+App
+├── ErrorBoundary
+├── NotificationProvider
+├── AccelerationProvider
+│
+├── BetaBanner
+├── Header (Navigation)
+│
+├── Routes (React Router)
+│   ├── / → HomePage (eager)
+│   ├── /analyzer → AnalyzerPage (lazy)
+│   ├── /guide → GuidePage (lazy)
+│   ├── /mathematics → MathematicsPage (lazy)
+│   ├── /land-glossary → LandGlossaryPage (lazy)
+│   └── /mes-analyses → MyAnalysesPage (lazy)
+│
+└── Footer
+```
+
+### AnalyzerPage Component Tree
+
+```
+AnalyzerPage
+├── FloatingManaSymbols (background)
+├── DeckInputSection
+│   ├── Textarea
+│   ├── ClearButton
+│   └── LoadSampleButton
+│
+├── Tabs (MUI)
+│   ├── Tab 0: DashboardTab
+│   │   ├── HealthScore
+│   │   ├── ColorDistribution
+│   │   └── QuickRecommendations
+│   │
+│   ├── Tab 1: CastabilityTab
+│   │   ├── SpellList
+│   │   └── TurnByTurnProbabilities
+│   │
+│   ├── Tab 2: MulliganTab
+│   │   ├── MonteCarloResults
+│   │   └── MulliganDecisionChart
+│   │
+│   ├── Tab 3: AnalysisTab
+│   │   ├── EnhancedSpellAnalysis
+│   │   └── EnhancedRecommendations
+│   │
+│   ├── Tab 4: ManabaseTab
+│   │   ├── LandBreakdown
+│   │   └── ManaCurveChart
+│   │
+│   └── Tab 5: ManaBlueprint
+│       └── ExportOptions (PNG/PDF/JSON)
+│
+├── PrivacySettings
+└── Snackbar (notifications)
+```
+
+---
+
+## External Integrations
+
+### Scryfall API
+
+**Purpose**: Card data enrichment (mana costs, types, produced mana)
 
 ```typescript
-const persistConfig = {
-  key: 'manatuner',
-  storage,
-  whitelist: ['deck', 'ui']  // Only persist specific slices
-};
+// Rate-limited: 10 requests/second
+// Cache: Map<cardName, ScryfallCard> (in-memory)
+
+const SCRYFALL_BASE = 'https://api.scryfall.com';
+
+async function fetchCard(name: string): Promise<ScryfallCard | null> {
+  // Check cache first
+  if (scryfallCache.has(name)) {
+    return scryfallCache.get(name);
+  }
+
+  const response = await fetch(
+    `${SCRYFALL_BASE}/cards/named?exact=${encodeURIComponent(name)}`
+  );
+
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  scryfallCache.set(name, data);
+  return data;
+}
 ```
+
+### Supabase (DISABLED)
+
+**Status**: Fully mocked (`isConfigured: () => false`)
+
+The application was designed with optional Supabase cloud sync, but this is currently disabled. All data remains in localStorage.
 
 ---
 
 ## Performance Optimizations
 
-### Web Workers
-
-Monte Carlo simulations run in a dedicated Web Worker to avoid blocking the main thread.
+### Code Splitting
 
 ```typescript
-// src/hooks/useMonteCarloWorker.ts
-export const useMonteCarloWorker = () => {
+// Lazy loading for route pages
+const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage'));
+const GuidePage = React.lazy(() => import('./pages/GuidePage'));
+
+// Suspense boundary with MTG-themed loader
+<Suspense fallback={<PageLoader />}>
+  <Routes>...</Routes>
+</Suspense>
+```
+
+### Bundle Optimization (Vite)
+
+```typescript
+// vite.config.ts
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        vendor: ['react', 'react-dom'],
+        mui: ['@mui/material', '@mui/icons-material'],
+        redux: ['@reduxjs/toolkit', 'react-redux'],
+        charts: ['recharts'],
+      },
+    },
+  },
+}
+```
+
+**Bundle Sizes (gzipped)**:
+| Chunk | Size |
+|-------|------|
+| AnalyzerPage | 166KB |
+| MUI | 114KB |
+| jspdf | 124KB |
+| Vendor (React) | 45KB |
+| **Total** | ~550KB |
+
+### Web Workers
+
+```typescript
+// Monte Carlo simulations run in dedicated worker
+const useMonteCarloWorker = () => {
   const workerRef = useRef<Worker | null>(null);
-  
+
   useEffect(() => {
     workerRef.current = new Worker(
       new URL('../workers/monteCarlo.worker.ts', import.meta.url)
     );
     return () => workerRef.current?.terminate();
   }, []);
-  
-  const runSimulation = useCallback((params: MonteCarloParams) => {
-    return new Promise<MonteCarloResult>((resolve) => {
+
+  const runSimulation = useCallback((params) => {
+    return new Promise((resolve) => {
       workerRef.current?.postMessage(params);
       workerRef.current!.onmessage = (e) => resolve(e.data);
     });
   }, []);
-  
+
   return { runSimulation };
 };
 ```
 
 ### Memoization
 
-Expensive calculations cached at multiple levels.
-
 ```typescript
-// In ManaCalculator
-private memoCache: Map<string, number> = new Map();
+// Heavy calculations are memoized
+const ManaCalculator = {
+  // Binomial coefficient cache
+  private memoCache: Map<string, number> = new Map();
 
-private binomial(n: number, k: number): number {
-  const key = `${n},${k}`;
-  if (this.memoCache.has(key)) {
-    return this.memoCache.get(key)!;
+  binomial(n: number, k: number): number {
+    const key = `${n},${k}`;
+    if (this.memoCache.has(key)) {
+      return this.memoCache.get(key)!;
+    }
+    // ... calculate and cache
   }
-  // ... calculate and cache
+};
+```
+
+---
+
+## Security Architecture
+
+### Security Headers (Vercel)
+
+```json
+// vercel.json
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: https://cards.scryfall.io https://c1.scryfall.com; connect-src 'self' https://api.scryfall.com; frame-ancestors 'none'" }
+      ]
+    }
+  ]
 }
 ```
 
-### Code Splitting
+### Client-Side Security
 
-Vite configuration for optimal chunk splitting.
-
-```typescript
-// vite.config.ts
-export default defineConfig({
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          mui: ['@mui/material', '@mui/icons-material'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          charts: ['recharts']
-        }
-      }
-    }
-  }
-});
-```
-
-### Virtual Lists
-
-Large lists rendered efficiently with `react-window`.
-
-```typescript
-// src/components/common/VirtualList.tsx
-import { FixedSizeList } from 'react-window';
-
-export const VirtualList = ({ items, renderItem, itemHeight }) => (
-  <FixedSizeList
-    height={400}
-    itemCount={items.length}
-    itemSize={itemHeight}
-  >
-    {({ index, style }) => (
-      <div style={style}>{renderItem(items[index])}</div>
-    )}
-  </FixedSizeList>
-);
-```
+| Measure | Implementation |
+|---------|----------------|
+| XSS Prevention | Input sanitization via Zod + DOMPurify |
+| Data Encryption | AES-256 for localStorage |
+| No eval() | ESLint rule enforced |
+| No dangerouslySetInnerHTML | ESLint rule enforced |
+| HTTPS Only | Vercel enforces HTTPS |
 
 ---
 
@@ -563,186 +714,148 @@ export const VirtualList = ({ items, renderItem, itemHeight }) => (
 
 ### Test Categories
 
-| Category | Tool | Location | Purpose |
-|----------|------|----------|---------|
-| Unit | Vitest | `src/**/*.test.ts` | Service logic validation |
-| Critical Math | Vitest | `src/services/__tests__/` | Frank Karsten formula verification |
-| E2E | Playwright | `tests/e2e/` | User workflow testing |
-| Accessibility | @axe-core/playwright | `tests/e2e/accessibility/` | WCAG compliance |
+| Type | Tool | Location | Coverage |
+|------|------|----------|----------|
+| Unit | Vitest | `src/**/*.test.ts` | ~60% services |
+| Component | Vitest + RTL | `tests/component/` | ~20% |
+| E2E | Playwright | `tests/e2e/` | Core flows |
+| Accessibility | axe-core | `tests/e2e/accessibility/` | WCAG AA |
+| Math Validation | Vitest | `src/services/__tests__/` | 100% Karsten tables |
+
+### Running Tests
+
+```bash
+npm run test:unit       # Unit tests
+npm run test:e2e        # E2E tests
+npm run test:coverage   # Coverage report
+npm run test:mtg-logic  # MTG-specific math tests
+```
 
 ### Critical Math Tests
 
 ```typescript
-// src/services/__tests__/maths.critical.test.ts
-describe('Frank Karsten Methodology', () => {
-  it('calculates hypergeometric probability correctly', () => {
-    const result = manaCalculator.cumulativeHypergeometric(60, 24, 7, 1);
-    expect(result).toBeCloseTo(0.985, 2);  // 98.5% for 1+ land in 7 cards
-  });
-  
-  it('matches Karsten tables for colored sources', () => {
-    // 14 sources for 90% on turn 1 with 1 colored symbol
+// Validate against Frank Karsten's published tables
+describe('Karsten Methodology', () => {
+  it('14 sources = 90%+ for 1 symbol turn 1', () => {
     const result = manaCalculator.calculateManaProbability(60, 14, 1, 1, true, 7);
     expect(result.probability).toBeGreaterThanOrEqual(0.90);
   });
 });
 ```
 
-### Running Tests
-
-```bash
-# Unit tests
-npm run test:unit
-
-# Watch mode
-npm run test:unit:watch
-
-# E2E tests
-npm run test:e2e
-
-# Specific test suites
-npm run test:mtg-logic      # MTG-specific logic
-npm run test:mana-calc      # Mana calculations
-npm run test:accessibility  # A11y compliance
-```
-
 ---
 
-## API Integrations
-
-### Scryfall API
-
-Used for card data enrichment (mana costs, types, produced mana).
-
-```typescript
-// Rate-limited requests with caching
-const scryfallCache = new Map<string, ScryfallCard>();
-
-async function fetchCard(name: string): Promise<ScryfallCard | null> {
-  if (scryfallCache.has(name)) {
-    return scryfallCache.get(name)!;
-  }
-  
-  const response = await fetch(
-    `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(name)}`
-  );
-  
-  if (!response.ok) return null;
-  
-  const data = await response.json();
-  scryfallCache.set(name, data);
-  return data;
-}
-```
-
-### Supabase (Optional)
-
-Cloud sync for saved analyses when user opts in.
-
-```typescript
-// src/services/supabase.ts
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_ANON_KEY!
-);
-
-export const syncAnalysis = async (analysis: AnalysisResult) => {
-  const { data, error } = await supabase
-    .from('analyses')
-    .upsert({ ...analysis, user_code: getUserCode() });
-  return { data, error };
-};
-```
-
----
-
-## Security Considerations
-
-### Data Encryption
-
-All locally stored data encrypted with AES-256.
-
-```typescript
-// src/lib/privacy.ts
-import CryptoJS from 'crypto-js';
-
-const ENCRYPTION_KEY = generateUserKey();
-
-export const encrypt = (data: string): string => {
-  return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
-};
-
-export const decrypt = (ciphertext: string): string => {
-  const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
-  return bytes.toString(CryptoJS.enc.Utf8);
-};
-```
-
-### Input Validation
-
-Deck input sanitized before processing.
-
-```typescript
-// src/lib/validations.ts
-export const sanitizeDeckList = (input: string): string => {
-  return input
-    .replace(/<[^>]*>/g, '')  // Remove HTML tags
-    .replace(/[^\w\s\d\-\/\(\)]/g, '')  // Allow only safe characters
-    .trim();
-};
-```
-
----
-
-## Deployment
+## Deployment Architecture
 
 ### Vercel Configuration
 
-```json
-// vercel.json
-{
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/workers/(.*)",
-      "headers": [
-        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
-      ]
-    }
-  ]
-}
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        Vercel Platform                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐       │
+│  │   GitHub    │───►│   Build     │───►│   Deploy    │       │
+│  │   Push      │    │  (Vite)     │    │  (Edge CDN) │       │
+│  └─────────────┘    └─────────────┘    └─────────────┘       │
+│                                                               │
+│  Build Command: npm run build                                 │
+│  Output: dist/                                                │
+│  Framework: Vite                                              │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────┐
+        │  https://manatuner-pro.vercel.app       │
+        │                                          │
+        │  - SPA rewrites (/* → /index.html)      │
+        │  - Security headers                      │
+        │  - COOP/COEP for Web Workers            │
+        │  - No-cache SW killer                    │
+        └─────────────────────────────────────────┘
 ```
 
-### Build Process
+### CI/CD Pipeline (GitHub Actions)
 
-```bash
-# Production build
-npm run build
+```yaml
+# .github/workflows/ci-cd.yml
+jobs:
+  test:
+    - npm run lint
+    - npm run test:unit
+    - npm run test:e2e
 
-# Output: dist/
-# - index.html
-# - assets/
-#   - index-[hash].js (main bundle)
-#   - vendor-[hash].js (React, etc.)
-#   - mui-[hash].js (Material-UI)
-#   - index-[hash].css
+  deploy:
+    needs: test
+    - vercel deploy --prod
 ```
+
+---
+
+## Technical Decisions
+
+### Decision 1: Client-Side Only
+
+**Context**: Privacy concerns for deck data
+**Decision**: All calculations run in browser
+**Rationale**: MTG players value deck secrecy (tournament prep)
+**Consequences**: No server costs, offline capability, limited analytics
+
+### Decision 2: Redux Toolkit over Context
+
+**Context**: State management choice
+**Decision**: Redux Toolkit for global state, Context for UI themes
+**Rationale**: DevTools, middleware support, predictable updates
+**Trade-off**: Additional bundle size (~12KB gzipped)
+
+### Decision 3: Vite over CRA
+
+**Context**: Build tooling
+**Decision**: Vite 7.3
+**Rationale**: Faster dev server (HMR), smaller bundles, ESM-native
+**Consequences**: Modern browser requirement (ES2015+)
+
+### Decision 4: MUI over Tailwind
+
+**Context**: UI framework
+**Decision**: Material-UI 5
+**Rationale**: Accessible components, consistent design, theme system
+**Trade-off**: Larger bundle (~114KB gzipped)
 
 ---
 
 ## Future Considerations
 
-- **Offline Mode**: Full PWA with service worker caching
-- **Deck Comparison**: Side-by-side manabase analysis
-- **Historical Tracking**: Performance trends over time
-- **AI Recommendations**: ML-powered optimization suggestions
-- **Commander Support**: Enhanced 99-card format analysis
+### Near-Term (P1)
+
+- [ ] Sentry error tracking integration
+- [ ] Keyboard navigation for cards
+- [ ] Fix remaining useCallback dependencies (22 ESLint warnings)
+
+### Medium-Term (P2)
+
+- [ ] Full PWA offline support
+- [ ] Deck comparison (side-by-side)
+- [ ] Commander (99-card) enhanced support
+- [ ] Import from Moxfield/Archidekt URLs
+
+### Long-Term (P3)
+
+- [ ] AI-powered recommendations (ML model)
+- [ ] Historical analysis tracking
+- [ ] Community deck database (opt-in)
+- [ ] Mobile app (React Native)
 
 ---
 
-*Last updated: December 2025*
+## References
+
+- [Frank Karsten - How Many Lands Do You Need?](https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/)
+- [Scryfall API Documentation](https://scryfall.com/docs/api)
+- [Keyrune - MTG Set Icons](https://andrewgioia.github.io/Keyrune/)
+- [Mana Font - Mana Symbols](https://mana.andrewgioia.com/)
+
+---
+
+*Document generated by Winston (BMAD Architect Agent) on 2026-01-06*
