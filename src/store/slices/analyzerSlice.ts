@@ -9,6 +9,7 @@ interface SnackbarState {
 
 interface AnalyzerState {
   deckList: string
+  deckName: string
   analysisResult: AnalysisResult | null
   isAnalyzing: boolean
   isDeckMinimized: boolean
@@ -18,6 +19,7 @@ interface AnalyzerState {
 
 const initialState: AnalyzerState = {
   deckList: '',
+  deckName: '',
   analysisResult: null,
   isAnalyzing: false,
   isDeckMinimized: false,
@@ -35,6 +37,10 @@ const analyzerSlice = createSlice({
   reducers: {
     setDeckList: (state, action: PayloadAction<string>) => {
       state.deckList = action.payload
+    },
+
+    setDeckName: (state, action: PayloadAction<string>) => {
+      state.deckName = action.payload
     },
 
     setAnalysisResult: (state, action: PayloadAction<AnalysisResult | null>) => {
@@ -71,6 +77,7 @@ const analyzerSlice = createSlice({
 
     clearAnalyzer: (state) => {
       state.deckList = ''
+      state.deckName = ''
       state.analysisResult = null
       state.isDeckMinimized = false
       state.activeTab = 0
@@ -80,6 +87,7 @@ const analyzerSlice = createSlice({
 
 export const {
   setDeckList,
+  setDeckName,
   setAnalysisResult,
   setIsAnalyzing,
   setIsDeckMinimized,

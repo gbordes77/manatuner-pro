@@ -53,6 +53,7 @@ import {
   setActiveTab,
   setAnalysisResult,
   setDeckList,
+  setDeckName,
   setIsAnalyzing,
   setIsDeckMinimized,
   showSnackbar,
@@ -90,7 +91,7 @@ const AnalyzerPage: React.FC = () => {
 
   // Redux state
   const dispatch = useDispatch<AppDispatch>()
-  const { deckList, analysisResult, isAnalyzing, isDeckMinimized, activeTab, snackbar } =
+  const { deckList, deckName, analysisResult, isAnalyzing, isDeckMinimized, activeTab, snackbar } =
     useSelector((state: RootState) => state.analyzer)
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -109,8 +110,13 @@ const AnalyzerPage: React.FC = () => {
 
       // Auto-save to PrivacyStorage
       try {
-        const deckName = `Deck ${new Date().toLocaleDateString()}`
-        PrivacyStorage.saveAnalysis({ deckName, deckList, analysis: result })
+        const saveName = deckName.trim() || `Deck ${new Date().toLocaleDateString()}`
+        PrivacyStorage.saveAnalysis({
+          deckName: saveName,
+          deckList,
+          analysis: result,
+          consistency: result.consistency,
+        })
       } catch {
         // Silent fail for auto-save
       }
@@ -339,7 +345,9 @@ const AnalyzerPage: React.FC = () => {
             <Grid item xs={12} lg={isMobile ? 12 : 6}>
               <DeckInputSection
                 deckList={deckList}
+                deckName={deckName}
                 setDeckList={(value: string) => dispatch(setDeckList(value))}
+                setDeckName={(value: string) => dispatch(setDeckName(value))}
                 isAnalyzing={isAnalyzing}
                 analysisResult={analysisResult}
                 isDeckMinimized={isDeckMinimized}

@@ -5,7 +5,9 @@ import { AnalysisResult } from '../../services/deckAnalyzer'
 
 interface DeckInputSectionProps {
   deckList: string
+  deckName: string
   setDeckList: (value: string) => void
+  setDeckName: (value: string) => void
   isAnalyzing: boolean
   analysisResult: AnalysisResult | null
   isDeckMinimized: boolean
@@ -20,7 +22,9 @@ interface DeckInputSectionProps {
 export const DeckInputSection: React.FC<DeckInputSectionProps> = memo(
   ({
     deckList,
+    deckName,
     setDeckList,
+    setDeckName,
     isAnalyzing,
     analysisResult,
     isDeckMinimized,
@@ -62,6 +66,15 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = memo(
 
         {!isDeckMinimized && (
           <Box sx={{ mb: 3 }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Deck Name (optional)"
+              placeholder="e.g. Rakdos Midrange, Mono-Red Aggro..."
+              value={deckName}
+              onChange={(e) => setDeckName(e.target.value)}
+              sx={{ mb: 2 }}
+            />
             <TextField
               fullWidth
               multiline
