@@ -13,23 +13,23 @@ export const useCardImage = (cardName: string) => {
   const [data, setData] = useState<CardImageData>({
     imageUrl: imageCache.get(cardName) || null,
     loading: false,
-    error: false
+    error: false,
   })
 
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
   const abortControllerRef = useRef<AbortController>()
 
   const fetchImage = useCallback(async () => {
     // Si déjà en cache, pas besoin de refetch
     if (imageCache.has(cardName)) {
-      setData(prev => ({ ...prev, imageUrl: imageCache.get(cardName)! }))
+      setData((prev) => ({ ...prev, imageUrl: imageCache.get(cardName)! }))
       return
     }
 
     // Si déjà en cours de chargement, ne pas relancer
     if (data.loading) return
 
-    setData(prev => ({ ...prev, loading: true, error: false }))
+    setData((prev) => ({ ...prev, loading: true, error: false }))
 
     // Annuler la requête précédente si elle existe
     if (abortControllerRef.current) {
@@ -51,10 +51,11 @@ export const useCardImage = (cardName: string) => {
       const card = await response.json()
 
       // Priorité : image normale > image des faces de carte > image petite
-      const imageUrl = card.image_uris?.normal ||
-                      card.card_faces?.[0]?.image_uris?.normal ||
-                      card.image_uris?.small ||
-                      card.card_faces?.[0]?.image_uris?.small
+      const imageUrl =
+        card.image_uris?.normal ||
+        card.card_faces?.[0]?.image_uris?.normal ||
+        card.image_uris?.small ||
+        card.card_faces?.[0]?.image_uris?.small
 
       if (imageUrl) {
         // Mettre en cache
@@ -93,6 +94,6 @@ export const useCardImage = (cardName: string) => {
   return {
     ...data,
     startFetch,
-    cancelFetch
+    cancelFetch,
   }
 }

@@ -1,23 +1,15 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import analysisReducer from './slices/analysisSlice'
 import analyzerReducer from './slices/analyzerSlice'
-import authReducer from './slices/authSlice'
-import deckReducer from './slices/deckSlice'
-import uiReducer from './slices/uiSlice'
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['deck', 'analysis', 'analyzer'] // Persist deck, analysis and analyzer state
+  whitelist: ['analyzer'],
 }
 
 const rootReducer = combineReducers({
-  deck: deckReducer,
-  analysis: analysisReducer,
-  ui: uiReducer,
-  auth: authReducer,
   analyzer: analyzerReducer,
 })
 
@@ -31,7 +23,7 @@ export const store = configureStore({
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
     }),
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: import.meta.env.DEV,
 })
 
 export const persistor = persistStore(store)

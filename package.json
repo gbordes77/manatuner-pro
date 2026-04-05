@@ -41,7 +41,8 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "playwright:install": "npx playwright install --with-deps"
+    "playwright:install": "npx playwright install --with-deps",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -61,7 +62,6 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.4",
     "lodash": "^4.17.21",
-    "next-pwa": "^5.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.5",
@@ -81,7 +81,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
     "@types/lodash": "^4.14.191",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
@@ -91,13 +90,13 @@
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
-    "c8": "^7.13.0",
     "eslint": "^8.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.26",
-    "jest": "^30.0.1",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
-    "ts-jest": "^29.4.0",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vercel": "^32.0.1",
     "vite": "^7.3.0",
@@ -134,5 +133,14 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write"
+    ]
   }
 }
