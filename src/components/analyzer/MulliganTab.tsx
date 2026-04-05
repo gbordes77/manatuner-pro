@@ -27,6 +27,7 @@ import {
   Chip,
   CircularProgress,
   Grid,
+  IconButton,
   LinearProgress,
   Paper,
   Tooltip,
@@ -791,9 +792,16 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
 export const MulliganTab: React.FC<MulliganTabProps> = memo(
   ({ cards, isMobile: _isMobile = false }) => {
     const [archetype, setArchetype] = useState<Archetype>('midrange')
+    const [iterations, setIterations] = useState(10000)
     const [result, setResult] = useState<AdvancedMulliganResult | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [error, setError] = useState<string | null>(null)
+
+    const ITERATION_PRESETS = [
+      { value: 3000, label: 'Quick (3k)', desc: '~1.8% margin' },
+      { value: 10000, label: 'Standard (10k)', desc: '~0.9% margin' },
+      { value: 50000, label: 'Precise (50k)', desc: '~0.4% margin' },
+    ]
 
     // Calculate total cards including quantities
     const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0)
@@ -810,7 +818,7 @@ export const MulliganTab: React.FC<MulliganTabProps> = memo(
       // Run in next tick to allow UI to update
       setTimeout(() => {
         try {
-          const analysisResult = analyzeWithArchetype(cards, archetype, 3000)
+          const analysisResult = analyzeWithArchetype(cards, archetype, iterations)
           setResult(analysisResult)
         } catch (e) {
           setError(e instanceof Error ? e.message : 'Analysis failed')
@@ -818,14 +826,14 @@ export const MulliganTab: React.FC<MulliganTabProps> = memo(
           setIsAnalyzing(false)
         }
       }, 50)
-    }, [cards, archetype, totalCards])
+    }, [cards, archetype, iterations, totalCards])
 
     // Auto-run on mount and archetype change
     useEffect(() => {
       if (totalCards >= 40) {
         runAnalysis()
       }
-    }, [archetype]) // Only re-run when archetype changes
+    }, [archetype, iterations]) // Re-run when archetype or precision changes
 
     // Initial analysis
     useEffect(() => {
@@ -863,6 +871,74 @@ export const MulliganTab: React.FC<MulliganTabProps> = memo(
 
         {/* Archetype Selector */}
         <ArchetypeSelector value={archetype} onChange={setArchetype} disabled={isAnalyzing} />
+
+        {/* Simulation Precision */}
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          <Typography variant="subtitle2" color="text.secondary">
+            Simulation precision:
+          </Typography>
+          {ITERATION_PRESETS.map((preset) => (
+            <Chip
+              key={preset.value}
+              label={preset.label}
+              size="small"
+              variant={iterations === preset.value ? 'filled' : 'outlined'}
+              color={iterations === preset.value ? 'primary' : 'default'}
+              onClick={() => !isAnalyzing && setIterations(preset.value)}
+              disabled={isAnalyzing}
+            />
+          ))}
+          <Typography variant="caption" color="text.secondary">
+            ({ITERATION_PRESETS.find((p) => p.value === iterations)?.desc})
+          </Typography>
+          <Tooltip
+            arrow
+            title={
+              <Box sx={{ p: 0.5, maxWidth: 280 }}>
+                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                  How Monte Carlo Simulation Works
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                  We shuffle your deck thousands of times and simulate opening hands to calculate
+                  mulligan thresholds statistically.
+                </Typography>
+                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                  What is the margin?
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                  The margin of error tells you how precise the results are. At 10k simulations, a
+                  reported 72% is actually between 71.1% and 72.9% (95% confidence).
+                </Typography>
+                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                  Which precision to choose?
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ mb: 0.5 }}>
+                  <strong>Quick (3k)</strong> — Fast overview, good enough for casual testing
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ mb: 0.5 }}>
+                  <strong>Standard (10k)</strong> — Reliable for deckbuilding decisions
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                  <strong>Precise (50k)</strong> — Compare builds that differ by 1-2%. May take a
+                  few seconds.
+                </Typography>
+                <Button
+                  component="a"
+                  href="/mathematics"
+                  size="small"
+                  variant="text"
+                  sx={{ mt: 0.5, p: 0, minWidth: 0, textTransform: 'none', fontSize: '0.75rem' }}
+                >
+                  Learn the full math behind this →
+                </Button>
+              </Box>
+            }
+          >
+            <IconButton size="small" sx={{ p: 0.5 }}>
+              <HelpIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
         {/* Error */}
         {error && (
