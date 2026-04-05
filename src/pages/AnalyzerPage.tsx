@@ -110,7 +110,22 @@ const AnalyzerPage: React.FC = () => {
 
       // Auto-save to PrivacyStorage
       try {
-        const saveName = deckName.trim() || `Deck ${new Date().toLocaleDateString()}`
+        // Generate a descriptive name from colors if user didn't set one
+        const colorNames: Record<string, string> = {
+          W: 'White',
+          U: 'Blue',
+          B: 'Black',
+          R: 'Red',
+          G: 'Green',
+        }
+        const activeColors = result.colorDistribution
+          ? Object.entries(result.colorDistribution)
+              .filter(([, v]) => v > 0)
+              .map(([k]) => colorNames[k] || k)
+          : []
+        const colorLabel =
+          activeColors.length > 0 ? `${activeColors.length}C ${activeColors.join('/')}` : 'Deck'
+        const saveName = deckName.trim() || `${colorLabel} - ${new Date().toLocaleDateString()}`
         PrivacyStorage.saveAnalysis({
           deckName: saveName,
           deckList,

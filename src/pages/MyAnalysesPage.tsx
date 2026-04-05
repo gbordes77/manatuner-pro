@@ -602,7 +602,7 @@ const MyAnalysesPage: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <StorageIcon sx={{ fontSize: 28 }} />
             <Typography variant="h6" fontWeight={700}>
-              {analyses.length} analysis{analyses.length !== 1 ? 'es' : ''} saved
+              {analyses.length} {analyses.length === 1 ? 'analysis' : 'analyses'} saved
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -688,6 +688,62 @@ const MyAnalysesPage: React.FC = () => {
           </Typography>
         )}
       </Paper>
+
+      {/* Feature Tips */}
+      {analyses.length > 0 && !compareMode && (
+        <Paper
+          sx={{
+            p: 2,
+            mb: 3,
+            borderRadius: 2,
+            bgcolor: 'action.hover',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}
+          >
+            What you can do here:
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Chip
+              icon={<LoadIcon sx={{ fontSize: 16 }} />}
+              label="Load a deck back into Analyzer"
+              size="small"
+              variant="outlined"
+              onClick={() => {}}
+              sx={{ cursor: 'default' }}
+            />
+            <Chip
+              icon={<CompareIcon sx={{ fontSize: 16 }} />}
+              label="Compare 2 builds side by side"
+              size="small"
+              variant="outlined"
+              color="secondary"
+              onClick={analyses.length >= 2 ? handleStartCompare : undefined}
+              sx={{ cursor: analyses.length >= 2 ? 'pointer' : 'default' }}
+            />
+            <Chip
+              icon={<DownloadIcon sx={{ fontSize: 16 }} />}
+              label="Export all as JSON backup"
+              size="small"
+              variant="outlined"
+              onClick={handleExport}
+              sx={{ cursor: 'pointer' }}
+            />
+            <Chip
+              icon={<DeleteIcon sx={{ fontSize: 16 }} />}
+              label="Delete individually"
+              size="small"
+              variant="outlined"
+              sx={{ cursor: 'default' }}
+            />
+          </Box>
+        </Paper>
+      )}
 
       {/* Analyses Grid */}
       {analyses.length === 0 ? (
