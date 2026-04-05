@@ -10,7 +10,7 @@ export default defineConfig({
   },
   build: {
     target: 'es2015',
-    minify: 'terser',
+    minify: 'esbuild',
     sourcemap: false,
     rollupOptions: {
       output: {
@@ -25,12 +25,6 @@ export default defineConfig({
           'vendor-charts': ['recharts'],
           'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
         },
-      },
-    },
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
       },
     },
     chunkSizeWarningLimit: 1000,
@@ -53,6 +47,9 @@ export default defineConfig({
       '@mui/icons-material',
       'recharts',
     ],
+  },
+  esbuild: {
+    drop: ['console', 'debugger'],
   },
   worker: {
     format: 'es',
