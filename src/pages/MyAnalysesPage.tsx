@@ -1,18 +1,22 @@
 import {
   Analytics as AnalyticsIcon,
+  CheckCircle as CheckIcon,
+  Close as CloseIcon,
+  CompareArrows as CompareIcon,
   Delete as DeleteIcon,
   DeleteForever as DeleteAllIcon,
   Download as DownloadIcon,
   History as HistoryIcon,
   OpenInNew as LoadIcon,
+  RadioButtonUnchecked as UncheckedIcon,
   Storage as StorageIcon,
 } from '@mui/icons-material'
 import {
-  Alert,
   Box,
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   Container,
   Dialog,
@@ -20,6 +24,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   Grid,
   IconButton,
   LinearProgress,
@@ -50,7 +55,30 @@ const MANA_COLORS_MAP: Record<string, string> = {
   G: '#00733E',
 }
 
-const HealthBadge: React.FC<{ consistency: number }> = ({ consistency }) => {
+// ─── Delta Display Helper ───────────────────────────────────────────────────
+
+const DeltaChip: React.FC<{ value: number; suffix?: string }> = ({ value, suffix = '' }) => {
+  if (Math.abs(value) < 0.1) return <Chip label="=" size="small" variant="outlined" />
+  const positive = value > 0
+  return (
+    <Chip
+      label={`${positive ? '+' : ''}${value.toFixed(1)}${suffix}`}
+      size="small"
+      sx={{
+        fontWeight: 'bold',
+        bgcolor: positive ? '#e8f5e9' : '#ffebee',
+        color: positive ? '#2e7d32' : '#c62828',
+      }}
+    />
+  )
+}
+
+// ─── Health Badge ───────────────────────────────────────────────────────────
+
+const HealthBadge: React.FC<{ consistency: number; size?: 'small' | 'large' }> = ({
+  consistency,
+  size = 'large',
+}) => {
   const percent = Math.round(consistency * 100)
   const color =
     percent >= 85 ? 'success' : percent >= 70 ? 'primary' : percent >= 55 ? 'warning' : 'error'
@@ -59,7 +87,11 @@ const HealthBadge: React.FC<{ consistency: number }> = ({ consistency }) => {
 
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h4" fontWeight="bold" color={`${color}.main`}>
+      <Typography
+        variant={size === 'large' ? 'h4' : 'h5'}
+        fontWeight="bold"
+        color={`${color}.main`}
+      >
         {percent}%
       </Typography>
       <Chip
@@ -71,11 +103,241 @@ const HealthBadge: React.FC<{ consistency: number }> = ({ consistency }) => {
   )
 }
 
+// ─── Compare View ───────────────────────────────────────────────────────────
+
+const CompareView: React.FC<{
+  a: AnalysisRecord
+  b: AnalysisRecord
+  onClose: () => void
+}> = ({ a, b, onClose }) => {
+  const getStats = (record: AnalysisRecord) => ({
+    name: record.deckName || 'Unnamed Deck',
+    consistency: record.consistency ?? record.analysis?.consistency ?? 0,
+    totalCards: record.analysis?.totalCards || 0,
+    totalLands: record.analysis?.totalLands || 0,
+    avgCMC: record.analysis?.averageCMC || 0,
+    landRatio: record.analysis?.landRatio || 0,
+    colors: record.analysis?.colorDistribution
+      ? Object.entries(record.analysis.colorDistribution)
+          .filter(([, v]) => (v as number) > 0)
+          .map(([k]) => k)
+      : [],
+    probabilities: record.analysis?.probabilities || null,
+    cards: record.analysis?.cards || [],
+  })
+
+  const sa = getStats(a)
+  const sb = getStats(b)
+
+  // Find common spells for castability comparison
+  type SpellInfo = { name: string; cmc: number; manaCost: string; isLand?: boolean }
+  const spellsA = new Map<string, SpellInfo>(
+    (sa.cards as SpellInfo[]).filter((c) => !c.isLand).map((c) => [c.name, c])
+  )
+  const spellsB = new Map<string, SpellInfo>(
+    (sb.cards as SpellInfo[]).filter((c) => !c.isLand).map((c) => [c.name, c])
+  )
+  const commonSpells = [...spellsA.keys()].filter((name) => spellsB.has(name))
+
+  const StatRow: React.FC<{
+    label: string
+    va: string
+    vb: string
+    delta?: number
+    suffix?: string
+  }> = ({ label, va, vb, delta, suffix = '' }) => (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        py: 1.5,
+        px: 2,
+        '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
+        borderRadius: 1,
+      }}
+    >
+      <Typography variant="body2" sx={{ flex: 1, fontWeight: 500 }}>
+        {label}
+      </Typography>
+      <Typography variant="body2" sx={{ width: 80, textAlign: 'center' }}>
+        {va}
+      </Typography>
+      <Box sx={{ width: 100, textAlign: 'center' }}>
+        {delta !== undefined ? <DeltaChip value={delta} suffix={suffix} /> : null}
+      </Box>
+      <Typography variant="body2" sx={{ width: 80, textAlign: 'center' }}>
+        {vb}
+      </Typography>
+    </Box>
+  )
+
+  const consistencyDelta = (sb.consistency - sa.consistency) * 100
+
+  return (
+    <Box>
+      {/* Header */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+          p: 2,
+          bgcolor: 'action.hover',
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ flex: 1, textAlign: 'center' }}>
+          <Typography variant="h6" fontWeight="bold">
+            {sa.name}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Version A
+          </Typography>
+        </Box>
+        <CompareIcon sx={{ mx: 2, color: 'text.secondary' }} />
+        <Box sx={{ flex: 1, textAlign: 'center' }}>
+          <Typography variant="h6" fontWeight="bold">
+            {sb.name}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Version B
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Health Score comparison */}
+      <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          Health Score
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <HealthBadge consistency={sa.consistency} />
+          <Box>
+            <DeltaChip value={consistencyDelta} suffix="%" />
+          </Box>
+          <HealthBadge consistency={sb.consistency} />
+        </Box>
+      </Paper>
+
+      {/* Stats comparison */}
+      <Paper sx={{ mb: 3, overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', py: 1.5, px: 2, bgcolor: 'primary.main', color: 'white' }}>
+          <Typography variant="subtitle2" sx={{ flex: 1 }}>
+            Metric
+          </Typography>
+          <Typography variant="subtitle2" sx={{ width: 80, textAlign: 'center' }}>
+            A
+          </Typography>
+          <Typography variant="subtitle2" sx={{ width: 100, textAlign: 'center' }}>
+            Delta
+          </Typography>
+          <Typography variant="subtitle2" sx={{ width: 80, textAlign: 'center' }}>
+            B
+          </Typography>
+        </Box>
+        <StatRow
+          label="Total Cards"
+          va={String(sa.totalCards)}
+          vb={String(sb.totalCards)}
+          delta={sb.totalCards - sa.totalCards}
+        />
+        <StatRow
+          label="Total Lands"
+          va={String(sa.totalLands)}
+          vb={String(sb.totalLands)}
+          delta={sb.totalLands - sa.totalLands}
+        />
+        <StatRow
+          label="Land Ratio"
+          va={`${(sa.landRatio * 100).toFixed(1)}%`}
+          vb={`${(sb.landRatio * 100).toFixed(1)}%`}
+          delta={(sb.landRatio - sa.landRatio) * 100}
+          suffix="%"
+        />
+        <StatRow
+          label="Avg CMC"
+          va={sa.avgCMC.toFixed(2)}
+          vb={sb.avgCMC.toFixed(2)}
+          delta={sb.avgCMC - sa.avgCMC}
+        />
+        <StatRow
+          label="Consistency"
+          va={`${(sa.consistency * 100).toFixed(1)}%`}
+          vb={`${(sb.consistency * 100).toFixed(1)}%`}
+          delta={consistencyDelta}
+          suffix="%"
+        />
+      </Paper>
+
+      {/* Turn probabilities comparison */}
+      {sa.probabilities && sb.probabilities && (
+        <Paper sx={{ mb: 3, overflow: 'hidden' }}>
+          <Box sx={{ py: 1.5, px: 2, bgcolor: 'secondary.main', color: 'white' }}>
+            <Typography variant="subtitle2">Color Probability by Turn (Any Color)</Typography>
+          </Box>
+          {(['turn1', 'turn2', 'turn3', 'turn4'] as const).map((turn) => {
+            const pa = sa.probabilities?.[turn]?.anyColor ?? 0
+            const pb = sb.probabilities?.[turn]?.anyColor ?? 0
+            return (
+              <StatRow
+                key={turn}
+                label={turn.replace('turn', 'Turn ')}
+                va={`${(pa * 100).toFixed(1)}%`}
+                vb={`${(pb * 100).toFixed(1)}%`}
+                delta={(pb - pa) * 100}
+                suffix="%"
+              />
+            )
+          })}
+        </Paper>
+      )}
+
+      {/* Common spells castability delta */}
+      {commonSpells.length > 0 && (
+        <Paper sx={{ overflow: 'hidden' }}>
+          <Box sx={{ py: 1.5, px: 2, bgcolor: '#e65100', color: 'white' }}>
+            <Typography variant="subtitle2">
+              Castability Comparison ({commonSpells.length} common spells)
+            </Typography>
+          </Box>
+          {commonSpells.slice(0, 15).map((name) => {
+            const cardA = spellsA.get(name)
+            const cardB = spellsB.get(name)
+            const cmcA = cardA?.cmc ?? 0
+            const cmcB = cardB?.cmc ?? 0
+            return (
+              <StatRow
+                key={name}
+                label={`${name} (${cmcA} CMC)`}
+                va={cardA?.manaCost || '?'}
+                vb={cardB?.manaCost || '?'}
+                delta={cmcB - cmcA}
+              />
+            )
+          })}
+          <Box sx={{ p: 2, bgcolor: 'action.hover' }}>
+            <Typography variant="caption" color="text.secondary">
+              For detailed per-card probability deltas, load each version in the Analyzer and
+              compare the Castability tab.
+            </Typography>
+          </Box>
+        </Paper>
+      )}
+    </Box>
+  )
+}
+
+// ─── Analysis Card ──────────────────────────────────────────────────────────
+
 const AnalysisCard: React.FC<{
   analysis: AnalysisRecord
   onLoad: () => void
   onDelete: () => void
-}> = ({ analysis, onLoad, onDelete }) => {
+  compareMode: boolean
+  selected: boolean
+  onToggleSelect: () => void
+}> = ({ analysis, onLoad, onDelete, compareMode, selected, onToggleSelect }) => {
   const colors: string[] = analysis.analysis?.colorDistribution
     ? Object.keys(analysis.analysis.colorDistribution).filter(
         (c) => analysis.analysis.colorDistribution[c] > 0
@@ -91,16 +353,37 @@ const AnalysisCard: React.FC<{
 
   return (
     <Card
+      onClick={compareMode ? onToggleSelect : undefined}
       sx={{
         height: '100%',
         transition: 'all 0.2s',
+        cursor: compareMode ? 'pointer' : 'default',
+        border: selected ? '2px solid' : '2px solid transparent',
+        borderColor: selected ? 'primary.main' : 'transparent',
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
       }}
     >
       <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        {/* Compare checkbox */}
+        {compareMode && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: -1, mt: -1, mr: -1 }}>
+            <Checkbox
+              checked={selected}
+              icon={<UncheckedIcon />}
+              checkedIcon={<CheckIcon />}
+              color="primary"
+            />
+          </Box>
+        )}
+
         {/* Header: name + colors */}
         <Box
-          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 2,
+          }}
         >
           <Box sx={{ flex: 1, mr: 1 }}>
             <Typography variant="h6" fontWeight="bold" noWrap>
@@ -110,7 +393,6 @@ const AnalysisCard: React.FC<{
               {date}
             </Typography>
           </Box>
-          {/* Mana colors */}
           <Box sx={{ display: 'flex', gap: 0.5 }}>
             {colors.map((c) => (
               <Box
@@ -128,7 +410,7 @@ const AnalysisCard: React.FC<{
         </Box>
 
         {/* Health Score */}
-        {consistency > 0 && <HealthBadge consistency={consistency} />}
+        {consistency > 0 && <HealthBadge consistency={consistency} size="small" />}
 
         {/* Stats */}
         <Box sx={{ display: 'flex', justifyContent: 'space-around', my: 2 }}>
@@ -173,26 +455,30 @@ const AnalysisCard: React.FC<{
         )}
 
         {/* Actions */}
-        <Box sx={{ mt: 'auto', display: 'flex', gap: 1, pt: 1 }}>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<LoadIcon />}
-            onClick={onLoad}
-            sx={{ flex: 1 }}
-          >
-            Load in Analyzer
-          </Button>
-          <Tooltip title="Delete this analysis">
-            <IconButton size="small" color="error" onClick={onDelete}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        {!compareMode && (
+          <Box sx={{ mt: 'auto', display: 'flex', gap: 1, pt: 1 }}>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<LoadIcon />}
+              onClick={onLoad}
+              sx={{ flex: 1 }}
+            >
+              Load in Analyzer
+            </Button>
+            <Tooltip title="Delete this analysis">
+              <IconButton size="small" color="error" onClick={onDelete}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
       </CardContent>
     </Card>
   )
 }
+
+// ─── Main Page ──────────────────────────────────────────────────────────────
 
 const MyAnalysesPage: React.FC = () => {
   const navigate = useNavigate()
@@ -201,6 +487,9 @@ const MyAnalysesPage: React.FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: string; all?: boolean }>({
     open: false,
   })
+  const [compareMode, setCompareMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [compareDialog, setCompareDialog] = useState(false)
 
   useEffect(() => {
     setAnalyses(getMyAnalyses())
@@ -236,6 +525,27 @@ const MyAnalysesPage: React.FC = () => {
     setAnalyses([])
     setDeleteDialog({ open: false })
   }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id)
+      if (prev.length >= 2) return [prev[1], id]
+      return [...prev, id]
+    })
+  }
+
+  const handleStartCompare = () => {
+    setCompareMode(true)
+    setSelectedIds([])
+  }
+
+  const handleCancelCompare = () => {
+    setCompareMode(false)
+    setSelectedIds([])
+  }
+
+  const selectedA = analyses.find((a) => a.id === selectedIds[0])
+  const selectedB = analyses.find((a) => a.id === selectedIds[1])
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
@@ -296,32 +606,87 @@ const MyAnalysesPage: React.FC = () => {
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<DownloadIcon />}
-              onClick={handleExport}
-              disabled={analyses.length === 0}
-              sx={{
-                bgcolor: 'white',
-                color: '#1976d2',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
-              }}
-            >
-              Export
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<DeleteAllIcon />}
-              onClick={() => setDeleteDialog({ open: true, all: true })}
-              disabled={analyses.length === 0}
-              sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}
-            >
-              Clear All
-            </Button>
+            {!compareMode ? (
+              <>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<CompareIcon />}
+                  onClick={handleStartCompare}
+                  disabled={analyses.length < 2}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#9c27b0',
+                    fontWeight: 700,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255,255,255,0.3)',
+                      color: 'rgba(255,255,255,0.5)',
+                    },
+                  }}
+                >
+                  Compare
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleExport}
+                  disabled={analyses.length === 0}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#1976d2',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                  }}
+                >
+                  Export
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<DeleteAllIcon />}
+                  onClick={() => setDeleteDialog({ open: true, all: true })}
+                  disabled={analyses.length === 0}
+                  sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}
+                >
+                  Clear All
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<CompareIcon />}
+                  onClick={() => setCompareDialog(true)}
+                  disabled={selectedIds.length !== 2}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#9c27b0',
+                    fontWeight: 700,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                  }}
+                >
+                  Compare Selected ({selectedIds.length}/2)
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<CloseIcon />}
+                  onClick={handleCancelCompare}
+                  sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
           </Box>
         </Box>
+        {compareMode && (
+          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+            Select 2 analyses to compare side by side
+          </Typography>
+        )}
       </Paper>
 
       {/* Analyses Grid */}
@@ -359,6 +724,9 @@ const MyAnalysesPage: React.FC = () => {
                 analysis={analysis}
                 onLoad={() => handleLoad(analysis)}
                 onDelete={() => setDeleteDialog({ open: true, id: analysis.id })}
+                compareMode={compareMode}
+                selected={selectedIds.includes(analysis.id)}
+                onToggleSelect={() => toggleSelect(analysis.id)}
               />
             </Grid>
           ))}
@@ -396,6 +764,33 @@ const MyAnalysesPage: React.FC = () => {
             Delete
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Compare Dialog */}
+      <Dialog
+        open={compareDialog}
+        onClose={() => setCompareDialog(false)}
+        maxWidth="md"
+        fullWidth
+        scroll="paper"
+      >
+        <DialogTitle
+          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CompareIcon />
+            <Typography variant="h6">Manabase Comparison</Typography>
+          </Box>
+          <IconButton onClick={() => setCompareDialog(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent>
+          {selectedA && selectedB && (
+            <CompareView a={selectedA} b={selectedB} onClose={() => setCompareDialog(false)} />
+          )}
+        </DialogContent>
       </Dialog>
     </Container>
   )
