@@ -38,6 +38,24 @@ echo "Rafraîchis http://localhost:3000/[page-modifiée]"
 - `/guide` - Guide utilisateur
 - `/mathematics` - Explications mathématiques
 
+## Personas Utilisateurs
+
+**Fichier** : `mtg-player-personas.md` (racine du projet)
+
+5 personas joueurs MTG pour evaluer l'UX, du casual au Pro Tour :
+
+1. **Leo (Le Curieux)** — 6 mois, casual Arena, fuit le jargon
+2. **Sarah (La Reguliere)** — FNM weekly, copie/ajuste des decklists
+3. **Karim (Le Tacticien)** — Grinder RCQ, veut data fine et exports
+4. **Natsuki (La Grinder)** — Pro Tour qual, pense en EV/equity, veut l'API
+5. **David (L'Architecte)** — Pro Tour vet, theoricien, lit le code source
+
+Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabulaire, parcours de navigation, grille d'evaluation (8 axes), et format de sortie structure.
+
+**Derniers scores (v2.1.0)** : Leo 4.2 | Sarah 4.2 | Karim 4.1 | Natsuki 3.8 | David 4.1 | **Moy: 4.08/5**
+
+---
+
 ## Notes Techniques
 
 ### Supabase
