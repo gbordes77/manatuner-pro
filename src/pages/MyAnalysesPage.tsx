@@ -9,6 +9,8 @@ import {
   History as HistoryIcon,
   OpenInNew as LoadIcon,
   RadioButtonUnchecked as UncheckedIcon,
+  Search as SearchIcon,
+  Sort as SortIcon,
   Storage as StorageIcon,
 } from '@mui/icons-material'
 import {
@@ -27,8 +29,12 @@ import {
   Divider,
   Grid,
   IconButton,
+  InputAdornment,
   LinearProgress,
+  MenuItem,
   Paper,
+  Select,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -124,6 +130,10 @@ const CompareView: React.FC<{
       : [],
     probabilities: record.analysis?.probabilities || null,
     cards: record.analysis?.cards || [],
+    spellAnalysis: (record.analysis?.spellAnalysis || {}) as Record<
+      string,
+      { castable: number; total: number; percentage: number }
+    >,
   })
 
   const sa = getStats(a)
@@ -301,27 +311,36 @@ const CompareView: React.FC<{
               Castability Comparison ({commonSpells.length} common spells)
             </Typography>
           </Box>
-          {commonSpells.slice(0, 15).map((name) => {
+          <Box sx={{ display: 'flex', py: 1, px: 2, bgcolor: 'action.selected' }}>
+            <Typography variant="caption" sx={{ flex: 1, fontWeight: 600 }}>
+              Spell
+            </Typography>
+            <Typography variant="caption" sx={{ width: 80, textAlign: 'center', fontWeight: 600 }}>
+              A
+            </Typography>
+            <Typography variant="caption" sx={{ width: 100, textAlign: 'center', fontWeight: 600 }}>
+              Delta
+            </Typography>
+            <Typography variant="caption" sx={{ width: 80, textAlign: 'center', fontWeight: 600 }}>
+              B
+            </Typography>
+          </Box>
+          {commonSpells.slice(0, 20).map((name) => {
+            const probaA = sa.spellAnalysis[name]?.percentage ?? 0
+            const probaB = sb.spellAnalysis[name]?.percentage ?? 0
+            const delta = probaB - probaA
             const cardA = spellsA.get(name)
-            const cardB = spellsB.get(name)
-            const cmcA = cardA?.cmc ?? 0
-            const cmcB = cardB?.cmc ?? 0
             return (
               <StatRow
                 key={name}
-                label={`${name} (${cmcA} CMC)`}
-                va={cardA?.manaCost || '?'}
-                vb={cardB?.manaCost || '?'}
-                delta={cmcB - cmcA}
+                label={`${name} (${cardA?.cmc ?? 0} CMC)`}
+                va={`${probaA}%`}
+                vb={`${probaB}%`}
+                delta={delta}
+                suffix="%"
               />
             )
           })}
-          <Box sx={{ p: 2, bgcolor: 'action.hover' }}>
-            <Typography variant="caption" color="text.secondary">
-              For detailed per-card probability deltas, load each version in the Analyzer and
-              compare the Castability tab.
-            </Typography>
-          </Box>
         </Paper>
       )}
     </Box>
@@ -487,6 +506,9 @@ const MyAnalysesPage: React.FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: string; all?: boolean }>({
     open: false,
   })
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'date' | 'score' | 'name'>('date')
+  const [colorFilter, setColorFilter] = useState<string[]>([])
   const [compareMode, setCompareMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [compareDialog, setCompareDialog] = useState(false)
@@ -544,8 +566,44 @@ const MyAnalysesPage: React.FC = () => {
     setSelectedIds([])
   }
 
+  // Filter and sort analyses
+  const filteredAnalyses = analyses
+    .filter((a) => {
+      // Search filter
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase()
+        if (!(a.deckName || '').toLowerCase().includes(q)) return false
+      }
+      // Color filter
+      if (colorFilter.length > 0) {
+        const deckColors = a.analysis?.colorDistribution
+          ? Object.keys(a.analysis.colorDistribution).filter(
+              (c) => a.analysis.colorDistribution[c] > 0
+            )
+          : []
+        if (!colorFilter.every((c) => deckColors.includes(c))) return false
+      }
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === 'score') {
+        const scoreA = a.consistency ?? a.analysis?.consistency ?? 0
+        const scoreB = b.consistency ?? b.analysis?.consistency ?? 0
+        return scoreB - scoreA
+      }
+      if (sortBy === 'name') {
+        return (a.deckName || '').localeCompare(b.deckName || '')
+      }
+      return b.timestamp - a.timestamp // date desc
+    })
+
   const selectedA = analyses.find((a) => a.id === selectedIds[0])
   const selectedB = analyses.find((a) => a.id === selectedIds[1])
+
+  const WUBRG = ['W', 'U', 'B', 'R', 'G'] as const
+  const toggleColor = (c: string) => {
+    setColorFilter((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]))
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
@@ -745,6 +803,69 @@ const MyAnalysesPage: React.FC = () => {
         </Paper>
       )}
 
+      {/* Filters & Sort */}
+      {analyses.length > 1 && (
+        <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField
+            size="small"
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 200, flex: 1 }}
+          />
+          <Select
+            size="small"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'date' | 'score' | 'name')}
+            startAdornment={<SortIcon sx={{ mr: 0.5, fontSize: 20, color: 'text.secondary' }} />}
+            sx={{ minWidth: 140 }}
+          >
+            <MenuItem value="date">Newest first</MenuItem>
+            <MenuItem value="score">Best score</MenuItem>
+            <MenuItem value="name">Name A-Z</MenuItem>
+          </Select>
+          <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+              Colors:
+            </Typography>
+            {WUBRG.map((c) => (
+              <Box
+                key={c}
+                onClick={() => toggleColor(c)}
+                sx={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: '50%',
+                  bgcolor: MANA_COLORS_MAP[c] || '#888',
+                  border: colorFilter.includes(c) ? '3px solid' : '2px solid transparent',
+                  borderColor: colorFilter.includes(c) ? 'primary.main' : 'transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  opacity: colorFilter.length > 0 && !colorFilter.includes(c) ? 0.4 : 1,
+                  boxShadow: c === 'W' ? 'inset 0 0 0 1px #ccc' : 'none',
+                  '&:hover': { transform: 'scale(1.2)' },
+                }}
+              />
+            ))}
+            {colorFilter.length > 0 && (
+              <Chip
+                label="Clear"
+                size="small"
+                onDelete={() => setColorFilter([])}
+                sx={{ ml: 0.5 }}
+              />
+            )}
+          </Box>
+        </Box>
+      )}
+
       {/* Analyses Grid */}
       {analyses.length === 0 ? (
         <Card
@@ -772,9 +893,26 @@ const MyAnalysesPage: React.FC = () => {
             </Button>
           </CardContent>
         </Card>
+      ) : filteredAnalyses.length === 0 ? (
+        <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 2 }}>
+          <Typography variant="body1" color="text.secondary">
+            No analyses match your filters
+          </Typography>
+          <Button
+            size="small"
+            onClick={() => {
+              setSearchQuery('')
+              setColorFilter([])
+              setSortBy('date')
+            }}
+            sx={{ mt: 1 }}
+          >
+            Clear filters
+          </Button>
+        </Paper>
       ) : (
         <Grid container spacing={3}>
-          {analyses.map((analysis) => (
+          {filteredAnalyses.map((analysis) => (
             <Grid item xs={12} sm={6} md={4} key={analysis.id}>
               <AnalysisCard
                 analysis={analysis}

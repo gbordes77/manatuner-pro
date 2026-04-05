@@ -243,8 +243,13 @@ export class AdvancedMathEngine {
     }
     const standardDeviation = Math.sqrt(variance / Math.max(1, successfulRuns))
 
-    // 95% confidence interval
-    const margin = 1.96 * (standardDeviation / Math.sqrt(successfulRuns))
+    // 95% Wilson score confidence interval for the success rate proportion
+    const z = 1.96
+    const p = successfulRuns / iterations
+    const n = iterations
+    const denominator = 1 + (z * z) / n
+    const center = (p + (z * z) / (2 * n)) / denominator
+    const wilsonMargin = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / denominator
 
     this.metrics.endTime = performance.now()
     this.metrics.duration = this.metrics.endTime - this.metrics.startTime
@@ -256,8 +261,8 @@ export class AdvancedMathEngine {
       averageTurn,
       standardDeviation,
       confidence: {
-        lower: Math.max(0, successRate - margin),
-        upper: Math.min(100, successRate + margin),
+        lower: Math.max(0, (center - wilsonMargin) * 100),
+        upper: Math.min(100, (center + wilsonMargin) * 100),
       },
       distribution: turnDistribution,
     }
