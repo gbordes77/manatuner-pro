@@ -17,6 +17,7 @@
 ManaTuner Pro answers the fundamental question every Magic player asks: **"Can I cast my spells on curve?"**
 
 Built on Frank Karsten's mathematical research, it provides:
+
 - Exact hypergeometric probabilities for every spell
 - Monte Carlo mulligan simulations (3,000+ hands)
 - Turn-by-turn castability analysis
@@ -28,14 +29,14 @@ Built on Frank Karsten's mathematical research, it provides:
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Health Score** | Instant manabase health percentage based on hypergeometric probability |
-| **Castability Analysis** | Exact probability of casting each spell on curve, turn by turn |
-| **Mulligan Simulator** | Monte Carlo simulation with optimal keep/mulligan thresholds |
-| **Export Blueprint** | Download analysis as PNG, PDF, or JSON for sharing |
-| **Multi-Format Support** | Limited (40), Constructed (60), Commander (99+) |
-| **Privacy-First** | All data stored locally with AES-256 encryption |
+| Feature                  | Description                                                            |
+| ------------------------ | ---------------------------------------------------------------------- |
+| **Health Score**         | Instant manabase health percentage based on hypergeometric probability |
+| **Castability Analysis** | Exact probability of casting each spell on curve, turn by turn         |
+| **Mulligan Simulator**   | Monte Carlo simulation with optimal keep/mulligan thresholds           |
+| **Export Blueprint**     | Download analysis as PNG, PDF, or JSON for sharing                     |
+| **Multi-Format Support** | Limited (40), Constructed (60), Commander (99+)                        |
+| **Privacy-First**        | All data stored locally with AES-256 encryption                        |
 
 ---
 
@@ -58,7 +59,7 @@ npm install
 
 # Start development server
 npm run dev
-# Open http://localhost:5173
+# Open http://localhost:3000
 
 # Run tests
 npm run test:unit    # Unit tests (Vitest)
@@ -90,6 +91,7 @@ ManaTuner Pro implements Frank Karsten's research on manabase optimization.
 ### Core Formulas
 
 **Hypergeometric Distribution**
+
 ```
 P(X = k) = C(K,k) * C(N-K,n-k) / C(N,n)
 
@@ -100,6 +102,7 @@ k = Sources needed
 ```
 
 **Cards Seen by Turn**
+
 ```
 On the play: 7 + turn - 1
 On the draw: 7 + turn
@@ -108,7 +111,7 @@ On the draw: 7 + turn
 ### Karsten Tables (90% Probability)
 
 | Colored Symbols | Turn 1 | Turn 2 | Turn 3 | Turn 4 |
-|-----------------|--------|--------|--------|--------|
+| --------------- | ------ | ------ | ------ | ------ |
 | 1 symbol        | 14     | 13     | 12     | 11     |
 | 2 symbols       | -      | 20     | 18     | 16     |
 | 3 symbols       | -      | -      | 23     | 20     |
@@ -119,14 +122,14 @@ On the draw: 7 + turn
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
+| Layer    | Technology                        |
+| -------- | --------------------------------- |
 | Frontend | React 18, TypeScript, Material-UI |
-| State | Redux Toolkit, React Query |
-| Build | Vite (ES2015 target) |
-| Testing | Vitest, Playwright |
-| Hosting | Vercel Edge Network |
-| Storage | localStorage + AES-256 encryption |
+| State    | Redux Toolkit, React Query        |
+| Build    | Vite (ES2015 target)              |
+| Testing  | Vitest, Playwright                |
+| Hosting  | Vercel Edge Network               |
+| Storage  | localStorage + AES-256 encryption |
 
 ---
 
@@ -162,7 +165,7 @@ See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed system documentation.
 
 ```bash
 # Development
-npm run dev              # Start dev server (port 5173)
+npm run dev              # Start dev server (port 3000)
 npm run build            # Production build
 npm run preview          # Preview production build
 
@@ -199,12 +202,12 @@ npm run type-check       # TypeScript validation
 
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| Bundle Size | 202KB gzipped |
-| Build Time | ~20 seconds |
+| Metric           | Value              |
+| ---------------- | ------------------ |
+| Bundle Size      | 202KB gzipped      |
+| Build Time       | ~20 seconds        |
 | Lighthouse Score | 90+ all categories |
-| Test Coverage | 85%+ critical code |
+| Test Coverage    | 85%+ critical code |
 
 ---
 

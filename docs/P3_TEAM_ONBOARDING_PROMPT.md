@@ -9,14 +9,16 @@ Tu es assigné à l'implémentation du **P3: Simulation Engine** pour ManaTuner 
 ## Projet: ManaTuner Pro
 
 **Stack technique:**
+
 - React 18 + TypeScript + Vite
 - MUI (Material-UI) pour l'UI
 - Vitest pour les tests
 - Architecture: Services modulaires + Hooks React
 
 **Repo:** `/Volumes/DataDisk/_Projects/Project Mana base V2`  
-**Port dev:** `http://localhost:5173`  
+**Port dev:** `http://localhost:3000`  
 **Commandes:**
+
 ```bash
 npm run dev          # Serveur dev
 npm run type-check   # Vérification TypeScript
@@ -32,12 +34,12 @@ npm run build        # Build production
 
 Le moteur analytique v1.1 (déjà implémenté) gère 95% des cas en O(1). Mais certains scénarios nécessitent une **simulation Monte Carlo**:
 
-| Cas | Pourquoi simulation requise |
-|-----|----------------------------|
+| Cas                            | Pourquoi simulation requise                                      |
+| ------------------------------ | ---------------------------------------------------------------- |
 | **ENHANCERs** (Badgermole Cub) | Multiplie le mana des autres dorks - nécessite tracking du board |
-| **Multi-mana lands complexes** | Ancient Tomb + Bounce lands avec deltas différents |
-| **Conditional producers** | Nykthos (devotion), Urborg+Coffers (count lands) |
-| **Treasure generators** | Dockside Extortionist - output variable |
+| **Multi-mana lands complexes** | Ancient Tomb + Bounce lands avec deltas différents               |
+| **Conditional producers**      | Nykthos (devotion), Urborg+Coffers (count lands)                 |
+| **Treasure generators**        | Dockside Extortionist - output variable                          |
 
 ### Livrables attendus
 
@@ -53,10 +55,13 @@ Le moteur analytique v1.1 (déjà implémenté) gère 95% des cas en O(1). Mais 
 ## Documents à lire OBLIGATOIREMENT
 
 ### 1. Spécification P3 (CRITIQUE - lire en premier)
+
 ```
 docs/P3_SIMULATION_ENGINE_SPEC.md
 ```
+
 Contient:
+
 - Architecture complète
 - Tous les types TypeScript à implémenter
 - Code du moteur de simulation
@@ -65,28 +70,36 @@ Contient:
 - Benchmarks de performance
 
 ### 2. Moteur analytique existant (référence)
+
 ```
 src/services/castability/acceleratedAnalyticEngine.ts
 ```
+
 Le moteur v1.1 que tu dois compléter (pas remplacer). Comprends comment il fonctionne pour assurer la compatibilité.
 
 ### 3. Types existants
+
 ```
 src/types/manaProducers.ts
 ```
+
 Tous les types de producteurs de mana (DORK, ROCK, RITUAL, ENHANCER, etc.)
 
 ### 4. Documentation mathématique
+
 ```
 docs/MATHEMATICAL_REFERENCE.md
 docs/P1_P2_PROBABILITY_METHOD.md
 ```
+
 Comprendre P1/P2 et la distribution hypergéométrique.
 
 ### 5. Système d'accélération
+
 ```
 docs/MANA_ACCELERATION_SYSTEM.md
 ```
+
 Vue d'ensemble du système complet.
 
 ---
@@ -112,13 +125,13 @@ src/services/castability/
 
 ```typescript
 type ManaProducerType =
-  | 'DORK'       // Créature qui tap pour mana (Llanowar Elves)
-  | 'ROCK'       // Artefact qui tap pour mana (Sol Ring)
-  | 'RITUAL'     // One-shot (Dark Ritual)
-  | 'ONE_SHOT'   // Artefact one-use (Lotus Petal)
-  | 'TREASURE'   // Génère des tokens treasure
+  | 'DORK' // Créature qui tap pour mana (Llanowar Elves)
+  | 'ROCK' // Artefact qui tap pour mana (Sol Ring)
+  | 'RITUAL' // One-shot (Dark Ritual)
+  | 'ONE_SHOT' // Artefact one-use (Lotus Petal)
+  | 'TREASURE' // Génère des tokens treasure
   | 'CONDITIONAL' // Dépend du board (Nykthos)
-  | 'ENHANCER'   // Multiplie les autres dorks (Badgermole Cub) ⭐
+  | 'ENHANCER' // Multiplie les autres dorks (Badgermole Cub) ⭐
 ```
 
 ### 2. ENHANCER pattern (cas principal P3)
@@ -126,6 +139,7 @@ type ManaProducerType =
 **Badgermole Cub**: Quand un autre dork tap pour du mana, il produit +1G en plus.
 
 Exemple:
+
 - Sans Badgermole: Llanowar Elves tap → {G}
 - Avec 1 Badgermole: Llanowar Elves tap → {G}{G}
 - Avec 2 Badgermole: Llanowar Elves tap → {G}{G}{G}
@@ -141,8 +155,8 @@ interface GameState {
   battlefield: Permanent[]
   turn: number
   landDropUsed: boolean
-  manaPool: { W, U, B, R, G, C }
-  dorksOnBattlefield: number      // Pour les ENHANCERs
+  manaPool: { W; U; B; R; G; C }
+  dorksOnBattlefield: number // Pour les ENHANCERs
   enhancersOnBattlefield: Permanent[]
 }
 ```
@@ -172,10 +186,8 @@ Agréger les résultats → probabilité + intervalle de confiance
 
 ```typescript
 function shouldUseSimulation(producers: ProducerInDeck[]): boolean {
-  return producers.some(p => 
-    p.def.type === 'ENHANCER' ||
-    p.def.type === 'CONDITIONAL' ||
-    p.def.type === 'TREASURE'
+  return producers.some(
+    (p) => p.def.type === 'ENHANCER' || p.def.type === 'CONDITIONAL' || p.def.type === 'TREASURE'
   )
 }
 ```
@@ -188,27 +200,32 @@ function shouldUseSimulation(producers: ProducerInDeck[]): boolean {
 ## Critères de succès
 
 ### Performance
+
 - [ ] N=1000 simulations < 500ms
 - [ ] N=5000 simulations < 2.5s
 - [ ] Memory < 50MB
 
 ### Précision
+
 - [ ] Résultats dans ±5% du moteur analytique pour cas simples
 - [ ] Intervalles de confiance 95% corrects
 
 ### Fonctionnalités
+
 - [ ] ENHANCER support complet (Badgermole Cub pattern)
 - [ ] London mulligan avec évaluation de main
 - [ ] Stratégies de land play (greedy-color, untapped-first)
-- [ ] Removal probabiliste (removalRate * rockRemovalFactor)
+- [ ] Removal probabiliste (removalRate \* rockRemovalFactor)
 - [ ] Router automatique analytique vs simulation
 
 ### Tests
+
 - [ ] Tests unitaires pour chaque composant
 - [ ] Tests d'intégration simulation vs analytique
 - [ ] Tests de reproductibilité (seed)
 
 ### UI
+
 - [ ] Toggle "Simulation Mode" dans AccelerationSettings
 - [ ] Affichage intervalle de confiance
 - [ ] Indicateur de chargement pendant simulation
@@ -232,13 +249,13 @@ function shouldUseSimulation(producers: ProducerInDeck[]): boolean {
 it('ENHANCER should increase dork mana output', () => {
   const deck = { deckSize: 60, totalLands: 24, landColorSources: { G: 20 } }
   const spell = { mv: 5, generic: 3, pips: { G: 2 } }
-  
+
   const llanowar = { def: { type: 'DORK', producesAmount: 1, ... }, copies: 4 }
   const badgermole = { def: { type: 'ENHANCER', enhancerBonus: 1, ... }, copies: 2 }
-  
+
   const withEnhancer = runSimulation(deck, spell, [llanowar, badgermole], ctx)
   const withoutEnhancer = runSimulation(deck, spell, [llanowar], ctx)
-  
+
   // Avec enhancer devrait avoir probabilité plus élevée
   expect(withEnhancer.probability).toBeGreaterThan(withoutEnhancer.probability)
 })
@@ -249,25 +266,30 @@ it('ENHANCER should increase dork mana output', () => {
 ## Checklist d'implémentation
 
 ### Phase 1: Types et État (Jour 1 matin)
+
 - [ ] Créer `simulationTypes.ts` avec tous les types
 - [ ] Créer `gameState.ts` avec shuffle, draw, deck building
 
 ### Phase 2: Moteur core (Jour 1 après-midi)
+
 - [ ] Implémenter `simulationEngine.ts` boucle principale
 - [ ] Mulligan London basique
 - [ ] Land play greedy-color
 
 ### Phase 3: ENHANCER (Jour 2 matin)
+
 - [ ] Tracker `dorksOnBattlefield` et `enhancersOnBattlefield`
 - [ ] Modifier `calculateManaAvailable()` pour appliquer bonus
 - [ ] Tests ENHANCER
 
 ### Phase 4: Router + UI (Jour 2 après-midi)
+
 - [ ] Mettre à jour `index.ts` avec routing
 - [ ] Toggle simulation dans UI
 - [ ] Affichage résultats avec CI
 
 ### Phase 5: Tests + Polish (Jour 3)
+
 - [ ] Tests unitaires complets
 - [ ] Tests d'intégration
 - [ ] Benchmark performance
@@ -299,6 +321,7 @@ npm run build
 ## Contact
 
 Pour toute question sur:
+
 - **Architecture existante**: Lire `docs/ARCHITECTURE.md`
 - **Mathématiques**: Lire `docs/MATHEMATICAL_REFERENCE.md`
 - **Types producteurs**: Lire `src/types/manaProducers.ts`
@@ -311,8 +334,8 @@ Pour toute question sur:
 ```
 Je travaille sur ManaTuner Pro, un outil d'analyse de mana pour Magic: The Gathering.
 
-Ma mission: Implémenter le P3 Simulation Engine (Monte Carlo) pour gérer les cas 
-complexes comme les ENHANCERs (Badgermole Cub) que le moteur analytique ne peut 
+Ma mission: Implémenter le P3 Simulation Engine (Monte Carlo) pour gérer les cas
+complexes comme les ENHANCERs (Badgermole Cub) que le moteur analytique ne peut
 pas calculer.
 
 J'ai lu:

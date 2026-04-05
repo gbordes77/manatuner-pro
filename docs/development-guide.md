@@ -2,11 +2,11 @@
 
 ## Prerequisites
 
-| Requirement | Version | Check Command |
-|-------------|---------|---------------|
-| Node.js | >= 18.0.0 | `node --version` |
-| npm | >= 8.0.0 | `npm --version` |
-| Git | Latest | `git --version` |
+| Requirement | Version   | Check Command    |
+| ----------- | --------- | ---------------- |
+| Node.js     | >= 18.0.0 | `node --version` |
+| npm         | >= 8.0.0  | `npm --version`  |
+| Git         | Latest    | `git --version`  |
 
 ## Quick Start
 
@@ -22,55 +22,55 @@ npm install
 npm run dev
 
 # 4. Open in browser
-# http://localhost:5173
+# http://localhost:3000
 ```
 
 ## Available Scripts
 
 ### Development
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Vite dev server (port 5173) |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
+| Command           | Description                       |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Start Vite dev server (port 3000) |
+| `npm run build`   | Build for production              |
+| `npm run preview` | Preview production build          |
 
 ### Testing
 
-| Command | Description |
-|---------|-------------|
-| `npm run test` | Run all tests (unit + E2E) |
-| `npm run test:unit` | Run Vitest unit tests |
-| `npm run test:unit:watch` | Watch mode for unit tests |
-| `npm run test:coverage` | Generate coverage report |
-| `npm run test:e2e` | Run Playwright E2E tests |
-| `npm run test:e2e:ui` | Playwright with UI mode |
-| `npm run test:e2e:headed` | E2E with visible browser |
+| Command                   | Description                |
+| ------------------------- | -------------------------- |
+| `npm run test`            | Run all tests (unit + E2E) |
+| `npm run test:unit`       | Run Vitest unit tests      |
+| `npm run test:unit:watch` | Watch mode for unit tests  |
+| `npm run test:coverage`   | Generate coverage report   |
+| `npm run test:e2e`        | Run Playwright E2E tests   |
+| `npm run test:e2e:ui`     | Playwright with UI mode    |
+| `npm run test:e2e:headed` | E2E with visible browser   |
 
 ### Specialized Tests
 
-| Command | Description |
-|---------|-------------|
-| `npm run test:mtg-logic` | MTG-specific logic tests |
-| `npm run test:mana-calc` | Mana calculation tests |
-| `npm run test:deck-parser` | Deck parsing tests |
-| `npm run test:accessibility` | A11y tests |
-| `npm run test:mobile` | Mobile viewport tests |
+| Command                      | Description              |
+| ---------------------------- | ------------------------ |
+| `npm run test:mtg-logic`     | MTG-specific logic tests |
+| `npm run test:mana-calc`     | Mana calculation tests   |
+| `npm run test:deck-parser`   | Deck parsing tests       |
+| `npm run test:accessibility` | A11y tests               |
+| `npm run test:mobile`        | Mobile viewport tests    |
 
 ### Code Quality
 
-| Command | Description |
-|---------|-------------|
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Fix ESLint issues |
-| `npm run format` | Format with Prettier |
-| `npm run format:check` | Check formatting |
-| `npm run type-check` | TypeScript check |
+| Command                | Description          |
+| ---------------------- | -------------------- |
+| `npm run lint`         | Run ESLint           |
+| `npm run lint:fix`     | Fix ESLint issues    |
+| `npm run format`       | Format with Prettier |
+| `npm run format:check` | Check formatting     |
+| `npm run type-check`   | TypeScript check     |
 
 ### Deployment
 
-| Command | Description |
-|---------|-------------|
+| Command          | Description                |
+| ---------------- | -------------------------- |
 | `npm run deploy` | Build and deploy to Vercel |
 
 ## Project Structure
@@ -109,12 +109,14 @@ VITE_ENABLE_CLOUD_SYNC=false
 #### VS Code (Recommended)
 
 Extensions:
+
 - ESLint
 - Prettier
 - TypeScript Vue Plugin (Volar)
 - Tailwind CSS IntelliSense (if using Tailwind)
 
 Settings (`.vscode/settings.json`):
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -180,13 +182,13 @@ npm run preview
 ```typescript
 // Use interfaces for objects
 interface DeckCard {
-  name: string;
-  quantity: number;
-  manaCost?: string;
+  name: string
+  quantity: number
+  manaCost?: string
 }
 
 // Use type for unions/primitives
-type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C';
+type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
 
 // Explicit return types on functions
 function analyzeDeck(cards: DeckCard[]): AnalysisResult {
@@ -199,21 +201,18 @@ function analyzeDeck(cards: DeckCard[]): AnalysisResult {
 ```tsx
 // Functional components with TypeScript
 interface MyComponentProps {
-  title: string;
-  onAction: () => void;
+  title: string
+  onAction: () => void
 }
 
-export const MyComponent: React.FC<MyComponentProps> = ({
-  title,
-  onAction
-}) => {
+export const MyComponent: React.FC<MyComponentProps> = ({ title, onAction }) => {
   return (
     <Box>
       <Typography>{title}</Typography>
       <Button onClick={onAction}>Action</Button>
     </Box>
-  );
-};
+  )
+}
 ```
 
 ### Hooks
@@ -221,76 +220,76 @@ export const MyComponent: React.FC<MyComponentProps> = ({
 ```typescript
 // Custom hooks start with 'use'
 export function useMyHook() {
-  const [state, setState] = useState<MyState>(initialState);
+  const [state, setState] = useState<MyState>(initialState)
 
   const action = useCallback(() => {
     // ...
-  }, []);
+  }, [])
 
-  return { state, action };
+  return { state, action }
 }
 ```
 
 ### File Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `MyComponent.tsx` |
-| Hooks | camelCase | `useMyHook.ts` |
-| Services | camelCase | `myService.ts` |
-| Types | camelCase | `myTypes.ts` |
-| Utils | camelCase | `myUtils.ts` |
-| Tests | same + .test | `MyComponent.test.tsx` |
+| Type       | Convention   | Example                |
+| ---------- | ------------ | ---------------------- |
+| Components | PascalCase   | `MyComponent.tsx`      |
+| Hooks      | camelCase    | `useMyHook.ts`         |
+| Services   | camelCase    | `myService.ts`         |
+| Types      | camelCase    | `myTypes.ts`           |
+| Utils      | camelCase    | `myUtils.ts`           |
+| Tests      | same + .test | `MyComponent.test.tsx` |
 
 ## Testing Guidelines
 
 ### Unit Tests (Vitest)
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { myFunction } from './myModule';
+import { describe, it, expect } from 'vitest'
+import { myFunction } from './myModule'
 
 describe('myFunction', () => {
   it('should return expected result', () => {
-    const result = myFunction(input);
-    expect(result).toEqual(expected);
-  });
-});
+    const result = myFunction(input)
+    expect(result).toEqual(expected)
+  })
+})
 ```
 
 ### Component Tests (Testing Library)
 
 ```tsx
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { MyComponent } from './MyComponent';
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MyComponent } from './MyComponent'
 
 describe('MyComponent', () => {
   it('renders correctly', () => {
-    render(<MyComponent title="Test" />);
-    expect(screen.getByText('Test')).toBeInTheDocument();
-  });
+    render(<MyComponent title="Test" />)
+    expect(screen.getByText('Test')).toBeInTheDocument()
+  })
 
   it('handles click', async () => {
-    const onAction = vi.fn();
-    render(<MyComponent title="Test" onAction={onAction} />);
-    await userEvent.click(screen.getByRole('button'));
-    expect(onAction).toHaveBeenCalled();
-  });
-});
+    const onAction = vi.fn()
+    render(<MyComponent title="Test" onAction={onAction} />)
+    await userEvent.click(screen.getByRole('button'))
+    expect(onAction).toHaveBeenCalled()
+  })
+})
 ```
 
 ### E2E Tests (Playwright)
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
 test('analyzer flow', async ({ page }) => {
-  await page.goto('/analyzer');
-  await page.fill('[data-testid="deck-input"]', '4 Lightning Bolt');
-  await page.click('[data-testid="analyze-btn"]');
-  await expect(page.locator('.results')).toBeVisible();
-});
+  await page.goto('/analyzer')
+  await page.fill('[data-testid="deck-input"]', '4 Lightning Bolt')
+  await page.click('[data-testid="analyze-btn"]')
+  await expect(page.locator('.results')).toBeVisible()
+})
 ```
 
 ## Troubleshooting
@@ -298,12 +297,14 @@ test('analyzer flow', async ({ page }) => {
 ### Common Issues
 
 #### Port 5173 in use
+
 ```bash
 # Kill process on port
 lsof -ti:5173 | xargs kill -9
 ```
 
 #### Node modules issues
+
 ```bash
 # Clean install
 rm -rf node_modules package-lock.json
@@ -311,12 +312,14 @@ npm install
 ```
 
 #### TypeScript errors after update
+
 ```bash
 # Rebuild types
 npm run type-check
 ```
 
 #### Playwright browsers not installed
+
 ```bash
 npm run playwright:install
 ```
@@ -359,4 +362,4 @@ ls dist/
 
 ---
 
-*Generated by BMAD document-project workflow on 2026-01-06*
+_Generated by BMAD document-project workflow on 2026-01-06_

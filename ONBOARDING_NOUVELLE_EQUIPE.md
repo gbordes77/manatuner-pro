@@ -13,24 +13,24 @@ Vous rejoignez le projet **ManaTuner Pro** en phase de **feedback utilisateurs e
 
 ### Qu'est-ce que ManaTuner Pro ?
 
-Un analyseur de manabase pour **Magic: The Gathering** qui répond à LA question : *"Est-ce que je peux cast mes sorts à temps ?"*
+Un analyseur de manabase pour **Magic: The Gathering** qui répond à LA question : _"Est-ce que je peux cast mes sorts à temps ?"_
 
-| Fonctionnalité | Description |
-|----------------|-------------|
+| Fonctionnalité   | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
 | **Health Score** | Score de santé manabase basé sur probabilités hypergeométriques |
-| **Castability** | Probabilité exacte de cast chaque sort, tour par tour |
-| **Mulligan Sim** | Simulation Monte Carlo (3000+ mains) avec seuils optimaux |
-| **Export** | PNG, PDF, JSON pour partager les analyses |
+| **Castability**  | Probabilité exacte de cast chaque sort, tour par tour           |
+| **Mulligan Sim** | Simulation Monte Carlo (3000+ mains) avec seuils optimaux       |
+| **Export**       | PNG, PDF, JSON pour partager les analyses                       |
 
 ### Stack Technique
 
-| Couche | Technologie |
-|--------|-------------|
-| Frontend | React 18 + TypeScript + Vite |
-| UI | Material-UI (MUI) |
-| State | Redux Toolkit |
-| Tests | Vitest (unit) + Playwright (E2E) |
-| Hosting | Vercel (auto-deploy sur push main) |
+| Couche   | Technologie                        |
+| -------- | ---------------------------------- |
+| Frontend | React 18 + TypeScript + Vite       |
+| UI       | Material-UI (MUI)                  |
+| State    | Redux Toolkit                      |
+| Tests    | Vitest (unit) + Playwright (E2E)   |
+| Hosting  | Vercel (auto-deploy sur push main) |
 
 ### Architecture Simplifiée
 
@@ -61,12 +61,12 @@ src/
 
 ### Priorités
 
-| Priorité | Focus |
-|----------|-------|
-| **P0** | Bugs bloquants (crash, calculs faux) |
-| **P1** | UX friction (navigation, compréhension) |
-| **P2** | Améliorations demandées par utilisateurs |
-| **P3** | Optimisations techniques |
+| Priorité | Focus                                    |
+| -------- | ---------------------------------------- |
+| **P0**   | Bugs bloquants (crash, calculs faux)     |
+| **P1**   | UX friction (navigation, compréhension)  |
+| **P2**   | Améliorations demandées par utilisateurs |
+| **P3**   | Optimisations techniques                 |
 
 ---
 
@@ -84,7 +84,7 @@ npm install
 
 # Lancer serveur dev
 npm run dev
-# → http://localhost:5173
+# → http://localhost:3000
 
 # Vérifier que tout marche
 npm run lint        # 0 errors attendu
@@ -116,16 +116,16 @@ git push origin fix/description-courte
 
 ## 4. Routes de l'Application
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | HomePage | Landing page avec mana flottants |
-| `/analyzer` | AnalyzerPage | **Page principale** - Analyseur |
-| `/guide` | GuidePage | Guide utilisateur |
-| `/mathematics` | MathematicsPage | Explications maths |
-| `/land-glossary` | LandGlossaryPage | Glossaire terrains MTG |
-| `/my-analyses` | MyAnalysesPage | Historique local |
-| `/privacy-first` | PrivacyFirstPage | Politique privacy |
-| `/about` | AboutPage | À propos |
+| Route            | Page             | Description                      |
+| ---------------- | ---------------- | -------------------------------- |
+| `/`              | HomePage         | Landing page avec mana flottants |
+| `/analyzer`      | AnalyzerPage     | **Page principale** - Analyseur  |
+| `/guide`         | GuidePage        | Guide utilisateur                |
+| `/mathematics`   | MathematicsPage  | Explications maths               |
+| `/land-glossary` | LandGlossaryPage | Glossaire terrains MTG           |
+| `/my-analyses`   | MyAnalysesPage   | Historique local                 |
+| `/privacy-first` | PrivacyFirstPage | Politique privacy                |
+| `/about`         | AboutPage        | À propos                         |
 
 ---
 
@@ -133,43 +133,45 @@ git push origin fix/description-courte
 
 ### Composants Principaux
 
-| Fichier | Rôle |
-|---------|------|
-| `src/pages/AnalyzerPage.tsx` | Page principale, orchestration |
-| `src/components/analyzer/DeckInputSection.tsx` | Saisie deck + boutons |
-| `src/components/analyzer/DashboardTab.tsx` | Onglet résultats principal |
-| `src/components/analysis/EnhancedCharts.tsx` | Graphiques d'analyse |
-| `src/components/export/ManaBlueprint.tsx` | Export visuel |
+| Fichier                                        | Rôle                           |
+| ---------------------------------------------- | ------------------------------ |
+| `src/pages/AnalyzerPage.tsx`                   | Page principale, orchestration |
+| `src/components/analyzer/DeckInputSection.tsx` | Saisie deck + boutons          |
+| `src/components/analyzer/DashboardTab.tsx`     | Onglet résultats principal     |
+| `src/components/analysis/EnhancedCharts.tsx`   | Graphiques d'analyse           |
+| `src/components/export/ManaBlueprint.tsx`      | Export visuel                  |
 
 ### Services (Logique Métier)
 
-| Fichier | Rôle |
-|---------|------|
+| Fichier                          | Rôle                      |
+| -------------------------------- | ------------------------- |
 | `src/services/manaCalculator.ts` | Calculs hypergeométriques |
-| `src/services/advancedMaths.ts` | Monte Carlo engine |
-| `src/services/deckAnalyzer.ts` | Parsing decklists |
-| `src/services/landService.ts` | Détection terrains |
+| `src/services/advancedMaths.ts`  | Monte Carlo engine        |
+| `src/services/deckAnalyzer.ts`   | Parsing decklists         |
+| `src/services/landService.ts`    | Détection terrains        |
 
 ### Configuration
 
-| Fichier | Rôle |
-|---------|------|
-| `vite.config.ts` | Config build Vite |
-| `vercel.json` | Config déploiement |
-| `tsconfig.json` | Config TypeScript |
-| `vitest.config.ts` | Config tests unit |
-| `playwright.config.ts` | Config tests E2E |
+| Fichier                | Rôle               |
+| ---------------------- | ------------------ |
+| `vite.config.ts`       | Config build Vite  |
+| `vercel.json`          | Config déploiement |
+| `tsconfig.json`        | Config TypeScript  |
+| `vitest.config.ts`     | Config tests unit  |
+| `playwright.config.ts` | Config tests E2E   |
 
 ---
 
 ## 6. Mana Font (Icônes MTG)
 
 CDN chargé dans `index.html`:
+
 ```html
 <link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css" rel="stylesheet" />
 ```
 
 Usage dans le code:
+
 ```tsx
 <i className="ms ms-w ms-cost" />  // Blanc
 <i className="ms ms-u ms-cost" />  // Bleu
@@ -187,16 +189,16 @@ Documentation: https://mana.andrewgioia.com/
 
 ### Score Audit Pré-Production : 85/100
 
-| Domaine | Score | Status |
-|---------|-------|--------|
-| Security | 82/100 | GO |
-| UX/Accessibility | 78/100 | GO |
-| Performance | 85/100 | GO |
-| TypeScript | 72/100 | GO |
-| MVP Readiness | 92/100 | GO |
-| Tests | 72/100 | GO |
-| React Patterns | 78/100 | GO |
-| DevOps | 78/100 | GO |
+| Domaine          | Score  | Status |
+| ---------------- | ------ | ------ |
+| Security         | 82/100 | GO     |
+| UX/Accessibility | 78/100 | GO     |
+| Performance      | 85/100 | GO     |
+| TypeScript       | 72/100 | GO     |
+| MVP Readiness    | 92/100 | GO     |
+| Tests            | 72/100 | GO     |
+| React Patterns   | 78/100 | GO     |
+| DevOps           | 78/100 | GO     |
 
 ### Tests Actuels
 
@@ -220,23 +222,23 @@ E2E:         Multi-browser (Chrome, Firefox, Safari)
 
 ### Documents Essentiels
 
-| Document | Contenu |
-|----------|---------|
-| `README.md` | Vue d'ensemble projet |
-| `TEAM_HANDOFF.md` | Document passation technique |
-| `HANDOFF.md` | Notes de sessions |
-| `PRE_PRODUCTION_AUDIT.md` | Rapport audit 8 agents |
+| Document                  | Contenu                      |
+| ------------------------- | ---------------------------- |
+| `README.md`               | Vue d'ensemble projet        |
+| `TEAM_HANDOFF.md`         | Document passation technique |
+| `HANDOFF.md`              | Notes de sessions            |
+| `PRE_PRODUCTION_AUDIT.md` | Rapport audit 8 agents       |
 
 ### Documentation Technique (docs/)
 
-| Document | Contenu |
-|----------|---------|
-| `docs/ARCHITECTURE.md` | Architecture technique détaillée |
-| `docs/MATHEMATICAL_REFERENCE.md` | Formules hypergeométriques |
-| `docs/MULLIGAN_SYSTEM.md` | Système de mulligan |
-| `docs/LAND_SYSTEM_REDESIGN.md` | Système de détection terrains |
-| `docs/MTG_VISUAL_IDENTITY.md` | Identité visuelle MTG |
-| `docs/PRODUCT_STRATEGY.md` | Stratégie produit |
+| Document                         | Contenu                          |
+| -------------------------------- | -------------------------------- |
+| `docs/ARCHITECTURE.md`           | Architecture technique détaillée |
+| `docs/MATHEMATICAL_REFERENCE.md` | Formules hypergeométriques       |
+| `docs/MULLIGAN_SYSTEM.md`        | Système de mulligan              |
+| `docs/LAND_SYSTEM_REDESIGN.md`   | Système de détection terrains    |
+| `docs/MTG_VISUAL_IDENTITY.md`    | Identité visuelle MTG            |
+| `docs/PRODUCT_STRATEGY.md`       | Stratégie produit                |
 
 ---
 
@@ -269,7 +271,7 @@ E2E:         Multi-browser (Chrome, Firefox, Safari)
 
 ```bash
 # Développement
-npm run dev              # Serveur dev (5173)
+npm run dev              # Serveur dev (3000)
 npm run build            # Build production
 npm run preview          # Preview build local
 
@@ -309,7 +311,7 @@ npm run test:coverage    # Couverture
 - [ ] Lire `README.md` et `TEAM_HANDOFF.md`
 - [ ] Lire `PRE_PRODUCTION_AUDIT.md` (sections P1)
 - [ ] Lancer `npm run test:unit` pour vérifier setup
-- [ ] Analyser un deck exemple sur http://localhost:5173/analyzer
+- [ ] Analyser un deck exemple sur http://localhost:3000/analyzer
 - [ ] Explorer le code de `AnalyzerPage.tsx`
 
 ---
