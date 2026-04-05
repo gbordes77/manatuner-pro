@@ -98,9 +98,9 @@ export const Header: React.FC = () => {
   const navItems = [
     { label: 'Home', path: '/', icon: HomeIcon },
     { label: 'Analyzer', path: '/analyzer', icon: AnalyticsIcon },
+    { label: 'My Analyses', path: '/my-analyses', icon: HistoryIcon },
     { label: 'Guide', path: '/guide', icon: GuideIcon },
     { label: 'Mathematics', path: '/mathematics', icon: FunctionsIcon },
-    { label: 'My Analyses', path: '/my-analyses', icon: HistoryIcon },
     { label: 'About', path: '/about', icon: InfoIcon },
   ]
 
