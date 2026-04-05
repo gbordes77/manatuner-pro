@@ -269,35 +269,37 @@ export class AdvancedMathEngine {
   private simulateSingleGame(params: MonteCarloParams): { success: boolean; turnAchieved: number } {
     const { deckSize, landCount, targetTurn, mulliganStrategy, playFirst, maxMulligans } = params
 
-    // Create deck
+    // Create and shuffle deck
     const deck = this.createSimulationDeck(deckSize, landCount)
+    let drawIndex = 0
 
-    // Simulate mulligans
-    let hand = this.drawHand(deck, 7)
+    // Simulate mulligans (re-shuffle between mulligans for realism)
+    let handSize = 7
     let mulligans = 0
+    let hand = deck.slice(0, handSize)
+    drawIndex = handSize
 
     while (mulligans < maxMulligans) {
       const decision = this.shouldMulligan(hand, mulliganStrategy)
       if (!decision.shouldMulligan) break
 
       mulligans++
-      hand = this.drawHand(deck, 7 - mulligans)
+      handSize = 7 - mulligans
+      hand = deck.slice(0, handSize)
+      drawIndex = handSize
     }
 
     // Simulate turns
-    let landsInPlay = 0
+    let landsInPlay = hand.filter((card) => card === 'land').length
     let currentTurn = 1
-
-    // Count lands in opening hand
-    landsInPlay = hand.filter((card) => card === 'land').length
 
     while (currentTurn <= targetTurn) {
       // Draw for turn (except turn 1 if on the play)
-      if (currentTurn > 1 || !playFirst) {
-        const drawnCard = this.drawCard(deck)
-        if (drawnCard === 'land') {
+      if ((currentTurn > 1 || !playFirst) && drawIndex < deck.length) {
+        if (deck[drawIndex] === 'land') {
           landsInPlay++
         }
+        drawIndex++
       }
 
       // Check if we have enough lands for target turn
@@ -341,20 +343,6 @@ export class AdvancedMathEngine {
       ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     return shuffled
-  }
-
-  /**
-   * Draw a hand from the deck
-   */
-  private drawHand(deck: string[], handSize: number): string[] {
-    return deck.slice(0, handSize)
-  }
-
-  /**
-   * Draw a single card from the deck
-   */
-  private drawCard(deck: string[]): string {
-    return deck[Math.floor(Math.random() * deck.length)]
   }
 
   /**
