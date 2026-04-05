@@ -1,82 +1,80 @@
-import { useEffect, useState } from 'react';
-import { AnalysisResult, DeckAnalyzer } from '../services/deckAnalyzer';
+import { useEffect, useState } from 'react'
+import { AnalysisResult, DeckAnalyzer } from '../services/deckAnalyzer'
 
 export interface DeckAnalysisState {
-  deckList: string;
-  isAnalyzing: boolean;
-  analysisResult: AnalysisResult | null;
-  isDeckMinimized: boolean;
+  deckList: string
+  isAnalyzing: boolean
+  analysisResult: AnalysisResult | null
+  isDeckMinimized: boolean
 }
 
 export const useDeckAnalysis = () => {
-  const [deckList, setDeckList] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isDeckMinimized, setIsDeckMinimized] = useState(false);
+  const [deckList, setDeckList] = useState('')
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [isDeckMinimized, setIsDeckMinimized] = useState(false)
 
   // Charger l'état depuis localStorage au montage
   useEffect(() => {
-    const savedDeckList = localStorage.getItem('manatuner-decklist');
-    const savedAnalysis = localStorage.getItem('manatuner-analysis');
-    const savedMinimized = localStorage.getItem('manatuner-minimized');
+    const savedDeckList = localStorage.getItem('manatuner-decklist')
+    const savedAnalysis = localStorage.getItem('manatuner-analysis')
+    const savedMinimized = localStorage.getItem('manatuner-minimized')
 
     if (savedDeckList) {
-      setDeckList(savedDeckList);
+      setDeckList(savedDeckList)
     }
     if (savedAnalysis) {
       try {
-        setAnalysisResult(JSON.parse(savedAnalysis));
+        setAnalysisResult(JSON.parse(savedAnalysis))
       } catch {
-        console.warn('Failed to parse saved analysis');
+        console.warn('Failed to parse saved analysis')
       }
     }
     if (savedMinimized) {
-      setIsDeckMinimized(savedMinimized === 'true');
+      setIsDeckMinimized(savedMinimized === 'true')
     }
-  }, []);
+  }, [])
 
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
-    localStorage.setItem('manatuner-decklist', deckList);
-  }, [deckList]);
+    localStorage.setItem('manatuner-decklist', deckList)
+  }, [deckList])
 
   useEffect(() => {
     if (analysisResult) {
-      localStorage.setItem('manatuner-analysis', JSON.stringify(analysisResult));
+      localStorage.setItem('manatuner-analysis', JSON.stringify(analysisResult))
     } else {
-      localStorage.removeItem('manatuner-analysis');
+      localStorage.removeItem('manatuner-analysis')
     }
-  }, [analysisResult]);
+  }, [analysisResult])
 
   useEffect(() => {
-    localStorage.setItem('manatuner-minimized', isDeckMinimized.toString());
-  }, [isDeckMinimized]);
+    localStorage.setItem('manatuner-minimized', isDeckMinimized.toString())
+  }, [isDeckMinimized])
 
   const analyzeDeck = async () => {
     if (!deckList.trim()) {
-      return;
+      return
     }
 
-    setIsAnalyzing(true);
+    setIsAnalyzing(true)
 
-    setTimeout(async () => {
-      try {
-        const result = await DeckAnalyzer.analyzeDeck(deckList);
-        setAnalysisResult(result);
-        // Minimiser automatiquement "Your Deck" quand les résultats s'affichent
-        setIsDeckMinimized(true);
-      } catch (error) {
-        console.error('Erreur lors de l\'analyse:', error);
-        setAnalysisResult(null);
-      }
-      setIsAnalyzing(false);
-    }, 1500);
-  };
+    try {
+      const result = await DeckAnalyzer.analyzeDeck(deckList)
+      setAnalysisResult(result)
+      setIsDeckMinimized(true)
+    } catch (error) {
+      console.error("Erreur lors de l'analyse:", error)
+      setAnalysisResult(null)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
 
   const clearAnalysis = () => {
-    setAnalysisResult(null);
-    setIsDeckMinimized(false);
-  };
+    setAnalysisResult(null)
+    setIsDeckMinimized(false)
+  }
 
   return {
     deckList,
@@ -86,6 +84,6 @@ export const useDeckAnalysis = () => {
     isDeckMinimized,
     setIsDeckMinimized,
     analyzeDeck,
-    clearAnalysis
-  };
-};
+    clearAnalysis,
+  }
+}

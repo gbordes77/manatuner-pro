@@ -10,47 +10,47 @@
  */
 
 import {
-    Casino as CasinoIcon,
-    ExpandMore as ExpandMoreIcon,
-    Help as HelpIcon,
-    Refresh as RefreshIcon,
+  Casino as CasinoIcon,
+  ExpandMore as ExpandMoreIcon,
+  Help as HelpIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material'
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Alert,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Chip,
-    CircularProgress,
-    Grid,
-    LinearProgress,
-    Paper,
-    Tooltip,
-    Typography
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Grid,
+  LinearProgress,
+  Paper,
+  Tooltip,
+  Typography,
 } from '@mui/material'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import {
-    Area,
-    AreaChart,
-    CartesianGrid,
-    Legend,
-    Tooltip as RechartsTooltip,
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
 } from 'recharts'
 import type { DeckCard } from '../../services/deckAnalyzer'
 import {
-    analyzeWithArchetype,
-    ARCHETYPE_CONFIGS,
-    SCORE_LEGEND,
-    type AdvancedMulliganResult,
-    type Archetype,
-    type SampleHand,
+  analyzeWithArchetype,
+  ARCHETYPE_CONFIGS,
+  SCORE_LEGEND,
+  type AdvancedMulliganResult,
+  type Archetype,
+  type SampleHand,
 } from '../../services/mulliganSimulatorAdvanced'
 
 // =============================================================================
@@ -76,47 +76,59 @@ const ArchetypeSelector: React.FC<ArchetypeSelectorProps> = ({ value, onChange, 
   return (
     <Box sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
-        <Typography variant="subtitle2">
-          🎯 Deck Archetype
-        </Typography>
+        <Typography variant="subtitle2">🎯 Deck Archetype</Typography>
         <InfoTooltip title={TOOLTIPS.archetype} />
       </Box>
 
       <Grid container spacing={1}>
-        {(Object.entries(ARCHETYPE_CONFIGS) as [Archetype, typeof ARCHETYPE_CONFIGS.aggro][]).map(([key, config]) => (
-          <Grid item xs={6} sm={3} key={key}>
-            <Paper
-              elevation={value === key ? 4 : 1}
-              onClick={() => !disabled && onChange(key)}
-              sx={{
-                p: 2,
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                textAlign: 'center',
-                border: 2,
-                borderColor: value === key ? 'primary.main' : 'transparent',
-                backgroundColor: value === key ? 'action.selected' : 'background.paper',
-                transition: 'all 0.2s ease',
-                opacity: disabled ? 0.6 : 1,
-                '&:hover': disabled ? {} : {
-                  borderColor: 'primary.light',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              <Typography variant="h5" sx={{ mb: 0.5 }}>{config.icon}</Typography>
-              <Typography variant="subtitle2" fontWeight="bold">{config.name}</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                {config.description.split(' ').slice(0, 4).join(' ')}...
-              </Typography>
-            </Paper>
-          </Grid>
-        ))}
+        {(Object.entries(ARCHETYPE_CONFIGS) as [Archetype, typeof ARCHETYPE_CONFIGS.aggro][]).map(
+          ([key, config]) => (
+            <Grid item xs={6} sm={3} key={key}>
+              <Paper
+                elevation={value === key ? 4 : 1}
+                onClick={() => !disabled && onChange(key)}
+                sx={{
+                  p: 2,
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  textAlign: 'center',
+                  border: 2,
+                  borderColor: value === key ? 'primary.main' : 'transparent',
+                  backgroundColor: value === key ? 'action.selected' : 'background.paper',
+                  transition: 'all 0.2s ease',
+                  opacity: disabled ? 0.6 : 1,
+                  '&:hover': disabled
+                    ? {}
+                    : {
+                        borderColor: 'primary.light',
+                        transform: 'translateY(-2px)',
+                      },
+                }}
+              >
+                <Typography variant="h5" sx={{ mb: 0.5 }}>
+                  {config.icon}
+                </Typography>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  {config.name}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
+                >
+                  {config.description.split(' ').slice(0, 4).join(' ')}...
+                </Typography>
+              </Paper>
+            </Grid>
+          )
+        )}
       </Grid>
 
       {/* Archetype priorities */}
       <Box sx={{ mt: 2, p: 2, backgroundColor: 'action.hover', borderRadius: 1 }}>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-          <strong>{ARCHETYPE_CONFIGS[value].icon} {ARCHETYPE_CONFIGS[value].name} Priorities:</strong>
+          <strong>
+            {ARCHETYPE_CONFIGS[value].icon} {ARCHETYPE_CONFIGS[value].name} Priorities:
+          </strong>
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {ARCHETYPE_CONFIGS[value].priorities.map((priority, i) => (
@@ -290,7 +302,7 @@ Overall evaluation of your deck's consistency based on simulations:
 • Excellent (80+): Most hands are keepable
 • Good (65-79): Good hands frequent
 • Average (50-64): Variable results
-• Poor (<50): Many problematic hands`
+• Poor (<50): Many problematic hands`,
 }
 
 // Helper component for tooltip with question mark
@@ -308,7 +320,7 @@ const InfoTooltip: React.FC<{ title: string }> = ({ title }) => (
         ml: 0.5,
         fontSize: '1rem',
         verticalAlign: 'middle',
-        '&:hover': { color: 'primary.main' }
+        '&:hover': { color: 'primary.main' },
       }}
     />
   </Tooltip>
@@ -337,27 +349,27 @@ const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
       shortLabel: 'Expected (7 cards)',
       value: result.expectedScores.hand7,
       highlight: true,
-      tooltip: TOOLTIPS.expectedScore7
+      tooltip: TOOLTIPS.expectedScore7,
     },
     {
       label: 'Average Score (6 cards)',
       shortLabel: 'Expected (6 cards)',
       value: result.expectedScores.hand6,
-      tooltip: TOOLTIPS.expectedScore6
+      tooltip: TOOLTIPS.expectedScore6,
     },
     {
       label: 'Keep 7 Threshold',
       shortLabel: 'Mull if below',
       value: result.thresholds.keep7,
       isThreshold: true,
-      tooltip: TOOLTIPS.threshold7
+      tooltip: TOOLTIPS.threshold7,
     },
     {
       label: 'Keep 6 Threshold',
       shortLabel: 'Mull to 5 if below',
       value: result.thresholds.keep6,
       isThreshold: true,
-      tooltip: TOOLTIPS.threshold6
+      tooltip: TOOLTIPS.threshold6,
     },
   ]
 
@@ -374,11 +386,7 @@ const ExpectedValues: React.FC<ExpectedValuesProps> = ({ result }) => {
               borderColor: 'primary.main',
             }}
           >
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              sx={{ color: getScoreColor(item.value) }}
-            >
+            <Typography variant="h4" fontWeight="bold" sx={{ color: getScoreColor(item.value) }}>
               {item.value}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -404,9 +412,24 @@ interface OptimalStrategyProps {
 
 const OptimalStrategy: React.FC<OptimalStrategyProps> = ({ result }) => {
   const strategies = [
-    { label: 'Keep 7 cards', description: 'Your hand is good enough', threshold: result.thresholds.keep7, color: '#4caf50' },
-    { label: 'Keep 6 cards', description: 'After one mulligan', threshold: result.thresholds.keep6, color: '#2196f3' },
-    { label: 'Keep 5 cards', description: 'After two mulligans', threshold: result.thresholds.keep5, color: '#ff9800' },
+    {
+      label: 'Keep 7 cards',
+      description: 'Your hand is good enough',
+      threshold: result.thresholds.keep7,
+      color: '#4caf50',
+    },
+    {
+      label: 'Keep 6 cards',
+      description: 'After one mulligan',
+      threshold: result.thresholds.keep6,
+      color: '#2196f3',
+    },
+    {
+      label: 'Keep 5 cards',
+      description: 'After two mulligans',
+      threshold: result.thresholds.keep5,
+      color: '#ff9800',
+    },
   ]
 
   return (
@@ -420,14 +443,25 @@ const OptimalStrategy: React.FC<OptimalStrategyProps> = ({ result }) => {
       </Typography>
       {strategies.map((s, i) => (
         <Box key={i} sx={{ mb: 1.5 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 0.5 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              mb: 0.5,
+            }}
+          >
             <Box>
-              <Typography variant="body2" component="span" fontWeight="medium">{s.label}</Typography>
+              <Typography variant="body2" component="span" fontWeight="medium">
+                {s.label}
+              </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
                 ({s.description})
               </Typography>
             </Box>
-            <Typography variant="body2" fontWeight="bold">≥ {s.threshold}</Typography>
+            <Typography variant="body2" fontWeight="bold">
+              ≥ {s.threshold}
+            </Typography>
           </Box>
           <LinearProgress
             variant="determinate"
@@ -496,11 +530,31 @@ interface ScoreBreakdownProps {
 
 const ScoreBreakdownDisplay: React.FC<ScoreBreakdownProps> = ({ breakdown }) => {
   const metrics = [
-    { label: 'Mana Efficiency', value: breakdown.manaEfficiency, icon: '⚡', tooltip: TOOLTIPS.manaEfficiency },
-    { label: 'Curve Playability', value: breakdown.curvePlayability, icon: '📈', tooltip: TOOLTIPS.curvePlayability },
-    { label: 'Color Access', value: breakdown.colorAccess, icon: '🎨', tooltip: TOOLTIPS.colorAccess },
+    {
+      label: 'Mana Efficiency',
+      value: breakdown.manaEfficiency,
+      icon: '⚡',
+      tooltip: TOOLTIPS.manaEfficiency,
+    },
+    {
+      label: 'Curve Playability',
+      value: breakdown.curvePlayability,
+      icon: '📈',
+      tooltip: TOOLTIPS.curvePlayability,
+    },
+    {
+      label: 'Color Access',
+      value: breakdown.colorAccess,
+      icon: '🎨',
+      tooltip: TOOLTIPS.colorAccess,
+    },
     { label: 'Early Game', value: breakdown.earlyGame, icon: '🚀', tooltip: TOOLTIPS.earlyGame },
-    { label: 'Land Balance', value: breakdown.landBalance, icon: '🏔️', tooltip: TOOLTIPS.landBalance },
+    {
+      label: 'Land Balance',
+      value: breakdown.landBalance,
+      icon: '🏔️',
+      tooltip: TOOLTIPS.landBalance,
+    },
   ]
 
   const getColor = (value: number): string => {
@@ -515,7 +569,11 @@ const ScoreBreakdownDisplay: React.FC<ScoreBreakdownProps> = ({ breakdown }) => 
       {metrics.map((m, i) => (
         <Tooltip
           key={i}
-          title={<Typography sx={{ whiteSpace: 'pre-line', fontSize: '0.85rem' }}>{m.tooltip}</Typography>}
+          title={
+            <Typography sx={{ whiteSpace: 'pre-line', fontSize: '0.85rem' }}>
+              {m.tooltip}
+            </Typography>
+          }
           arrow
           placement="top"
         >
@@ -547,21 +605,31 @@ interface SampleHandCardProps {
 const SampleHandCard: React.FC<SampleHandCardProps> = ({ hand, index }) => {
   const getRecommendationColor = (rec: SampleHand['recommendation']): string => {
     switch (rec) {
-      case 'SNAP_KEEP': return '#4caf50'
-      case 'KEEP': return '#8bc34a'
-      case 'MARGINAL': return '#ff9800'
-      case 'MULLIGAN': return '#f44336'
-      case 'SNAP_MULL': return '#b71c1c'
+      case 'SNAP_KEEP':
+        return '#4caf50'
+      case 'KEEP':
+        return '#8bc34a'
+      case 'MARGINAL':
+        return '#ff9800'
+      case 'MULLIGAN':
+        return '#f44336'
+      case 'SNAP_MULL':
+        return '#b71c1c'
     }
   }
 
   const getRecommendationLabel = (rec: SampleHand['recommendation']): string => {
     switch (rec) {
-      case 'SNAP_KEEP': return '✅ SNAP KEEP'
-      case 'KEEP': return '👍 KEEP'
-      case 'MARGINAL': return '⚠️ MARGINAL'
-      case 'MULLIGAN': return '👎 MULLIGAN'
-      case 'SNAP_MULL': return '❌ SNAP MULL'
+      case 'SNAP_KEEP':
+        return '✅ SNAP KEEP'
+      case 'KEEP':
+        return '👍 KEEP'
+      case 'MARGINAL':
+        return '⚠️ MARGINAL'
+      case 'MULLIGAN':
+        return '👎 MULLIGAN'
+      case 'SNAP_MULL':
+        return '❌ SNAP MULL'
     }
   }
 
@@ -642,7 +710,7 @@ const SampleHandCard: React.FC<SampleHandCardProps> = ({ hand, index }) => {
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
                       {turn.plays.length > 0
-                        ? `⚡ ${turn.plays.map(p => p.split(' ')[0]).join(', ')}`
+                        ? `⚡ ${turn.plays.map((p) => p.split(' ')[0]).join(', ')}`
                         : '—'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -687,14 +755,15 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
-        <Typography variant="subtitle2">
-          🃏 Sample Hands From Your Deck
-        </Typography>
+        <Typography variant="subtitle2">🃏 Sample Hands From Your Deck</Typography>
         <InfoTooltip title={TOOLTIPS.sampleHands} />
       </Box>
 
       {categories.map((cat) => (
-        <Accordion key={cat.key} defaultExpanded={cat.key === 'excellent' || cat.key === 'marginal'}>
+        <Accordion
+          key={cat.key}
+          defaultExpanded={cat.key === 'excellent' || cat.key === 'marginal'}
+        >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body2">
               {cat.label} ({cat.hands.length} exemples)
@@ -702,9 +771,7 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
           </AccordionSummary>
           <AccordionDetails>
             {cat.hands.length > 0 ? (
-              cat.hands.map((hand, i) => (
-                <SampleHandCard key={i} hand={hand} index={i} />
-              ))
+              cat.hands.map((hand, i) => <SampleHandCard key={i} hand={hand} index={i} />)
             ) : (
               <Typography variant="body2" color="text.secondary">
                 No hands in this category from the simulation
@@ -721,194 +788,208 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
 // MAIN COMPONENT
 // =============================================================================
 
-export const MulliganTab: React.FC<MulliganTabProps> = ({ cards, isMobile: _isMobile = false }) => {
-  const [archetype, setArchetype] = useState<Archetype>('midrange')
-  const [result, setResult] = useState<AdvancedMulliganResult | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export const MulliganTab: React.FC<MulliganTabProps> = memo(
+  ({ cards, isMobile: _isMobile = false }) => {
+    const [archetype, setArchetype] = useState<Archetype>('midrange')
+    const [result, setResult] = useState<AdvancedMulliganResult | null>(null)
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
-  // Calculate total cards including quantities
-  const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0)
+    // Calculate total cards including quantities
+    const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0)
 
-  const runAnalysis = useCallback(async () => {
-    if (totalCards < 40) {
-      setError('You need at least 40 cards for mulligan analysis')
-      return
-    }
-
-    setIsAnalyzing(true)
-    setError(null)
-
-    // Run in next tick to allow UI to update
-    setTimeout(() => {
-      try {
-        const analysisResult = analyzeWithArchetype(cards, archetype, 3000)
-        setResult(analysisResult)
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Analysis failed')
-      } finally {
-        setIsAnalyzing(false)
+    const runAnalysis = useCallback(async () => {
+      if (totalCards < 40) {
+        setError('You need at least 40 cards for mulligan analysis')
+        return
       }
-    }, 50)
-  }, [cards, archetype, totalCards])
 
-  // Auto-run on mount and archetype change
-  useEffect(() => {
-    if (totalCards >= 40) {
-      runAnalysis()
+      setIsAnalyzing(true)
+      setError(null)
+
+      // Run in next tick to allow UI to update
+      setTimeout(() => {
+        try {
+          const analysisResult = analyzeWithArchetype(cards, archetype, 3000)
+          setResult(analysisResult)
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Analysis failed')
+        } finally {
+          setIsAnalyzing(false)
+        }
+      }, 50)
+    }, [cards, archetype, totalCards])
+
+    // Auto-run on mount and archetype change
+    useEffect(() => {
+      if (totalCards >= 40) {
+        runAnalysis()
+      }
+    }, [archetype]) // Only re-run when archetype changes
+
+    // Initial analysis
+    useEffect(() => {
+      if (totalCards >= 40 && !result) {
+        runAnalysis()
+      }
+    }, [cards, totalCards])
+
+    if (totalCards < 40) {
+      return (
+        <Alert severity="warning">
+          You need at least 40 cards in your deck for mulligan analysis. Currently: {totalCards}{' '}
+          cards.
+        </Alert>
+      )
     }
-  }, [archetype]) // Only re-run when archetype changes
 
-  // Initial analysis
-  useEffect(() => {
-    if (totalCards >= 40 && !result) {
-      runAnalysis()
-    }
-  }, [cards, totalCards])
-
-  if (totalCards < 40) {
     return (
-      <Alert severity="warning">
-        You need at least 40 cards in your deck for mulligan analysis.
-        Currently: {totalCards} cards.
-      </Alert>
+      <Box>
+        {/* Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CasinoIcon /> Mulligan Strategy Analysis
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={isAnalyzing ? <CircularProgress size={16} /> : <RefreshIcon />}
+            onClick={runAnalysis}
+            disabled={isAnalyzing}
+            size="small"
+          >
+            {isAnalyzing ? 'Analyzing...' : 'Re-run Analysis'}
+          </Button>
+        </Box>
+
+        {/* Archetype Selector */}
+        <ArchetypeSelector value={archetype} onChange={setArchetype} disabled={isAnalyzing} />
+
+        {/* Error */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Loading */}
+        {isAnalyzing && (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <CircularProgress />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Running Monte Carlo simulation ({result ? 'updating' : 'initial analysis'})...
+            </Typography>
+          </Box>
+        )}
+
+        {/* Results */}
+        {result && !isAnalyzing && (
+          <>
+            {/* Quality Badge */}
+            <Alert
+              severity={
+                result.deckQuality === 'excellent'
+                  ? 'success'
+                  : result.deckQuality === 'good'
+                    ? 'info'
+                    : result.deckQuality === 'average'
+                      ? 'warning'
+                      : 'error'
+              }
+              sx={{ mb: 3 }}
+            >
+              <Typography variant="body2">
+                <strong>
+                  {result.archetypeConfig.icon} {result.archetypeConfig.name} Deck Quality:{' '}
+                </strong>
+                {result.deckQuality.toUpperCase()} (Score: {result.qualityScore}/100)
+              </Typography>
+            </Alert>
+
+            {/* Pedagogical Introduction */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="subtitle2">📖 How to use this analysis</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      🎮 What is a Mulligan?
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      At game start, you draw 7 cards. If your hand is bad (wrong lands, no playable
+                      spells), you can shuffle it back and draw a new hand with 1 fewer card. This
+                      is called a "mulligan".
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      🎯 Understanding the Scores (0-100)
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Each hand gets a score based on how well you can play your first turns.
+                      <strong> 90+</strong> = excellent hand, <strong>70-89</strong> = good,
+                      <strong> 55-69</strong> = playable but risky, <strong>&lt;55</strong> =
+                      consider mulligan.
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      ⚖️ The Key Decision
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Compare your hand's score to the <strong>"Mull if below"</strong> threshold.
+                      If your hand scores lower, statistically you'll get a better 6-card hand by
+                      mulliganing.
+                    </Typography>
+                  </Box>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Expected Values */}
+            <ExpectedValues result={result} />
+
+            {/* Optimal Strategy */}
+            <OptimalStrategy result={result} />
+
+            {/* Distribution Chart */}
+            <DistributionChart result={result} />
+
+            {/* Score Legend */}
+            <ScoreLegendSection />
+
+            {/* Recommendations */}
+            <Paper sx={{ p: 2, mb: 3, mt: 2 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                💡 Recommendations
+              </Typography>
+              {result.recommendations.map((rec, i) => (
+                <Typography key={i} variant="body2" sx={{ mb: 0.5 }}>
+                  {rec}
+                </Typography>
+              ))}
+            </Paper>
+
+            {/* Sample Hands */}
+            <SampleHandsSection sampleHands={result.sampleHands} />
+
+            {/* Footer */}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', mt: 2, textAlign: 'center' }}
+            >
+              Based on {result.iterations.toLocaleString()} Monte Carlo simulations using Frank
+              Karsten methodology
+            </Typography>
+          </>
+        )}
+      </Box>
     )
   }
-
-  return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CasinoIcon /> Mulligan Strategy Analysis
-        </Typography>
-        <Button
-          variant="outlined"
-          startIcon={isAnalyzing ? <CircularProgress size={16} /> : <RefreshIcon />}
-          onClick={runAnalysis}
-          disabled={isAnalyzing}
-          size="small"
-        >
-          {isAnalyzing ? 'Analyzing...' : 'Re-run Analysis'}
-        </Button>
-      </Box>
-
-      {/* Archetype Selector */}
-      <ArchetypeSelector
-        value={archetype}
-        onChange={setArchetype}
-        disabled={isAnalyzing}
-      />
-
-      {/* Error */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {/* Loading */}
-      {isAnalyzing && (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <CircularProgress />
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            Running Monte Carlo simulation ({result ? 'updating' : 'initial analysis'})...
-          </Typography>
-        </Box>
-      )}
-
-      {/* Results */}
-      {result && !isAnalyzing && (
-        <>
-          {/* Quality Badge */}
-          <Alert
-            severity={
-              result.deckQuality === 'excellent' ? 'success' :
-              result.deckQuality === 'good' ? 'info' :
-              result.deckQuality === 'average' ? 'warning' : 'error'
-            }
-            sx={{ mb: 3 }}
-          >
-            <Typography variant="body2">
-              <strong>{result.archetypeConfig.icon} {result.archetypeConfig.name} Deck Quality: </strong>
-              {result.deckQuality.toUpperCase()} (Score: {result.qualityScore}/100)
-            </Typography>
-          </Alert>
-
-          {/* Pedagogical Introduction */}
-          <Accordion defaultExpanded sx={{ mb: 3 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle2">📖 How to use this analysis</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box>
-                  <Typography variant="body2" fontWeight="bold" gutterBottom>
-                    🎮 What is a Mulligan?
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    At game start, you draw 7 cards. If your hand is bad (wrong lands, no playable spells),
-                    you can shuffle it back and draw a new hand with 1 fewer card. This is called a "mulligan".
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="body2" fontWeight="bold" gutterBottom>
-                    🎯 Understanding the Scores (0-100)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Each hand gets a score based on how well you can play your first turns.
-                    <strong> 90+</strong> = excellent hand, <strong>70-89</strong> = good,
-                    <strong> 55-69</strong> = playable but risky, <strong>&lt;55</strong> = consider mulligan.
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="body2" fontWeight="bold" gutterBottom>
-                    ⚖️ The Key Decision
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Compare your hand's score to the <strong>"Mull if below"</strong> threshold.
-                    If your hand scores lower, statistically you'll get a better 6-card hand by mulliganing.
-                  </Typography>
-                </Box>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-
-          {/* Expected Values */}
-          <ExpectedValues result={result} />
-
-          {/* Optimal Strategy */}
-          <OptimalStrategy result={result} />
-
-          {/* Distribution Chart */}
-          <DistributionChart result={result} />
-
-          {/* Score Legend */}
-          <ScoreLegendSection />
-
-          {/* Recommendations */}
-          <Paper sx={{ p: 2, mb: 3, mt: 2 }}>
-            <Typography variant="subtitle2" gutterBottom>💡 Recommendations</Typography>
-            {result.recommendations.map((rec, i) => (
-              <Typography key={i} variant="body2" sx={{ mb: 0.5 }}>
-                {rec}
-              </Typography>
-            ))}
-          </Paper>
-
-          {/* Sample Hands */}
-          <SampleHandsSection sampleHands={result.sampleHands} />
-
-          {/* Footer */}
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'center' }}>
-            Based on {result.iterations.toLocaleString()} Monte Carlo simulations using Frank Karsten methodology
-          </Typography>
-        </>
-      )}
-    </Box>
-  )
-}
+)
 
 export default MulliganTab

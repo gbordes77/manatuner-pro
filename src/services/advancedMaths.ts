@@ -2,22 +2,22 @@
 // Based on Frank Karsten's research and hypergeometric distribution theory
 
 import {
-    KARSTEN_TABLES,
-    MAGIC_CONSTANTS,
-    type CalculationMetrics,
-    type ColorCombinationAnalysis,
-    type ColorRequirement,
-    type DeckConfiguration,
-    type HypergeometricParams,
-    type KarstenRecommendation,
-    type ManaColor,
-    type MemoizationCache,
-    type MonteCarloParams,
-    type MonteCarloResult,
-    type MulliganDecision,
-    type MultivariateAnalysis,
-    type ProbabilityResult,
-    type TurnAnalysis
+  KARSTEN_TABLES,
+  MAGIC_CONSTANTS,
+  type CalculationMetrics,
+  type ColorCombinationAnalysis,
+  type ColorRequirement,
+  type DeckConfiguration,
+  type HypergeometricParams,
+  type KarstenRecommendation,
+  type ManaColor,
+  type MemoizationCache,
+  type MonteCarloParams,
+  type MonteCarloResult,
+  type MulliganDecision,
+  type MultivariateAnalysis,
+  type ProbabilityResult,
+  type TurnAnalysis,
 } from '../types/maths'
 
 /**
@@ -35,7 +35,7 @@ export class AdvancedMathEngine {
       factorial: new Map(),
       combinations: new Map(),
       maxSize: 10000,
-      hitRate: 0
+      hitRate: 0,
     }
 
     this.metrics = {
@@ -46,7 +46,7 @@ export class AdvancedMathEngine {
       cacheHits: 0,
       cacheMisses: 0,
       calculationsPerformed: 0,
-      averageCalculationTime: 0
+      averageCalculationTime: 0,
     }
   }
 
@@ -71,7 +71,7 @@ export class AdvancedMathEngine {
 
     let result = 1
     for (let i = 0; i < actualK; i++) {
-      result = result * (n - i) / (i + 1)
+      result = (result * (n - i)) / (i + 1)
     }
 
     // Cache the result if cache isn't full
@@ -129,7 +129,7 @@ export class AdvancedMathEngine {
         populationSize: N,
         successStates: K,
         sampleSize: n,
-        successesWanted: i
+        successesWanted: i,
       })
     }
 
@@ -139,8 +139,8 @@ export class AdvancedMathEngine {
     return {
       probability,
       percentage: probability * 100,
-      meetsThreshold: probability >= 0.90,
-      confidence: this.getConfidenceLevel(probability)
+      meetsThreshold: probability >= 0.9,
+      confidence: this.getConfidenceLevel(probability),
     }
   }
 
@@ -164,7 +164,7 @@ export class AdvancedMathEngine {
       populationSize: deckSize,
       successStates: sourcesInDeck,
       sampleSize: cardsDrawn,
-      successesWanted: symbolsNeeded
+      successesWanted: symbolsNeeded,
     })
 
     // Get Karsten recommendation from lookup tables
@@ -176,7 +176,12 @@ export class AdvancedMathEngine {
       sourcesAvailable: sourcesInDeck,
       deficit,
       rating: this.getKarstenRating(probabilityResult.probability, deficit),
-      recommendation: this.generateRecommendation(probabilityResult.probability, deficit, symbolsNeeded, turn)
+      recommendation: this.generateRecommendation(
+        probabilityResult.probability,
+        deficit,
+        symbolsNeeded,
+        turn
+      ),
     }
 
     return {
@@ -185,7 +190,7 @@ export class AdvancedMathEngine {
       landProbability: probabilityResult.probability,
       colorProbability: probabilityResult.probability, // Same for single color
       castProbability: probabilityResult.probability,
-      karstenRating: recommendation
+      karstenRating: recommendation,
     }
   }
 
@@ -204,6 +209,7 @@ export class AdvancedMathEngine {
 
     let successfulRuns = 0
     let totalTurns = 0
+    const successTurns: number[] = []
     const turnDistribution: number[] = new Array(11).fill(0) // Turns 0-10
 
     // Use Web Worker for heavy computation if available
@@ -218,6 +224,7 @@ export class AdvancedMathEngine {
       if (simulation.success) {
         successfulRuns++
         totalTurns += simulation.turnAchieved
+        successTurns.push(simulation.turnAchieved)
         if (simulation.turnAchieved <= 10) {
           turnDistribution[simulation.turnAchieved]++
         }
@@ -229,13 +236,10 @@ export class AdvancedMathEngine {
     const successRate = (successfulRuns / iterations) * 100
     const averageTurn = successfulRuns > 0 ? totalTurns / successfulRuns : 0
 
-    // Calculate standard deviation
+    // Calculate standard deviation from stored results (single pass)
     let variance = 0
-    for (let i = 0; i < iterations; i++) {
-      const simulation = this.simulateSingleGame(params)
-      if (simulation.success) {
-        variance += Math.pow(simulation.turnAchieved - averageTurn, 2)
-      }
+    for (const turn of successTurns) {
+      variance += (turn - averageTurn) ** 2
     }
     const standardDeviation = Math.sqrt(variance / Math.max(1, successfulRuns))
 
@@ -253,9 +257,9 @@ export class AdvancedMathEngine {
       standardDeviation,
       confidence: {
         lower: Math.max(0, successRate - margin),
-        upper: Math.min(100, successRate + margin)
+        upper: Math.min(100, successRate + margin),
       },
-      distribution: turnDistribution
+      distribution: turnDistribution,
     }
   }
 
@@ -285,7 +289,7 @@ export class AdvancedMathEngine {
     let currentTurn = 1
 
     // Count lands in opening hand
-    landsInPlay = hand.filter(card => card === 'land').length
+    landsInPlay = hand.filter((card) => card === 'land').length
 
     while (currentTurn <= targetTurn) {
       // Draw for turn (except turn 1 if on the play)
@@ -357,7 +361,7 @@ export class AdvancedMathEngine {
    * Mulligan decision logic
    */
   private shouldMulligan(hand: string[], strategy: string): MulliganDecision {
-    const landCount = hand.filter(card => card === 'land').length
+    const landCount = hand.filter((card) => card === 'land').length
     const handSize = hand.length
 
     let shouldMulligan = false
@@ -367,7 +371,8 @@ export class AdvancedMathEngine {
     switch (strategy) {
       case 'aggressive':
         shouldMulligan = landCount < 2 || landCount > 5
-        reason = landCount < 2 ? 'Too few lands' : landCount > 5 ? 'Too many lands' : 'Good land count'
+        reason =
+          landCount < 2 ? 'Too few lands' : landCount > 5 ? 'Too many lands' : 'Good land count'
         handRating = Math.max(0, Math.min(10, 5 + (3 - Math.abs(landCount - 3))))
         break
 
@@ -397,7 +402,7 @@ export class AdvancedMathEngine {
       shouldMulligan,
       reason,
       handRating,
-      keepProbability: handRating / 10
+      keepProbability: handRating / 10,
     }
   }
 
@@ -455,14 +460,14 @@ export class AdvancedMathEngine {
         probability: analysis.castProbability,
         sources: requirement.sources,
         deficit: analysis.karstenRating.deficit,
-        criticalTurn: requirement.criticalTurn
+        criticalTurn: requirement.criticalTurn,
       })
 
       // Update overall consistency (product of probabilities)
       overallConsistency *= analysis.castProbability
 
       // Identify bottlenecks
-      if (analysis.castProbability < 0.80) {
+      if (analysis.castProbability < 0.8) {
         bottleneckColors.push(requirement.color)
         recommendations.push(
           `${requirement.color}: Add ${Math.abs(analysis.karstenRating.deficit)} more sources`
@@ -478,7 +483,7 @@ export class AdvancedMathEngine {
       overallConsistency,
       bottleneckColors,
       recommendations,
-      optimalManabase
+      optimalManabase,
     }
   }
 
@@ -506,10 +511,10 @@ export class AdvancedMathEngine {
       totalLands,
       colorSources,
       fetchlands: Math.floor(totalLands * 0.2), // ~20% fetchlands
-      duallands: Math.floor(totalLands * 0.4),  // ~40% dual lands
-      basics: Math.floor(totalLands * 0.3),     // ~30% basics
-      utility: Math.floor(totalLands * 0.1),    // ~10% utility
-      confidence: 0.85
+      duallands: Math.floor(totalLands * 0.4), // ~40% dual lands
+      basics: Math.floor(totalLands * 0.3), // ~30% basics
+      utility: Math.floor(totalLands * 0.1), // ~10% utility
+      confidence: 0.85,
     }
   }
 
@@ -526,11 +531,14 @@ export class AdvancedMathEngine {
   /**
    * Get Karsten rating based on probability and deficit
    */
-  private getKarstenRating(probability: number, _deficit: number): 'excellent' | 'good' | 'acceptable' | 'poor' | 'unplayable' {
+  private getKarstenRating(
+    probability: number,
+    _deficit: number
+  ): 'excellent' | 'good' | 'acceptable' | 'poor' | 'unplayable' {
     if (probability >= 0.95) return 'excellent'
-    if (probability >= 0.90) return 'good'
-    if (probability >= 0.80) return 'acceptable'
-    if (probability >= 0.60) return 'poor'
+    if (probability >= 0.9) return 'good'
+    if (probability >= 0.8) return 'acceptable'
+    if (probability >= 0.6) return 'poor'
     return 'unplayable'
   }
 
@@ -573,12 +581,14 @@ export class AdvancedMathEngine {
     this.metrics.endTime = performance.now()
     this.metrics.duration = this.metrics.endTime - this.metrics.startTime
     this.metrics.calculationsPerformed = this.metrics.cacheHits + this.metrics.cacheMisses
-    this.metrics.averageCalculationTime = this.metrics.calculationsPerformed > 0
-      ? this.metrics.duration / this.metrics.calculationsPerformed
-      : 0
-    this.cache.hitRate = this.metrics.calculationsPerformed > 0
-      ? this.metrics.cacheHits / this.metrics.calculationsPerformed
-      : 0
+    this.metrics.averageCalculationTime =
+      this.metrics.calculationsPerformed > 0
+        ? this.metrics.duration / this.metrics.calculationsPerformed
+        : 0
+    this.cache.hitRate =
+      this.metrics.calculationsPerformed > 0
+        ? this.metrics.cacheHits / this.metrics.calculationsPerformed
+        : 0
 
     return { ...this.metrics }
   }
@@ -588,7 +598,8 @@ export class AdvancedMathEngine {
 export const advancedMathEngine = new AdvancedMathEngine()
 
 // Add missing methods to instance for test compatibility
-;(advancedMathEngine as any).calculateHypergeometric = advancedMathEngine.cumulativeHypergeometric.bind(advancedMathEngine)
+;(advancedMathEngine as any).calculateHypergeometric =
+  advancedMathEngine.cumulativeHypergeometric.bind(advancedMathEngine)
 
 // Export compatibility methods for existing tests
 export const calculateHypergeometric = (params: HypergeometricParams) =>
@@ -601,7 +612,15 @@ export const calculateKarstenProbability = (
   symbolsNeeded: number,
   onThePlay: boolean = true,
   handSize: number = 7
-) => advancedMathEngine.calculateKarstenProbability(deckSize, sourcesInDeck, turn, symbolsNeeded, onThePlay, handSize)
+) =>
+  advancedMathEngine.calculateKarstenProbability(
+    deckSize,
+    sourcesInDeck,
+    turn,
+    symbolsNeeded,
+    onThePlay,
+    handSize
+  )
 
 export const runMonteCarloSimulation = (params: MonteCarloParams) =>
   advancedMathEngine.runMonteCarloSimulation(params)
