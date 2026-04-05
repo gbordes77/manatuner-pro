@@ -1,5 +1,5 @@
 import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
-import { Box, Grid, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Grid, IconButton, Paper, Tooltip, Typography } from '@mui/material'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useAcceleration } from '../../contexts/AccelerationContext'
 import { AnalysisResult } from '../../services/deckAnalyzer'
@@ -140,6 +140,30 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
         {/* Acceleration Settings Panel */}
         <AccelerationSettings producersInDeck={producersInDeck} />
 
+        {/* Ramp detection banner */}
+        {producersInDeck.length > 0 && (
+          <Paper
+            sx={{
+              mb: 2,
+              p: 1.5,
+              bgcolor: 'success.main',
+              color: 'success.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="body2" fontWeight="bold">
+              {producersInDeck.reduce((sum, p) => sum + p.copies, 0)} mana rocks/dorks detected
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              — {producersInDeck.map((p) => `${p.copies}x ${p.def.name}`).join(', ')}. Castability
+              includes ramp acceleration.
+            </Typography>
+          </Paper>
+        )}
+
         {nonLandCards.length > 0 ? (
           <Box>
             <Grid container spacing={1} sx={{ mb: 2 }}>
@@ -215,16 +239,8 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
                   <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                 </IconButton>
               </Tooltip>
-              = Realistic (accounts for
-              <Tooltip
-                title="Mana screw happens when you don't draw enough lands to cast your spells. It's one of the most frustrating experiences in Magic, and proper manabase construction helps minimize it."
-                arrow
-              >
-                <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
-                  <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
-                </IconButton>
-              </Tooltip>
-              mana screw)
+              = Realistic (accounts for mana screw
+              {producersInDeck.length > 0 ? ' + mana rocks/dorks' : ''})
             </Box>
           </Typography>
         </Box>

@@ -10,26 +10,26 @@
  */
 
 import {
-    ExpandMore as ExpandMoreIcon,
-    HelpOutline as HelpOutlineIcon,
-    Restore as RestoreIcon,
-    Settings as SettingsIcon
+  ExpandMore as ExpandMoreIcon,
+  HelpOutline as HelpOutlineIcon,
+  Restore as RestoreIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material'
 import {
-    Box,
-    Collapse,
-    FormControl,
-    FormControlLabel,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    Slider,
-    Switch,
-    Tooltip,
-    Typography,
-    useTheme
+  Box,
+  Collapse,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Slider,
+  Switch,
+  Tooltip,
+  Typography,
+  useTheme,
 } from '@mui/material'
 import React, { useState } from 'react'
 import { useAcceleration } from '../../contexts/AccelerationContext'
@@ -43,9 +43,17 @@ const FORMAT_OPTIONS: Array<{ value: FormatPreset; label: string; description: s
   { value: 'goldfish', label: 'Goldfish (0%)', description: 'No interaction - testing only' },
   { value: 'casual_edh', label: 'Casual EDH (10%)', description: 'Casual multiplayer games' },
   { value: 'cedh', label: 'cEDH (15%)', description: 'Competitive EDH - less creature focus' },
-  { value: 'standard', label: 'Standard (20%)', description: 'Standard metagame interaction level' },
-  { value: 'modern', label: 'Modern (35%)', description: '"Bolt the Bird" - high creature removal' },
-  { value: 'legacy', label: 'Legacy (40%)', description: 'Highest interaction density' }
+  {
+    value: 'standard',
+    label: 'Standard (20%)',
+    description: 'Standard metagame interaction level',
+  },
+  {
+    value: 'modern',
+    label: 'Modern (35%)',
+    description: '"Bolt the Bird" - high creature removal',
+  },
+  { value: 'legacy', label: 'Legacy (40%)', description: 'Highest interaction density' },
 ]
 
 // =============================================================================
@@ -58,7 +66,7 @@ interface AccelerationSettingsProps {
 }
 
 export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
-  producersInDeck = []
+  producersInDeck = [],
 }) => {
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
@@ -71,7 +79,7 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
     setPlayDraw,
     setCustomRemovalRate,
     setShowAcceleration,
-    resetToDefaults
+    resetToDefaults,
   } = useAcceleration()
 
   const handleRemovalRateChange = (_: Event, value: number | number[]) => {
@@ -90,7 +98,7 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
       sx={{
         mb: 2,
         overflow: 'hidden',
-        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`
+        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
       }}
     >
       {/* Header - Always visible */}
@@ -102,16 +110,14 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
           p: 1.5,
           cursor: 'pointer',
           '&:hover': {
-            bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'
-          }
+            bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+          },
         }}
         onClick={() => setExpanded(!expanded)}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <SettingsIcon fontSize="small" color="action" />
-          <Typography variant="subtitle2">
-            Acceleration Settings
-          </Typography>
+          <Typography variant="subtitle2">Acceleration Settings</Typography>
           <Tooltip
             title="Configure how mana dorks and rocks are factored into castability calculations. The removal rate affects creature survival probability."
             arrow
@@ -132,7 +138,7 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
                 py: 0.25,
                 borderRadius: 1,
                 fontSize: '0.65rem',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
               }}
             >
               {producersInDeck.reduce((sum, p) => sum + p.copies, 0)} ramp cards
@@ -146,7 +152,7 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
                 px: 0.75,
                 py: 0.25,
                 borderRadius: 1,
-                fontSize: '0.65rem'
+                fontSize: '0.65rem',
               }}
             >
               No ramp detected
@@ -181,15 +187,36 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
             sx={{ mr: 1 }}
           />
 
-          <IconButton
-            size="small"
+          <Box
             sx={{
-              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s'
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              px: 1,
+              py: 0.25,
+              borderRadius: 1,
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`,
+              bgcolor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+              '&:hover': {
+                bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+              },
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
             }}
           >
-            <ExpandMoreIcon fontSize="small" />
-          </IconButton>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+              {expanded ? 'Hide' : 'Configure'}
+            </Typography>
+            <ExpandMoreIcon
+              fontSize="small"
+              sx={{
+                fontSize: 16,
+                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+                color: 'text.secondary',
+              }}
+            />
+          </Box>
         </Box>
       </Box>
 
@@ -199,7 +226,7 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
           sx={{
             p: 2,
             pt: 1,
-            borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`
+            borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
           }}
         >
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
@@ -245,7 +272,9 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
 
           {/* Custom Removal Rate Slider */}
           <Box sx={{ mt: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+            >
               <Typography variant="caption" color="text.secondary">
                 Creature Removal Rate
               </Typography>
@@ -263,18 +292,19 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
                 { value: 0, label: '0%' },
                 { value: 20, label: '20%' },
                 { value: 40, label: '40%' },
-                { value: 60, label: '60%' }
+                { value: 60, label: '60%' },
               ]}
               valueLabelDisplay="auto"
               valueLabelFormat={(v) => `${v}%`}
               sx={{
                 '& .MuiSlider-markLabel': {
-                  fontSize: '0.65rem'
-                }
+                  fontSize: '0.65rem',
+                },
               }}
             />
             <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
-              Higher removal rate = lower dork survival probability. Rocks are unaffected (~98% survival).
+              Higher removal rate = lower dork survival probability. Rocks are unaffected (~98%
+              survival).
             </Typography>
           </Box>
 
@@ -285,13 +315,14 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
               p: 1.5,
               bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
               borderRadius: 1,
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
             }}
           >
             <Typography variant="caption" color="text.secondary">
-              <strong>How it works:</strong> Dork survival is calculated as (1 - removal_rate)^turns_exposed.
-              A 35% removal rate means a T1 dork has ~65% chance of surviving to T2, ~42% to T3.
-              Mana rocks have a fixed ~98% survival rate (artifact removal is less common).
+              <strong>How it works:</strong> Dork survival is calculated as (1 -
+              removal_rate)^turns_exposed. A 35% removal rate means a T1 dork has ~65% chance of
+              surviving to T2, ~42% to T3. Mana rocks have a fixed ~98% survival rate (artifact
+              removal is less common).
             </Typography>
           </Box>
         </Box>

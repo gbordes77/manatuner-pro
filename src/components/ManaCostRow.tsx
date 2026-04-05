@@ -911,23 +911,24 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
                   totalProbability={Math.round(acceleratedResult.withAcceleration.p2 * 100)}
                   height={6}
                   showLabels={true}
-                  label="P2 (w/ Ramp):"
+                  label="P2 (Lands + Rocks):"
                   tooltipContent={
                     <Box sx={{ p: 0.5 }}>
                       <Typography variant="body2" fontWeight="bold" gutterBottom>
-                        Accelerated Castability
+                        Castability with Mana Acceleration
                       </Typography>
                       <Typography variant="caption" component="div" sx={{ mb: 1 }}>
-                        Probability accounting for mana acceleration (dorks, rocks, rituals).
+                        Unlike basic calculators, ManaTuner factors in your mana rocks, dorks, and
+                        rituals with format-aware removal survival rates.
                       </Typography>
                       <Typography variant="caption" component="div">
                         • Lands only: {Math.round(acceleratedResult.base.p2 * 100)}%
                       </Typography>
                       <Typography variant="caption" component="div">
-                        • With ramp: {Math.round(acceleratedResult.withAcceleration.p2 * 100)}%
+                        • Lands + Rocks: {Math.round(acceleratedResult.withAcceleration.p2 * 100)}%
                       </Typography>
-                      <Typography variant="caption" component="div">
-                        • Bonus: +{Math.round(acceleratedResult.accelerationImpact * 100)}%
+                      <Typography variant="caption" component="div" sx={{ color: 'success.light' }}>
+                        • Ramp bonus: +{Math.round(acceleratedResult.accelerationImpact * 100)}%
                       </Typography>
                       {acceleratedResult.acceleratedTurn !== null && (
                         <Typography

@@ -1,35 +1,35 @@
 import {
-    Analytics as AnalyticsIcon,
-    ArrowForward as ArrowForwardIcon,
-    Book as BookIcon,
-    Casino as CasinoIcon,
-    MenuBook as MenuBookIcon,
-    Psychology as PsychologyIcon,
-    ShowChart as ShowChartIcon,
-    Timeline as TimelineIcon
-} from "@mui/icons-material";
+  Analytics as AnalyticsIcon,
+  ArrowForward as ArrowForwardIcon,
+  Book as BookIcon,
+  Casino as CasinoIcon,
+  MenuBook as MenuBookIcon,
+  Psychology as PsychologyIcon,
+  ShowChart as ShowChartIcon,
+  Timeline as TimelineIcon,
+} from '@mui/icons-material'
 import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Chip,
-    Container,
-    Grid,
-    Paper,
-    Typography,
-    useTheme,
-} from "@mui/material";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { AnimatedContainer } from "../components/common/AnimatedContainer";
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AnimatedContainer } from '../components/common/AnimatedContainer'
 
 // Mana symbol component using Keyrune font
-const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g' | 'c'; size?: number; glow?: boolean }> = ({
-  color,
-  size = 24,
-  glow = false
-}) => (
+const ManaSymbol: React.FC<{
+  color: 'w' | 'u' | 'b' | 'r' | 'g' | 'c'
+  size?: number
+  glow?: boolean
+}> = ({ color, size = 24, glow = false }) => (
   <i
     className={`ms ms-${color} ms-cost`}
     style={{
@@ -38,12 +38,12 @@ const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g' | 'c'; size?: nu
       transition: 'all 0.3s ease',
     }}
   />
-);
+)
 
 // Floating mana symbols background decoration
 const FloatingManaSymbols: React.FC = () => {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
 
   return (
     <Box
@@ -86,82 +86,82 @@ const FloatingManaSymbols: React.FC = () => {
         </Box>
       ))}
     </Box>
-  );
-};
+  )
+}
 
 export const HomePage: React.FC = () => {
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const navigate = useNavigate()
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
 
   // Réorganisé: dans l'ordre du Dashboard
   const features = [
     {
       icon: <TimelineIcon sx={{ fontSize: 40 }} />,
-      title: "Health Score",
-      description: "Instant manabase health percentage based on hypergeometric probability.",
+      title: 'Health Score',
+      description: 'Instant manabase health percentage based on hypergeometric probability.',
       color: theme.palette.mana.green,
       manaColor: 'g' as const,
     },
     {
       icon: <ShowChartIcon sx={{ fontSize: 40 }} />,
-      title: "Castability",
-      description: "Exact probability of casting each spell on curve, turn by turn.",
+      title: 'Castability',
+      description: 'Exact cast probability including mana rocks and dorks — not just lands.',
       color: theme.palette.mana.blue,
       manaColor: 'u' as const,
     },
     {
       icon: <CasinoIcon sx={{ fontSize: 40 }} />,
-      title: "Mulligan Simulator",
-      description: "Monte Carlo simulation tells you exactly when to keep or mulligan.",
-      color: "#9c27b0",
+      title: 'Mulligan Simulator',
+      description: 'Monte Carlo simulation tells you exactly when to keep or mulligan.',
+      color: '#9c27b0',
       manaColor: 'b' as const,
     },
     {
       icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
-      title: "Export Blueprint",
-      description: "Download your analysis as PNG, PDF or JSON. Share on Discord or archive.",
+      title: 'Export Blueprint',
+      description: 'Download your analysis as PNG, PDF or JSON. Share on Discord or archive.',
       color: theme.palette.mana.multicolor,
       manaColor: 'w' as const,
       isNew: true,
     },
-  ];
+  ]
 
   // Les fondations mathématiques avec mana colors
   const mathFoundations = [
     {
-      title: "Karsten Tables",
-      desc: "Mana source requirements",
-      formula: "90%",
+      title: 'Karsten Tables',
+      desc: 'Mana source requirements',
+      formula: '90%',
       manaColor: 'g' as const,
       color: isDark ? 'rgba(0, 115, 62, 0.15)' : '#e8f5e9',
       borderColor: theme.palette.mana.green,
     },
     {
-      title: "Hypergeometric",
-      desc: "Exact probability calculation",
-      formula: "P(X≥k)",
+      title: 'Hypergeometric',
+      desc: 'Exact probability calculation',
+      formula: 'P(X≥k)',
       manaColor: 'u' as const,
       color: isDark ? 'rgba(14, 104, 171, 0.15)' : '#e3f2fd',
       borderColor: theme.palette.mana.blue,
     },
     {
-      title: "Monte Carlo",
-      desc: "3,000 hands simulated",
-      formula: "n=3000",
+      title: 'Monte Carlo',
+      desc: '3,000 hands simulated',
+      formula: 'n=3000',
       manaColor: 'b' as const,
       color: isDark ? 'rgba(90, 60, 90, 0.2)' : '#f3e5f5',
-      borderColor: "#9c27b0",
+      borderColor: '#9c27b0',
     },
     {
-      title: "Bellman Equation",
-      desc: "Optimal stopping theory",
-      formula: "E[V₇]",
+      title: 'Bellman Equation',
+      desc: 'Optimal stopping theory',
+      formula: 'E[V₇]',
       manaColor: 'r' as const,
       color: isDark ? 'rgba(211, 32, 42, 0.15)' : '#fff3e0',
       borderColor: theme.palette.mana.red,
     },
-  ];
+  ]
 
   return (
     <Container maxWidth="lg" sx={{ position: 'relative' }}>
@@ -170,7 +170,7 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Section */}
       <AnimatedContainer animation="fadeInUp">
-        <Box sx={{ textAlign: "center", py: 3, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ textAlign: 'center', py: 3, position: 'relative', zIndex: 1 }}>
           {/* WUBRG mana row */}
           <Box
             sx={{
@@ -201,7 +201,7 @@ export const HomePage: React.FC = () => {
             gutterBottom
             sx={{
               fontWeight: 800,
-              fontSize: { xs: "2.5rem", md: "3.5rem" },
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
               fontFamily: '"Cinzel", serif',
               // WUBRG gradient - gold start for better visibility
               background: `linear-gradient(135deg,
@@ -210,10 +210,10 @@ export const HomePage: React.FC = () => {
                 #9c27b0 50%,
                 ${theme.palette.mana.red} 75%,
                 ${theme.palette.mana.green} 100%)`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              letterSpacing: "0.02em",
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '0.02em',
               textShadow: isDark ? '0 0 40px rgba(255,255,255,0.1)' : 'none',
             }}
           >
@@ -225,54 +225,54 @@ export const HomePage: React.FC = () => {
             color="text.secondary"
             sx={{
               maxWidth: 650,
-              mx: "auto",
+              mx: 'auto',
               mb: 2,
               fontWeight: 400,
               lineHeight: 1.6,
             }}
           >
-            Stop guessing. Get <strong>exact probabilities</strong> for every spell,
-            plus know <strong>exactly when to mulligan</strong>.
+            Stop guessing. Get <strong>exact probabilities</strong> for every spell, plus know{' '}
+            <strong>exactly when to mulligan</strong>.
           </Typography>
 
           {/* Tags with mana symbols */}
           <Box
             sx={{
-              display: "flex",
+              display: 'flex',
               gap: 1,
-              justifyContent: "center",
+              justifyContent: 'center',
               mb: 2.5,
-              flexWrap: "wrap",
+              flexWrap: 'wrap',
             }}
           >
             <Chip
               icon={<i className="ms ms-u ms-cost" style={{ fontSize: 14 }} />}
               label="Turn-by-Turn Probabilities"
               sx={{
-                bgcolor: isDark ? 'rgba(14, 104, 171, 0.2)' : "#e3f2fd",
-                color: isDark ? theme.palette.mana.blue : "#1565c0",
+                bgcolor: isDark ? 'rgba(14, 104, 171, 0.2)' : '#e3f2fd',
+                color: isDark ? theme.palette.mana.blue : '#1565c0',
                 fontWeight: 600,
-                '& .MuiChip-icon': { ml: 1 }
+                '& .MuiChip-icon': { ml: 1 },
               }}
             />
             <Chip
               icon={<i className="ms ms-b ms-cost" style={{ fontSize: 14 }} />}
               label="Monte Carlo Mulligan"
               sx={{
-                bgcolor: isDark ? 'rgba(90, 60, 90, 0.3)' : "#f3e5f5",
-                color: isDark ? '#CE93D8' : "#7b1fa2",
+                bgcolor: isDark ? 'rgba(90, 60, 90, 0.3)' : '#f3e5f5',
+                color: isDark ? '#CE93D8' : '#7b1fa2',
                 fontWeight: 600,
-                '& .MuiChip-icon': { ml: 1 }
+                '& .MuiChip-icon': { ml: 1 },
               }}
             />
             <Chip
               icon={<i className="ms ms-g ms-cost" style={{ fontSize: 14 }} />}
               label="Proven Mathematics"
               sx={{
-                bgcolor: isDark ? 'rgba(0, 115, 62, 0.2)' : "#e8f5e9",
-                color: isDark ? theme.palette.mana.green : "#2e7d32",
+                bgcolor: isDark ? 'rgba(0, 115, 62, 0.2)' : '#e8f5e9',
+                color: isDark ? theme.palette.mana.green : '#2e7d32',
                 fontWeight: 600,
-                '& .MuiChip-icon': { ml: 1 }
+                '& .MuiChip-icon': { ml: 1 },
               }}
             />
           </Box>
@@ -280,35 +280,35 @@ export const HomePage: React.FC = () => {
           {/* CTA Buttons */}
           <Box
             sx={{
-              display: "flex",
+              display: 'flex',
               gap: 2,
-              justifyContent: "center",
-              flexWrap: "wrap",
+              justifyContent: 'center',
+              flexWrap: 'wrap',
             }}
           >
             <AnimatedContainer animation="scaleIn" delay={0.2}>
               <Button
                 variant="contained"
                 size="large"
-                onClick={() => navigate("/analyzer")}
+                onClick={() => navigate('/analyzer')}
                 startIcon={<AnalyticsIcon />}
                 sx={{
                   px: 5,
                   py: 1.8,
-                  fontSize: "1.1rem",
+                  fontSize: '1.1rem',
                   fontWeight: 700,
                   borderRadius: 3,
                   // Gold multicolor button
                   background: `linear-gradient(135deg, ${theme.palette.mana.multicolor} 0%, #FFD700 50%, ${theme.palette.mana.multicolor} 100%)`,
-                  color: "#1a1a2e",
+                  color: '#1a1a2e',
                   boxShadow: `0 8px 32px ${theme.palette.mana.multicolor}50`,
                   border: '2px solid rgba(255,255,255,0.3)',
-                  "&:hover": {
+                  '&:hover': {
                     background: `linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FFD700 100%)`,
                     boxShadow: `0 12px 40px ${theme.palette.mana.multicolor}70`,
-                    transform: "translateY(-3px)",
+                    transform: 'translateY(-3px)',
                   },
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               >
                 Analyze My Deck
@@ -319,23 +319,23 @@ export const HomePage: React.FC = () => {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() => navigate("/guide")}
+                onClick={() => navigate('/guide')}
                 startIcon={<MenuBookIcon />}
                 sx={{
                   px: 4,
                   py: 1.8,
-                  fontSize: "1rem",
+                  fontSize: '1rem',
                   fontWeight: 600,
                   borderRadius: 3,
                   borderWidth: 2,
                   borderColor: theme.palette.mana.blue,
                   color: isDark ? theme.palette.mana.blue : theme.palette.primary.main,
-                  "&:hover": {
+                  '&:hover': {
                     borderWidth: 2,
-                    transform: "translateY(-2px)",
+                    transform: 'translateY(-2px)',
                     bgcolor: `${theme.palette.mana.blue}15`,
                   },
-                  transition: "all 0.3s ease",
+                  transition: 'all 0.3s ease',
                 }}
               >
                 Read Guide
@@ -347,29 +347,25 @@ export const HomePage: React.FC = () => {
 
       {/* Math Foundations with mana symbols */}
       <Box sx={{ my: 3, position: 'relative', zIndex: 1 }}>
-        <Box sx={{ textAlign: "center", mb: 2.5 }}>
+        <Box sx={{ textAlign: 'center', mb: 2.5 }}>
           <Typography
             variant="overline"
             sx={{
               color: theme.palette.mana.multicolor,
               fontWeight: 700,
               letterSpacing: 2,
-              fontSize: "0.85rem",
+              fontSize: '0.85rem',
             }}
           >
             Powered By
           </Typography>
-          <Typography
-            variant="h4"
-            fontWeight={700}
-            sx={{ mt: 0.5, fontFamily: '"Cinzel", serif' }}
-          >
+          <Typography variant="h4" fontWeight={700} sx={{ mt: 0.5, fontFamily: '"Cinzel", serif' }}>
             Rigorous Mathematics
           </Typography>
           <Typography
             variant="body1"
             color="text.secondary"
-            sx={{ mt: 1, maxWidth: 500, mx: "auto" }}
+            sx={{ mt: 1, maxWidth: 500, mx: 'auto' }}
           >
             Not guesswork. Real probability theory used by mathematicians and competitive players.
           </Typography>
@@ -383,21 +379,21 @@ export const HomePage: React.FC = () => {
                   elevation={0}
                   sx={{
                     p: 3,
-                    textAlign: "center",
+                    textAlign: 'center',
                     borderRadius: 3,
                     bgcolor: foundation.color,
-                    border: "2px solid",
+                    border: '2px solid',
                     borderColor: foundation.borderColor,
-                    height: "100%",
+                    height: '100%',
                     minHeight: 140,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    transition: "all 0.3s ease",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
                     position: 'relative',
                     overflow: 'hidden',
-                    "&:hover": {
-                      transform: "translateY(-4px)",
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
                       boxShadow: `0 8px 24px ${foundation.borderColor}40`,
                     },
                   }}
@@ -417,7 +413,7 @@ export const HomePage: React.FC = () => {
                     variant="body1"
                     fontWeight={600}
                     sx={{
-                      fontFamily: "monospace",
+                      fontFamily: 'monospace',
                       color: foundation.borderColor,
                       opacity: 0.8,
                       mb: 1,
@@ -440,7 +436,7 @@ export const HomePage: React.FC = () => {
         <Typography
           variant="h4"
           fontWeight={700}
-          sx={{ mb: 2.5, textAlign: "center", fontFamily: '"Cinzel", serif' }}
+          sx={{ mb: 2.5, textAlign: 'center', fontFamily: '"Cinzel", serif' }}
         >
           What You Get
         </Typography>
@@ -450,15 +446,15 @@ export const HomePage: React.FC = () => {
               <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
                 <Card
                   sx={{
-                    height: "100%",
+                    height: '100%',
                     borderRadius: 3,
-                    transition: "all 0.3s ease",
-                    border: "1px solid",
-                    borderColor: "divider",
+                    transition: 'all 0.3s ease',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     position: 'relative',
                     overflow: 'hidden',
-                    "&:hover": {
-                      transform: "translateY(-8px)",
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
                       boxShadow: `0 16px 40px ${feature.color}30`,
                       borderColor: feature.color,
                       '& .feature-mana': {
@@ -482,17 +478,17 @@ export const HomePage: React.FC = () => {
                     <ManaSymbol color={feature.manaColor} size={80} />
                   </Box>
 
-                  <CardContent sx={{ textAlign: "center", py: 3, position: 'relative', zIndex: 1 }}>
+                  <CardContent sx={{ textAlign: 'center', py: 3, position: 'relative', zIndex: 1 }}>
                     <Box
                       sx={{
                         width: 72,
                         height: 72,
-                        borderRadius: "50%",
+                        borderRadius: '50%',
                         bgcolor: `${feature.color}15`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        mx: "auto",
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mx: 'auto',
                         mb: 2,
                         color: feature.color,
                         border: `2px solid ${feature.color}30`,
@@ -500,7 +496,14 @@ export const HomePage: React.FC = () => {
                     >
                       {feature.icon}
                     </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                      }}
+                    >
                       <Typography variant="h6" fontWeight={700}>
                         {feature.title}
                       </Typography>
@@ -509,8 +512,8 @@ export const HomePage: React.FC = () => {
                           component="span"
                           sx={{
                             bgcolor: theme.palette.mana.multicolor,
-                            color: "#1a1a2e",
-                            fontSize: "0.6rem",
+                            color: '#1a1a2e',
+                            fontSize: '0.6rem',
                             fontWeight: 800,
                             px: 0.8,
                             py: 0.2,
@@ -540,9 +543,9 @@ export const HomePage: React.FC = () => {
           borderRadius: 4,
           background: isDark
             ? 'linear-gradient(135deg, rgba(26,26,30,0.8) 0%, rgba(13,13,15,0.9) 100%)'
-            : "linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)",
-          border: "1px solid",
-          borderColor: "divider",
+            : 'linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)',
+          border: '1px solid',
+          borderColor: 'divider',
           position: 'relative',
           zIndex: 1,
         }}
@@ -551,35 +554,50 @@ export const HomePage: React.FC = () => {
           <Typography
             variant="h4"
             fontWeight={700}
-            sx={{ mb: 2.5, textAlign: "center", fontFamily: '"Cinzel", serif' }}
+            sx={{ mb: 2.5, textAlign: 'center', fontFamily: '"Cinzel", serif' }}
           >
             How It Works
           </Typography>
           <Grid container spacing={3} alignItems="center">
             {[
-              { num: "1", title: "Paste Your Deck", desc: "MTGO, MTGA, Moxfield & more", mana: 'w' },
-              { num: "2", title: "Get Probabilities", desc: "Cast chances for every spell, every turn", mana: 'u' },
-              { num: "3", title: "Know Your Mulligans", desc: "Optimal thresholds for your archetype", mana: 'g' },
+              {
+                num: '1',
+                title: 'Paste Your Deck',
+                desc: 'MTGO, MTGA, Moxfield & more',
+                mana: 'w',
+              },
+              {
+                num: '2',
+                title: 'Get Probabilities',
+                desc: 'Cast chances for every spell, every turn',
+                mana: 'u',
+              },
+              {
+                num: '3',
+                title: 'Know Your Mulligans',
+                desc: 'Optimal thresholds for your archetype',
+                mana: 'g',
+              },
             ].map((step, index) => (
               <Grid item xs={12} md={4} key={index}>
-                <Box sx={{ textAlign: "center" }}>
+                <Box sx={{ textAlign: 'center' }}>
                   <Box
                     sx={{
                       width: 64,
                       height: 64,
-                      borderRadius: "50%",
+                      borderRadius: '50%',
                       background: `linear-gradient(135deg,
                         ${theme.palette.mana.white} 0%,
                         ${theme.palette.mana.blue} 25%,
                         #9c27b0 50%,
                         ${theme.palette.mana.red} 75%,
                         ${theme.palette.mana.green} 100%)`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mx: "auto",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mx: 'auto',
                       mb: 2,
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
                       position: 'relative',
                     }}
                   >
@@ -603,34 +621,34 @@ export const HomePage: React.FC = () => {
       {/* Guide Banner */}
       <Paper
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           px: 3,
           py: 2,
           mb: 2,
           borderRadius: 3,
           background: isDark
             ? 'linear-gradient(135deg, rgba(90, 60, 90, 0.2) 0%, rgba(30, 30, 50, 0.3) 100%)'
-            : "linear-gradient(135deg, #f3e5f5 0%, #e8eaf6 100%)",
-          flexWrap: "wrap",
+            : 'linear-gradient(135deg, #f3e5f5 0%, #e8eaf6 100%)',
+          flexWrap: 'wrap',
           gap: 2,
           position: 'relative',
           zIndex: 1,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <BookIcon sx={{ color: "#9c27b0", fontSize: 28 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BookIcon sx={{ color: '#9c27b0', fontSize: 28 }} />
           <Typography variant="body1">
             <strong>New to manabase theory?</strong> Learn the math behind optimal deckbuilding
           </Typography>
         </Box>
         <Button
-          onClick={() => navigate("/mathematics")}
+          onClick={() => navigate('/mathematics')}
           endIcon={<ArrowForwardIcon />}
           sx={{
             fontWeight: 600,
-            color: "#9c27b0",
+            color: '#9c27b0',
           }}
         >
           Learn the Math
@@ -640,21 +658,29 @@ export const HomePage: React.FC = () => {
       {/* Privacy - with mana symbols */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
+          display: 'flex',
+          justifyContent: 'center',
           gap: 3,
           py: 1.5,
-          flexWrap: "wrap",
+          flexWrap: 'wrap',
           position: 'relative',
           zIndex: 1,
         }}
       >
         {[
-          { icon: <i className="ms ms-w ms-cost" style={{ fontSize: 16 }} />, text: "100% Local" },
-          { icon: <i className="ms ms-u ms-cost" style={{ fontSize: 16 }} />, text: "No account required" },
-          { icon: <i className="ms ms-g ms-cost" style={{ fontSize: 16 }} />, text: "Auto-saved" },
+          { icon: <i className="ms ms-w ms-cost" style={{ fontSize: 16 }} />, text: '100% Local' },
+          {
+            icon: <i className="ms ms-u ms-cost" style={{ fontSize: 16 }} />,
+            text: 'No account required',
+          },
+          { icon: <i className="ms ms-g ms-cost" style={{ fontSize: 16 }} />, text: 'Auto-saved' },
         ].map((item, index) => (
-          <Typography key={index} variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <Typography
+            key={index}
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+          >
             {item.icon} {item.text}
           </Typography>
         ))}
@@ -671,13 +697,13 @@ export const HomePage: React.FC = () => {
             ${theme.palette.mana.blue} 0%,
             #7B1FA2 50%,
             ${theme.palette.mana.red} 100%)`,
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
           gap: 2,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.3)",
+          boxShadow: '0 16px 48px rgba(0,0,0,0.3)',
           position: 'relative',
           zIndex: 1,
           overflow: 'hidden',
@@ -702,30 +728,30 @@ export const HomePage: React.FC = () => {
         <Button
           variant="contained"
           size="large"
-          onClick={() => navigate("/analyzer")}
+          onClick={() => navigate('/analyzer')}
           startIcon={<AnalyticsIcon />}
           sx={{
             px: 5,
             py: 1.5,
-            fontSize: "1.1rem",
+            fontSize: '1.1rem',
             fontWeight: 700,
             bgcolor: theme.palette.mana.multicolor,
-            color: "#1a1a2e",
+            color: '#1a1a2e',
             borderRadius: 3,
             border: '2px solid rgba(255,255,255,0.3)',
             position: 'relative',
             zIndex: 1,
-            "&:hover": {
-              bgcolor: "#FFD700",
-              transform: "translateY(-2px)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+            '&:hover': {
+              bgcolor: '#FFD700',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
             },
-            transition: "all 0.3s ease",
+            transition: 'all 0.3s ease',
           }}
         >
           Start Now — Free
         </Button>
       </Paper>
     </Container>
-  );
-};
+  )
+}
