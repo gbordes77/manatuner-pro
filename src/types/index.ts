@@ -1,6 +1,6 @@
 // MTG Card Types
 export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G'
-export type ManaSymbol = ManaColor | 'C' | string
+export type ManaSymbol = ManaColor | 'C' | 'X' | 'S'
 
 export interface Card {
   id: string
@@ -197,7 +197,7 @@ export const MTG_FORMATS: MTGFormat[] = [
   'pioneer',
   'historic',
   'pauper',
-  'limited'
+  'limited',
 ]
 
 export const MANA_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G']
@@ -207,7 +207,7 @@ export const COLOR_NAMES: Record<ManaColor, string> = {
   U: 'Blue',
   B: 'Black',
   R: 'Red',
-  G: 'Green'
+  G: 'Green',
 }
 
 // Simulation Types
@@ -261,29 +261,6 @@ export interface Recommendation {
   }
 }
 
-// Simulation Types
-export interface SimulationParams {
-  iterations: number
-  mulliganStrategy: 'none' | 'aggressive' | 'conservative'
-  playFirst: boolean
-  maxMulligans: number
-}
-
-export interface SimulationResult {
-  params: SimulationParams
-  results: {
-    turn: number
-    castRate: number
-    averageDelay: number
-    keepRate: number
-  }[]
-  statistics: {
-    totalGames: number
-    averageKeepRate: number
-    averageFirstSpellTurn: number
-  }
-}
-
 // Firebase Types
 export interface FirebaseConfig {
   apiKey: string
@@ -319,26 +296,26 @@ export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
 export type OptionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export interface DeckAnalysis {
-  id: string;
-  deckId: string;
-  format: MTGFormat;
-  totalCards: number;
-  totalLands: number;
-  colorDistribution?: Record<string, number>;
-  manaCurve?: Record<string, number>;
+  id: string
+  deckId: string
+  format: MTGFormat
+  totalCards: number
+  totalLands: number
+  colorDistribution?: Record<string, number>
+  manaCurve?: Record<string, number>
   mulliganAnalysis?: {
-    perfectHand: number;
-    goodHand: number;
-    averageHand: number;
-    poorHand: number;
-    terribleHand: number;
-  };
-  overallScore?: number;
-  consistency?: number;
-  colorScrew?: number;
-  avgCMC?: number;
-  recommendations: LandRecommendation[];
-  probabilities: ManabaseProbabilities;
-  createdAt: string;
-  updatedAt: string;
+    perfectHand: number
+    goodHand: number
+    averageHand: number
+    poorHand: number
+    terribleHand: number
+  }
+  overallScore?: number
+  consistency?: number
+  colorScrew?: number
+  avgCMC?: number
+  recommendations: LandRecommendation[]
+  probabilities: ManabaseProbabilities
+  createdAt: string
+  updatedAt: string
 }

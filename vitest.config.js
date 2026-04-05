@@ -12,7 +12,7 @@ export default defineConfig({
     exclude: [
       "node_modules/**",
       "tests/e2e/**",
-      "tests/mtg-specific/card-types/**",
+      "tests/mtg-specific/card-types/**", // TODO: rewrite tests — imports private parseDeckList
       "**/node_modules/**",
     ],
     coverage: {

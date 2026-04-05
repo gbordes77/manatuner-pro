@@ -1,17 +1,6 @@
+import type { ScryfallCard } from '../types/scryfall'
 import { getComprehensiveLandAnalysis } from './intelligentLandAnalysis'
 import { detectLand } from './landDetection'
-
-// Interface pour les données Scryfall (copiée du deckAnalyzer)
-interface ScryfallCard {
-  id: string
-  name: string
-  type_line: string
-  mana_cost?: string
-  cmc: number
-  colors: string[]
-  produced_mana?: string[]
-  layout: string
-}
 
 // Cache pour éviter les appels répétés à Scryfall
 const scryfallCache = new Map<string, ScryfallCard>()
@@ -65,13 +54,37 @@ const LAND_BEHAVIORS: Record<string, LandBehavior> = {
   // Fetchlands
   'Polluted Delta': { behavior: 'Fetchland', targets: ['Island', 'Swamp'], entersUntapped: false },
   'Flooded Strand': { behavior: 'Fetchland', targets: ['Plains', 'Island'], entersUntapped: false },
-  'Bloodstained Mire': { behavior: 'Fetchland', targets: ['Swamp', 'Mountain'], entersUntapped: false },
-  'Wooded Foothills': { behavior: 'Fetchland', targets: ['Mountain', 'Forest'], entersUntapped: false },
-  'Windswept Heath': { behavior: 'Fetchland', targets: ['Forest', 'Plains'], entersUntapped: false },
-  'Scalding Tarn': { behavior: 'Fetchland', targets: ['Island', 'Mountain'], entersUntapped: false },
-  'Verdant Catacombs': { behavior: 'Fetchland', targets: ['Swamp', 'Forest'], entersUntapped: false },
+  'Bloodstained Mire': {
+    behavior: 'Fetchland',
+    targets: ['Swamp', 'Mountain'],
+    entersUntapped: false,
+  },
+  'Wooded Foothills': {
+    behavior: 'Fetchland',
+    targets: ['Mountain', 'Forest'],
+    entersUntapped: false,
+  },
+  'Windswept Heath': {
+    behavior: 'Fetchland',
+    targets: ['Forest', 'Plains'],
+    entersUntapped: false,
+  },
+  'Scalding Tarn': {
+    behavior: 'Fetchland',
+    targets: ['Island', 'Mountain'],
+    entersUntapped: false,
+  },
+  'Verdant Catacombs': {
+    behavior: 'Fetchland',
+    targets: ['Swamp', 'Forest'],
+    entersUntapped: false,
+  },
   'Arid Mesa': { behavior: 'Fetchland', targets: ['Plains', 'Mountain'], entersUntapped: false },
-  'Misty Rainforest': { behavior: 'Fetchland', targets: ['Forest', 'Island'], entersUntapped: false },
+  'Misty Rainforest': {
+    behavior: 'Fetchland',
+    targets: ['Forest', 'Island'],
+    entersUntapped: false,
+  },
   'Marsh Flats': { behavior: 'Fetchland', targets: ['Plains', 'Swamp'], entersUntapped: false },
 
   // Shocklands
@@ -114,11 +127,11 @@ const LAND_BEHAVIORS: Record<string, LandBehavior> = {
   'Cavern of Souls': { behavior: 'Utility Land', mana: ['Any'], entersUntapped: true },
 
   // Basics
-  'Plains': { behavior: 'Basic Land', mana: ['W'], entersUntapped: true },
-  'Island': { behavior: 'Basic Land', mana: ['U'], entersUntapped: true },
-  'Swamp': { behavior: 'Basic Land', mana: ['B'], entersUntapped: true },
-  'Mountain': { behavior: 'Basic Land', mana: ['R'], entersUntapped: true },
-  'Forest': { behavior: 'Basic Land', mana: ['G'], entersUntapped: true },
+  Plains: { behavior: 'Basic Land', mana: ['W'], entersUntapped: true },
+  Island: { behavior: 'Basic Land', mana: ['U'], entersUntapped: true },
+  Swamp: { behavior: 'Basic Land', mana: ['B'], entersUntapped: true },
+  Mountain: { behavior: 'Basic Land', mana: ['R'], entersUntapped: true },
+  Forest: { behavior: 'Basic Land', mana: ['G'], entersUntapped: true },
 }
 
 /**
@@ -130,7 +143,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
     category: 'Non-Land',
     behavior: 'None',
     manaProduction: [],
-    entersUntapped: false
+    entersUntapped: false,
   }
 
   try {
@@ -149,7 +162,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
           behavior: landBehavior.behavior,
           manaProduction: landBehavior.mana || [],
           entersUntapped: landBehavior.entersUntapped === true,
-          specialRules: getSpecialRules(landBehavior.behavior, cardName)
+          specialRules: getSpecialRules(landBehavior.behavior, cardName),
         }
       } else {
         // Terrain inconnu, utiliser l'analyse intelligente
@@ -163,7 +176,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
             behavior: intelligentAnalysis.behavior,
             manaProduction: intelligentAnalysis.manaProduction,
             entersUntapped: intelligentAnalysis.entersUntapped === true,
-            specialRules: `AI Analysis (${intelligentAnalysis.confidence}%): ${intelligentAnalysis.specialRules.join(', ')}`
+            specialRules: `AI Analysis (${intelligentAnalysis.confidence}%): ${intelligentAnalysis.specialRules.join(', ')}`,
           }
         } else {
           // Fallback vers catégorisation basique
@@ -174,7 +187,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
             behavior: category,
             manaProduction: extractManaFromScryfall(scryfallCard),
             entersUntapped: true, // Par défaut
-            specialRules: `Detected via Scryfall: ${scryfallCard.type_line}`
+            specialRules: `Detected via Scryfall: ${scryfallCard.type_line}`,
           }
         }
       }
@@ -195,7 +208,7 @@ export const detectLandHybrid = async (cardName: string): Promise<HybridLandInfo
       behavior: landBehavior?.behavior || localResult.type,
       manaProduction: landBehavior?.mana || [],
       entersUntapped: landBehavior?.entersUntapped === true,
-      specialRules: getSpecialRules(landBehavior?.behavior || localResult.type, cardName)
+      specialRules: getSpecialRules(landBehavior?.behavior || localResult.type, cardName),
     }
   }
 

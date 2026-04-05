@@ -1,41 +1,41 @@
-import { Box, Container, Typography } from "@mui/material";
-import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
-import { BetaBanner } from "./components";
-import { ErrorBoundary } from "./components/common/ErrorBoundary";
-import { NotificationProvider } from "./components/common/NotificationProvider";
-import { Footer } from "./components/layout/Footer";
-import { Header } from "./components/layout/Header";
-import { AccelerationProvider } from "./contexts/AccelerationContext";
+import { Box, Button, Container, Typography } from '@mui/material'
+import React, { Suspense } from 'react'
+import { Link, Route, Routes } from 'react-router-dom'
+import { BetaBanner } from './components'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { NotificationProvider } from './components/common/NotificationProvider'
+import { Footer } from './components/layout/Footer'
+import { Header } from './components/layout/Header'
+import { AccelerationProvider } from './contexts/AccelerationContext'
 
 // Only HomePage is loaded immediately (landing page)
-import { HomePage } from "./pages/HomePage";
+import { HomePage } from './pages/HomePage'
 
 // MTG-themed loading messages
 const MTG_LOADING_MESSAGES = [
-  { main: "Tapping mana sources...", sub: "Calculating probabilities" },
-  { main: "Shuffling up...", sub: "Preparing your analysis" },
-  { main: "Reading the stack...", sub: "Processing deck data" },
-  { main: "Resolving triggers...", sub: "Loading components" },
-  { main: "Drawing seven...", sub: "Initializing analyzer" },
-];
+  { main: 'Tapping mana sources...', sub: 'Calculating probabilities' },
+  { main: 'Shuffling up...', sub: 'Preparing your analysis' },
+  { main: 'Reading the stack...', sub: 'Processing deck data' },
+  { main: 'Resolving triggers...', sub: 'Loading components' },
+  { main: 'Drawing seven...', sub: 'Initializing analyzer' },
+]
 
 // Loading component for Suspense fallback with MTG flavor
 const PageLoader = () => {
   const [messageIndex] = React.useState(() =>
     Math.floor(Math.random() * MTG_LOADING_MESSAGES.length)
-  );
-  const message = MTG_LOADING_MESSAGES[messageIndex];
+  )
+  const message = MTG_LOADING_MESSAGES[messageIndex]
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "50vh",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '50vh',
           gap: 2,
         }}
       >
@@ -67,76 +67,93 @@ const PageLoader = () => {
         </Typography>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
 // Lazy-loaded pages - loaded only when navigating to them
-const AnalyzerPage = React.lazy(() => import("./pages/AnalyzerPage"));
+const AnalyzerPage = React.lazy(() => import('./pages/AnalyzerPage'))
 const GuidePage = React.lazy(() =>
-  import("./pages/GuidePage").then((m) => ({ default: m.GuidePage }))
-);
-const MathematicsPage = React.lazy(() => import("./pages/MathematicsPage"));
-const MyAnalysesPage = React.lazy(() => import("./pages/MyAnalysesPage"));
+  import('./pages/GuidePage').then((m) => ({ default: m.GuidePage }))
+)
+const MathematicsPage = React.lazy(() => import('./pages/MathematicsPage'))
+const MyAnalysesPage = React.lazy(() => import('./pages/MyAnalysesPage'))
 // PrivacyFirstPage removed - privacy info is now on HomePage
-const LandGlossaryPage = React.lazy(() => import("./pages/LandGlossaryPage"));
+const LandGlossaryPage = React.lazy(() => import('./pages/LandGlossaryPage'))
 
 const AboutPage = React.lazy(() =>
-  import("./components/layout/StaticPages").then((m) => ({
+  import('./components/layout/StaticPages').then((m) => ({
     default: m.AboutPage,
-  })),
-);
+  }))
+)
 
 const PrivacyPage = React.lazy(() =>
-  import("./components/layout/StaticPages").then((m) => ({
+  import('./components/layout/StaticPages').then((m) => ({
     default: m.PrivacyPage,
-  })),
-);
+  }))
+)
+
+const NotFoundPage = () => (
+  <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
+    <Typography variant="h2" fontWeight="bold" color="text.secondary" gutterBottom>
+      404
+    </Typography>
+    <Typography variant="h5" gutterBottom>
+      Page not found
+    </Typography>
+    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      This page doesn't exist. Maybe your spell fizzled?
+    </Typography>
+    <Button variant="contained" component={Link} to="/">
+      Back to Home
+    </Button>
+  </Container>
+)
 
 function App() {
   return (
     <ErrorBoundary>
       <NotificationProvider>
         <AccelerationProvider>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "100vh",
-          }}
-        >
-          <BetaBanner />
-          <Header />
-
           <Box
-            component="main"
             sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100vh',
             }}
           >
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/analyzer" element={<AnalyzerPage />} />
-                <Route path="/guide" element={<GuidePage />} />
-                <Route path="/mathematics" element={<MathematicsPage />} />
-                <Route path="/mes-analyses" element={<MyAnalysesPage />} />
-                {/* Privacy-First page removed - redirects to home */}
-                <Route path="/land-glossary" element={<LandGlossaryPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="*" element={<HomePage />} />
-              </Routes>
-            </Suspense>
-          </Box>
+            <BetaBanner />
+            <Header />
 
-          <Footer />
-        </Box>
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/analyzer" element={<AnalyzerPage />} />
+                  <Route path="/guide" element={<GuidePage />} />
+                  <Route path="/mathematics" element={<MathematicsPage />} />
+                  <Route path="/my-analyses" element={<MyAnalysesPage />} />
+                  <Route path="/mes-analyses" element={<MyAnalysesPage />} />
+                  <Route path="/land-glossary" element={<LandGlossaryPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </Box>
+
+            <Footer />
+          </Box>
         </AccelerationProvider>
       </NotificationProvider>
     </ErrorBoundary>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -5,6 +5,7 @@
  */
 
 import { nanoid } from 'nanoid'
+import { z } from 'zod'
 
 /**
  * Analysis record interface
@@ -19,6 +20,19 @@ export interface AnalysisRecord {
   date?: string
   consistency?: number
 }
+
+const analysisRecordSchema = z.object({
+  id: z.string(),
+  deckName: z.string(),
+  deckList: z.string(),
+  analysis: z.unknown(),
+  timestamp: z.number(),
+  shareId: z.string().optional(),
+  date: z.string().optional(),
+  consistency: z.number().optional(),
+})
+
+const importSchema = z.array(analysisRecordSchema)
 
 /**
  * Simple Storage Management
@@ -37,7 +51,7 @@ export class PrivacyStorage {
       ...analysis,
       id: nanoid(),
       timestamp: Date.now(),
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
     }
 
     analyses.unshift(record) // Add to beginning
@@ -80,7 +94,9 @@ export class PrivacyStorage {
   /**
    * Async save for compatibility
    */
-  static async saveAnalysisAsync(analysis: Omit<AnalysisRecord, 'id' | 'timestamp'>): Promise<string> {
+  static async saveAnalysisAsync(
+    analysis: Omit<AnalysisRecord, 'id' | 'timestamp'>
+  ): Promise<string> {
     return this.saveAnalysis(analysis)
   }
 
@@ -91,7 +107,7 @@ export class PrivacyStorage {
     if (typeof window === 'undefined') return
 
     const analyses = this.getMyAnalyses()
-    const filtered = analyses.filter(a => a.id !== id)
+    const filtered = analyses.filter((a) => a.id !== id)
     localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(filtered))
   }
 
@@ -135,12 +151,19 @@ export class PrivacyStorage {
   static importAnalyses(data: string): void {
     if (typeof window === 'undefined') return
 
-    const analyses = JSON.parse(data)
-    if (!Array.isArray(analyses)) {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(data)
+    } catch {
+      throw new Error('Invalid JSON data')
+    }
+
+    const result = importSchema.safeParse(parsed)
+    if (!result.success) {
       throw new Error('Invalid analysis data format')
     }
 
-    localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(analyses))
+    localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(result.data))
   }
 
   /**
@@ -164,8 +187,10 @@ export const getMyAnalysesAsync = () => PrivacyStorage.getMyAnalysesAsync()
 export const exportAnalyses = () => PrivacyStorage.exportAnalyses()
 export const exportAnalysesAsync = () => PrivacyStorage.exportAnalysesAsync()
 export const clearAllLocalData = () => PrivacyStorage.clearAllLocalData()
-export const saveAnalysisLocal = (analysis: Partial<AnalysisRecord>) => PrivacyStorage.saveAnalysis(analysis as any)
-export const saveAnalysisLocalAsync = (analysis: Partial<AnalysisRecord>) => PrivacyStorage.saveAnalysisAsync(analysis as any)
+export const saveAnalysisLocal = (analysis: Partial<AnalysisRecord>) =>
+  PrivacyStorage.saveAnalysis(analysis as any)
+export const saveAnalysisLocalAsync = (analysis: Partial<AnalysisRecord>) =>
+  PrivacyStorage.saveAnalysisAsync(analysis as any)
 export const deleteLocalAnalysis = (id: string) => PrivacyStorage.deleteAnalysis(id)
 export const deleteLocalAnalysisAsync = (id: string) => PrivacyStorage.deleteAnalysisAsync(id)
 

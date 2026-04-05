@@ -1,19 +1,8 @@
 import { MANA_COLORS, ManaColor } from '../types'
 import type { LandManaColor, LandMetadata } from '../types/lands'
+import type { ScryfallCard } from '../types/scryfall'
 import { landService } from './landService'
 import { analyzeSpellCastability, compareTempoImpact } from './manaCalculator'
-
-// Interface pour les données Scryfall
-interface ScryfallCard {
-  id: string
-  name: string
-  type_line: string
-  mana_cost?: string
-  cmc: number
-  colors: string[]
-  produced_mana?: string[]
-  layout: string
-}
 
 // Cache pour éviter les appels répétés à Scryfall
 const scryfallCache = new Map<string, ScryfallCard>()

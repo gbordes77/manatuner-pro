@@ -1,40 +1,43 @@
 import {
-    Analytics as AnalyticsIcon,
-    Close as CloseIcon,
-    DarkMode as DarkModeIcon,
-    Functions as FunctionsIcon,
-    GitHub as GitHubIcon,
-    MenuBook as GuideIcon,
-    History as HistoryIcon,
-    Home as HomeIcon,
-    Info as InfoIcon,
-    LightMode as LightModeIcon,
-    Menu as MenuIcon
-} from "@mui/icons-material";
+  Analytics as AnalyticsIcon,
+  Close as CloseIcon,
+  DarkMode as DarkModeIcon,
+  Functions as FunctionsIcon,
+  GitHub as GitHubIcon,
+  MenuBook as GuideIcon,
+  History as HistoryIcon,
+  Home as HomeIcon,
+  Info as InfoIcon,
+  LightMode as LightModeIcon,
+  Menu as MenuIcon,
+} from '@mui/icons-material'
 import {
-    AppBar,
-    Box,
-    Button,
-    Divider,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Toolbar,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-    useTheme as useMuiTheme,
-} from "@mui/material";
-import React, { useState } from "react";
-import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "../common/NotificationProvider";
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme as useMuiTheme,
+} from '@mui/material'
+import React, { useState } from 'react'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
+import { useTheme } from '../common/NotificationProvider'
 
 // Mana symbol component using Keyrune font
-const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }> = ({ color, size = 18 }) => (
+const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }> = ({
+  color,
+  size = 18,
+}) => (
   <i
     className={`ms ms-${color} ms-cost`}
     style={{
@@ -42,7 +45,7 @@ const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }
       filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
     }}
   />
-);
+)
 
 // WUBRG mana bar component
 const ManaBar: React.FC = () => (
@@ -68,38 +71,38 @@ const ManaBar: React.FC = () => (
     <ManaSymbol color="r" size={16} />
     <ManaSymbol color="g" size={16} />
   </Box>
-);
+)
 
 // Prefetch AnalyzerPage on hover for faster navigation
 const prefetchAnalyzer = () => {
-  import("../../pages/AnalyzerPage");
-};
+  import('../../pages/AnalyzerPage')
+}
 
 export const Header: React.FC = () => {
-  const muiTheme = useMuiTheme();
-  const { isDark, toggleTheme } = useTheme();
-  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const muiTheme = useMuiTheme()
+  const { isDark, toggleTheme } = useTheme()
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
+    setMobileMenuOpen(!mobileMenuOpen)
+  }
 
   const handleNavigation = (path: string) => {
-    navigate(path);
-    setMobileMenuOpen(false);
-  };
+    navigate(path)
+    setMobileMenuOpen(false)
+  }
 
   const navItems = [
-    { label: "Home", path: "/", icon: HomeIcon },
-    { label: "Analyzer", path: "/analyzer", icon: AnalyticsIcon },
-    { label: "Guide", path: "/guide", icon: GuideIcon },
-    { label: "Mathematics", path: "/mathematics", icon: FunctionsIcon },
-    { label: "My Analyses", path: "/mes-analyses", icon: HistoryIcon },
-    { label: "About", path: "/about", icon: InfoIcon },
-  ];
+    { label: 'Home', path: '/', icon: HomeIcon },
+    { label: 'Analyzer', path: '/analyzer', icon: AnalyticsIcon },
+    { label: 'Guide', path: '/guide', icon: GuideIcon },
+    { label: 'Mathematics', path: '/mathematics', icon: FunctionsIcon },
+    { label: 'My Analyses', path: '/my-analyses', icon: HistoryIcon },
+    { label: 'About', path: '/about', icon: InfoIcon },
+  ]
 
   return (
     <AppBar
@@ -132,8 +135,8 @@ export const Header: React.FC = () => {
               variant="h6"
               component="span"
               sx={{
-                textDecoration: "none",
-                color: "inherit",
+                textDecoration: 'none',
+                color: 'inherit',
                 fontWeight: 700,
                 fontFamily: '"Cinzel", serif',
                 letterSpacing: '0.05em',
@@ -164,15 +167,15 @@ export const Header: React.FC = () => {
         {!isMobile && (
           <Box
             sx={{
-              display: "flex",
+              display: 'flex',
               gap: 1,
               flexGrow: 1,
-              justifyContent: "center",
+              justifyContent: 'center',
             }}
           >
             {navItems.map((item) => {
-              const isAnalyzer = item.path === "/analyzer";
-              const isActive = location.pathname === item.path;
+              const isAnalyzer = item.path === '/analyzer'
+              const isActive = location.pathname === item.path
 
               return (
                 <Button
@@ -180,59 +183,58 @@ export const Header: React.FC = () => {
                   component={RouterLink}
                   to={item.path}
                   color="inherit"
-                  variant={isAnalyzer ? "contained" : isActive ? "outlined" : "text"}
+                  variant={isAnalyzer ? 'contained' : isActive ? 'outlined' : 'text'}
                   onMouseEnter={isAnalyzer ? prefetchAnalyzer : undefined}
                   startIcon={<item.icon />}
                   sx={{
-                    borderColor: isActive ? "rgba(255,255,255,0.5)" : "transparent",
+                    borderColor: isActive ? 'rgba(255,255,255,0.5)' : 'transparent',
                     // Style CTA pour Analyzer - gold multicolor style
                     ...(isAnalyzer && {
                       background: 'linear-gradient(135deg, #E9B54C 0%, #FFD700 50%, #E9B54C 100%)',
-                      color: "#1a1a2e",
-                      fontWeight: "bold",
-                      textTransform: "none",
+                      color: '#1a1a2e',
+                      fontWeight: 'bold',
+                      textTransform: 'none',
                       px: 2.5,
-                      boxShadow: "0 2px 12px rgba(233, 181, 76, 0.5)",
+                      boxShadow: '0 2px 12px rgba(233, 181, 76, 0.5)',
                       border: '1px solid rgba(255,255,255,0.3)',
-                      "&:hover": {
-                        background: 'linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FFD700 100%)',
-                        boxShadow: "0 4px 20px rgba(255, 215, 0, 0.6)",
-                        transform: "translateY(-1px)",
+                      '&:hover': {
+                        background:
+                          'linear-gradient(135deg, #FFD700 0%, #FFC107 50%, #FFD700 100%)',
+                        boxShadow: '0 4px 20px rgba(255, 215, 0, 0.6)',
+                        transform: 'translateY(-1px)',
                       },
-                      "& .MuiSvgIcon-root": {
-                        color: "#1a1a2e",
+                      '& .MuiSvgIcon-root': {
+                        color: '#1a1a2e',
                       },
                     }),
                     // Style pour Guide
-                    ...(item.path === "/guide" && {
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    ...(item.path === '/guide' && {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
                       },
-                      fontWeight: "bold",
-                      textTransform: "none",
+                      fontWeight: 'bold',
+                      textTransform: 'none',
                     }),
                   }}
                 >
                   {item.label}
                 </Button>
-              );
+              )
             })}
           </Box>
         )}
 
         {/* Theme Toggle */}
-        <Tooltip
-          title={`Switch to ${isDark ? "light" : "dark"} theme`}
-        >
+        <Tooltip title={`Switch to ${isDark ? 'light' : 'dark'} theme`}>
           <IconButton
             color="inherit"
             onClick={toggleTheme}
             sx={{
               ml: 1,
-              transition: "transform 0.3s ease",
-              "&:hover": {
-                transform: "rotate(180deg)",
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'rotate(180deg)',
               },
             }}
           >
@@ -284,15 +286,15 @@ export const Header: React.FC = () => {
         {/* Drawer Header with WUBRG */}
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             p: 2,
             background: isDark
               ? 'linear-gradient(135deg, #1a1a1e 0%, #2d2d35 100%)'
               : 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
-            color: "white",
+            color: 'white',
           }}
         >
           <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -317,12 +319,16 @@ export const Header: React.FC = () => {
         {/* Navigation Items */}
         <List sx={{ pt: 1 }}>
           {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            const isAnalyzer = item.path === "/analyzer";
+            const Icon = item.icon
+            const isActive = location.pathname === item.path
+            const isAnalyzer = item.path === '/analyzer'
 
             return (
-              <ListItem key={item.path} disablePadding sx={{ px: isAnalyzer ? 1 : 0, py: isAnalyzer ? 0.5 : 0 }}>
+              <ListItem
+                key={item.path}
+                disablePadding
+                sx={{ px: isAnalyzer ? 1 : 0, py: isAnalyzer ? 0.5 : 0 }}
+              >
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   selected={isActive}
@@ -333,23 +339,27 @@ export const Header: React.FC = () => {
                       background: 'linear-gradient(135deg, #E9B54C 0%, #FFD700 100%)',
                       borderRadius: 2,
                       my: 0.5,
-                      "&:hover": {
+                      '&:hover': {
                         background: 'linear-gradient(135deg, #FFD700 0%, #FFC107 100%)',
                       },
                     }),
-                    "&.Mui-selected": {
-                      backgroundColor: isAnalyzer ? undefined : muiTheme.palette.primary.main + "20",
-                      borderRight: isAnalyzer ? "none" : `3px solid ${muiTheme.palette.primary.main}`,
+                    '&.Mui-selected': {
+                      backgroundColor: isAnalyzer
+                        ? undefined
+                        : muiTheme.palette.primary.main + '20',
+                      borderRight: isAnalyzer
+                        ? 'none'
+                        : `3px solid ${muiTheme.palette.primary.main}`,
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       color: isAnalyzer
-                        ? "#1a1a2e"
+                        ? '#1a1a2e'
                         : isActive
                           ? muiTheme.palette.primary.main
-                          : "inherit",
+                          : 'inherit',
                       minWidth: 40,
                     }}
                   >
@@ -358,17 +368,17 @@ export const Header: React.FC = () => {
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
-                      fontWeight: isAnalyzer || isActive ? "bold" : "normal",
+                      fontWeight: isAnalyzer || isActive ? 'bold' : 'normal',
                       color: isAnalyzer
-                        ? "#1a1a2e"
+                        ? '#1a1a2e'
                         : isActive
                           ? muiTheme.palette.primary.main
-                          : "inherit",
+                          : 'inherit',
                     }}
                   />
                 </ListItemButton>
               </ListItem>
-            );
+            )
           })}
         </List>
 
@@ -381,9 +391,7 @@ export const Header: React.FC = () => {
               <ListItemIcon sx={{ minWidth: 40 }}>
                 {isDark ? <LightModeIcon /> : <DarkModeIcon />}
               </ListItemIcon>
-              <ListItemText
-                primary={isDark ? "Light Mode" : "Dark Mode"}
-              />
+              <ListItemText primary={isDark ? 'Light Mode' : 'Dark Mode'} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
@@ -403,5 +411,5 @@ export const Header: React.FC = () => {
         </List>
       </Drawer>
     </AppBar>
-  );
-};
+  )
+}

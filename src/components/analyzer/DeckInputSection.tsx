@@ -66,7 +66,7 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = memo(
               fullWidth
               multiline
               rows={isMobile ? 8 : 12}
-              label="List of deck"
+              label="Deck List"
               placeholder="Paste your decklist here...&#10;Format: 4 Lightning Bolt&#10;3 Counterspell&#10;..."
               value={deckList}
               onChange={(e) => setDeckList(e.target.value)}

@@ -23,7 +23,7 @@ yarn-error.log*
 # Build outputs
 dist/
 build/
-lib/
+/lib/
 
 # Vite
 .vite/

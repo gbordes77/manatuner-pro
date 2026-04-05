@@ -1,43 +1,8 @@
 import type { Card } from '@/types'
+import type { ScryfallCard } from '../types/scryfall'
 
 const SCRYFALL_API_BASE = 'https://api.scryfall.com'
 const RATE_LIMIT_DELAY = 100 // 100ms entre les requêtes
-
-interface ScryfallCard {
-  id: string
-  name: string
-  mana_cost?: string
-  cmc: number
-  colors: string[]
-  color_identity: string[]
-  type_line: string
-  oracle_text?: string  // Added for land detection
-  rarity: string
-  set: string
-  image_uris?: {
-    small?: string
-    normal?: string
-    large?: string
-  }
-  card_faces?: ScryfallCardFace[]  // Updated type
-  layout: string
-  produced_mana?: string[]
-  keywords?: string[]  // Added for land detection
-}
-
-/** Card face for MDFC and split cards */
-interface ScryfallCardFace {
-  name: string
-  mana_cost?: string
-  type_line: string
-  oracle_text?: string
-  colors?: string[]
-  image_uris?: {
-    small?: string
-    normal?: string
-    large?: string
-  }
-}
 
 interface ScryfallResponse<T> {
   object: string
@@ -55,7 +20,7 @@ const collectionCache = new Map<string, Card[]>()
 let lastRequestTime = 0
 
 const delay = (ms: number): Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 const ensureRateLimit = async (): Promise<void> => {
@@ -88,14 +53,14 @@ const convertScryfallCard = (scryfallCard: ScryfallCard): Card => {
     imageUris: scryfallCard.image_uris,
     layout: scryfallCard.layout,
     // Include card_faces for DFCs (double-faced cards, transform, modal_dfc, etc.)
-    card_faces: scryfallCard.card_faces?.map(face => ({
+    card_faces: scryfallCard.card_faces?.map((face) => ({
       name: face.name,
       mana_cost: face.mana_cost,
       type_line: face.type_line,
       oracle_text: face.oracle_text,
       colors: face.colors || [],
-      image_uris: face.image_uris
-    }))
+      image_uris: face.image_uris,
+    })),
   } as Card
 }
 
@@ -134,9 +99,9 @@ export const searchCardByName = async (name: string): Promise<Card | null> => {
     name.trim(),
     name.replace(/'/g, "'"), // Apostrophe droite → courbe
     name.replace(/'/g, "'"), // Apostrophe courbe → droite
-    name.replace(/['']/g, ""), // Supprimer apostrophes
-    name.replace(/,/g, ""), // Supprimer virgules
-    name.replace(/\s+/g, " ").trim() // Normaliser espaces
+    name.replace(/['']/g, ''), // Supprimer apostrophes
+    name.replace(/,/g, ''), // Supprimer virgules
+    name.replace(/\s+/g, ' ').trim(), // Normaliser espaces
   ]
 
   for (const variant of nameVariants) {
@@ -171,14 +136,14 @@ export const searchCardsByCollection = async (cardNames: string[]): Promise<Card
   }
 
   try {
-    const identifiers = cardNames.map(name => ({ name: name.trim() }))
+    const identifiers = cardNames.map((name) => ({ name: name.trim() }))
 
     const response = await fetch(`${SCRYFALL_API_BASE}/cards/collection`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ identifiers })
+      body: JSON.stringify({ identifiers }),
     })
 
     if (!response.ok) {
@@ -190,7 +155,6 @@ export const searchCardsByCollection = async (cardNames: string[]): Promise<Card
 
     collectionCache.set(cacheKey, cards)
     return cards
-
   } catch (error) {
     console.error('Collection search failed:', error)
 
@@ -210,15 +174,21 @@ export const searchCardsByCollection = async (cardNames: string[]): Promise<Card
 /**
  * Parse une decklist au format standard
  */
-export const parseDecklistText = (text: string): { name: string, quantity: number }[] => {
-  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0)
-  const cards: { name: string, quantity: number }[] = []
+export const parseDecklistText = (text: string): { name: string; quantity: number }[] => {
+  const lines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+  const cards: { name: string; quantity: number }[] = []
 
   for (const line of lines) {
     // Skip les commentaires et sections
-    if (line.startsWith('//') || line.startsWith('#') ||
-        line.toLowerCase().includes('sideboard') ||
-        line.toLowerCase().includes('maybeboard')) {
+    if (
+      line.startsWith('//') ||
+      line.startsWith('#') ||
+      line.toLowerCase().includes('sideboard') ||
+      line.toLowerCase().includes('maybeboard')
+    ) {
       continue
     }
 
@@ -247,29 +217,31 @@ export const parseDecklistText = (text: string): { name: string, quantity: numbe
 /**
  * Analyse une decklist complète avec l'API Scryfall
  */
-export const analyzeDecklistText = async (text: string): Promise<{
+export const analyzeDecklistText = async (
+  text: string
+): Promise<{
   cards: Card[]
   notFound: string[]
   totalCards: number
 }> => {
   const parsedCards = parseDecklistText(text)
-  const uniqueNames = [...new Set(parsedCards.map(c => c.name))]
+  const uniqueNames = [...new Set(parsedCards.map((c) => c.name))]
 
-  console.log(`Analyzing decklist with ${parsedCards.length} entries, ${uniqueNames.length} unique cards`)
+  console.log(
+    `Analyzing decklist with ${parsedCards.length} entries, ${uniqueNames.length} unique cards`
+  )
 
   const foundCards = await searchCardsByCollection(uniqueNames)
-  const foundNames = new Set(foundCards.map(c => c.name.toLowerCase()))
+  const foundNames = new Set(foundCards.map((c) => c.name.toLowerCase()))
 
-  const notFound = uniqueNames.filter(name =>
-    !foundNames.has(name.toLowerCase())
-  )
+  const notFound = uniqueNames.filter((name) => !foundNames.has(name.toLowerCase()))
 
   const totalCards = parsedCards.reduce((sum, card) => sum + card.quantity, 0)
 
   return {
     cards: foundCards,
     notFound,
-    totalCards
+    totalCards,
   }
 }
 
@@ -287,9 +259,9 @@ export const getLandSuggestions = async (colors: string[]): Promise<Card[]> => {
   try {
     // Recherche de terrains basiques et non-basiques
     const queries = [
-      `t:land (${colors.map(c => `c:${c}`).join(' OR ')})`,
+      `t:land (${colors.map((c) => `c:${c}`).join(' OR ')})`,
       `t:land produces:${colors.join('')}`,
-      `t:land ${colors.map(c => `produces:${c}`).join(' ')} -t:basic`
+      `t:land ${colors.map((c) => `produces:${c}`).join(' ')} -t:basic`,
     ]
 
     const allLands: Card[] = []
@@ -313,13 +285,10 @@ export const getLandSuggestions = async (colors: string[]): Promise<Card[]> => {
     }
 
     // Déduplique et trie par popularité
-    const uniqueLands = Array.from(
-      new Map(allLands.map(land => [land.id, land])).values()
-    )
+    const uniqueLands = Array.from(new Map(allLands.map((land) => [land.id, land])).values())
 
     collectionCache.set(cacheKey, uniqueLands)
     return uniqueLands
-
   } catch (error) {
     console.error('Land suggestions failed:', error)
     return []
@@ -341,7 +310,7 @@ export const getCacheStats = () => {
   return {
     cardCacheSize: cardCache.size,
     collectionCacheSize: collectionCache.size,
-    totalCachedItems: cardCache.size + collectionCache.size
+    totalCachedItems: cardCache.size + collectionCache.size,
   }
 }
 
@@ -406,7 +375,6 @@ export const fetchLandData = async (cardName: string): Promise<ScryfallLandData 
 
     const data = await response.json()
     return processLandData(data, cacheKey)
-
   } catch (error) {
     console.warn(`[Scryfall] Failed to fetch land data for "${cardName}":`, error)
     landDataCache.set(cacheKey, null)
@@ -419,8 +387,9 @@ export const fetchLandData = async (cardName: string): Promise<ScryfallLandData 
  */
 const processLandData = (data: ScryfallCard, cacheKey: string): ScryfallLandData | null => {
   // Check if it's a land
-  const isLand = data.type_line?.toLowerCase().includes('land') ||
-    data.card_faces?.some(face => face.type_line?.toLowerCase().includes('land'))
+  const isLand =
+    data.type_line?.toLowerCase().includes('land') ||
+    data.card_faces?.some((face) => face.type_line?.toLowerCase().includes('land'))
 
   if (!isLand) {
     landDataCache.set(cacheKey, null)
@@ -435,13 +404,13 @@ const processLandData = (data: ScryfallCard, cacheKey: string): ScryfallLandData
     produced_mana: data.produced_mana,
     layout: data.layout,
     keywords: data.keywords,
-    card_faces: data.card_faces?.map(face => ({
+    card_faces: data.card_faces?.map((face) => ({
       name: face.name,
       type_line: face.type_line,
       oracle_text: face.oracle_text,
       mana_cost: face.mana_cost,
-      colors: face.colors
-    }))
+      colors: face.colors,
+    })),
   }
 
   landDataCache.set(cacheKey, landData)
@@ -478,12 +447,12 @@ export const fetchLandDataBatch = async (
   try {
     await ensureRateLimit()
 
-    const identifiers = toFetch.map(name => ({ name: name.trim() }))
+    const identifiers = toFetch.map((name) => ({ name: name.trim() }))
 
     const response = await fetch(`${SCRYFALL_API_BASE}/cards/collection`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifiers })
+      body: JSON.stringify({ identifiers }),
     })
 
     if (!response.ok) {
@@ -499,14 +468,13 @@ export const fetchLandDataBatch = async (
     }
 
     // Mark not found cards
-    const foundNames = new Set((data.data || []).map(c => c.name.toLowerCase()))
+    const foundNames = new Set((data.data || []).map((c) => c.name.toLowerCase()))
     for (const name of toFetch) {
       if (!foundNames.has(name.toLowerCase())) {
         landDataCache.set(name.toLowerCase().trim(), null)
         results.set(name, null)
       }
     }
-
   } catch (error) {
     console.error('[Scryfall] Batch land data fetch failed:', error)
 
