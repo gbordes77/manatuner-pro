@@ -9,13 +9,13 @@
  */
 
 import type {
-    DeckContext,
-    ETBCondition,
-    ETBParseResult,
-    ILandService,
-    LandCategory,
-    LandManaColor,
-    LandMetadata
+  DeckContext,
+  ETBCondition,
+  ETBParseResult,
+  ILandService,
+  LandCategory,
+  LandManaColor,
+  LandMetadata,
 } from '@/types/lands'
 
 import { LAND_SEED } from '../data/landSeed'
@@ -28,10 +28,13 @@ import { fetchLandData, type ScryfallLandData } from './scryfall'
 
 /** Mana symbol to color mapping */
 const MANA_SYMBOL_MAP: Record<string, LandManaColor> = {
-  'W': 'W', 'U': 'U', 'B': 'B', 'R': 'R', 'G': 'G', 'C': 'C'
+  W: 'W',
+  U: 'U',
+  B: 'B',
+  R: 'R',
+  G: 'G',
+  C: 'C',
 }
-
-
 
 // =============================================================================
 // ETB DETECTION PATTERNS
@@ -52,7 +55,7 @@ const ETB_PATTERNS: Array<{
     pattern: /you may pay (\d+) life.*if you don't.*enters.*tapped/i,
     getCondition: (match) => ({ type: 'pay_life', amount: parseInt(match[1], 10) }),
     category: 'shock',
-    confidence: 98
+    confidence: 98,
   },
 
   // Fastlands: "~ enters the battlefield tapped unless you control two or fewer other lands."
@@ -60,7 +63,7 @@ const ETB_PATTERNS: Array<{
     pattern: /enters.*tapped unless you control (?:two|2) or fewer other lands/i,
     getCondition: () => ({ type: 'control_lands_max', threshold: 2 }),
     category: 'fast',
-    confidence: 95
+    confidence: 95,
   },
 
   // Slowlands: "~ enters the battlefield tapped unless you control two or more other lands."
@@ -68,7 +71,7 @@ const ETB_PATTERNS: Array<{
     pattern: /enters.*tapped unless you control (?:two|2) or more other lands/i,
     getCondition: () => ({ type: 'control_lands_min', threshold: 2 }),
     category: 'slow',
-    confidence: 95
+    confidence: 95,
   },
 
   // Battle lands: "~ enters the battlefield tapped unless you control two or more basic lands."
@@ -76,26 +79,27 @@ const ETB_PATTERNS: Array<{
     pattern: /enters.*tapped unless you control (?:two|2) or more basic lands/i,
     getCondition: () => ({ type: 'control_basics_min', threshold: 2 }),
     category: 'battle',
-    confidence: 95
+    confidence: 95,
   },
 
   // Checklands: "~ enters the battlefield tapped unless you control a Plains or Island."
   {
-    pattern: /enters.*tapped unless you control (?:a |an )?([A-Z][a-z]+)(?: or (?:a |an )?([A-Z][a-z]+))?/i,
+    pattern:
+      /enters.*tapped unless you control (?:a |an )?([A-Z][a-z]+)(?: or (?:a |an )?([A-Z][a-z]+))?/i,
     getCondition: (match) => {
       const basicTypes = [match[1]]
       if (match[2]) basicTypes.push(match[2])
       return { type: 'control_basic', basicTypes }
     },
     category: 'check',
-    confidence: 95
+    confidence: 95,
   },
 
   // Reveal lands: "you may reveal an Island card from your hand. If you don't, ~ enters the battlefield tapped."
   {
     pattern: /you may reveal (?:a |an )?([A-Za-z]+) card.*if you don't.*enters.*tapped/i,
     getCondition: (match) => ({ type: 'reveal_card', cardType: match[1] }),
-    confidence: 90
+    confidence: 90,
   },
 
   // Turn threshold (Starting Town): "~ enters the battlefield tapped unless it's your first, second, or third turn."
@@ -111,15 +115,15 @@ const ETB_PATTERNS: Array<{
       if (text.includes('fifth')) maxTurn = 5
       return { type: 'turn_threshold', threshold: maxTurn }
     },
-    confidence: 92
+    confidence: 92,
   },
 
   // Always tapped (simple pattern): "~ enters the battlefield tapped."
   {
     pattern: /enters the battlefield tapped\.$/im,
     getCondition: () => ({ type: 'pay_life', amount: 0 }), // Placeholder, will be overridden
-    confidence: 100
-  }
+    confidence: 100,
+  },
 ]
 
 // =============================================================================
@@ -135,17 +139,21 @@ const CATEGORY_PATTERNS: Array<{
   { pattern: (_, type) => type.toLowerCase().includes('basic'), category: 'basic' },
 
   // Fetchlands (search library for land)
-  { pattern: /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest)/i, category: 'fetch' },
+  {
+    pattern: /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest)/i,
+    category: 'fetch',
+  },
 
   // Triomes (three basic types)
   {
     pattern: (_, type) => {
       const types = type.toLowerCase()
-      const basicCount = ['plains', 'island', 'swamp', 'mountain', 'forest']
-        .filter(t => types.includes(t)).length
+      const basicCount = ['plains', 'island', 'swamp', 'mountain', 'forest'].filter((t) =>
+        types.includes(t)
+      ).length
       return basicCount >= 3
     },
-    category: 'triome'
+    category: 'triome',
   },
 
   // Creature lands
@@ -164,7 +172,10 @@ const CATEGORY_PATTERNS: Array<{
   { pattern: /\{1\}, \{T\}: Add \{[WUBRG]\}\{[WUBRG]\}/i, category: 'filter' },
 
   // Painlands
-  { pattern: /\{T\}: Add \{C\}\..*\{T\}: Add \{[WUBRG]\} or \{[WUBRG]\}.*deals 1 damage/i, category: 'pain' }
+  {
+    pattern: /\{T\}: Add \{C\}\..*\{T\}: Add \{[WUBRG]\} or \{[WUBRG]\}.*deals 1 damage/i,
+    category: 'pain',
+  },
 ]
 
 // =============================================================================
@@ -265,11 +276,7 @@ class LandService implements ILandService {
    * @param context - Deck context for condition evaluation
    * @returns Probability between 0 and 1
    */
-  getUntappedProbability(
-    land: LandMetadata,
-    turn: number,
-    context: DeckContext
-  ): number {
+  getUntappedProbability(land: LandMetadata, turn: number, context: DeckContext): number {
     const { type, condition } = land.etbBehavior
 
     switch (type) {
@@ -344,8 +351,8 @@ class LandService implements ILandService {
       scryfallData: {
         oracleText: data.oracle_text,
         typeLine: data.type_line,
-        layout: data.layout
-      }
+        layout: data.layout,
+      },
     }
   }
 
@@ -356,7 +363,7 @@ class LandService implements ILandService {
     const faces = data.card_faces || []
 
     // Find the first land face
-    const landFace = faces.find(f => f.type_line?.toLowerCase().includes('land'))
+    const landFace = faces.find((f) => f.type_line?.toLowerCase().includes('land'))
 
     if (!landFace) {
       // No land face found, return basic unknown
@@ -369,33 +376,48 @@ class LandService implements ILandService {
         isFetch: false,
         isCreatureLand: false,
         hasChannel: false,
-        confidence: 50
+        confidence: 50,
       }
     }
 
     const oracleText = landFace.oracle_text || ''
-    const produces = this.extractColorsFromOracleText(oracleText)
+
+    // Use Scryfall's produced_mana as primary source (authoritative),
+    // fallback to oracle text regex extraction
+    let produces: LandManaColor[]
+    if (data.produced_mana && data.produced_mana.length > 0) {
+      produces = data.produced_mana
+        .map((symbol) => MANA_SYMBOL_MAP[symbol])
+        .filter((color): color is LandManaColor => color !== undefined)
+    } else {
+      produces = this.extractColorsFromOracleText(oracleText)
+    }
+
+    const producesAny = produces.length >= 5 || /any\s+color/i.test(oracleText)
+
+    // Detect ETB behavior from oracle text (not all MDFCs enter untapped)
+    const etbResult = this.parseETBBehavior(oracleText)
 
     // Find the other face name
-    const otherFace = faces.find(f => f.name !== landFace.name)
+    const otherFace = faces.find((f) => f.name !== landFace.name)
 
     return {
       name: landFace.name,
       category: 'pathway',
       produces,
-      producesAny: false,
-      etbBehavior: { type: 'always_untapped' }, // Pathways always enter untapped
+      producesAny,
+      etbBehavior: etbResult.behavior,
       isFetch: false,
       isCreatureLand: false,
       hasChannel: false,
       isMDFC: true,
       otherFace: otherFace?.name,
-      confidence: 95,
+      confidence: etbResult.confidence,
       scryfallData: {
         oracleText: landFace.oracle_text,
         typeLine: landFace.type_line,
-        layout: data.layout
-      }
+        layout: data.layout,
+      },
     }
   }
 
@@ -408,13 +430,15 @@ class LandService implements ILandService {
    */
   private parseETBBehavior(oracleText: string): ETBParseResult {
     // Check for "enters the battlefield tapped" without conditions
-    if (/enters the battlefield tapped\.$/im.test(oracleText) &&
-        !/unless/i.test(oracleText) &&
-        !/you may pay/i.test(oracleText)) {
+    if (
+      /enters the battlefield tapped\.$/im.test(oracleText) &&
+      !/unless/i.test(oracleText) &&
+      !/you may pay/i.test(oracleText)
+    ) {
       return {
         behavior: { type: 'always_tapped' },
         confidence: 100,
-        matchedPattern: 'always_tapped'
+        matchedPattern: 'always_tapped',
       }
     }
 
@@ -429,14 +453,14 @@ class LandService implements ILandService {
           return {
             behavior: { type: 'always_tapped' },
             confidence,
-            matchedPattern: 'always_tapped'
+            matchedPattern: 'always_tapped',
           }
         }
 
         return {
           behavior: { type: 'conditional', condition },
           confidence,
-          matchedPattern: pattern.toString()
+          matchedPattern: pattern.toString(),
         }
       }
     }
@@ -445,7 +469,7 @@ class LandService implements ILandService {
     return {
       behavior: { type: 'always_untapped' },
       confidence: 70,
-      matchedPattern: 'default_untapped'
+      matchedPattern: 'default_untapped',
     }
   }
 
@@ -457,11 +481,7 @@ class LandService implements ILandService {
    * Evaluate an ETB condition for a specific turn and deck context.
    * Returns probability of entering untapped.
    */
-  private evaluateCondition(
-    condition: ETBCondition,
-    turn: number,
-    context: DeckContext
-  ): number {
+  private evaluateCondition(condition: ETBCondition, turn: number, context: DeckContext): number {
     switch (condition.type) {
       case 'pay_life':
         // Shocklands: depends on strategy
@@ -495,9 +515,7 @@ class LandService implements ILandService {
       case 'control_basic': {
         // Checklands: depends on basic land composition
         const basicTypes = condition.basicTypes || []
-        const hasMatchingBasics = basicTypes.some(type =>
-          (context.basicTypeCount[type] || 0) > 0
-        )
+        const hasMatchingBasics = basicTypes.some((type) => (context.basicTypeCount[type] || 0) > 0)
 
         if (!hasMatchingBasics) {
           return 0.0
@@ -543,7 +561,7 @@ class LandService implements ILandService {
     // Use produced_mana if available
     if (data.produced_mana && data.produced_mana.length > 0) {
       return data.produced_mana
-        .map(symbol => MANA_SYMBOL_MAP[symbol])
+        .map((symbol) => MANA_SYMBOL_MAP[symbol])
         .filter((color): color is LandManaColor => color !== undefined)
     }
 
@@ -553,18 +571,24 @@ class LandService implements ILandService {
 
   /**
    * Extract colors from oracle text mana symbols.
+   * Matches all {X} symbols in "Add" clauses, including "Add {W} or {B}",
+   * "Add {G}, {R}, or {W}", "Add one mana of any color", etc.
    */
   private extractColorsFromOracleText(oracleText: string): LandManaColor[] {
     const colors: Set<LandManaColor> = new Set()
 
-    // Match patterns like "{T}: Add {W}." or "{T}: Add {G} or {W}."
-    const addManaPattern = /add \{([WUBRGC])\}/gi
-    let match
-
-    while ((match = addManaPattern.exec(oracleText)) !== null) {
-      const color = MANA_SYMBOL_MAP[match[1].toUpperCase()]
-      if (color) {
-        colors.add(color)
+    // Match all {X} mana symbols that appear in "Add" clauses
+    // Covers: "Add {W}", "Add {W} or {B}", "Add {G}, {R}, or {W}", etc.
+    const addClausePattern = /add\b[^.]*?\./gi
+    let clause
+    while ((clause = addClausePattern.exec(oracleText)) !== null) {
+      const symbolPattern = /\{([WUBRGC])\}/g
+      let symbol
+      while ((symbol = symbolPattern.exec(clause[0])) !== null) {
+        const color = MANA_SYMBOL_MAP[symbol[1].toUpperCase()]
+        if (color) {
+          colors.add(color)
+        }
       }
     }
 
@@ -574,11 +598,7 @@ class LandService implements ILandService {
   /**
    * Detect land category from name, type line, and oracle text.
    */
-  private detectCategory(
-    name: string,
-    typeLine: string,
-    oracleText: string
-  ): LandCategory {
+  private detectCategory(name: string, typeLine: string, oracleText: string): LandCategory {
     // Check each pattern
     for (const { pattern, category } of CATEGORY_PATTERNS) {
       if (typeof pattern === 'function') {
@@ -594,8 +614,9 @@ class LandService implements ILandService {
 
     // Check type line for dual land types (shock, check, etc.)
     const typeLineLower = typeLine.toLowerCase()
-    const basicTypeCount = ['plains', 'island', 'swamp', 'mountain', 'forest']
-      .filter(t => typeLineLower.includes(t)).length
+    const basicTypeCount = ['plains', 'island', 'swamp', 'mountain', 'forest'].filter((t) =>
+      typeLineLower.includes(t)
+    ).length
 
     if (basicTypeCount === 2) {
       // Could be shock, check, battle, etc. - analyze ETB
@@ -612,7 +633,9 @@ class LandService implements ILandService {
    * Detect if a land is a fetchland.
    */
   private detectFetchland(oracleText: string): boolean {
-    return /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest)/i.test(oracleText)
+    return /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest)/i.test(
+      oracleText
+    )
   }
 
   /**
@@ -620,7 +643,8 @@ class LandService implements ILandService {
    */
   private extractFetchTargets(oracleText: string): string[] {
     const targets: string[] = []
-    const pattern = /search your library for (?:a |an )?((?:plains|island|swamp|mountain|forest)(?:(?: or )?(?:plains|island|swamp|mountain|forest))*)/i
+    const pattern =
+      /search your library for (?:a |an )?((?:plains|island|swamp|mountain|forest)(?:(?: or )?(?:plains|island|swamp|mountain|forest))*)/i
     const match = oracleText.match(pattern)
 
     if (match) {
@@ -673,14 +697,14 @@ export function createDeckContext(
   lands: LandMetadata[],
   assumePayLife: boolean = true
 ): DeckContext {
-  const basicCount = lands.filter(l => l.category === 'basic').length
+  const basicCount = lands.filter((l) => l.category === 'basic').length
 
   const basicTypeCount: Record<string, number> = {
-    'Plains': 0,
-    'Island': 0,
-    'Swamp': 0,
-    'Mountain': 0,
-    'Forest': 0
+    Plains: 0,
+    Island: 0,
+    Swamp: 0,
+    Mountain: 0,
+    Forest: 0,
   }
 
   for (const land of lands) {
@@ -700,6 +724,6 @@ export function createDeckContext(
       // Simplified: return ratio of lands with matching basic type
       const typeCount = basicTypeCount[cardType] || 0
       return lands.length > 0 ? typeCount / lands.length : 0
-    }
+    },
   }
 }

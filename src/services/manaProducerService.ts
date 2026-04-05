@@ -29,7 +29,7 @@ import { computeAcceleratedCastability, computeCastabilityByTurn } from './casta
 // =============================================================================
 
 const CACHE_KEY = 'manatuner_producer_cache'
-const CACHE_VERSION = '1.0'
+const CACHE_VERSION = '2.0' // Bumped: v2.0 uses Scryfall produced_mana + improved oracle analysis
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 
 // =============================================================================
@@ -181,34 +181,105 @@ export const producerCacheService = new ProducerCacheService()
 // =============================================================================
 
 /**
- * Heuristic patterns for detecting mana producers from oracle text
+ * Analyze oracle text to detect mana production capabilities.
+ *
+ * Covers all common mana producer patterns:
+ * - {T}: Add {X}                    (dorks, rocks, basic mana)
+ * - {T}: Add {X} or {Y}            (talismans, multi-color rocks)
+ * - {T}: Add {C}{C}                 (Sol Ring, etc.)
+ * - {T}, Pay {E}: Add ...           (energy-based: Solar Transformer)
+ * - Remove a counter: Add ...       (charge counters: Pentad Prism)
+ * - Add one mana of any color       (any-color producers)
+ * - Add {X}{X}{X}                   (rituals: Dark Ritual, Irencrag Feat)
+ * - Create ... Treasure             (treasure makers)
+ * - Sacrifice: Add ...              (one-shot mana like Lotus Petal)
  */
-const MANA_PRODUCER_PATTERNS = [
-  // Dorks
-  { pattern: /\{T\}:\s*Add\s+\{([WUBRGC])\}/i, type: 'DORK' as const },
-  {
-    pattern: /\{T\}:\s*Add\s+one\s+mana\s+of\s+any\s+color/i,
-    type: 'DORK' as const,
-    producesAny: true,
-  },
+function analyzeOracleForMana(oracleText: string): {
+  type: 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | null
+  producesAny: boolean
+  colorLetters: string[]
+  amount: number
+  oneShot: boolean
+} {
+  const result = {
+    type: null as 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | null,
+    producesAny: false,
+    colorLetters: [] as string[],
+    amount: 1,
+    oneShot: false,
+  }
 
-  // Rocks
-  { pattern: /\{T\}:\s*Add\s+\{C\}\{C\}/i, type: 'ROCK' as const, amount: 2 },
-  { pattern: /\{T\}:\s*Add\s+\{C\}/i, type: 'ROCK' as const },
+  if (!oracleText) return result
 
-  // Rituals
-  {
-    pattern: /Add\s+\{([WUBRGC])\}\{([WUBRGC])\}\{([WUBRGC])\}/i,
-    type: 'RITUAL' as const,
-    amount: 3,
-  },
+  const colors = new Set<string>()
 
-  // Treasures
-  { pattern: /create.*treasure/i, type: 'TREASURE' as const },
-]
+  // 1. Detect "any color" production (highest priority)
+  if (/add\s+one\s+mana\s+of\s+any\s+(?:color|type)/i.test(oracleText)) {
+    result.producesAny = true
+    result.type = 'ROCK'
+  }
+
+  // 2. Extract ALL "Add" clauses and find mana symbols in them
+  const addClauses = oracleText.match(/add\b[^.]*?\./gi) || []
+  for (const clause of addClauses) {
+    // Count consecutive mana symbols for amount (e.g., Add {R}{R}{R} = 3)
+    const consecutive = clause.match(/\{([WUBRGC])\}(?:\{([WUBRGC])\})?(?:\{([WUBRGC])\})?/i)
+    if (consecutive) {
+      const symbols = [consecutive[1], consecutive[2], consecutive[3]].filter(Boolean)
+      if (symbols.length >= 3) {
+        result.amount = Math.max(result.amount, symbols.length)
+        result.type = 'RITUAL'
+        result.oneShot = true
+      }
+    }
+
+    // Extract all individual color symbols from the clause
+    const symbolMatches = clause.matchAll(/\{([WUBRGC])\}/gi)
+    for (const m of symbolMatches) {
+      colors.add(m[1].toUpperCase())
+    }
+  }
+
+  // 3. Detect producer type if not already set
+  if (!result.type) {
+    // {T}: Add ... (standard tap ability)
+    if (/\{T\}[^.]*?:\s*add\b/i.test(oracleText)) {
+      result.type = 'ROCK'
+    }
+    // Remove a counter: Add ... (Pentad Prism, Gemstone Mine)
+    else if (/remove\s+a\s+.*?counter[^.]*?:\s*add\b/i.test(oracleText)) {
+      result.type = 'ROCK'
+      result.oneShot = true // charge-counter based = limited uses
+    }
+    // Sacrifice: Add ... (Lotus Petal, etc.)
+    else if (/sacrifice[^.]*?:\s*add\b/i.test(oracleText)) {
+      result.type = 'ROCK'
+      result.oneShot = true
+    }
+    // Create Treasure tokens
+    else if (/create.*treasure/i.test(oracleText)) {
+      result.type = 'TREASURE'
+      result.producesAny = true
+    }
+  }
+
+  // 4. Check for {C}{C} production (Sol Ring type)
+  if (/add\s+\{C\}\{C\}/i.test(oracleText)) {
+    result.amount = 2
+    colors.add('C')
+  }
+
+  result.colorLetters = Array.from(colors)
+  return result
+}
 
 /**
- * Attempt to detect a mana producer from Scryfall data
+ * Attempt to detect a mana producer from Scryfall data.
+ *
+ * Strategy:
+ * 1. Oracle text analysis to detect producer TYPE (rock, dork, ritual, etc.)
+ * 2. Scryfall `produced_mana` field as PRIMARY source for colors (authoritative)
+ * 3. Oracle regex as FALLBACK for colors (if produced_mana is missing)
  */
 async function detectProducerFromScryfall(cardName: string): Promise<ManaProducerDef | null> {
   try {
@@ -219,43 +290,68 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
     if (!response.ok) return null
 
     const data = await response.json()
-    const oracleText = data.oracle_text || ''
+    // For DFCs, use front face oracle text (the castable side)
+    let oracleText = data.oracle_text || ''
+    if (data.card_faces) {
+      oracleText = data.card_faces[0]?.oracle_text || oracleText
+    }
     const typeLine = data.type_line || ''
-    const manaCost = data.mana_cost || ''
+    const manaCost = data.mana_cost || data.card_faces?.[0]?.mana_cost || ''
 
-    // Check if it's a creature
     const isCreature = typeLine.toLowerCase().includes('creature')
 
-    // Try to match patterns
-    for (const p of MANA_PRODUCER_PATTERNS) {
-      const match = oracleText.match(p.pattern)
-      if (match) {
-        // Parse mana cost
-        const { generic, colors } = parseManaCost(manaCost)
+    // Step 1: Analyze oracle text to detect producer type
+    const analysis = analyzeOracleForMana(oracleText)
 
-        return {
-          name: data.name,
-          type: isCreature && p.type === 'ROCK' ? 'DORK' : p.type,
-          castCostGeneric: generic,
-          castCostColors: colors,
-          delay: isCreature ? 1 : 0,
-          isCreature,
-          producesAmount: p.amount ?? 1,
-          activationTax: 0,
-          producesMask: p.producesAny
-            ? 0b111111
-            : match[1]
-              ? colorMaskFromLetters([match[1] as any])
-              : 0b100000,
-          producesAny: p.producesAny ?? false,
-          oneShot: p.type === 'RITUAL',
-          // Note: survivalBase deprecated in v1.1
-          // Survival now calculated dynamically via ctx.removalRate * rockRemovalFactor
-        }
-      }
+    if (!analysis.type) return null
+
+    const { generic, colors } = parseManaCost(manaCost)
+
+    // Step 2: Use Scryfall's produced_mana as primary color source
+    // This is authoritative — Scryfall computes it from all card abilities
+    const scryfallProducedMana: string[] | undefined = data.produced_mana
+    let producesAny = analysis.producesAny
+    let producesMask: number
+
+    if (scryfallProducedMana && scryfallProducedMana.length > 0) {
+      // Scryfall produced_mana is available — use it
+      const validColors = scryfallProducedMana.filter((c): c is 'W' | 'U' | 'B' | 'R' | 'G' | 'C' =>
+        ['W', 'U', 'B', 'R', 'G', 'C'].includes(c)
+      )
+      // If it produces all 5 colors, mark as "any color"
+      const hasAllFive = (['W', 'U', 'B', 'R', 'G'] as const).every((c) => validColors.includes(c))
+      if (hasAllFive) producesAny = true
+
+      producesMask = producesAny
+        ? 0b111111
+        : validColors.length > 0
+          ? colorMaskFromLetters(validColors as any)
+          : 0b100000
+    } else {
+      // Fallback: use oracle text regex extraction
+      const validColors = analysis.colorLetters.filter(
+        (c): c is 'W' | 'U' | 'B' | 'R' | 'G' | 'C' => ['W', 'U', 'B', 'R', 'G', 'C'].includes(c)
+      )
+      producesMask = producesAny
+        ? 0b111111
+        : validColors.length > 0
+          ? colorMaskFromLetters(validColors as any)
+          : 0b100000
     }
 
-    return null
+    return {
+      name: data.name,
+      type: isCreature && analysis.type === 'ROCK' ? 'DORK' : analysis.type,
+      castCostGeneric: generic,
+      castCostColors: colors,
+      delay: isCreature ? 1 : 0,
+      isCreature,
+      producesAmount: analysis.amount,
+      activationTax: 0,
+      producesMask,
+      producesAny,
+      oneShot: analysis.oneShot,
+    }
   } catch (e) {
     console.warn('Scryfall lookup failed:', e)
     return null

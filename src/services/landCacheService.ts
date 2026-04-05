@@ -10,11 +10,11 @@
  */
 
 import type {
-    CachedLandEntry,
-    ILandCacheService,
-    LandCacheStats,
-    LandCacheStorage,
-    LandMetadata
+  CachedLandEntry,
+  ILandCacheService,
+  LandCacheStats,
+  LandCacheStorage,
+  LandMetadata,
 } from '@/types/lands'
 
 // =============================================================================
@@ -28,7 +28,7 @@ const CACHE_KEY = 'manatuner_lands_cache'
 const CACHE_TTL_DAYS = 30
 
 /** Current cache version (for migrations) */
-const CACHE_VERSION = '1.0'
+const CACHE_VERSION = '2.0' // Bumped: fixed MDFC multi-color detection + produced_mana
 
 /** Maximum entries to keep during emergency cleanup */
 const MAX_ENTRIES_EMERGENCY = 100
@@ -94,11 +94,7 @@ class LandCacheService implements ILandCacheService {
    * @param metadata - The land metadata to store
    * @param source - Source of the data (scryfall, pattern, seed)
    */
-  set(
-    cardName: string,
-    metadata: LandMetadata,
-    source: 'scryfall' | 'pattern' | 'seed'
-  ): void {
+  set(cardName: string, metadata: LandMetadata, source: 'scryfall' | 'pattern' | 'seed'): void {
     const normalizedName = this.normalizeName(cardName)
 
     // 1. Memory cache
@@ -113,7 +109,7 @@ class LandCacheService implements ILandCacheService {
       metadata,
       fetchedAt: now.toISOString(),
       source,
-      expiresAt: expiresAt.toISOString()
+      expiresAt: expiresAt.toISOString(),
     }
 
     storage.lands[normalizedName] = entry
@@ -190,7 +186,7 @@ class LandCacheService implements ILandCacheService {
       total: Object.keys(storage.lands).length,
       bySource,
       memorySize: this.memoryCache.size,
-      storageSizeBytes
+      storageSizeBytes,
     }
   }
 
@@ -236,7 +232,7 @@ class LandCacheService implements ILandCacheService {
         isMDFC: partialMetadata.isMDFC,
         otherFace: partialMetadata.otherFace,
         basicLandTypes: partialMetadata.basicLandTypes,
-        confidence: partialMetadata.confidence || 100
+        confidence: partialMetadata.confidence || 100,
       }
 
       this.set(name, metadata, 'seed')
@@ -314,7 +310,7 @@ class LandCacheService implements ILandCacheService {
     return {
       version: CACHE_VERSION,
       lastCleanup: new Date().toISOString(),
-      lands: {}
+      lands: {},
     }
   }
 
@@ -354,9 +350,7 @@ class LandCacheService implements ILandCacheService {
     const storage = this.getStorage()
     const entries = Object.entries(storage.lands)
       .map(([name, entry]) => ({ name, entry }))
-      .sort((a, b) =>
-        new Date(b.entry.fetchedAt).getTime() - new Date(a.entry.fetchedAt).getTime()
-      )
+      .sort((a, b) => new Date(b.entry.fetchedAt).getTime() - new Date(a.entry.fetchedAt).getTime())
       .slice(0, MAX_ENTRIES_EMERGENCY)
 
     // Rebuild the lands object

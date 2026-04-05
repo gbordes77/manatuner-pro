@@ -109,15 +109,19 @@
 
 ### Projet Dedie — London Mulligan (Sprint separe)
 
-> **Pourquoi c'est important**: Le modele actuel simule le Vancouver Mulligan (draw 7-N).
-> Le London Mulligan (draw 7, bottom N) est la regle officielle depuis 2019.
-> Ca change significativement les thresholds de keep/mull.
+> **Pourquoi c'est important**: Le London Mulligan (draw 7, bottom N) est la regle officielle depuis 2019.
+> L'implementation precedente ne trackait pas les cartes bottomed et ne re-shufflait pas entre mulligans.
 
-- [ ] Implementer London Mulligan dans simulateSingleGame: - Toujours draw 7 cartes apres mulligan - Ajouter chooseBottom(hand, n, strategy) pour selectionner quoi mettre en dessous - Re-shuffle le deck entre chaque mulligan - Tracker les cartes bottomed (vont en dessous de la library)
+- [x] Implementer London Mulligan dans simulateSingleGame: draw 7 → evaluate → mull → re-shuffle → draw 7 → pick best k → bottom rest
+- [x] Ajouter chooseBottom(hand, n) pour selectionner quoi mettre en dessous (priorite: lands excedentaires, CMC 5+)
+- [x] Re-shuffle le deck entre chaque mulligan (London rule)
+- [x] Tracker les cartes bottomed (vont en dessous de la library, pas perdues)
+- [x] Fix calculateExpectedValue: bottomed cards go to bottom of remaining library
+- [x] Fix mulliganSimulatorAdvanced: meme correction library + simulateSingleGameAdvanced
+- [x] 15 nouveaux tests London Mulligan (chooseBottom, simulateSingleGame, library correctness, archetypes)
 - [ ] Aligner le scoring mulligan avance (mulliganSimulatorAdvanced.ts) avec le Monte Carlo (advancedMaths.ts)
       Actuellement deux systemes paralleles avec des logiques differentes
 - [ ] Tester contre des donnees de 17Lands pour calibrer les poids d'archetype
-- [ ] Ajouter option "London Mulligan" vs "Vancouver Mulligan" dans le selecteur
 
 ### Nice-to-have (Futur)
 

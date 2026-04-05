@@ -1,18 +1,127 @@
 /**
- * Advanced Mulligan Simulator with Archetype Support
+ * Mulligan Simulator — London Mulligan (official since 2019)
  *
- * Extends base mulligan simulator with:
+ * Single source of truth for all mulligan simulation logic:
+ * - London Mulligan: draw 7, keep best k, bottom rest
  * - Archetype-specific scoring (Aggro, Midrange, Control, Combo)
- * - Detailed score breakdown (Mana Efficiency, Curve, Colors)
- * - Sample hand generation with analysis
- * - Before/After comparison support
+ * - Monte Carlo + Dynamic Programming (Bellman equation)
+ * - Score breakdown, sample hands, turn-by-turn plans
  */
 
 import type { DeckCard } from './deckAnalyzer'
-import { prepareDeckForSimulation, type SimulatedCard, type SimulatedHand } from './mulliganSimulator'
 
 // =============================================================================
-// TYPES
+// SHARED TYPES
+// =============================================================================
+
+export interface SimulatedCard {
+  name: string
+  cmc: number
+  isLand: boolean
+  manaCost: {
+    colorless: number
+    symbols: Record<string, number>
+  }
+  quantity: number
+}
+
+export interface SimulatedHand {
+  cards: SimulatedCard[]
+  lands: SimulatedCard[]
+  spells: SimulatedCard[]
+  landCount: number
+  totalCMC: number
+}
+
+// =============================================================================
+// DECK PREPARATION
+// =============================================================================
+
+/**
+ * Convert DeckCards to SimulatedCards for the simulation
+ */
+export function prepareDeckForSimulation(cards: DeckCard[]): SimulatedCard[] {
+  const simulatedDeck: SimulatedCard[] = []
+
+  for (const card of cards) {
+    for (let i = 0; i < card.quantity; i++) {
+      let parsedManaCost: { colorless: number; symbols: Record<string, number> }
+
+      if (typeof card.manaCost === 'string') {
+        parsedManaCost = parseManaCostString(card.manaCost)
+      } else if (card.manaCost && typeof card.manaCost === 'object') {
+        parsedManaCost = card.manaCost as { colorless: number; symbols: Record<string, number> }
+      } else {
+        parsedManaCost = { colorless: 0, symbols: {} }
+      }
+
+      simulatedDeck.push({
+        name: card.name,
+        cmc: card.cmc,
+        isLand: card.isLand,
+        manaCost: parsedManaCost,
+        quantity: 1,
+      })
+    }
+  }
+
+  return simulatedDeck
+}
+
+function parseManaCostString(cost: string): { colorless: number; symbols: Record<string, number> } {
+  const result = { colorless: 0, symbols: {} as Record<string, number> }
+  if (!cost) return result
+
+  const matches = cost.match(/\{([^}]+)\}/g) || []
+  for (const match of matches) {
+    const symbol = match.slice(1, -1)
+    if (/^\d+$/.test(symbol)) {
+      result.colorless += parseInt(symbol, 10)
+    } else if (['W', 'U', 'B', 'R', 'G'].includes(symbol)) {
+      result.symbols[symbol] = (result.symbols[symbol] || 0) + 1
+    }
+  }
+  return result
+}
+
+/**
+ * London Mulligan: choose which cards to put on the bottom of the library.
+ * Returns { kept, bottomed } — bottomed cards go to bottom of library in order.
+ */
+export function chooseBottom(
+  hand: SimulatedCard[],
+  bottomCount: number
+): { kept: SimulatedCard[]; bottomed: SimulatedCard[] } {
+  if (bottomCount <= 0) return { kept: [...hand], bottomed: [] }
+  if (bottomCount >= hand.length) return { kept: [], bottomed: [...hand] }
+
+  const targetKeep = hand.length - bottomCount
+  const landCount = hand.filter((c) => c.isLand).length
+  const idealLands = Math.round(targetKeep * 0.4)
+
+  const scored = hand.map((card) => {
+    let score = 0
+    if (card.isLand) {
+      if (landCount <= idealLands) score = 80
+      else score = landCount > idealLands + 1 ? 20 : 50
+    } else {
+      if (card.cmc === 1) score = 95
+      else if (card.cmc === 2) score = 90
+      else if (card.cmc === 3) score = 70
+      else if (card.cmc === 4) score = 50
+      else score = 25
+    }
+    return { card, score }
+  })
+
+  scored.sort((a, b) => a.score - b.score)
+  const bottomed = scored.slice(0, bottomCount).map((s) => s.card)
+  const kept = scored.slice(bottomCount).map((s) => s.card)
+  return { kept, bottomed }
+}
+
+// =============================================================================
+// ARCHETYPE TYPES
 // =============================================================================
 
 export type Archetype = 'aggro' | 'midrange' | 'control' | 'combo'
@@ -22,27 +131,27 @@ export interface ArchetypeConfig {
   description: string
   icon: string
   weights: {
-    manaEfficiency: number    // How important is spending mana each turn
-    curvePlayability: number  // How important is playing on curve
-    colorAccess: number       // How important is having right colors
-    earlyGame: number         // How important is T1-T2 plays
-    landCount: number         // Ideal land count preferences
+    manaEfficiency: number // How important is spending mana each turn
+    curvePlayability: number // How important is playing on curve
+    colorAccess: number // How important is having right colors
+    earlyGame: number // How important is T1-T2 plays
+    landCount: number // Ideal land count preferences
   }
   idealLands: {
     min: number
     optimal: number
     max: number
   }
-  priorities: string[]        // Key priorities for this archetype
+  priorities: string[] // Key priorities for this archetype
 }
 
 export interface ScoreBreakdown {
-  manaEfficiency: number      // 0-100: How well mana was spent
-  curvePlayability: number    // 0-100: How well curve was followed
-  colorAccess: number         // 0-100: Access to required colors
-  earlyGame: number           // 0-100: T1-T2 play availability
-  landBalance: number         // 0-100: Land count appropriateness
-  total: number               // 0-100: Weighted total
+  manaEfficiency: number // 0-100: How well mana was spent
+  curvePlayability: number // 0-100: How well curve was followed
+  colorAccess: number // 0-100: Access to required colors
+  earlyGame: number // 0-100: T1-T2 play availability
+  landBalance: number // 0-100: Land count appropriateness
+  total: number // 0-100: Weighted total
 }
 
 export interface SampleHand {
@@ -105,19 +214,19 @@ export const ARCHETYPE_CONFIGS: Record<Archetype, ArchetypeConfig> = {
     description: 'Fast, proactive decks that want to kill quickly',
     icon: '⚡',
     weights: {
-      manaEfficiency: 0.20,
-      curvePlayability: 0.30,
+      manaEfficiency: 0.2,
+      curvePlayability: 0.3,
       colorAccess: 0.15,
       earlyGame: 0.25,
-      landCount: 0.10
+      landCount: 0.1,
     },
     idealLands: { min: 1, optimal: 2, max: 3 },
     priorities: [
       '1-drop on T1 is critical',
       'Curve out T1-T2-T3',
       '2-3 lands is ideal, 4+ is flood',
-      'Mulligan aggressively for action'
-    ]
+      'Mulligan aggressively for action',
+    ],
   },
   midrange: {
     name: 'Midrange',
@@ -126,17 +235,17 @@ export const ARCHETYPE_CONFIGS: Record<Archetype, ArchetypeConfig> = {
     weights: {
       manaEfficiency: 0.25,
       curvePlayability: 0.25,
-      colorAccess: 0.20,
+      colorAccess: 0.2,
       earlyGame: 0.15,
-      landCount: 0.15
+      landCount: 0.15,
     },
     idealLands: { min: 2, optimal: 3, max: 4 },
     priorities: [
       'Smooth curve T2-T3-T4',
       '3-4 lands is ideal',
       'Balance threats and interaction',
-      'Keep hands with good mana'
-    ]
+      'Keep hands with good mana',
+    ],
   },
   control: {
     name: 'Control',
@@ -145,17 +254,17 @@ export const ARCHETYPE_CONFIGS: Record<Archetype, ArchetypeConfig> = {
     weights: {
       manaEfficiency: 0.15,
       curvePlayability: 0.15,
-      colorAccess: 0.30,
-      earlyGame: 0.10,
-      landCount: 0.30
+      colorAccess: 0.3,
+      earlyGame: 0.1,
+      landCount: 0.3,
     },
     idealLands: { min: 3, optimal: 4, max: 5 },
     priorities: [
       'Hit land drops every turn',
       'Have answers for early threats',
       '4+ lands is ideal',
-      'Color access is critical'
-    ]
+      'Color access is critical',
+    ],
   },
   combo: {
     name: 'Combo',
@@ -163,19 +272,19 @@ export const ARCHETYPE_CONFIGS: Record<Archetype, ArchetypeConfig> = {
     icon: '🔮',
     weights: {
       manaEfficiency: 0.15,
-      curvePlayability: 0.10,
+      curvePlayability: 0.1,
       colorAccess: 0.25,
-      earlyGame: 0.20,
-      landCount: 0.30
+      earlyGame: 0.2,
+      landCount: 0.3,
     },
     idealLands: { min: 2, optimal: 3, max: 4 },
     priorities: [
       'Find combo pieces',
       'Have mana to combo off',
       'Cantrips and draw are premium',
-      'Can keep slower hands'
-    ]
-  }
+      'Can keep slower hands',
+    ],
+  },
 }
 
 // =============================================================================
@@ -183,11 +292,36 @@ export const ARCHETYPE_CONFIGS: Record<Archetype, ArchetypeConfig> = {
 // =============================================================================
 
 export const SCORE_LEGEND = {
-  snapKeep: { min: 90, label: 'SNAP KEEP', description: 'Perfect hand - keep without thinking', color: '#4caf50' },
-  keep: { min: 75, label: 'KEEP', description: 'Good hand - plays well on curve', color: '#8bc34a' },
-  marginal: { min: 60, label: 'MARGINAL', description: 'Risky hand - depends on draws', color: '#ff9800' },
-  mulligan: { min: 40, label: 'MULLIGAN', description: 'Weak hand - will struggle', color: '#f44336' },
-  snapMull: { min: 0, label: 'SNAP MULL', description: 'Unplayable - mulligan immediately', color: '#b71c1c' }
+  snapKeep: {
+    min: 90,
+    label: 'SNAP KEEP',
+    description: 'Perfect hand - keep without thinking',
+    color: '#4caf50',
+  },
+  keep: {
+    min: 75,
+    label: 'KEEP',
+    description: 'Good hand - plays well on curve',
+    color: '#8bc34a',
+  },
+  marginal: {
+    min: 60,
+    label: 'MARGINAL',
+    description: 'Risky hand - depends on draws',
+    color: '#ff9800',
+  },
+  mulligan: {
+    min: 40,
+    label: 'MULLIGAN',
+    description: 'Weak hand - will struggle',
+    color: '#f44336',
+  },
+  snapMull: {
+    min: 0,
+    label: 'SNAP MULL',
+    description: 'Unplayable - mulligan immediately',
+    color: '#b71c1c',
+  },
 }
 
 export function getScoreCategory(score: number): keyof typeof SCORE_LEGEND {
@@ -225,19 +359,19 @@ function calculateScoreBreakdown(
   const landBalance = calculateLandBalance(hand, config)
 
   // Weighted total
-  const total = Math.round(
-    manaEfficiency * config.weights.manaEfficiency +
-    curvePlayability * config.weights.curvePlayability +
-    colorAccess * config.weights.colorAccess +
-    earlyGame * config.weights.earlyGame +
-    landBalance * config.weights.landCount
-  ) / (
-    config.weights.manaEfficiency +
-    config.weights.curvePlayability +
-    config.weights.colorAccess +
-    config.weights.earlyGame +
-    config.weights.landCount
-  )
+  const total =
+    Math.round(
+      manaEfficiency * config.weights.manaEfficiency +
+        curvePlayability * config.weights.curvePlayability +
+        colorAccess * config.weights.colorAccess +
+        earlyGame * config.weights.earlyGame +
+        landBalance * config.weights.landCount
+    ) /
+    (config.weights.manaEfficiency +
+      config.weights.curvePlayability +
+      config.weights.colorAccess +
+      config.weights.earlyGame +
+      config.weights.landCount)
 
   return {
     manaEfficiency: Math.round(manaEfficiency),
@@ -245,11 +379,11 @@ function calculateScoreBreakdown(
     colorAccess: Math.round(colorAccess),
     earlyGame: Math.round(earlyGame),
     landBalance: Math.round(landBalance),
-    total: Math.round(total)
+    total: Math.round(total),
   }
 }
 
-function calculateManaEfficiency(hand: SimulatedHand, deck: SimulatedCard[]): number {
+function calculateManaEfficiency(hand: SimulatedHand, library: SimulatedCard[]): number {
   // Simulate T1-T4 goldfish
   let landsInPlay = 0
   let totalManaSpent = 0
@@ -258,7 +392,7 @@ function calculateManaEfficiency(hand: SimulatedHand, deck: SimulatedCard[]): nu
   const landsInHand = [...hand.lands]
   const spellsInHand = [...hand.spells]
   let deckIndex = 0
-  const remainingDeck = deck.slice(7)
+  const remainingDeck = library // Already the correct library (undrawn + bottomed)
 
   for (let turn = 1; turn <= 4; turn++) {
     // Draw (except T1)
@@ -308,27 +442,27 @@ function calculateCurvePlayability(hand: SimulatedHand, archetype: Archetype): n
 
   if (archetype === 'aggro') {
     // Aggro wants 1s and 2s
-    if (cmcCounts[0] >= 1) score += 40  // Has 1-drop
-    if (cmcCounts[1] >= 1) score += 30  // Has 2-drop
-    if (cmcCounts[0] >= 2) score += 15  // Multiple 1-drops
-    if (cmcCounts[2] >= 1) score += 15  // Has 3-drop
+    if (cmcCounts[0] >= 1) score += 40 // Has 1-drop
+    if (cmcCounts[1] >= 1) score += 30 // Has 2-drop
+    if (cmcCounts[0] >= 2) score += 15 // Multiple 1-drops
+    if (cmcCounts[2] >= 1) score += 15 // Has 3-drop
   } else if (archetype === 'midrange') {
     // Midrange wants 2s and 3s
-    if (cmcCounts[1] >= 1) score += 35  // Has 2-drop
-    if (cmcCounts[2] >= 1) score += 35  // Has 3-drop
-    if (cmcCounts[3] >= 1) score += 20  // Has 4-drop
-    if (cmcCounts[0] >= 1) score += 10  // Has 1-drop
+    if (cmcCounts[1] >= 1) score += 35 // Has 2-drop
+    if (cmcCounts[2] >= 1) score += 35 // Has 3-drop
+    if (cmcCounts[3] >= 1) score += 20 // Has 4-drop
+    if (cmcCounts[0] >= 1) score += 10 // Has 1-drop
   } else if (archetype === 'control') {
     // Control wants interaction and late game
-    if (cmcCounts[1] >= 1) score += 30  // Has 2-drop (removal)
-    if (cmcCounts[2] >= 1) score += 25  // Has 3-drop
-    if (cmcCounts[3] >= 1) score += 25  // Has 4-drop
-    if (hand.spells.length >= 3) score += 20  // Multiple spells
+    if (cmcCounts[1] >= 1) score += 30 // Has 2-drop (removal)
+    if (cmcCounts[2] >= 1) score += 25 // Has 3-drop
+    if (cmcCounts[3] >= 1) score += 25 // Has 4-drop
+    if (hand.spells.length >= 3) score += 20 // Multiple spells
   } else {
     // Combo - flexible
     if (hand.spells.length >= 2) score += 40
-    if (cmcCounts[0] >= 1 || cmcCounts[1] >= 1) score += 30  // Early plays
-    if (hand.spells.some(s => s.cmc <= 2)) score += 30
+    if (cmcCounts[0] >= 1 || cmcCounts[1] >= 1) score += 30 // Early plays
+    if (hand.spells.some((s) => s.cmc <= 2)) score += 30
   }
 
   return Math.min(100, score)
@@ -374,8 +508,8 @@ function calculateColorAccess(hand: SimulatedHand): number {
 }
 
 function calculateEarlyGame(hand: SimulatedHand, archetype: Archetype): number {
-  const has1Drop = hand.spells.some(s => s.cmc === 1)
-  const has2Drop = hand.spells.some(s => s.cmc === 2)
+  const has1Drop = hand.spells.some((s) => s.cmc === 1)
+  const has2Drop = hand.spells.some((s) => s.cmc === 2)
   const hasEnoughLands = hand.landCount >= 2
 
   let score = 0
@@ -390,7 +524,7 @@ function calculateEarlyGame(hand: SimulatedHand, archetype: Archetype): number {
     if (hand.landCount >= 3) score += 30
   } else if (archetype === 'control') {
     if (hasEnoughLands) score += 40
-    if (has2Drop) score += 30  // Early interaction
+    if (has2Drop) score += 30 // Early interaction
     if (hand.landCount >= 3) score += 30
   } else {
     // Combo
@@ -410,9 +544,9 @@ function calculateLandBalance(hand: SimulatedHand, config: ArchetypeConfig): num
   if (count >= min && count <= max) {
     // Linear interpolation
     if (count < optimal) {
-      return 70 + 30 * (count - min) / (optimal - min)
+      return 70 + (30 * (count - min)) / (optimal - min)
     } else {
-      return 70 + 30 * (max - count) / (max - optimal)
+      return 70 + (30 * (max - count)) / (max - optimal)
     }
   }
   if (count === 0) return 0
@@ -424,13 +558,13 @@ function calculateLandBalance(hand: SimulatedHand, config: ArchetypeConfig): num
 // SAMPLE HAND GENERATION
 // =============================================================================
 
-function generateTurnPlan(hand: SimulatedHand, deck: SimulatedCard[]): TurnPlan[] {
+function generateTurnPlan(hand: SimulatedHand, library: SimulatedCard[]): TurnPlan[] {
   const plans: TurnPlan[] = []
   const landsInHand = [...hand.lands]
   const spellsInHand = [...hand.spells]
   let landsInPlay = 0
   let deckIndex = 0
-  const remainingDeck = deck.slice(7)
+  const remainingDeck = library // Already the correct library
 
   for (let turn = 1; turn <= 4; turn++) {
     // Draw
@@ -470,7 +604,7 @@ function generateTurnPlan(hand: SimulatedHand, deck: SimulatedCard[]): TurnPlan[
       landDrop,
       plays,
       manaUsed: landsInPlay - manaLeft,
-      manaAvailable: landsInPlay
+      manaAvailable: landsInPlay,
     })
   }
 
@@ -497,8 +631,8 @@ function generateReasoningForHand(
   }
 
   // Early game
-  const has1Drop = hand.spells.some(s => s.cmc === 1)
-  const has2Drop = hand.spells.some(s => s.cmc === 2)
+  const has1Drop = hand.spells.some((s) => s.cmc === 1)
+  const has2Drop = hand.spells.some((s) => s.cmc === 2)
 
   if (archetype === 'aggro') {
     if (has1Drop) reasons.push('✅ Has T1 play - critical for aggro')
@@ -525,13 +659,16 @@ function generateReasoningForHand(
 }
 
 function createSampleHand(
-  cards: SimulatedCard[],
+  fullDeck: SimulatedCard[],
   hand: SimulatedHand,
   archetype: Archetype,
   threshold: number
 ): SampleHand {
-  const breakdown = calculateScoreBreakdown(hand, archetype, cards)
-  const turnByTurn = generateTurnPlan(hand, cards)
+  // Build a representative library: cards not in hand
+  const handSet = new Set(hand.cards)
+  const library = fullDeck.filter((c) => !handSet.has(c))
+  const breakdown = calculateScoreBreakdown(hand, archetype, library)
+  const turnByTurn = generateTurnPlan(hand, library)
   const reasoning = generateReasoningForHand(hand, breakdown, archetype)
 
   let recommendation: SampleHand['recommendation']
@@ -549,7 +686,72 @@ function createSampleHand(
     breakdown,
     recommendation,
     reasoning,
-    turnByTurn
+    turnByTurn,
+  }
+}
+
+// =============================================================================
+// LONDON MULLIGAN: FULL SEQUENTIAL SIMULATION
+// =============================================================================
+
+/**
+ * Simulate a single game with full London Mulligan sequence.
+ *
+ * London Mulligan (official since 2019):
+ * 1. Shuffle, draw 7 → evaluate → keep or mulligan?
+ * 2. If mull: shuffle ALL 7 back into deck, re-shuffle, draw 7 again
+ * 3. Select best 6 from 7, put 1 on bottom of library → evaluate → keep or mull?
+ * 4. Repeat: draw 7, select best 5, bottom 2 → ...
+ * 5. At 4 cards: forced keep (draw 7, select best 4, bottom 3)
+ */
+export function simulateSingleGameAdvanced(
+  deck: SimulatedCard[],
+  archetype: Archetype,
+  thresholds: { keep7: number; keep6: number; keep5: number }
+): { score: number; handSize: number; mulliganCount: number; breakdown: ScoreBreakdown } {
+  const thresholdMap: Record<number, number> = {
+    7: thresholds.keep7,
+    6: thresholds.keep6,
+    5: thresholds.keep5,
+    4: 0,
+  }
+
+  for (let handSize = 7; handSize >= 4; handSize--) {
+    // London: re-shuffle entire deck for each mulligan attempt
+    const shuffled = shuffleDeck(deck)
+    const fullHand = drawHand(shuffled, 7)
+    const hand = selectBestSubset(fullHand, handSize, archetype)
+
+    // Bottomed cards go to bottom of library
+    const keptSet = new Set(hand.cards)
+    const bottomedCards = fullHand.cards.filter((c) => !keptSet.has(c))
+    const undrawnCards = shuffled.slice(7)
+    const library = [...undrawnCards, ...bottomedCards]
+
+    const breakdown = calculateScoreBreakdown(hand, archetype, library)
+
+    if (breakdown.total >= thresholdMap[handSize] || handSize === 4) {
+      return {
+        score: breakdown.total,
+        handSize,
+        mulliganCount: 7 - handSize,
+        breakdown,
+      }
+    }
+  }
+
+  return {
+    score: 0,
+    handSize: 4,
+    mulliganCount: 3,
+    breakdown: {
+      manaEfficiency: 0,
+      curvePlayability: 0,
+      colorAccess: 0,
+      earlyGame: 0,
+      landBalance: 0,
+      total: 0,
+    },
   }
 }
 
@@ -568,30 +770,34 @@ function shuffleDeck(deck: SimulatedCard[]): SimulatedCard[] {
 
 function drawHand(deck: SimulatedCard[], size: number = 7): SimulatedHand {
   const cards = deck.slice(0, size)
-  const lands = cards.filter(c => c.isLand)
-  const spells = cards.filter(c => !c.isLand)
+  const lands = cards.filter((c) => c.isLand)
+  const spells = cards.filter((c) => !c.isLand)
 
   return {
     cards,
     lands,
     spells,
     landCount: lands.length,
-    totalCMC: spells.reduce((sum, c) => sum + c.cmc, 0)
+    totalCMC: spells.reduce((sum, c) => sum + c.cmc, 0),
   }
 }
 
-function selectBestSubset(hand: SimulatedHand, targetSize: number, archetype: Archetype): SimulatedHand {
+function selectBestSubset(
+  hand: SimulatedHand,
+  targetSize: number,
+  archetype: Archetype
+): SimulatedHand {
   if (hand.cards.length <= targetSize) return hand
 
   const config = ARCHETYPE_CONFIGS[archetype]
   const cards = [...hand.cards]
 
   // Score each card for this archetype
-  const scoredCards = cards.map(card => {
+  const scoredCards = cards.map((card) => {
     let priority = 0
 
     if (card.isLand) {
-      const currentLands = cards.filter(c => c.isLand).length
+      const currentLands = cards.filter((c) => c.isLand).length
       if (currentLands <= config.idealLands.max) priority = 70
       else priority = 20
     } else {
@@ -608,7 +814,8 @@ function selectBestSubset(hand: SimulatedHand, targetSize: number, archetype: Ar
         else if (card.cmc === 1) priority = 70
         else priority = 40
       } else if (archetype === 'control') {
-        if (card.cmc === 2) priority = 85  // Interaction
+        if (card.cmc === 2)
+          priority = 85 // Interaction
         else if (card.cmc === 3) priority = 80
         else if (card.cmc === 4) priority = 85
         else if (card.cmc >= 5) priority = 70
@@ -648,15 +855,15 @@ function selectBestSubset(hand: SimulatedHand, targetSize: number, archetype: Ar
     }
   }
 
-  const lands = selected.filter(c => c.isLand)
-  const spells = selected.filter(c => !c.isLand)
+  const lands = selected.filter((c) => c.isLand)
+  const spells = selected.filter((c) => !c.isLand)
 
   return {
     cards: selected,
     lands,
     spells,
     landCount: lands.length,
-    totalCMC: spells.reduce((sum, c) => sum + c.cmc, 0)
+    totalCMC: spells.reduce((sum, c) => sum + c.cmc, 0),
   }
 }
 
@@ -686,7 +893,13 @@ export function analyzeWithArchetype(
       const fullHand = drawHand(shuffled, 7)
       const hand = selectBestSubset(fullHand, handSize, archetype)
 
-      const breakdown = calculateScoreBreakdown(hand, archetype, shuffled)
+      // London Mulligan: bottomed cards go to bottom of library
+      const keptSet = new Set(hand.cards)
+      const bottomedCards = fullHand.cards.filter((c) => !keptSet.has(c))
+      const undrawnCards = shuffled.slice(7)
+      const libraryWithBottomed = [...undrawnCards, ...bottomedCards]
+
+      const breakdown = calculateScoreBreakdown(hand, archetype, libraryWithBottomed)
       scores.push(breakdown.total)
 
       const bucket = Math.min(10, Math.floor(breakdown.total / 10))
@@ -732,7 +945,7 @@ export function analyzeWithArchetype(
     excellent: [] as SampleHand[],
     good: [] as SampleHand[],
     marginal: [] as SampleHand[],
-    poor: [] as SampleHand[]
+    poor: [] as SampleHand[],
   }
 
   // Sort and pick diverse samples
@@ -775,7 +988,9 @@ export function analyzeWithArchetype(
 
   const mulliganValue = ev6 - ev7 + (ev7 - ev6)
   if (mulliganValue > 5) {
-    recommendations.push(`📊 Mulliganing bad 7s to 6 gains ~${Math.round(mulliganValue)} points on average`)
+    recommendations.push(
+      `📊 Mulliganing bad 7s to 6 gains ~${Math.round(mulliganValue)} points on average`
+    )
   }
 
   return {
@@ -785,23 +1000,23 @@ export function analyzeWithArchetype(
       hand7: Math.round(ev7),
       hand6: Math.round(ev6),
       hand5: Math.round(ev5),
-      hand4: Math.round(ev4)
+      hand4: Math.round(ev4),
     },
     thresholds: {
       keep7: Math.round(ev6),
       keep6: Math.round(ev5),
-      keep5: Math.round(ev4)
+      keep5: Math.round(ev4),
     },
     distributions: {
       hand7: results[7].distribution.map((freq, i) => ({ score: i * 10 + 5, frequency: freq })),
       hand6: results[6].distribution.map((freq, i) => ({ score: i * 10 + 5, frequency: freq })),
-      hand5: results[5].distribution.map((freq, i) => ({ score: i * 10 + 5, frequency: freq }))
+      hand5: results[5].distribution.map((freq, i) => ({ score: i * 10 + 5, frequency: freq })),
     },
     sampleHands,
     deckQuality,
     qualityScore: Math.round(ev7),
     recommendations,
-    iterations
+    iterations,
   }
 }
 

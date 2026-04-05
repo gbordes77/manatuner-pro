@@ -1,9 +1,9 @@
 import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
 import { Box, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import React, { memo, useMemo } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useAcceleration } from '../../contexts/AccelerationContext'
 import { AnalysisResult } from '../../services/deckAnalyzer'
-import { producerCacheService } from '../../services/manaProducerService'
+import { manaProducerService, producerCacheService } from '../../services/manaProducerService'
 import type { Card } from '../../types'
 import type { ProducerInDeck, UnconditionalMultiManaGroup } from '../../types/manaProducers'
 import ManaCostRow from '../ManaCostRow'
@@ -29,27 +29,47 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
       })
     }, [analysisResult?.cards])
 
-    // Detect mana producers in the deck
-    const producersInDeck = useMemo<ProducerInDeck[]>(() => {
-      if (!analysisResult?.cards) return []
+    // Detect mana producers in the deck (sync seed/cache + async Scryfall fallback)
+    const [producersInDeck, setProducersInDeck] = useState<ProducerInDeck[]>([])
 
-      const producers: ProducerInDeck[] = []
+    useEffect(() => {
+      if (!analysisResult?.cards) {
+        setProducersInDeck([])
+        return
+      }
+
+      // Phase 1: Sync lookup from seed/cache (instant)
+      const syncProducers: ProducerInDeck[] = []
+      const unknownCards: { name: string; quantity: number }[] = []
 
       for (const card of analysisResult.cards) {
-        // Skip lands - they're handled separately
         if (card.isLand) continue
-
-        // Check if this card is a known mana producer (sync lookup from cache/seed)
-        const producerDef = producerCacheService.get(card.name)
-        if (producerDef) {
-          producers.push({
-            def: producerDef,
-            copies: card.quantity || 1,
-          })
+        const cached = producerCacheService.get(card.name)
+        if (cached) {
+          syncProducers.push({ def: cached, copies: card.quantity || 1 })
+        } else {
+          unknownCards.push({ name: card.name, quantity: card.quantity || 1 })
         }
       }
 
-      return producers
+      setProducersInDeck(syncProducers)
+
+      // Phase 2: Async Scryfall lookup for cards not in seed/cache
+      if (unknownCards.length > 0) {
+        const fetchUnknown = async () => {
+          const newProducers: ProducerInDeck[] = []
+          for (const card of unknownCards) {
+            const def = await manaProducerService.getProducer(card.name)
+            if (def) {
+              newProducers.push({ def, copies: card.quantity })
+            }
+          }
+          if (newProducers.length > 0) {
+            setProducersInDeck((prev) => [...prev, ...newProducers])
+          }
+        }
+        fetchUnknown()
+      }
     }, [analysisResult?.cards])
 
     // v1.1: Extract unconditional multi-mana lands for probabilistic handling
