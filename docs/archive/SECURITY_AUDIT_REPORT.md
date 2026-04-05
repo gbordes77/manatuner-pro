@@ -1,4 +1,5 @@
 # Security Audit Report - ManaTuner Pro
+
 ## Privacy Claims Verification
 
 **Audit Date:** 2025-12-25  
@@ -14,9 +15,9 @@ This audit evaluates whether the privacy and security claims made on the ManaTun
 
 ### Overall Assessment: **PARTIAL COMPLIANCE**
 
-| Category | Status |
-|----------|--------|
-| Claims Fully Verified | 5/11 (45%) |
+| Category                  | Status     |
+| ------------------------- | ---------- |
+| Claims Fully Verified     | 5/11 (45%) |
 | Claims Partially Verified | 4/11 (36%) |
 | Claims Not Verified/False | 2/11 (18%) |
 
@@ -31,11 +32,13 @@ This audit evaluates whether the privacy and security claims made on the ManaTun
 **Status:** :warning: PARTIAL
 
 **Evidence:**
+
 - File: `/src/lib/privacy.ts` (lines 95-115)
 - Deck data is stored in `localStorage` by default
 - No automatic transmission to servers in default mode
 
 **Issues Found:**
+
 - Decks ARE stored in plain text in localStorage (see finding #6)
 - If cloud sync is enabled, deck data could be transmitted
 - File `/src/hooks/useAnalysisStorage.ts` lines 59-72 shows plain JSON storage
@@ -49,21 +52,24 @@ This audit evaluates whether the privacy and security claims made on the ManaTun
 **Status:** :x: FALSE
 
 **Evidence:**
+
 - File: `/src/lib/privacy.ts` lines 18-28
 - File: `/src/hooks/useAnalysisStorage.ts` lines 59-72
 - File: `/src/pages/AnalyzerPage.tsx` lines 477-487
 
 **Critical Finding:**
+
 ```typescript
 // From useAnalysisStorage.ts - NO ENCRYPTION
-localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
 
-// From AnalyzerPage.tsx - NO ENCRYPTION  
-localStorage.setItem("manatuner-decklist", deckList);
-localStorage.setItem("manatuner-analysis", JSON.stringify(analysisResult));
+// From AnalyzerPage.tsx - NO ENCRYPTION
+localStorage.setItem('manatuner-decklist', deckList)
+localStorage.setItem('manatuner-analysis', JSON.stringify(analysisResult))
 ```
 
 **The encryption class exists but is NEVER USED:**
+
 ```typescript
 // privacy.ts has ClientEncryption class with encrypt/decrypt methods
 // But these methods are never called when saving data!
@@ -78,16 +84,18 @@ localStorage.setItem("manatuner-analysis", JSON.stringify(analysisResult));
 **Status:** :warning: PARTIAL
 
 **Evidence:**
+
 - File: `/src/services/scryfall.ts` - Card names ARE sent to Scryfall API
 - File: `/src/services/supabase.ts` - Supabase disabled by default
 - File: `/src/services/firebase.ts` - Firebase Analytics configured
 
 **Network Calls Found:**
+
 ```typescript
 // scryfall.ts lines 86, 153 - Card names sent to external API
 const response = await fetch(`${SCRYFALL_API_BASE}/cards/collection`, {
   method: 'POST',
-  body: JSON.stringify({ identifiers }) // Card names sent here!
+  body: JSON.stringify({ identifiers }), // Card names sent here!
 })
 ```
 
@@ -100,15 +108,18 @@ const response = await fetch(`${SCRYFALL_API_BASE}/cards/collection`, {
 **Status:** :x: NOT IMPLEMENTED
 
 **Evidence:**
+
 - File: `/src/lib/privacy.ts` - Encryption exists but unused
 - No server-side component that would require zero-knowledge proof
 - Local storage is plain text
 
 **Definition Check:** Zero-Knowledge Architecture means the service provider cannot access user data even if they wanted to. This requires:
+
 1. Client-side encryption with user-held keys
 2. Server never sees plaintext data
 
 **Reality:**
+
 - No actual encryption of stored data
 - Card names sent to third-party (Scryfall)
 - If Supabase/Firebase enabled, data sent unencrypted
@@ -122,9 +133,11 @@ const response = await fetch(`${SCRYFALL_API_BASE}/cards/collection`, {
 **Status:** :warning: PARTIAL (Code exists, not used)
 
 **Evidence:**
+
 - File: `/src/lib/privacy.ts` lines 7-55
 
 **Code Review:**
+
 ```typescript
 // XOR encryption exists (weak, but present)
 static encrypt(text: string, key: string): string {
@@ -136,6 +149,7 @@ static encrypt(text: string, key: string): string {
 ```
 
 **Critical Issues:**
+
 1. Encryption class exists but `encrypt()` is NEVER called
 2. XOR encryption is cryptographically weak (trivially breakable)
 3. Website claims "AES-256" but code uses XOR
@@ -150,17 +164,19 @@ static encrypt(text: string, key: string): string {
 **Status:** :x: FALSE
 
 **Evidence:**
+
 - File: `/src/hooks/useAnalysisStorage.ts` lines 59-72
 - File: `/src/pages/AnalyzerPage.tsx` lines 477-487
 - File: `/src/lib/privacy.ts` lines 107-115
 
 **Proof of Plain Text Storage:**
+
 ```typescript
 // useAnalysisStorage.ts
-localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
 
-// AnalyzerPage.tsx  
-localStorage.setItem("manatuner-decklist", deckList);
+// AnalyzerPage.tsx
+localStorage.setItem('manatuner-decklist', deckList)
 
 // privacy.ts - saveAnalysis stores in plain JSON
 localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(trimmed))
@@ -177,10 +193,12 @@ localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(trimmed))
 **Status:** :warning: PARTIAL
 
 **Evidence:**
+
 - No server-side storage by default (Supabase disabled)
 - File: `/src/services/supabase.ts` shows mocked/disabled service
 
 **Analysis:**
+
 - TRUE for server access: Default mode doesn't send to their servers
 - FALSE for local access: Plain text storage means anyone with device access can read
 
@@ -193,6 +211,7 @@ localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(trimmed))
 **Status:** :white_check_mark: VERIFIED
 
 **Evidence:**
+
 - No data collection infrastructure found
 - No advertising SDKs
 - No data broker integrations
@@ -207,11 +226,13 @@ localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(trimmed))
 **Status:** :warning: PARTIAL
 
 **Evidence:**
+
 - File: `/src/services/firebase.ts` lines 33-35
 - File: `/package.json` - Contains `@sentry/react`
 - File: `/.env.example` - Shows `VITE_GA_TRACKING_ID` option
 
 **Findings:**
+
 ```typescript
 // firebase.ts - Analytics IS configured
 import { getAnalytics } from 'firebase/analytics'
@@ -242,6 +263,7 @@ VITE_ENABLE_ANALYTICS=true
 **Status:** :white_check_mark: VERIFIED
 
 **Evidence:**
+
 - File: `/vite.config.ts` lines 7-91 - Full PWA configuration
 - Service worker with comprehensive caching strategy
 - Scryfall API responses cached for 1 week
@@ -259,11 +281,11 @@ VitePWA({
         handler: 'CacheFirst',
         options: {
           cacheName: 'scryfall-api-cache',
-          expiration: { maxAgeSeconds: 60 * 60 * 24 * 7 }
-        }
-      }
-    ]
-  }
+          expiration: { maxAgeSeconds: 60 * 60 * 24 * 7 },
+        },
+      },
+    ],
+  },
 })
 ```
 
@@ -276,6 +298,7 @@ VitePWA({
 **Status:** :white_check_mark: VERIFIED
 
 **Evidence:**
+
 - File: `/LICENSE` - MIT License
 - Git remote: `https://github.com/gbordes77/manatuner-pro.git`
 - File: `/package.json` - Repository field points to GitHub
@@ -286,19 +309,19 @@ VitePWA({
 
 ## Summary Table
 
-| # | Claim | Status | Severity |
-|---|-------|--------|----------|
-| 1 | "Your decks stay private" | :warning: PARTIAL | Medium |
-| 2 | "Encrypted local storage only" | :x: FALSE | **Critical** |
-| 3 | "No sensitive data sent to server" | :warning: PARTIAL | High |
-| 4 | "Zero-Knowledge Architecture" | :x: FALSE | **Critical** |
-| 5 | "Client-side encryption" | :warning: PARTIAL | **Critical** |
-| 6 | "We NEVER store in plain text" | :x: FALSE | **Critical** |
-| 7 | "We CANNOT read your private decks" | :warning: PARTIAL | Medium |
-| 8 | "We sell NO data" | :white_check_mark: VERIFIED | - |
-| 9 | "No tracking cookies" | :warning: PARTIAL | Medium |
-| 10 | "Works offline" | :white_check_mark: VERIFIED | - |
-| 11 | "100% Open Source" | :white_check_mark: VERIFIED | - |
+| #   | Claim                               | Status                      | Severity     |
+| --- | ----------------------------------- | --------------------------- | ------------ |
+| 1   | "Your decks stay private"           | :warning: PARTIAL           | Medium       |
+| 2   | "Encrypted local storage only"      | :x: FALSE                   | **Critical** |
+| 3   | "No sensitive data sent to server"  | :warning: PARTIAL           | High         |
+| 4   | "Zero-Knowledge Architecture"       | :x: FALSE                   | **Critical** |
+| 5   | "Client-side encryption"            | :warning: PARTIAL           | **Critical** |
+| 6   | "We NEVER store in plain text"      | :x: FALSE                   | **Critical** |
+| 7   | "We CANNOT read your private decks" | :warning: PARTIAL           | Medium       |
+| 8   | "We sell NO data"                   | :white_check_mark: VERIFIED | -            |
+| 9   | "No tracking cookies"               | :warning: PARTIAL           | Medium       |
+| 10  | "Works offline"                     | :white_check_mark: VERIFIED | -            |
+| 11  | "100% Open Source"                  | :white_check_mark: VERIFIED | -            |
 
 ---
 
@@ -312,20 +335,22 @@ VitePWA({
 **Description:** User deck data is stored in browser localStorage without any encryption, despite claims of "encrypted local storage" and "AES-256 encryption".
 
 **Impact:**
+
 - Any browser extension can read deck data
 - Any script on the same origin can access data
 - Physical access to device reveals all data
 - Browser sync features may upload unencrypted data to cloud
 
 **Remediation:**
+
 ```typescript
 // BEFORE (current - insecure)
-localStorage.setItem("manatuner-decklist", deckList);
+localStorage.setItem('manatuner-decklist', deckList)
 
 // AFTER (recommended)
-const userKey = PrivacyStorage.getUserKey(); // Get or generate user key
-const encrypted = await ClientEncryption.encryptAES(deckList, userKey);
-localStorage.setItem("manatuner-decklist", encrypted);
+const userKey = PrivacyStorage.getUserKey() // Get or generate user key
+const encrypted = await ClientEncryption.encryptAES(deckList, userKey)
+localStorage.setItem('manatuner-decklist', encrypted)
 ```
 
 ---
@@ -338,12 +363,14 @@ localStorage.setItem("manatuner-decklist", encrypted);
 **Description:** The encryption implementation uses XOR cipher instead of the claimed AES-256.
 
 **Impact:**
+
 - XOR encryption is trivially reversible with known-plaintext attacks
 - Magic card names are predictable (known plaintext)
 - Key can be recovered with minimal effort
 
 **Remediation:**
 Replace XOR with Web Crypto API's AES-GCM:
+
 ```typescript
 static async encryptAES(text: string, key: CryptoKey): Promise<string> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -367,11 +394,13 @@ static async encryptAES(text: string, key: CryptoKey): Promise<string> {
 **Description:** Card names are sent to Scryfall API, revealing deck contents to a third party.
 
 **Impact:**
+
 - Scryfall can log and analyze deck compositions
 - Network observers can see deck contents
 - Contradicts "no sensitive data sent" claim
 
 **Remediation:**
+
 - Cache card data more aggressively
 - Consider local card database
 - Update privacy claims to disclose Scryfall integration
@@ -425,15 +454,15 @@ static async encryptAES(text: string, key: CryptoKey): Promise<string> {
 
 ## Files Requiring Changes
 
-| File | Required Change |
-|------|-----------------|
-| `/src/lib/privacy.ts` | Upgrade encryption, actually use it |
-| `/src/hooks/useAnalysisStorage.ts` | Encrypt before localStorage |
-| `/src/pages/AnalyzerPage.tsx` | Encrypt deck data |
-| `/src/pages/PrivacyFirstPage.tsx` | Update false claims |
-| `/src/components/PrivacySettings.tsx` | Update UI claims |
-| `/package.json` | Remove unused Sentry dependency |
-| `/src/services/firebase.ts` | Remove analytics or disclose |
+| File                                  | Required Change                     |
+| ------------------------------------- | ----------------------------------- |
+| `/src/lib/privacy.ts`                 | Upgrade encryption, actually use it |
+| `/src/hooks/useAnalysisStorage.ts`    | Encrypt before localStorage         |
+| `/src/pages/AnalyzerPage.tsx`         | Encrypt deck data                   |
+| `/src/pages/PrivacyFirstPage.tsx`     | Update false claims                 |
+| `/src/components/PrivacySettings.tsx` | Update UI claims                    |
+| `/package.json`                       | Remove unused Sentry dependency     |
+| `/src/services/firebase.ts`           | Remove analytics or disclose        |
 
 ---
 
@@ -442,6 +471,7 @@ static async encryptAES(text: string, key: CryptoKey): Promise<string> {
 ManaTuner Pro makes strong privacy claims that are **not fully implemented**. While the application does function primarily locally and is genuinely open source, the core security claims about encryption are **materially false**.
 
 The most critical issue is that the website explicitly claims "encrypted local storage" and "AES-256" encryption, when in reality:
+
 1. No encryption is applied to stored data
 2. The only encryption code is weak XOR (never used)
 3. All deck data is stored in plain text JSON
@@ -450,5 +480,5 @@ The most critical issue is that the website explicitly claims "encrypted local s
 
 ---
 
-*Report generated by Security-Auditor Agent*  
-*ManaTuner Pro Security Audit - December 2025*
+_Report generated by Security-Auditor Agent_  
+_ManaTuner Pro Security Audit - December 2025_

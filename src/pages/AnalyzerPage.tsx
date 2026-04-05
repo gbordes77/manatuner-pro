@@ -114,8 +114,14 @@ const AnalyzerPage: React.FC = () => {
       } catch {
         // Silent fail for auto-save
       }
-    } catch {
+    } catch (error) {
       dispatch(setAnalysisResult(null))
+      dispatch(
+        showSnackbar({
+          message: 'Failed to analyze deck. Please check the format and try again.',
+          severity: 'error',
+        })
+      )
     } finally {
       dispatch(setIsAnalyzing(false))
     }

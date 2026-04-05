@@ -75,19 +75,6 @@ const analyzerSlice = createSlice({
       state.isDeckMinimized = false
       state.activeTab = 0
     },
-
-    // Hydrate from localStorage (for initial load)
-    hydrateFromStorage: (state, action: PayloadAction<Partial<AnalyzerState>>) => {
-      if (action.payload.deckList !== undefined) {
-        state.deckList = action.payload.deckList
-      }
-      if (action.payload.analysisResult !== undefined) {
-        state.analysisResult = action.payload.analysisResult
-      }
-      if (action.payload.isDeckMinimized !== undefined) {
-        state.isDeckMinimized = action.payload.isDeckMinimized
-      }
-    },
   },
 })
 
@@ -100,7 +87,6 @@ export const {
   showSnackbar,
   hideSnackbar,
   clearAnalyzer,
-  hydrateFromStorage,
 } = analyzerSlice.actions
 
 export default analyzerSlice.reducer

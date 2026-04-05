@@ -47,15 +47,18 @@ ManaTuner Pro implémente fidèlement la recherche de Frank Karsten publiée sur
 ### Formules Clés Implémentées
 
 #### 1. Distribution Hypergéométrique
+
 ```typescript
 P(X = k) = C(K,k) × C(N-K,n-k) / C(N,n)
 ```
+
 - **N** : Taille du deck (60)
 - **K** : Nombre de sources de mana
 - **n** : Cartes vues (main + draws)
 - **k** : Sources de mana désirées
 
 #### 2. Analyse Turn-by-Turn
+
 ```typescript
 cardsSeenOnTurn(turn: number, onPlay: boolean): number {
   return 7 + turn - (onPlay ? 1 : 0);
@@ -63,21 +66,23 @@ cardsSeenOnTurn(turn: number, onPlay: boolean): number {
 ```
 
 #### 3. Gestion des Fetchlands
+
 Les fetchlands comptent pour **chaque couleur** qu'ils peuvent chercher :
+
 ```typescript
 // Polluted Delta compte pour U ET B
-sources.blue += 1;
-sources.black += 1;
+sources.blue += 1
+sources.black += 1
 ```
 
 ### 🎯 Recommandations Karsten
 
 | Turn | Probabilité Cible | Sources Recommandées |
-|------|------------------|---------------------|
-| T1   | 90%             | 14-15 sources       |
-| T2   | 85%             | 17-18 sources       |
-| T3   | 80%             | 20-21 sources       |
-| T4   | 75%             | 22-23 sources       |
+| ---- | ----------------- | -------------------- |
+| T1   | 90%               | 14-15 sources        |
+| T2   | 85%               | 17-18 sources        |
+| T3   | 80%               | 20-21 sources        |
+| T4   | 75%               | 22-23 sources        |
 
 ---
 
@@ -127,11 +132,11 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           mui: ['@mui/material', '@mui/icons-material'],
-          redux: ['@reduxjs/toolkit', 'react-redux']
-        }
-      }
-    }
-  }
+          redux: ['@reduxjs/toolkit', 'react-redux'],
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -139,9 +144,7 @@ export default defineConfig({
 
 ```json
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/workers/(.*)",
@@ -166,16 +169,13 @@ export default defineConfig({
 
 ```typescript
 // Génération de clé utilisateur
-const userCode = CryptoJS.lib.WordArray.random(16).toString();
+const userCode = CryptoJS.lib.WordArray.random(16).toString()
 
 // Chiffrement AES-256
-const encrypted = CryptoJS.AES.encrypt(
-  JSON.stringify(data), 
-  userCode
-).toString();
+const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), userCode).toString()
 
 // Stockage sécurisé
-localStorage.setItem('manatuner_encrypted_data', encrypted);
+localStorage.setItem('manatuner_encrypted_data', encrypted)
 ```
 
 ### Architecture Privacy
@@ -200,6 +200,7 @@ Utilisateur → Interface → Chiffrement Local → localStorage
 ### Suite de Tests Complète
 
 #### 1. Tests Mathématiques Critiques
+
 ```bash
 npm run test:unit
 # 9/9 tests passent
@@ -208,6 +209,7 @@ npm run test:unit
 ```
 
 #### 2. Tests End-to-End
+
 ```bash
 npm run test:e2e
 # Tests Playwright complets
@@ -216,6 +218,7 @@ npm run test:e2e
 ```
 
 #### 3. Tests de Performance
+
 ```bash
 npm run test:performance
 # Lighthouse audits
@@ -238,6 +241,7 @@ npm run test:performance
 ### Plateforme : Vercel
 
 **Pourquoi Vercel ?**
+
 - ✅ Déploiement automatique depuis GitHub
 - ✅ CDN global ultra-rapide
 - ✅ HTTPS automatique
@@ -262,15 +266,18 @@ npm run test:performance
 ### Variables d'Environnement
 
 #### Obligatoires : Aucune
+
 Le projet fonctionne sans configuration.
 
 #### Optionnelles (Cloud Sync)
+
 ```bash
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 ### Configuration DNS (Domaine Personnalisé)
+
 ```bash
 # Vercel Dashboard > Domains
 # CNAME: www -> cname.vercel-dns.com
@@ -423,11 +430,13 @@ vercel --prod
 ### Validation Finale
 
 ✅ **Local Development**
+
 - Application charge sur http://localhost:3000
 - Analyseur fonctionne avec deck de test
 - Tests passent (9/9)
 
 ✅ **Production Deployment**
+
 - Site accessible via URL Vercel
 - Toutes fonctionnalités opérationnelles
 - Performance Lighthouse > 90
@@ -451,12 +460,14 @@ npx lighthouse https://manatuner-pro.vercel.app
 ### Monitoring Production
 
 **Vercel Dashboard**
+
 - Build status et logs
 - Performance metrics
 - Error tracking
 - Usage analytics
 
 **GitHub Actions**
+
 - Tests automatiques sur PR
 - Build validation
 - Security scanning
@@ -514,5 +525,5 @@ ManaTuner Pro représente l'**état de l'art** en matière d'analyse de manabase
 
 **🎉 Le projet est maintenant documenté de façon exhaustive et prêt pour tout développeur souhaitant le reprendre, le maintenir ou le faire évoluer.**
 
-*Documentation générée le 22 juin 2025 - Version 2.0.1*
-*Projet ManaTuner Pro - Analyseur de Manabase Avancé pour Magic: The Gathering* 
+_Documentation générée le 22 juin 2025 - Version 2.0.1_
+_Projet ManaTuner Pro - Analyseur de Manabase Avancé pour Magic: The Gathering_

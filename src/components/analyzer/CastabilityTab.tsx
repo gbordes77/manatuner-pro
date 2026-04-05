@@ -4,6 +4,7 @@ import React, { memo, useMemo } from 'react'
 import { useAcceleration } from '../../contexts/AccelerationContext'
 import { AnalysisResult } from '../../services/deckAnalyzer'
 import { producerCacheService } from '../../services/manaProducerService'
+import type { Card } from '../../types'
 import type { ProducerInDeck, UnconditionalMultiManaGroup } from '../../types/manaProducers'
 import ManaCostRow from '../ManaCostRow'
 import { AccelerationSettings } from './AccelerationSettings'
@@ -83,6 +84,30 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
       }
     }, [analysisResult?.cards])
 
+    // Build Card objects from DeckCard to pass as initialCardData (avoids N+1 Scryfall calls)
+    const cardDataMap = useMemo(() => {
+      const map = new Map<string, Card>()
+      if (!analysisResult?.cards) return map
+      for (const card of analysisResult.cards) {
+        if (card.isLand) continue
+        map.set(card.name, {
+          id: '',
+          name: card.name,
+          mana_cost: card.manaCost,
+          cmc: card.cmc,
+          type_line: '',
+          colors: card.colors,
+          color_identity: card.colors,
+          set: '',
+          set_name: '',
+          rarity: '',
+          legalities: {},
+          layout: 'normal',
+        })
+      }
+      return map
+    }, [analysisResult?.cards])
+
     return (
       <>
         <Typography variant="h6" gutterBottom>
@@ -127,6 +152,7 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
                 accelContext={accelContext}
                 showAcceleration={settings.showAcceleration && producersInDeck.length > 0}
                 unconditionalMultiMana={unconditionalMultiMana}
+                initialCardData={cardDataMap.get(card.name) ?? null}
               />
             ))}
           </Box>

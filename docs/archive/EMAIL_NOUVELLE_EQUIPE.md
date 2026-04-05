@@ -15,6 +15,7 @@ Bienvenue dans l'équipe **ManaTuner Pro** !
 ManaTuner Pro est un analyseur de manabase pour Magic: The Gathering, actuellement **en production** sur https://manatuner-pro.vercel.app
 
 L'app permet aux joueurs de :
+
 - Calculer les probabilités exactes de cast de leurs sorts
 - Simuler des milliers de mains pour optimiser les décisions de mulligan
 - Exporter leurs analyses en PNG/PDF
@@ -56,24 +57,24 @@ npm run dev
 
 ### 3. Documentation à lire EN PRIORITÉ
 
-| Document | Contenu | Temps |
-|----------|---------|-------|
+| Document                        | Contenu                    | Temps  |
+| ------------------------------- | -------------------------- | ------ |
 | `ONBOARDING_NOUVELLE_EQUIPE.md` | Guide complet d'onboarding | 15 min |
-| `TEAM_HANDOFF.md` | Passation technique | 10 min |
-| `README.md` | Vue d'ensemble | 5 min |
-| `PRE_PRODUCTION_AUDIT.md` | Audit complet (focus P1) | 20 min |
+| `TEAM_HANDOFF.md`               | Passation technique        | 10 min |
+| `README.md`                     | Vue d'ensemble             | 5 min  |
+| `PRE_PRODUCTION_AUDIT.md`       | Audit complet (focus P1)   | 20 min |
 
 ---
 
 ## Stack Technique
 
-| Élément | Technologie |
-|---------|-------------|
+| Élément  | Technologie                  |
+| -------- | ---------------------------- |
 | Frontend | React 18 + TypeScript + Vite |
-| UI | Material-UI (MUI) |
-| Tests | Vitest + Playwright |
-| Hosting | Vercel |
-| State | Redux Toolkit |
+| UI       | Material-UI (MUI)            |
+| Tests    | Vitest + Playwright          |
+| Hosting  | Vercel                       |
+| State    | Redux Toolkit                |
 
 **Note importante** : L'app est 100% client-side, privacy-first. Supabase est désactivé, toutes les données restent en localStorage.
 
@@ -82,6 +83,7 @@ npm run dev
 ## État Actuel
 
 ### Ce qui fonctionne
+
 - Toutes les features core sont complètes
 - Tests : 86/88 passing
 - ESLint : 0 errors
@@ -112,6 +114,7 @@ npm run dev
 ## Documents Disponibles
 
 ### Racine du projet
+
 - `README.md` - Vue d'ensemble
 - `ONBOARDING_NOUVELLE_EQUIPE.md` - **CE DOCUMENT EN PREMIER**
 - `TEAM_HANDOFF.md` - Passation technique
@@ -119,6 +122,7 @@ npm run dev
 - `PRE_PRODUCTION_AUDIT.md` - Audit 8 agents
 
 ### Dossier docs/
+
 - `ARCHITECTURE.md` - Architecture technique
 - `MATHEMATICAL_REFERENCE.md` - Formules maths
 - `MULLIGAN_SYSTEM.md` - Système mulligan
@@ -147,7 +151,8 @@ L'équipe ManaTuner Pro
 
 ---
 
-**TL;DR** : 
+**TL;DR** :
+
 1. `git clone` + `npm install` + `npm run dev`
 2. Lire `ONBOARDING_NOUVELLE_EQUIPE.md`
 3. Explorer https://manatuner-pro.vercel.app

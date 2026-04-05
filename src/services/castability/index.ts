@@ -6,11 +6,11 @@
 
 // Core engine
 export {
-    computeAcceleratedCastability,
-    computeAcceleratedCastabilityAtTurn,
-    computeCastabilityByTurn,
-    findAcceleratedTurn,
-    producerOnlineProbByTurn
+  computeAcceleratedCastability,
+  computeAcceleratedCastabilityAtTurn,
+  computeCastabilityByTurn,
+  findAcceleratedTurn,
+  producerOnlineProbByTurn,
 } from './acceleratedAnalyticEngine'
 
 // Hypergeometric utilities
@@ -19,12 +19,15 @@ export type { PlayDraw } from './hypergeom'
 
 // Re-export types for convenience
 export type {
-    AccelContext,
-    AcceleratedCastabilityResult,
-    CastabilityResult,
-    DeckManaProfile, FormatPreset, ManaCost,
-    ManaProducerDef,
-    ProducerInDeck
+  AccelContext,
+  AcceleratedCastabilityResult,
+  CastabilityResult,
+  DeckManaProfile,
+  FormatPreset,
+  ManaCost,
+  ProducerManaCost,
+  ManaProducerDef,
+  ProducerInDeck,
 } from '../../types/manaProducers'
 
 export { FORMAT_REMOVAL_RATES } from '../../types/manaProducers'

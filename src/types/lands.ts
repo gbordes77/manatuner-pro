@@ -12,8 +12,13 @@
 // MANA & COLOR TYPES
 // =============================================================================
 
-/** Extended mana color type including colorless */
-export type LandManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
+import type { ManaColor } from './index'
+
+/**
+ * Alias for ManaColor in the land subsystem.
+ * Kept for backward compatibility -- identical to ManaColor ('W'|'U'|'B'|'R'|'G'|'C').
+ */
+export type LandManaColor = ManaColor
 
 /** All possible mana colors as array */
 export const LAND_MANA_COLORS: LandManaColor[] = ['W', 'U', 'B', 'R', 'G', 'C']
@@ -27,24 +32,24 @@ export const LAND_MANA_COLORS: LandManaColor[] = ['W', 'U', 'B', 'R', 'G', 'C']
  * Used for quick classification and UI display.
  */
 export type LandCategory =
-  | 'basic'      // Plains, Island, Swamp, Mountain, Forest, Wastes
-  | 'fetch'      // Flooded Strand, Polluted Delta, etc.
-  | 'shock'      // Hallowed Fountain, Watery Grave, etc.
-  | 'fast'       // Seachrome Coast, Darkslick Shores, etc. (Fastlands)
-  | 'slow'       // Deserted Beach, Shipwreck Marsh, etc. (Slowlands)
-  | 'check'      // Glacial Fortress, Drowned Catacomb, etc. (Checklands)
-  | 'battle'     // Prairie Stream, Sunken Hollow, etc. (Battle lands/Tango lands)
-  | 'pain'       // Adarkar Wastes, Underground River, etc. (Painlands)
-  | 'filter'     // Mystic Gate, Sunken Ruins, etc. (Filter lands)
-  | 'horizon'    // Horizon Canopy, Silent Clearing, etc. (Horizon lands)
-  | 'triome'     // Raffine's Tower, Spara's Headquarters, etc. (Triomes)
-  | 'pathway'    // Brightclimb Pathway, Clearwater Pathway, etc. (MDFC Pathways)
-  | 'channel'    // Otawara, Boseiju, etc. (Channel lands)
-  | 'creature'   // Celestial Colonnade, Creeping Tar Pit, etc. (Creature lands)
-  | 'bounce'     // Azorius Chancery, Dimir Aqueduct, etc. (Bounce lands)
-  | 'utility'    // Misc utility lands (Field of Ruin, etc.)
-  | 'dual'       // Original dual lands (Underground Sea, Volcanic Island, etc.)
-  | 'unknown'    // Unrecognized lands (fallback)
+  | 'basic' // Plains, Island, Swamp, Mountain, Forest, Wastes
+  | 'fetch' // Flooded Strand, Polluted Delta, etc.
+  | 'shock' // Hallowed Fountain, Watery Grave, etc.
+  | 'fast' // Seachrome Coast, Darkslick Shores, etc. (Fastlands)
+  | 'slow' // Deserted Beach, Shipwreck Marsh, etc. (Slowlands)
+  | 'check' // Glacial Fortress, Drowned Catacomb, etc. (Checklands)
+  | 'battle' // Prairie Stream, Sunken Hollow, etc. (Battle lands/Tango lands)
+  | 'pain' // Adarkar Wastes, Underground River, etc. (Painlands)
+  | 'filter' // Mystic Gate, Sunken Ruins, etc. (Filter lands)
+  | 'horizon' // Horizon Canopy, Silent Clearing, etc. (Horizon lands)
+  | 'triome' // Raffine's Tower, Spara's Headquarters, etc. (Triomes)
+  | 'pathway' // Brightclimb Pathway, Clearwater Pathway, etc. (MDFC Pathways)
+  | 'channel' // Otawara, Boseiju, etc. (Channel lands)
+  | 'creature' // Celestial Colonnade, Creeping Tar Pit, etc. (Creature lands)
+  | 'bounce' // Azorius Chancery, Dimir Aqueduct, etc. (Bounce lands)
+  | 'utility' // Misc utility lands (Field of Ruin, etc.)
+  | 'dual' // Original dual lands (Underground Sea, Volcanic Island, etc.)
+  | 'unknown' // Unrecognized lands (fallback)
 
 /** Human-readable names for land categories */
 export const LAND_CATEGORY_NAMES: Record<LandCategory, string> = {
@@ -65,7 +70,7 @@ export const LAND_CATEGORY_NAMES: Record<LandCategory, string> = {
   bounce: 'Bounce Land',
   utility: 'Utility Land',
   dual: 'Dual Land',
-  unknown: 'Unknown Land'
+  unknown: 'Unknown Land',
 }
 
 // =============================================================================
@@ -76,21 +81,21 @@ export const LAND_CATEGORY_NAMES: Record<LandCategory, string> = {
  * Type of ETB behavior for a land.
  */
 export type ETBType =
-  | 'always_untapped'  // Basic lands, Painlands, Pathways, etc.
-  | 'always_tapped'    // Triomes, Taplands, Bounce lands, etc.
-  | 'conditional'      // Shocklands, Fastlands, Checklands, etc.
+  | 'always_untapped' // Basic lands, Painlands, Pathways, etc.
+  | 'always_tapped' // Triomes, Taplands, Bounce lands, etc.
+  | 'conditional' // Shocklands, Fastlands, Checklands, etc.
 
 /**
  * Types of conditions that determine if a land enters tapped or untapped.
  */
 export type ETBConditionType =
-  | 'pay_life'           // Shocklands: "pay 2 life or enters tapped"
-  | 'control_lands_max'  // Fastlands: "unless you control 2 or fewer other lands"
-  | 'control_lands_min'  // Slowlands: "unless you control 2 or more other lands"
-  | 'control_basic'      // Checklands: "unless you control a Plains or Island"
+  | 'pay_life' // Shocklands: "pay 2 life or enters tapped"
+  | 'control_lands_max' // Fastlands: "unless you control 2 or fewer other lands"
+  | 'control_lands_min' // Slowlands: "unless you control 2 or more other lands"
+  | 'control_basic' // Checklands: "unless you control a Plains or Island"
   | 'control_basics_min' // Battle lands: "unless you control 2 or more basic lands"
-  | 'reveal_card'        // Reveal lands: "reveal an Island card or enters tapped"
-  | 'turn_threshold'     // Starting Town: "unless it's your first, second, or third turn"
+  | 'reveal_card' // Reveal lands: "reveal an Island card or enters tapped"
+  | 'turn_threshold' // Starting Town: "unless it's your first, second, or third turn"
 
 /**
  * Condition details for conditional ETB lands.

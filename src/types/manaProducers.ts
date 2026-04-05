@@ -23,7 +23,7 @@ export const COLOR_MASK = {
   B: 4,
   R: 8,
   G: 16,
-  C: 32
+  C: 32,
 } as const
 
 export type ColorMask = number
@@ -36,13 +36,13 @@ export type ColorMask = number
  * Type of mana-producing source
  */
 export type ManaProducerType =
-  | 'DORK'       // Creature that taps for mana (Llanowar Elves, Birds of Paradise)
-  | 'ROCK'       // Artifact that taps for mana (Sol Ring, Arcane Signet)
-  | 'RITUAL'     // One-shot spell that produces mana (Dark Ritual, Rite of Flame)
-  | 'ONE_SHOT'   // One-use artifact (Lotus Petal, Lion's Eye Diamond)
-  | 'TREASURE'   // Token-based mana (Dockside Extortionist creates treasures)
+  | 'DORK' // Creature that taps for mana (Llanowar Elves, Birds of Paradise)
+  | 'ROCK' // Artifact that taps for mana (Sol Ring, Arcane Signet)
+  | 'RITUAL' // One-shot spell that produces mana (Dark Ritual, Rite of Flame)
+  | 'ONE_SHOT' // One-use artifact (Lotus Petal, Lion's Eye Diamond)
+  | 'TREASURE' // Token-based mana (Dockside Extortionist creates treasures)
   | 'CONDITIONAL' // Conditional producers (Nykthos, Urborg+Coffers)
-  | 'ENHANCER'   // Multiplies/enhances other dorks (Badgermole Cub)
+  | 'ENHANCER' // Multiplies/enhances other dorks (Badgermole Cub)
 
 /**
  * Human-readable names for producer types
@@ -54,7 +54,7 @@ export const PRODUCER_TYPE_NAMES: Record<ManaProducerType, string> = {
   ONE_SHOT: 'One-Shot',
   TREASURE: 'Treasure Producer',
   CONDITIONAL: 'Conditional',
-  ENHANCER: 'Mana Enhancer'
+  ENHANCER: 'Mana Enhancer',
 }
 
 // =============================================================================
@@ -62,9 +62,10 @@ export const PRODUCER_TYPE_NAMES: Record<ManaProducerType, string> = {
 // =============================================================================
 
 /**
- * Represents a mana cost for calculation purposes
+ * Represents a mana cost for mana producer castability calculations.
+ * Uses mana value (mv) + generic + colored pips breakdown.
  */
-export interface ManaCost {
+export interface ProducerManaCost {
   /** Total mana value (converted mana cost) */
   mv: number
   /** Generic mana component */
@@ -72,6 +73,9 @@ export interface ManaCost {
   /** Colored pips required */
   pips: Partial<Record<LandManaColor, number>>
 }
+
+/** @deprecated Use ProducerManaCost instead */
+export type ManaCost = ProducerManaCost
 
 // =============================================================================
 // PRODUCER DEFINITION
@@ -228,23 +232,23 @@ export interface DeckManaProfile {
  * Format presets for removal rates
  */
 export type FormatPreset =
-  | 'goldfish'    // 0% removal (testing only)
-  | 'casual_edh'  // ~10% removal
-  | 'standard'    // ~20% removal
-  | 'modern'      // ~35% removal (Bolt the Bird)
-  | 'legacy'      // ~40% removal
-  | 'cedh'        // ~15% removal (less creature interaction)
+  | 'goldfish' // 0% removal (testing only)
+  | 'casual_edh' // ~10% removal
+  | 'standard' // ~20% removal
+  | 'modern' // ~35% removal (Bolt the Bird)
+  | 'legacy' // ~40% removal
+  | 'cedh' // ~15% removal (less creature interaction)
 
 /**
  * Removal rate presets by format
  */
 export const FORMAT_REMOVAL_RATES: Record<FormatPreset, number> = {
-  goldfish: 0.00,
-  casual_edh: 0.10,
-  standard: 0.20,
+  goldfish: 0.0,
+  casual_edh: 0.1,
+  standard: 0.2,
   modern: 0.35,
-  legacy: 0.40,
-  cedh: 0.15
+  legacy: 0.4,
+  cedh: 0.15,
 }
 
 /**
@@ -362,12 +366,14 @@ export interface IManaProducerService {
   isProducer(cardName: string): boolean
 
   /** Get all producers from a deck list */
-  getProducersFromDeckList(deckList: Array<{ name: string; quantity: number }>): Promise<ProducerInDeck[]>
+  getProducersFromDeckList(
+    deckList: Array<{ name: string; quantity: number }>
+  ): Promise<ProducerInDeck[]>
 
   /** Calculate accelerated castability for a spell */
   calculateAcceleratedCastability(
     deck: DeckManaProfile,
-    spell: ManaCost,
+    spell: ProducerManaCost,
     producers: ProducerInDeck[],
     ctx: AccelContext
   ): AcceleratedCastabilityResult

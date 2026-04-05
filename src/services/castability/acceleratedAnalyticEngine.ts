@@ -16,13 +16,13 @@
  */
 
 import type {
-    AccelContext,
-    AcceleratedCastabilityResult,
-    CastabilityResult,
-    DeckManaProfile,
-    LandManaColor,
-    ManaCost,
-    ProducerInDeck
+  AccelContext,
+  AcceleratedCastabilityResult,
+  CastabilityResult,
+  DeckManaProfile,
+  LandManaColor,
+  ProducerManaCost,
+  ProducerInDeck,
 } from '../../types/manaProducers'
 import { colorsFromMask, maskHasColor, netManaPerTurn } from '../../types/manaProducers'
 import { Hypergeom, cardsSeenByTurn } from './hypergeom'
@@ -106,7 +106,7 @@ function calculateSurvivalProbability(
 function colorsOkGivenLands(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   landsInHand: number
 ): number {
   if (landsInHand <= 0) return 0
@@ -196,7 +196,7 @@ function manaOkGivenLands(
 function computeBaseCastability(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   turn: number,
   ctx: AccelContext
 ): CastabilityResult {
@@ -241,12 +241,13 @@ function computeProducerCastability(
   ctx: AccelContext
 ): number {
   const def = producer.def
-  const mv = def.castCostGeneric + Object.values(def.castCostColors).reduce((a, b) => a + (b ?? 0), 0)
+  const mv =
+    def.castCostGeneric + Object.values(def.castCostColors).reduce((a, b) => a + (b ?? 0), 0)
 
-  const producerSpell: ManaCost = {
+  const producerSpell: ProducerManaCost = {
     mv,
     generic: def.castCostGeneric,
-    pips: def.castCostColors
+    pips: def.castCostColors,
   }
 
   return computeBaseCastability(hg, deck, producerSpell, turn, ctx).p2
@@ -309,15 +310,16 @@ export function producerOnlineProbByTurn(
 function bestP1GivenOnlineProducers(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   turn: number,
   ctx: AccelContext,
   onlineProducers: ProducerInDeck[]
 ): number {
   const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
 
-  const neededColors = (Object.keys(spell.pips) as LandManaColor[])
-    .filter((c) => (spell.pips[c] ?? 0) > 0)
+  const neededColors = (Object.keys(spell.pips) as LandManaColor[]).filter(
+    (c) => (spell.pips[c] ?? 0) > 0
+  )
 
   if (neededColors.length === 0) return 1
 
@@ -328,7 +330,7 @@ function bestP1GivenOnlineProducers(
   }
 
   // Filter to non-ENHANCER producers (ENHANCERs don't produce mana in instant mode)
-  const manaProducers = onlineProducers.filter(p => p.def.type !== 'ENHANCER')
+  const manaProducers = onlineProducers.filter((p) => p.def.type !== 'ENHANCER')
 
   if (manaProducers.length === 0) {
     // No producers, just use base land probability
@@ -385,13 +387,13 @@ function bestP1GivenOnlineProducers(
 function castabilityGivenOnlineSet(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   turn: number,
   ctx: AccelContext,
   onlineSet: ProducerInDeck[]
 ): CastabilityResult {
   // Filter out ENHANCERs (disabled in instant mode)
-  const activeProducers = onlineSet.filter(p => p.def.type !== 'ENHANCER')
+  const activeProducers = onlineSet.filter((p) => p.def.type !== 'ENHANCER')
 
   // Calculate extra mana from online producers
   const extraMana = activeProducers.reduce((s, p) => s + netManaPerTurn(p.def), 0)
@@ -402,10 +404,10 @@ function castabilityGivenOnlineSet(
   const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
 
   // Create reduced spell for calculation
-  const reducedSpell: ManaCost = {
+  const reducedSpell: ProducerManaCost = {
     mv: landsNeeded,
     generic: Math.max(0, spell.generic - extraMana),
-    pips: { ...spell.pips }
+    pips: { ...spell.pips },
   }
 
   // Allocate producer colors to reduce pip requirements
@@ -460,7 +462,7 @@ function castabilityGivenOnlineSet(
 export function computeAcceleratedCastabilityAtTurn(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   turn: number,
   producers: ProducerInDeck[],
   ctx: AccelContext,
@@ -472,7 +474,7 @@ export function computeAcceleratedCastabilityAtTurn(
     .map((pd) => ({
       pd,
       pOnline: producerOnlineProbByTurn(hg, deck, pd, turn, ctx),
-      netMana: netManaPerTurn(pd.def)
+      netMana: netManaPerTurn(pd.def),
     }))
     .filter((x) => x.pOnline > 0 && x.netMana > 0)
 
@@ -482,7 +484,7 @@ export function computeAcceleratedCastabilityAtTurn(
   }
 
   // Sort by impact (pOnline * net mana) and cap for performance
-  candidatesRaw.sort((a, b) => (b.pOnline * b.netMana) - (a.pOnline * a.netMana))
+  candidatesRaw.sort((a, b) => b.pOnline * b.netMana - a.pOnline * a.netMana)
   const candidates = candidatesRaw.slice(0, MAX_PRODUCER_CANDIDATES)
 
   const probs = candidates.map((x) => x.pOnline)
@@ -491,7 +493,7 @@ export function computeAcceleratedCastabilityAtTurn(
   // P(K=0) = Π(1 - pᵢ)
   let p0 = 1
   for (const pi of probs) {
-    p0 *= (1 - pi)
+    p0 *= 1 - pi
   }
   p0 = clamp01(p0)
 
@@ -568,7 +570,7 @@ export function computeAcceleratedCastabilityAtTurn(
 
   return {
     p1: clamp01(outP1),
-    p2: clamp01(outP2)
+    p2: clamp01(outP2),
   }
 }
 
@@ -584,7 +586,7 @@ export function computeAcceleratedCastabilityAtTurn(
 export function findAcceleratedTurn(
   hg: Hypergeom,
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   producers: ProducerInDeck[],
   ctx: AccelContext,
   threshold: number = DEFAULT_ACCELERATION_THRESHOLD
@@ -610,7 +612,7 @@ export function findAcceleratedTurn(
  */
 export function computeAcceleratedCastability(
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   producers: ProducerInDeck[],
   ctx: AccelContext
 ): AcceleratedCastabilityResult {
@@ -632,7 +634,7 @@ export function computeAcceleratedCastability(
 
   // Key accelerators: top by marginal impact (excluding ENHANCERs)
   const scored = producers
-    .filter(pd => pd.def.type !== 'ENHANCER')
+    .filter((pd) => pd.def.type !== 'ENHANCER')
     .map((pd) => {
       const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx)
       return { name: pd.def.name, score: pOnline * netManaPerTurn(pd.def) }
@@ -644,7 +646,7 @@ export function computeAcceleratedCastability(
     withAcceleration,
     accelerationImpact: withAcceleration.p2 - base.p2,
     acceleratedTurn: accel.acceleratedTurn,
-    keyAccelerators: scored.slice(0, 3).map((x) => x.name)
+    keyAccelerators: scored.slice(0, 3).map((x) => x.name),
   }
 }
 
@@ -654,7 +656,7 @@ export function computeAcceleratedCastability(
  */
 export function computeBaseCastabilityAtTurn(
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   turn: number,
   ctx: AccelContext
 ): CastabilityResult {
@@ -667,17 +669,29 @@ export function computeBaseCastabilityAtTurn(
  */
 export function computeCastabilityByTurn(
   deck: DeckManaProfile,
-  spell: ManaCost,
+  spell: ProducerManaCost,
   producers: ProducerInDeck[],
   ctx: AccelContext,
   maxTurn: number = 7
 ): Array<{ turn: number; base: CastabilityResult; withAcceleration: CastabilityResult }> {
   const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
-  const results: Array<{ turn: number; base: CastabilityResult; withAcceleration: CastabilityResult }> = []
+  const results: Array<{
+    turn: number
+    base: CastabilityResult
+    withAcceleration: CastabilityResult
+  }> = []
 
   for (let turn = 1; turn <= maxTurn; turn++) {
     const base = computeBaseCastability(hg, deck, spell, turn, ctx)
-    const withAcceleration = computeAcceleratedCastabilityAtTurn(hg, deck, spell, turn, producers, ctx, 2)
+    const withAcceleration = computeAcceleratedCastabilityAtTurn(
+      hg,
+      deck,
+      spell,
+      turn,
+      producers,
+      ctx,
+      2
+    )
     results.push({ turn, base, withAcceleration })
   }
 

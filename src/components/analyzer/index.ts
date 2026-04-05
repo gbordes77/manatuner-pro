@@ -1,27 +1,25 @@
 // Analyzer components exports
-export { DeckInputSection } from "./DeckInputSection";
-export { TabPanel } from "./TabPanel";
+export { DeckInputSection } from './DeckInputSection'
+export { TabPanel } from './TabPanel'
 
 // New consolidated tabs (5 tabs)
-export { AnalysisTab } from "./AnalysisTab";
-export { CastabilityTab } from "./CastabilityTab";
-export { DashboardTab } from "./DashboardTab";
-export { ManabaseFullTab } from "./ManabaseFullTab";
-export { MulliganTab } from "./MulliganTab";
+export { AnalysisTab } from './AnalysisTab'
+export { CastabilityTab } from './CastabilityTab'
+export { DashboardTab } from './DashboardTab'
+export { ManabaseFullTab } from './ManabaseFullTab'
+export { MulliganTab } from './MulliganTab'
 
-// Legacy tabs (used internally)
-export { DeckListTab } from "./DeckListTab";
-export { ManabaseTab } from "./ManabaseTab";
-export { OverviewTab } from "./OverviewTab";
-export { ProbabilitiesTab } from "./ProbabilitiesTab";
+// Sub-tabs (used internally by ManabaseFullTab and AnalysisTab)
+export { DeckListTab } from './DeckListTab'
+export { ManabaseTab } from './ManabaseTab'
 
 // Manabase sub-components
-export { LandBreakdownList } from "./LandBreakdownList";
-export { ManabaseStats } from "./ManabaseStats";
-export { ManaDistributionChart } from "./ManaDistributionChart";
+export { LandBreakdownList } from './LandBreakdownList'
+export { ManabaseStats } from './ManabaseStats'
+export { ManaDistributionChart } from './ManaDistributionChart'
 
 // Skeleton loaders
-export { AnalyzerSkeleton } from "./AnalyzerSkeleton";
+export { AnalyzerSkeleton } from './AnalyzerSkeleton'
 
 // Utilities
-export { categorizeLandComplete, isLandCardComplete } from "./landUtils";
+export { categorizeLandComplete, isLandCardComplete } from './landUtils'

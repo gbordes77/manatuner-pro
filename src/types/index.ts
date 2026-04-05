@@ -1,6 +1,7 @@
 // MTG Card Types
-export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G'
-export type ManaSymbol = ManaColor | 'C' | 'X' | 'S'
+/** MTG mana color including Colorless ('C') */
+export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
+export type ManaSymbol = ManaColor | 'X' | 'S'
 
 export interface Card {
   id: string
@@ -41,10 +42,30 @@ export interface CardFace {
   }
 }
 
-export interface ManaCost {
+/** Array-based mana cost representation (symbols list) */
+export interface ManaCostSymbols {
   symbols: ManaSymbol[]
   cmc: number
   colors: string[]
+}
+
+/** @deprecated Use ManaCostSymbols instead */
+export type ManaCost = ManaCostSymbols
+
+/**
+ * Parsed mana cost with detailed breakdown.
+ * Used by ManaCalculator for probability calculations.
+ * Supports hybrid ({W/U}) and phyrexian ({W/P}) mana.
+ */
+export interface ParsedManaCost {
+  /** Generic/colorless mana component */
+  colorless: number
+  /** Count of each colored mana symbol required */
+  symbols: Record<string, number>
+  /** Hybrid mana pairs, e.g. [[W, U]] for {W/U} */
+  hybrid?: Array<[string, string]>
+  /** Phyrexian mana symbols, e.g. { W: 1 } for {W/P} */
+  phyrexian?: Record<string, number>
 }
 
 // Deck Types
@@ -200,7 +221,10 @@ export const MTG_FORMATS: MTGFormat[] = [
   'limited',
 ]
 
-export const MANA_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G']
+export const MANA_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G', 'C']
+
+/** Subset of MANA_COLORS excluding colorless -- useful for color-pip iteration */
+export const WUBRG_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G']
 
 export const COLOR_NAMES: Record<ManaColor, string> = {
   W: 'White',
@@ -208,6 +232,7 @@ export const COLOR_NAMES: Record<ManaColor, string> = {
   B: 'Black',
   R: 'Red',
   G: 'Green',
+  C: 'Colorless',
 }
 
 // Simulation Types

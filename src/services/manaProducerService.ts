@@ -10,15 +10,16 @@
 
 import { MANA_PRODUCER_SEED, isInProducerSeed } from '../data/manaProducerSeed'
 import type {
-    AccelContext,
-    AcceleratedCastabilityResult,
-    CachedProducerEntry,
-    DeckManaProfile,
-    FormatPreset,
-    ManaCost,
-    ManaProducerDef,
-    ProducerCacheStorage,
-    ProducerInDeck
+  AccelContext,
+  AcceleratedCastabilityResult,
+  CachedProducerEntry,
+  DeckManaProfile,
+  FormatPreset,
+  ManaCost,
+  ProducerManaCost,
+  ManaProducerDef,
+  ProducerCacheStorage,
+  ProducerInDeck,
 } from '../types/manaProducers'
 import { FORMAT_REMOVAL_RATES, colorMaskFromLetters } from '../types/manaProducers'
 import { computeAcceleratedCastability, computeCastabilityByTurn } from './castability'
@@ -93,7 +94,11 @@ class ProducerCacheService {
   /**
    * Add a producer to cache
    */
-  set(cardName: string, def: ManaProducerDef, source: 'seed' | 'scryfall' | 'user' = 'scryfall'): void {
+  set(
+    cardName: string,
+    def: ManaProducerDef,
+    source: 'seed' | 'scryfall' | 'user' = 'scryfall'
+  ): void {
     this.initialize()
     this.memoryCache.set(cardName.toLowerCase(), def)
 
@@ -106,7 +111,11 @@ class ProducerCacheService {
   /**
    * Persist a single entry to localStorage
    */
-  private persistToStorage(cardName: string, def: ManaProducerDef, source: 'scryfall' | 'user'): void {
+  private persistToStorage(
+    cardName: string,
+    def: ManaProducerDef,
+    source: 'scryfall' | 'user'
+  ): void {
     try {
       const stored = localStorage.getItem(CACHE_KEY)
       const cache: ProducerCacheStorage = stored
@@ -117,7 +126,7 @@ class ProducerCacheService {
         def,
         fetchedAt: new Date().toISOString(),
         source,
-        expiresAt: new Date(Date.now() + CACHE_TTL_MS).toISOString()
+        expiresAt: new Date(Date.now() + CACHE_TTL_MS).toISOString(),
       }
 
       cache.producers[cardName.toLowerCase()] = entry
@@ -138,7 +147,7 @@ class ProducerCacheService {
     return {
       total: this.memoryCache.size,
       fromSeed: seedCount,
-      fromScryfall: this.memoryCache.size - seedCount
+      fromScryfall: this.memoryCache.size - seedCount,
     }
   }
 
@@ -177,17 +186,25 @@ export const producerCacheService = new ProducerCacheService()
 const MANA_PRODUCER_PATTERNS = [
   // Dorks
   { pattern: /\{T\}:\s*Add\s+\{([WUBRGC])\}/i, type: 'DORK' as const },
-  { pattern: /\{T\}:\s*Add\s+one\s+mana\s+of\s+any\s+color/i, type: 'DORK' as const, producesAny: true },
+  {
+    pattern: /\{T\}:\s*Add\s+one\s+mana\s+of\s+any\s+color/i,
+    type: 'DORK' as const,
+    producesAny: true,
+  },
 
   // Rocks
   { pattern: /\{T\}:\s*Add\s+\{C\}\{C\}/i, type: 'ROCK' as const, amount: 2 },
   { pattern: /\{T\}:\s*Add\s+\{C\}/i, type: 'ROCK' as const },
 
   // Rituals
-  { pattern: /Add\s+\{([WUBRGC])\}\{([WUBRGC])\}\{([WUBRGC])\}/i, type: 'RITUAL' as const, amount: 3 },
+  {
+    pattern: /Add\s+\{([WUBRGC])\}\{([WUBRGC])\}\{([WUBRGC])\}/i,
+    type: 'RITUAL' as const,
+    amount: 3,
+  },
 
   // Treasures
-  { pattern: /create.*treasure/i, type: 'TREASURE' as const }
+  { pattern: /create.*treasure/i, type: 'TREASURE' as const },
 ]
 
 /**
@@ -225,9 +242,13 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
           isCreature,
           producesAmount: p.amount ?? 1,
           activationTax: 0,
-          producesMask: p.producesAny ? 0b111111 : (match[1] ? colorMaskFromLetters([match[1] as any]) : 0b100000),
+          producesMask: p.producesAny
+            ? 0b111111
+            : match[1]
+              ? colorMaskFromLetters([match[1] as any])
+              : 0b100000,
           producesAny: p.producesAny ?? false,
-          oneShot: p.type === 'RITUAL'
+          oneShot: p.type === 'RITUAL',
           // Note: survivalBase deprecated in v1.1
           // Survival now calculated dynamically via ctx.removalRate * rockRemovalFactor
         }
@@ -244,7 +265,10 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
 /**
  * Parse a mana cost string into components
  */
-function parseManaCost(cost: string): { generic: number; colors: Partial<Record<'W' | 'U' | 'B' | 'R' | 'G' | 'C', number>> } {
+function parseManaCost(cost: string): {
+  generic: number
+  colors: Partial<Record<'W' | 'U' | 'B' | 'R' | 'G' | 'C', number>>
+} {
   const colors: Partial<Record<'W' | 'U' | 'B' | 'R' | 'G' | 'C', number>> = {}
   let generic = 0
 
@@ -338,7 +362,7 @@ class ManaProducerService {
     return {
       playDraw,
       removalRate: FORMAT_REMOVAL_RATES[format],
-      defaultRockSurvival: 0.98
+      defaultRockSurvival: 0.98,
     }
   }
 
@@ -347,7 +371,7 @@ class ManaProducerService {
    */
   calculateAcceleratedCastability(
     deck: DeckManaProfile,
-    spell: ManaCost,
+    spell: ProducerManaCost,
     producers: ProducerInDeck[],
     ctx: AccelContext
   ): AcceleratedCastabilityResult {
@@ -359,7 +383,7 @@ class ManaProducerService {
    */
   calculateCastabilityByTurn(
     deck: DeckManaProfile,
-    spell: ManaCost,
+    spell: ProducerManaCost,
     producers: ProducerInDeck[],
     ctx: AccelContext,
     maxTurn: number = 7
@@ -383,5 +407,11 @@ export const manaProducerService = new ManaProducerService()
 // =============================================================================
 
 export { FORMAT_REMOVAL_RATES }
-export type { AccelContext, DeckManaProfile, FormatPreset, ManaCost, ProducerInDeck }
-
+export type {
+  AccelContext,
+  DeckManaProfile,
+  FormatPreset,
+  ProducerManaCost,
+  ManaCost,
+  ProducerInDeck,
+}

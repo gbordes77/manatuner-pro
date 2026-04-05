@@ -5,6 +5,7 @@
 ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScript + Vite. Ce guide couvre tous les aspects du déploiement en production.
 
 ### ✅ Status Actuel
+
 - **🌐 Production Live** : https://manatuner-pro.vercel.app
 - **📦 Plateforme** : Vercel (pas Firebase)
 - **🔧 Framework** : Vite + React 18 + TypeScript
@@ -15,6 +16,7 @@ ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScr
 ## 📋 Checklist de Déploiement
 
 ### ✅ Pré-déploiement
+
 - [ ] Tests mathématiques passent (9/9) : `npm run test:unit`
 - [ ] Build de production réussit : `npm run build`
 - [ ] Aucune erreur TypeScript : `npm run type-check`
@@ -22,6 +24,7 @@ ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScr
 - [ ] Variables d'environnement configurées
 
 ### ✅ Déploiement Vercel
+
 - [ ] Push sur branche `main`
 - [ ] Déploiement automatique via GitHub
 - [ ] Tests de fumée sur production
@@ -32,6 +35,7 @@ ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScr
 ## 🔧 Configuration Vercel Complète
 
 ### vercel.json (Déjà configuré)
+
 ```json
 {
   "rewrites": [
@@ -78,9 +82,11 @@ ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScr
 ### Variables d'Environnement Vercel
 
 #### Variables Obligatoires (Aucune)
+
 Le projet fonctionne **100% en mode privacy-first** sans variables d'environnement.
 
 #### Variables Optionnelles (Cloud Sync)
+
 Si vous voulez activer la synchronisation cloud :
 
 ```bash
@@ -109,11 +115,11 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           mui: ['@mui/material', '@mui/icons-material'],
-          redux: ['@reduxjs/toolkit', 'react-redux']
-        }
-      }
-    }
-  }
+          redux: ['@reduxjs/toolkit', 'react-redux'],
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -162,13 +168,15 @@ vercel --prod
 ## 🔒 Sécurité Production
 
 ### Headers de Sécurité (Configurés)
+
 - ✅ `X-Content-Type-Options: nosniff`
-- ✅ `X-Frame-Options: DENY` 
+- ✅ `X-Frame-Options: DENY`
 - ✅ `X-XSS-Protection: 1; mode=block`
 - ✅ HTTPS automatique par Vercel
 - ✅ CORS configuré pour Web Workers
 
 ### Privacy-First Architecture
+
 - ✅ **Aucune donnée utilisateur** envoyée par défaut
 - ✅ **Chiffrement AES-256** pour stockage local
 - ✅ **Codes utilisateur anonymes** générés localement
@@ -179,12 +187,14 @@ vercel --prod
 ## 📊 Monitoring et Performance
 
 ### Métriques Actuelles
+
 - ✅ **Bundle Size** : 739KB (202KB gzipped)
 - ✅ **Build Time** : ~20 secondes
 - ✅ **Tests** : 9/9 mathématiques passent
 - ✅ **Lighthouse Score** : 90+ sur tous les critères
 
 ### Monitoring Vercel
+
 ```bash
 # Voir les logs de déploiement
 vercel logs
@@ -198,6 +208,7 @@ vercel logs
 ## 🧪 Tests et Validation
 
 ### Tests Pré-déploiement
+
 ```bash
 # Tests unitaires (critiques)
 npm run test:unit
@@ -216,6 +227,7 @@ npm run lint
 ```
 
 ### Tests Post-déploiement
+
 ```bash
 # Test rapide des fonctionnalités critiques
 # 1. Page d'accueil charge
@@ -230,6 +242,7 @@ npm run lint
 ## 🚨 Rollback et Recovery
 
 ### Procédure de Rollback Vercel
+
 ```bash
 # Via Dashboard Vercel
 # 1. Aller dans Deployments
@@ -241,6 +254,7 @@ vercel rollback [deployment-url]
 ```
 
 ### Monitoring des Erreurs
+
 - **Console Browser** : Vérifier les erreurs JavaScript
 - **Vercel Logs** : Erreurs de build et runtime
 - **GitHub Actions** : Status des tests automatiques
@@ -250,12 +264,14 @@ vercel rollback [deployment-url]
 ## 📱 PWA et Performance
 
 ### Fonctionnalités PWA (Activées)
+
 - ✅ **Service Worker** avec cache intelligent
 - ✅ **Offline-ready** pour analyses locales
 - ✅ **Installable** sur mobile et desktop
 - ✅ **Responsive** mobile-first
 
 ### Optimisations Performance
+
 - ✅ **Code Splitting** automatique par Vite
 - ✅ **Lazy Loading** des composants lourds
 - ✅ **Web Workers** pour calculs mathématiques
@@ -267,6 +283,7 @@ vercel rollback [deployment-url]
 ## 🔧 Configuration Domaine Personnalisé
 
 ### Ajouter un Domaine
+
 ```bash
 # Via Vercel Dashboard
 # 1. Project Settings > Domains
@@ -283,6 +300,7 @@ vercel rollback [deployment-url]
 ## 📋 Checklist Post-Déploiement
 
 ### ✅ Fonctionnalités Critiques
+
 - [ ] **Page d'accueil** : Animations et navigation
 - [ ] **Analyseur** : Calculs mathématiques corrects
 - [ ] **Frank Karsten** : Liens cliquables vers TCGPlayer
@@ -293,6 +311,7 @@ vercel rollback [deployment-url]
 - [ ] **Sécurité** : HTTPS et headers configurés
 
 ### ✅ Tests Utilisateur
+
 - [ ] **Deck Standard** : Analyse complète
 - [ ] **Deck Multicolore** : Recommandations correctes
 - [ ] **Mobile** : Interface utilisable
@@ -306,6 +325,7 @@ vercel rollback [deployment-url]
 ### Problèmes Courants
 
 **Site ne charge pas**
+
 ```bash
 # Vérifier build local
 npm run build
@@ -316,12 +336,14 @@ vercel logs
 ```
 
 **Erreurs JavaScript**
+
 ```bash
 # Console navigateur F12
 # Vérifier erreurs réseau et JavaScript
 ```
 
 **Performance dégradée**
+
 ```bash
 # Lighthouse audit
 npx lighthouse https://manatuner-pro.vercel.app
@@ -331,6 +353,7 @@ npm run build:analyze
 ```
 
 ### Contacts
+
 - **Repository** : https://github.com/gbordes77/manatuner-pro
 - **Issues** : GitHub Issues pour bugs
 - **Vercel Support** : Dashboard Vercel > Help
@@ -354,6 +377,7 @@ https://manatuner-pro.vercel.app
 ```
 
 **Stack Technique :**
+
 - **Frontend** : React 18 + TypeScript + Material-UI
 - **Build** : Vite (ES2015 target)
 - **Hosting** : Vercel Edge Network
@@ -362,4 +386,4 @@ https://manatuner-pro.vercel.app
 
 ---
 
-🎉 **ManaTuner Pro est maintenant production-ready avec une architecture moderne et sécurisée !** 
+🎉 **ManaTuner Pro est maintenant production-ready avec une architecture moderne et sécurisée !**
