@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx playwright install chromium --with-deps && npm run build",
+  "buildCommand": "npm run build:fast",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [

@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs",
-    "build:fast": "vite build",
+    "build": "vite build",
+    "build:prerender": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
