@@ -1,4 +1,4 @@
-# ManaTuner Pro - Document de Passation
+# ManaTuner - Document de Passation
 
 ## Bienvenue dans l'équipe !
 
@@ -8,11 +8,11 @@ Ce document vous permettra de prendre en main le projet rapidement.
 
 ## 1. Vue d'ensemble
 
-**ManaTuner Pro** est un analyseur de manabase pour Magic: The Gathering.
+**ManaTuner** est un analyseur de manabase pour Magic: The Gathering.
 
 | Info               | Valeur                             |
 | ------------------ | ---------------------------------- |
-| **URL Production** | https://manatuner-pro.vercel.app   |
+| **URL Production** | https://manatuner.app              |
 | **Stack**          | React 18 + TypeScript + Vite + MUI |
 | **Hébergement**    | Vercel                             |
 | **Tests**          | Vitest (unit) + Playwright (E2E)   |

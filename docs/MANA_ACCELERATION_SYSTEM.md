@@ -1,4 +1,4 @@
-# ManaTuner Pro — Mana Acceleration System
+# ManaTuner — Mana Acceleration System
 
 **Version: 1.1 (Corrected)**  
 **Last Updated: December 2025**  
@@ -28,25 +28,25 @@
 
 ### Removed (from v1.0)
 
-| What | Why it was wrong |
-|------|------------------|
-| `EffectiveTurn = MV - ExpectedAcceleration` | Non-probabilistic averages don't model variance |
-| `applyAcceleration()` with arbitrary additive boost | Magic number `0.05` was unjustified |
-| `activationTurn` derived from MV | Conceptually incorrect — depends on delay, not cost |
-| `survivalProfile` with fixed percentages | Inflexible, didn't scale with removal rate |
-| `bonusManaFromLands` as deterministic sum | Assumed all copies drawn and played |
+| What                                                | Why it was wrong                                    |
+| --------------------------------------------------- | --------------------------------------------------- |
+| `EffectiveTurn = MV - ExpectedAcceleration`         | Non-probabilistic averages don't model variance     |
+| `applyAcceleration()` with arbitrary additive boost | Magic number `0.05` was unjustified                 |
+| `activationTurn` derived from MV                    | Conceptually incorrect — depends on delay, not cost |
+| `survivalProfile` with fixed percentages            | Inflexible, didn't scale with removal rate          |
+| `bonusManaFromLands` as deterministic sum           | Assumed all copies drawn and played                 |
 
 ### Added / Replaced
 
-| Feature | Description |
-|---------|-------------|
-| **Disjoint scenario model K∈{0,1,2}** | Probabilistic model for number of producers online |
-| **Multi-mana lands as random variable** | Bonus mana conditional on lands actually in play |
-| **Unified survival model** | `P_survive(n) = (1-r)^n` with single slider |
-| **Stable API** | `computeBaseCastabilityAtTurn()` + `computeAcceleratedCastabilityAtTurn()` |
-| **Advanced Mode option** | Smart Monte Carlo for rituals/treasures/conditional lands |
-| **No magic numbers** | All constants derived or configurable |
-| **`delay` instead of `activationTurn`** | 1 for summoning sickness, 0 for immediate |
+| Feature                                 | Description                                                                |
+| --------------------------------------- | -------------------------------------------------------------------------- |
+| **Disjoint scenario model K∈{0,1,2}**   | Probabilistic model for number of producers online                         |
+| **Multi-mana lands as random variable** | Bonus mana conditional on lands actually in play                           |
+| **Unified survival model**              | `P_survive(n) = (1-r)^n` with single slider                                |
+| **Stable API**                          | `computeBaseCastabilityAtTurn()` + `computeAcceleratedCastabilityAtTurn()` |
+| **Advanced Mode option**                | Smart Monte Carlo for rituals/treasures/conditional lands                  |
+| **No magic numbers**                    | All constants derived or configurable                                      |
+| **`delay` instead of `activationTurn`** | 1 for summoning sickness, 0 for immediate                                  |
 
 ---
 
@@ -58,9 +58,9 @@ Answer the question:
 
 ### Constraints
 
-| Mode | Method | Target |
-|------|--------|--------|
-| **Instant (default)** | Analytic | <100ms |
+| Mode                  | Method                   | Target              |
+| --------------------- | ------------------------ | ------------------- |
+| **Instant (default)** | Analytic                 | <100ms              |
 | **Advanced (toggle)** | Monte Carlo (Web Worker) | Deck-level accuracy |
 
 ---
@@ -69,14 +69,14 @@ Answer the question:
 
 ### Variables
 
-| Symbol | Definition |
-|--------|------------|
-| N | Deck size (60 or 99) |
-| L | Total lands in deck |
-| n(T) | Cards seen by turn T |
-| Sᶜ | Sources producing color c |
-| MV | Mana value of spell |
-| r | Removal rate (0..1) |
+| Symbol | Definition                |
+| ------ | ------------------------- |
+| N      | Deck size (60 or 99)      |
+| L      | Total lands in deck       |
+| n(T)   | Cards seen by turn T      |
+| Sᶜ     | Sources producing color c |
+| MV     | Mana value of spell       |
+| r      | Removal rate (0..1)       |
 
 ### Cards Seen by Turn T
 
@@ -88,16 +88,19 @@ DRAW: n(T) = 7 + T
 ### Hypergeometric Distribution
 
 **PMF (Probability Mass Function):**
+
 ```
 P(X = k) = C(K,k) × C(N-K, n-k) / C(N,n)
 ```
 
 **CDF (Cumulative — "at least k"):**
+
 ```
 P(X ≥ k) = Σᵢ₌ₖᵐⁱⁿ⁽ⁿ'ᴷ⁾ P(X = i)
 ```
 
 Where:
+
 - N = population size (deck)
 - K = success states in population (e.g., lands)
 - n = draws (cards seen)
@@ -110,6 +113,7 @@ Where:
 ### Why v1.0 Was Wrong
 
 The formula `P2 = P1 × P(≥T lands)` is an approximation that:
+
 - Doesn't properly condition color probability on actual lands drawn
 - Assumes independence that doesn't exist
 
@@ -136,6 +140,7 @@ P(pipᶜ OK | l) = P(Xᶜ ≥ needᶜ), where Xᶜ ~ Hypergeom(L, Sᶜ, l)
 ```
 
 **Conservative approximation (fast, stable):**
+
 ```
 P(colors OK | l) ≈ minᶜ P(Xᶜ ≥ needᶜ)
 ```
@@ -151,6 +156,7 @@ P(castable at T) = Σₗ P(lands=l) × P(colors OK | l) × 𝟙[l ≥ MV]
 ### 3.4 Legacy P1/P2 Compatibility
 
 For UX continuity, expose:
+
 - **P1** = `P(colors OK | l=T)` — "perfect drops" reading
 - **P2** = sum above — realistic
 
@@ -167,22 +173,26 @@ Adding `bonusManaFromLands` as if all copies were in play assumes "all drawn + a
 ### 4.2 Correct Model (Unconditional Multi-Mana)
 
 Let:
+
 - U = number of multi-mana lands in deck (e.g., Ancient Tomb)
 - Δ = bonus per land (Ancient Tomb produces 2 → Δ = 1)
 - l = lands in play at T (random variable)
 - M = # of multi-mana among those l lands
 
 **Distribution of M given l lands:**
+
 ```
 P(M = m | l) = HypergeomPMF(L, U, l, m)
 ```
 
 **Total mana:**
+
 ```
 mana(l, m) = l + m × Δ
 ```
 
 **Replace the mana test:**
+
 ```
 𝟙[l ≥ MV]  →  𝟙[mana(l,m) ≥ MV]
 ```
@@ -196,6 +206,7 @@ P(castable at T) = Σₗ P(l) × P(colors OK | l) × Σₘ P(m|l) × 𝟙[l + m�
 ### 4.4 Conditional Lands (Cradle/Nykthos/Coffers/Temple)
 
 **Instant mode recommendation:**
+
 - Disclaimer + ignore (V1 approach)
 - OR: simulation only (advanced mode)
 
@@ -210,28 +221,28 @@ P(castable at T) = Σₗ P(l) × P(colors OK | l) × Σₘ P(m|l) × 𝟙[l + m�
 We do NOT store `activationTurn`. We store only invariant properties:
 
 ```typescript
-type ProducerType = 'DORK' | 'ROCK' | 'RITUAL' | 'ONE_SHOT' | 'TREASURE' | 'ENHANCER';
+type ProducerType = 'DORK' | 'ROCK' | 'RITUAL' | 'ONE_SHOT' | 'TREASURE' | 'ENHANCER'
 
 interface ManaProducerDef {
-  name: string;
-  type: ProducerType;
+  name: string
+  type: ProducerType
 
   // Casting cost
-  castCostGeneric: number;
-  castCostPips: Partial<Record<Color, number>>;
+  castCostGeneric: number
+  castCostPips: Partial<Record<Color, number>>
 
   // Timing
-  delay: number;           // 1 = summoning sickness/ETB tapped; 0 = immediate
-  isCreature: boolean;
+  delay: number // 1 = summoning sickness/ETB tapped; 0 = immediate
+  isCreature: boolean
 
   // Production
-  producesAmount: number;  // Raw output per tap
-  activationTax: number;   // Signets: 1; Sol Ring: 0
-  producesMask: ColorMask; // Which colors
-  producesAny: boolean;    // Any color?
+  producesAmount: number // Raw output per tap
+  activationTax: number // Signets: 1; Sol Ring: 0
+  producesMask: ColorMask // Which colors
+  producesAny: boolean // Any color?
 
   // One-shot
-  oneShot: boolean;        // Rituals/treasures/petal
+  oneShot: boolean // Rituals/treasures/petal
 }
 ```
 
@@ -246,6 +257,7 @@ T_latest = T - delay - 1
 If `T_latest < 1` → cannot accelerate (too slow to help before T).
 
 **Example:**
+
 - Llanowar Elves (delay=1) helping cast a 4-drop on T3:
   - T_latest = 3 - 1 - 1 = 1 ✓ (must be cast T1)
 - Sol Ring (delay=0) helping cast a 3-drop on T2:
@@ -260,6 +272,7 @@ P(A online at T) ≈ P(draw A ≤ T_latest) × P(castable at T_latest) × P_surv
 ```
 
 Where:
+
 - **P(draw)** = hypergeom "at least 1 copy" by T_latest
 - **P(castable)** = lands-only castability at T_latest for producer's cost
 - **P_survive(n)** = survival over n = T - T_latest turns
@@ -280,12 +293,12 @@ Where n = turns exposed to removal.
 
 ### Recommended Presets
 
-| Preset | r | Environment |
-|--------|---|-------------|
-| Goldfish | 0.00 | Testing |
-| Low | 0.10 | Casual/Battlecruiser |
-| Medium | 0.25 | Standard/Pioneer |
-| High | 0.45 | Modern/Legacy |
+| Preset   | r    | Environment          |
+| -------- | ---- | -------------------- |
+| Goldfish | 0.00 | Testing              |
+| Low      | 0.10 | Casual/Battlecruiser |
+| Medium   | 0.25 | Standard/Pioneer     |
+| High     | 0.45 | Modern/Legacy        |
 
 ### Rock vs Creature Distinction
 
@@ -334,12 +347,14 @@ P(K=2) ≈ P(K≥2)  // Truncation
 For a set of k producers online:
 
 **Net mana per turn:**
+
 ```
 netPerTurn = producesAmount - activationTax  (≥0)
 extraMana = Σ netPerTurn  // Total ramp
 ```
 
 **Reduced mana requirement from lands:**
+
 ```
 MV_lands = max(0, MV - extraMana)
 ```
@@ -374,16 +389,16 @@ With θ configurable (e.g., 5% or 10%).
 
 ```typescript
 function findAcceleratedTurn(deck, spell, producers, ctx, threshold = 0.05): number | null {
-  const naturalTurn = spell.mv;
-  
+  const naturalTurn = spell.mv
+
   for (let t = 1; t < naturalTurn; t++) {
-    const p = computeAcceleratedCastabilityAtTurn(deck, spell, t, producers, ctx).p2;
+    const p = computeAcceleratedCastabilityAtTurn(deck, spell, t, producers, ctx).p2
     if (p >= threshold) {
-      return t;
+      return t
     }
   }
-  
-  return null; // No acceleration possible
+
+  return null // No acceleration possible
 }
 ```
 
@@ -400,40 +415,40 @@ function findAcceleratedTurn(deck, spell, producers, ctx, threshold = 0.05): num
 
 ### Characteristics
 
-| Feature | Description |
-|---------|-------------|
-| Execution | Web Worker |
-| Mulligan | London mulligan, ramp-aware |
+| Feature     | Description                       |
+| ----------- | --------------------------------- |
+| Execution   | Web Worker                        |
+| Mulligan    | London mulligan, ramp-aware       |
 | Play policy | Greedy (land fixing + ramp chain) |
-| Output | `castableByTurn[spellId][t]` |
-| Samples | 10,000+ for convergence |
+| Output      | `castableByTurn[spellId][t]`      |
+| Samples     | 10,000+ for convergence           |
 
 ### Implementation Sketch
 
 ```typescript
 // In Web Worker
 function simulateDeck(deck, spells, ctx, samples = 10000): SimulationResult {
-  const results = spells.map(() => new Array(10).fill(0));
-  
+  const results = spells.map(() => new Array(10).fill(0))
+
   for (let sim = 0; sim < samples; sim++) {
-    const game = new GameState(deck, ctx);
-    game.mulligan(); // London mulligan with ramp awareness
-    
+    const game = new GameState(deck, ctx)
+    game.mulligan() // London mulligan with ramp awareness
+
     for (let turn = 1; turn <= 10; turn++) {
-      game.drawStep(turn);
-      game.playLand();  // Greedy: fixing > ramp > utility
-      game.playRamp();  // Deploy available acceleration
-      
+      game.drawStep(turn)
+      game.playLand() // Greedy: fixing > ramp > utility
+      game.playRamp() // Deploy available acceleration
+
       for (let s = 0; s < spells.length; s++) {
         if (game.canCast(spells[s])) {
-          results[s][turn]++;
+          results[s][turn]++
         }
       }
     }
   }
-  
+
   // Normalize to probabilities
-  return results.map(r => r.map(count => count / samples));
+  return results.map((r) => r.map((count) => count / samples))
 }
 ```
 
@@ -445,23 +460,23 @@ function simulateDeck(deck, spells, ctx, samples = 10000): SimulationResult {
 
 ```typescript
 function pmf(N: number, K: number, n: number, k: number): number {
-  return binomial(K, k) * binomial(N - K, n - k) / binomial(N, n);
+  return (binomial(K, k) * binomial(N - K, n - k)) / binomial(N, n)
 }
 
 function atLeast(N: number, K: number, n: number, kMin: number): number {
-  let sum = 0;
+  let sum = 0
   for (let k = kMin; k <= Math.min(n, K); k++) {
-    sum += pmf(N, K, n, k);
+    sum += pmf(N, K, n, k)
   }
-  return sum;
+  return sum
 }
 
 function atLeastOneCopy(N: number, copies: number, cardsSeen: number): number {
-  return 1 - pmf(N, copies, cardsSeen, 0);
+  return 1 - pmf(N, copies, cardsSeen, 0)
 }
 
 function cardsSeen(T: number, playDraw: 'PLAY' | 'DRAW'): number {
-  return playDraw === 'PLAY' ? 7 + (T - 1) : 7 + T;
+  return playDraw === 'PLAY' ? 7 + (T - 1) : 7 + T
 }
 ```
 
@@ -469,8 +484,8 @@ function cardsSeen(T: number, playDraw: 'PLAY' | 'DRAW'): number {
 
 ```typescript
 interface BaseCastabilityResult {
-  p1: number;  // Perfect drops (legacy)
-  p2: number;  // Realistic
+  p1: number // Perfect drops (legacy)
+  p2: number // Realistic
 }
 
 function baseCastabilityAtTurn(
@@ -479,53 +494,53 @@ function baseCastabilityAtTurn(
   turn: number,
   ctx: Context
 ): BaseCastabilityResult {
-  const n = cardsSeen(turn, ctx.playDraw);
+  const n = cardsSeen(turn, ctx.playDraw)
 
   // P1 "legacy" (perfect drops): colors given l=turn
-  const p1 = colorsOkGivenLands(deck, spell, turn);
+  const p1 = colorsOkGivenLands(deck, spell, turn)
 
   // P2: Sum over all possible land counts
-  let p2 = 0;
+  let p2 = 0
   for (let l = 0; l <= Math.min(deck.totalLands, n); l++) {
-    const pL = pmf(deck.deckSize, deck.totalLands, n, l);
-    if (pL === 0) continue;
+    const pL = pmf(deck.deckSize, deck.totalLands, n, l)
+    if (pL === 0) continue
 
-    const pColors = colorsOkGivenLands(deck, spell, l);
-    const pManaOk = manaOkGivenLands(deck, spell.mv, l);
+    const pColors = colorsOkGivenLands(deck, spell, l)
+    const pManaOk = manaOkGivenLands(deck, spell.mv, l)
 
-    p2 += pL * pColors * pManaOk;
+    p2 += pL * pColors * pManaOk
   }
 
-  return { p1, p2: clamp01(p2) };
+  return { p1, p2: clamp01(p2) }
 }
 
 function colorsOkGivenLands(deck: DeckProfile, spell: SpellCost, l: number): number {
-  let minP = 1;
+  let minP = 1
   for (const [c, need] of Object.entries(spell.pips)) {
-    if (!need) continue;
-    const Sc = deck.landColorSources[c] ?? 0;
-    const p = atLeast(deck.totalLands, Sc, l, need);
-    minP = Math.min(minP, p);
+    if (!need) continue
+    const Sc = deck.landColorSources[c] ?? 0
+    const p = atLeast(deck.totalLands, Sc, l, need)
+    minP = Math.min(minP, p)
   }
-  return minP;
+  return minP
 }
 
 function manaOkGivenLands(deck: DeckProfile, mvNeeded: number, l: number): number {
   // No multi-mana lands
   if (!deck.unconditionalMultiMana) {
-    return l >= mvNeeded ? 1 : 0;
+    return l >= mvNeeded ? 1 : 0
   }
 
-  const { U, delta } = deck.unconditionalMultiMana;
-  let sum = 0;
-  
+  const { U, delta } = deck.unconditionalMultiMana
+  let sum = 0
+
   for (let m = 0; m <= Math.min(U, l); m++) {
-    const pM = pmf(deck.totalLands, U, l, m);
-    const mana = l + m * delta;
-    if (mana >= mvNeeded) sum += pM;
+    const pM = pmf(deck.totalLands, U, l, m)
+    const mana = l + m * delta
+    if (mana >= mvNeeded) sum += pM
   }
-  
-  return clamp01(sum);
+
+  return clamp01(sum)
 }
 ```
 
@@ -538,30 +553,28 @@ function producerOnlineProb(
   turnTarget: number,
   ctx: Context
 ): number {
-  const tLatest = turnTarget - producer.def.delay - 1;
-  if (tLatest < 1) return 0;
+  const tLatest = turnTarget - producer.def.delay - 1
+  if (tLatest < 1) return 0
 
-  const seen = cardsSeen(tLatest, ctx.playDraw);
+  const seen = cardsSeen(tLatest, ctx.playDraw)
 
   // P(draw at least one copy)
-  const pDraw = atLeastOneCopy(deck.deckSize, producer.copies, seen);
+  const pDraw = atLeastOneCopy(deck.deckSize, producer.copies, seen)
 
   // P(can cast producer by tLatest)
   const costSpell: SpellCost = {
     mv: producer.def.castCostGeneric + sumPips(producer.def.castCostPips),
     generic: producer.def.castCostGeneric,
-    pips: producer.def.castCostPips
-  };
-  const pCastable = baseCastabilityAtTurn(deck, costSpell, tLatest, ctx).p2;
+    pips: producer.def.castCostPips,
+  }
+  const pCastable = baseCastabilityAtTurn(deck, costSpell, tLatest, ctx).p2
 
   // P(survives until turnTarget)
-  const exposureTurns = turnTarget - tLatest;
-  const r = producer.def.isCreature 
-    ? ctx.removalRate 
-    : ctx.removalRate * ctx.rockRemovalFactor;
-  const pSurvive = Math.pow(1 - r, Math.max(0, exposureTurns));
+  const exposureTurns = turnTarget - tLatest
+  const r = producer.def.isCreature ? ctx.removalRate : ctx.removalRate * ctx.rockRemovalFactor
+  const pSurvive = Math.pow(1 - r, Math.max(0, exposureTurns))
 
-  return clamp01(pDraw * pCastable * pSurvive);
+  return clamp01(pDraw * pCastable * pSurvive)
 }
 ```
 
@@ -575,57 +588,58 @@ function acceleratedCastabilityAtTurn(
   producers: ProducerInDeck[],
   ctx: Context
 ): { p2: number } {
-  
   // 1) Compute pᵢ for each producer
   const items = producers
-    .filter(p => p.copies > 0)
-    .map(p => ({
+    .filter((p) => p.copies > 0)
+    .map((p) => ({
       p,
       pi: producerOnlineProb(deck, p, turn, ctx),
-      net: netPerTurn(p)
+      net: netPerTurn(p),
     }))
-    .filter(x => x.pi > 0 && x.net > 0);
+    .filter((x) => x.pi > 0 && x.net > 0)
 
   // Cap for performance (top 18 by impact)
-  items.sort((a, b) => (b.pi * b.net) - (a.pi * a.net));
-  const cand = items.slice(0, 18);
+  items.sort((a, b) => b.pi * b.net - a.pi * a.net)
+  const cand = items.slice(0, 18)
 
   // 2) Compute P(K=0), P(K=1), P(K≥2)
-  const p0 = cand.reduce((acc, x) => acc * (1 - x.pi), 1);
+  const p0 = cand.reduce((acc, x) => acc * (1 - x.pi), 1)
   const p1Sum = cand.reduce((acc, xj) => {
-    return acc + (xj.pi * p0 / (1 - xj.pi));
-  }, 0);
-  const p2Sum = clamp01(1 - p0 - p1Sum);
+    return acc + (xj.pi * p0) / (1 - xj.pi)
+  }, 0)
+  const p2Sum = clamp01(1 - p0 - p1Sum)
 
   // 3) K=0 scenario
-  const k0 = castabilityGivenOnlineSet(deck, spell, turn, [], ctx);
-  let out = p0 * k0;
+  const k0 = castabilityGivenOnlineSet(deck, spell, turn, [], ctx)
+  let out = p0 * k0
 
   // 4) K=1 scenario (mixture over which producer)
   if (p1Sum > 0) {
-    let mix = 0;
+    let mix = 0
     for (const x of cand) {
-      const w = (x.pi * p0 / (1 - x.pi)) / p1Sum;
-      mix += w * castabilityGivenOnlineSet(deck, spell, turn, [x.p], ctx);
+      const w = (x.pi * p0) / (1 - x.pi) / p1Sum
+      mix += w * castabilityGivenOnlineSet(deck, spell, turn, [x.p], ctx)
     }
-    out += p1Sum * mix;
+    out += p1Sum * mix
   }
 
   // 5) K=2 scenario (pair mixture)
   if (p2Sum > 0 && cand.length >= 2) {
-    let sumW = 0, mix = 0;
+    let sumW = 0,
+      mix = 0
     for (let i = 0; i < cand.length; i++) {
       for (let j = i + 1; j < cand.length; j++) {
-        const pi = cand[i].pi, pj = cand[j].pi;
-        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj));
-        sumW += w;
-        mix += w * castabilityGivenOnlineSet(deck, spell, turn, [cand[i].p, cand[j].p], ctx);
+        const pi = cand[i].pi,
+          pj = cand[j].pi
+        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj))
+        sumW += w
+        mix += w * castabilityGivenOnlineSet(deck, spell, turn, [cand[i].p, cand[j].p], ctx)
       }
     }
-    if (sumW > 0) out += p2Sum * (mix / sumW);
+    if (sumW > 0) out += p2Sum * (mix / sumW)
   }
 
-  return { p2: clamp01(out) };
+  return { p2: clamp01(out) }
 }
 
 function castabilityGivenOnlineSet(
@@ -636,23 +650,23 @@ function castabilityGivenOnlineSet(
   ctx: Context
 ): number {
   // Extra mana from online producers
-  const extraMana = onlineProducers.reduce((s, p) => s + netPerTurn(p), 0);
-  const mvNeeded = Math.max(0, spell.mv - extraMana);
+  const extraMana = onlineProducers.reduce((s, p) => s + netPerTurn(p), 0)
+  const mvNeeded = Math.max(0, spell.mv - extraMana)
 
   // Allocate pips covered by producers (k≤2, brute-force)
-  const pipsCovered = bestPipCoverage(spell.pips, onlineProducers);
+  const pipsCovered = bestPipCoverage(spell.pips, onlineProducers)
 
   const reducedSpell: SpellCost = {
     ...spell,
     mv: mvNeeded,
-    pips: pipsCovered.remainingPips
-  };
+    pips: pipsCovered.remainingPips,
+  }
 
-  return baseCastabilityAtTurn(deck, reducedSpell, turn, ctx).p2;
+  return baseCastabilityAtTurn(deck, reducedSpell, turn, ctx).p2
 }
 
 function netPerTurn(p: ProducerInDeck): number {
-  return Math.max(0, p.def.producesAmount - p.def.activationTax);
+  return Math.max(0, p.def.producesAmount - p.def.activationTax)
 }
 ```
 
@@ -662,21 +676,21 @@ function netPerTurn(p: ProducerInDeck): number {
 
 ### Instant Mode (Analytic)
 
-| Limitation | Acceptable Because |
-|------------|-------------------|
+| Limitation                                           | Acceptable Because                          |
+| ---------------------------------------------------- | ------------------------------------------- |
 | Correlations approximated (dork {G} ↔ green sources) | Validated via advanced mode on sample decks |
-| Signets: activation tax handled, fixing approximated | Conservative estimate is safe |
-| K truncated at 2 | 3+ producers online is rare edge case |
-| Independence assumption for producers | Poisson-binomial is standard approximation |
+| Signets: activation tax handled, fixing approximated | Conservative estimate is safe               |
+| K truncated at 2                                     | 3+ producers online is rare edge case       |
+| Independence assumption for producers                | Poisson-binomial is standard approximation  |
 
 ### Needs Advanced Mode
 
-| Scenario | Why |
-|----------|-----|
-| Rituals / Treasures | One-shot timing is sequencing-dependent |
-| Enhancers (Badgermole Cub) | Land ETB interactions |
-| Conditional lands (Nykthos, Cradle, Coffers, Temple) | Board-state dependent |
-| Tron lands | Assembly probability needs simulation |
+| Scenario                                             | Why                                     |
+| ---------------------------------------------------- | --------------------------------------- |
+| Rituals / Treasures                                  | One-shot timing is sequencing-dependent |
+| Enhancers (Badgermole Cub)                           | Land ETB interactions                   |
+| Conditional lands (Nykthos, Cradle, Coffers, Temple) | Board-state dependent                   |
+| Tron lands                                           | Assembly probability needs simulation   |
 
 ---
 
@@ -720,30 +734,30 @@ computeAcceleratedCastability(
 
 ```typescript
 interface DeckProfile {
-  deckSize: number;
-  totalLands: number;
-  landColorSources: Record<Color, number>;
+  deckSize: number
+  totalLands: number
+  landColorSources: Record<Color, number>
   unconditionalMultiMana?: {
-    U: number;    // Count of multi-mana lands
-    delta: number; // Bonus per land
-  };
+    U: number // Count of multi-mana lands
+    delta: number // Bonus per land
+  }
 }
 
 interface SpellCost {
-  mv: number;
-  generic: number;
-  pips: Partial<Record<Color, number>>;
+  mv: number
+  generic: number
+  pips: Partial<Record<Color, number>>
 }
 
 interface Context {
-  playDraw: 'PLAY' | 'DRAW';
-  removalRate: number;        // 0..1
-  rockRemovalFactor: number;  // e.g., 0.3
+  playDraw: 'PLAY' | 'DRAW'
+  removalRate: number // 0..1
+  rockRemovalFactor: number // e.g., 0.3
 }
 
 interface ProducerInDeck {
-  def: ManaProducerDef;
-  copies: number;
+  def: ManaProducerDef
+  copies: number
 }
 ```
 
@@ -766,6 +780,6 @@ The result is a mathematically rigorous system that answers the real question pl
 
 ---
 
-*Document Version: 1.1*  
-*Last Updated: December 2025*  
-*ManaTuner Pro v2.1*
+_Document Version: 1.1_  
+_Last Updated: December 2025_  
+_ManaTuner v2.1_

@@ -1,4 +1,4 @@
-# ManaTuner Pro - Feedback Tracker
+# ManaTuner - Feedback Tracker
 
 **Date de création**: 2025-12-27  
 **Source**: Retours utilisateurs via captures d'écran
@@ -9,25 +9,25 @@
 
 ### Issues Actives
 
-| ID | Écran | Type | Priorité | Status |
-|----|-------|------|----------|--------|
-| *Aucune issue active* | - | - | - | - |
+| ID                    | Écran | Type | Priorité | Status |
+| --------------------- | ----- | ---- | -------- | ------ |
+| _Aucune issue active_ | -     | -    | -        | -      |
 
 ### Issues Résolues (v2.0)
 
-| ID | Écran | Type | Priorité | Status |
-|----|-------|------|----------|--------|
-| FB-001 | Castability | UX/Documentation | - | ✅ RESOLVED |
-| FB-002 | Dashboard | UX/Documentation | P2 | ✅ RESOLVED |
-| FB-003 | Mulligan | UX/Documentation | P1 | ✅ RESOLVED |
-| FB-004 | Analysis | Bug | P1 | ✅ RESOLVED |
-| FB-005 | Analysis | Feature | P3 | ✅ RESOLVED |
-| FB-006 | Manabase | Bug | P0 | ✅ RESOLVED |
-| FB-007 | Blueprint | Positif | - | N/A |
-| FB-008 | Castability | Feature/Design | P2 | ✅ RESOLVED |
-| FB-009 | Dashboard | Bug/UI | P1 | ✅ RESOLVED |
-| FB-010 | Manabase | Bug | P0 | ✅ RESOLVED |
-| FB-011 | Castability | Bug | P1 | ✅ RESOLVED |
+| ID     | Écran       | Type             | Priorité | Status      |
+| ------ | ----------- | ---------------- | -------- | ----------- |
+| FB-001 | Castability | UX/Documentation | -        | ✅ RESOLVED |
+| FB-002 | Dashboard   | UX/Documentation | P2       | ✅ RESOLVED |
+| FB-003 | Mulligan    | UX/Documentation | P1       | ✅ RESOLVED |
+| FB-004 | Analysis    | Bug              | P1       | ✅ RESOLVED |
+| FB-005 | Analysis    | Feature          | P3       | ✅ RESOLVED |
+| FB-006 | Manabase    | Bug              | P0       | ✅ RESOLVED |
+| FB-007 | Blueprint   | Positif          | -        | N/A         |
+| FB-008 | Castability | Feature/Design   | P2       | ✅ RESOLVED |
+| FB-009 | Dashboard   | Bug/UI           | P1       | ✅ RESOLVED |
+| FB-010 | Manabase    | Bug              | P0       | ✅ RESOLVED |
+| FB-011 | Castability | Bug              | P1       | ✅ RESOLVED |
 
 ---
 
@@ -45,6 +45,7 @@ L'utilisateur ne comprend pas la différence entre "P1 (Perfect)" et "P2 (Realis
 
 **Résolution**:  
 L'info est déjà présente :
+
 - Tooltip au survol du "?" à côté de P1/P2
 - Légende en bas de page : "P1 = Perfect scenario (all lands on curve) | P2 = Realistic (accounts for mana screw)"
 
@@ -64,12 +65,14 @@ L'utilisateur ne comprend pas comment le "Manabase Health" global (75% "Good") e
 
 **Capture**: Widget "MANABASE HEALTH" affichant 75% avec badge "Good"
 
-**Action requise**:  
+**Action requise**:
+
 - Ajouter un tooltip ou un "?" cliquable expliquant la formule
 - Référencer les Karsten Tables et le calcul hypergeométrique
 - Expliquer les seuils (Good/Average/Poor)
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/components/analyzer/DashboardTab.tsx`
 - `src/services/manaCalculator.ts` (pour documenter la formule)
 
@@ -86,19 +89,22 @@ L'utilisateur ne comprend pas comment le "Manabase Health" global (75% "Good") e
 
 **Description**:  
 L'utilisateur ne comprend pas les informations affichées :
+
 - "Midrange Deck Quality: GOOD (Score: 77/100)"
 - Les 4 métriques : 77 (Avg. 7 cards), 74 (Avg. 6 cards), 74 (Thresh. 7), 70 (Thresh. 6)
 - "Optimal Strategy" avec les barres colorées et seuils (Score >= 74, 70, 61)
 
 **Capture**: Section Mulligan avec scores et barres de stratégie
 
-**Action requise**:  
+**Action requise**:
+
 - Ajouter des tooltips explicatifs sur chaque métrique
 - Clarifier ce que signifie "Avg. 7 cards" vs "Thresh. 7"
 - Expliquer la section "Optimal Strategy" (Keep 7/6/5 cards if: Score >= X)
 - Peut-être ajouter un mini-guide ou lien vers /mathematics
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/components/analyzer/MulliganTab.tsx`
 
 **Effort estimé**: 3-4h
@@ -115,18 +121,21 @@ L'utilisateur ne comprend pas les informations affichées :
 **Description**:  
 L'utilisateur a eu un crash la première fois qu'il a accédé à l'onglet Analysis, puis ça a fonctionné ensuite.
 
-**Hypothèses**:  
+**Hypothèses**:
+
 - Race condition sur le chargement des données
 - État non initialisé lors du premier rendu
 - Erreur dans un useEffect avec dépendances manquantes
 
-**Action requise**:  
+**Action requise**:
+
 - Investiguer les logs console
 - Vérifier les error boundaries
 - Ajouter Sentry pour capturer ces erreurs en prod
 - Revoir les useEffect dans les composants Analysis
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/components/analyzer/AnalysisTab.tsx`
 - `src/components/analysis/*.tsx`
 
@@ -144,13 +153,15 @@ L'utilisateur a eu un crash la première fois qu'il a accédé à l'onglet Analy
 **Description**:  
 L'utilisateur trouve l'écran Analysis "très clair et synthétique" mais suggère de le merger avec Dashboard car redondant.
 
-**Action requise**:  
+**Action requise**:
+
 - Évaluer la pertinence de fusionner les deux onglets
 - Ou clarifier la différence de purpose entre Dashboard et Analysis
 - Dashboard = vue rapide/résumé
 - Analysis = vue détaillée/deep dive
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/components/analyzer/DashboardTab.tsx`
 - `src/components/analyzer/AnalysisTab.tsx`
 - `src/pages/AnalyzerPage.tsx`
@@ -173,19 +184,22 @@ La carte réelle dans le deck est "Foggy Bottom Swamp" (TLA) 269 - un vrai terra
 
 **Capture**: Land Breakdown montrant "Swampsnare Trap" sous "Other Land (1 types)"
 
-**Cause probable**:  
+**Cause probable**:
+
 - Recherche Scryfall fuzzy trop permissive
 - "Swamp" dans "Foggy Bottom Swamp" matche "Swampsnare Trap"
 - Ou problème de cache avec mauvaise association
 - Ou parser qui tronque/modifie le nom
 
-**Action requise**:  
+**Action requise**:
+
 1. Investiguer la logique de recherche Scryfall (`scryfall.ts`)
 2. Vérifier le cache (`landCacheService.ts`)
 3. Utiliser le set code (TLA) + collector number (269) pour identifier précisément
 4. Ajouter des tests avec "Foggy Bottom Swamp"
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/services/scryfall.ts`
 - `src/services/landCacheService.ts`
 - `src/services/landService.ts`
@@ -223,7 +237,8 @@ Les cartes avec X dans le coût de mana sont traitées comme si X=0, ce qui donn
 
 **Capture**: United Front affichée avec CMC: 2, P1: 21%, P2: 19%
 
-**Complexité**:  
+**Complexité**:
+
 - Définir une valeur de X par défaut est difficile car ça dépend de chaque carte
 - Certaines cartes X sont jouables à X=1, d'autres à X=3+
 - Le "bon" X dépend aussi de l'archétype du deck
@@ -250,12 +265,14 @@ Les cartes avec X dans le coût de mana sont traitées comme si X=0, ce qui donn
 
 **Recommandation**: Option B (X=2 par défaut) + Option C (override utilisateur) en P3
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/services/deckAnalyzer.ts` (parsing du coût)
 - `src/services/manaCalculator.ts` (calcul des probas)
 - `src/components/analyzer/CastabilityTab.tsx` (affichage)
 
-**Effort estimé**: 
+**Effort estimé**:
+
 - Option B seule: 2-3h
 - Option B + C: 4-6h
 
@@ -273,17 +290,20 @@ La légende du graphique "Category Distribution" (donut chart) est coupée en ba
 
 **Capture**: Donut chart avec légende coupée après "Weak"
 
-**Cause probable**:  
+**Cause probable**:
+
 - Container avec hauteur fixe insuffisante
 - Overflow hidden sur le parent
 - Légende positionnée en bas sans espace suffisant
 
-**Action requise**:  
+**Action requise**:
+
 - Augmenter la hauteur du container du graphique
 - Ou passer la légende sur le côté droit au lieu du bas
 - Ou utiliser `overflow: visible` si approprié
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/components/analyzer/DashboardTab.tsx`
 - `src/components/EnhancedCharts.tsx` (si le chart est là)
 
@@ -307,7 +327,8 @@ La légende du graphique "Category Distribution" (donut chart) est coupée en ba
 
 **Lien**: À fusionner avec FB-006 - même root cause
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/services/landService.ts`
 - `src/utils/landDetection.ts`
 
@@ -329,16 +350,19 @@ Les cartes avec des coûts de mana hybrides ne sont pas correctement analysées.
 
 **Capture**: Wandering Musicians avec probabilité très basse (rouge) alors qu'avec 5 Plains + le coût hybride payable en W, ça devrait être castable.
 
-**Impact**:  
+**Impact**:
+
 - Probabilités de cast incorrectes pour les cartes hybrides
 - Fausse alerte "Critical Issues" pour des cartes facilement castables
 
-**Action requise**:  
+**Action requise**:
+
 - Parser correctement les coûts hybrides {W/R}, {U/B}, etc.
 - Dans le calcul de proba, considérer que le mana hybride peut être payé par l'une OU l'autre couleur
 - Mettre à jour la logique dans manaCalculator
 
-**Fichiers concernés**:  
+**Fichiers concernés**:
+
 - `src/services/deckAnalyzer.ts` (parsing du coût)
 - `src/services/manaCalculator.ts` (calcul des probas)
 
@@ -349,6 +373,7 @@ Les cartes avec des coûts de mana hybrides ne sont pas correctement analysées.
 ## Notes additionnelles
 
 ### Point positif mentionné
+
 - Les creatures cyclers (comme Canyon Crawler) sont bien prises en compte comme sources de mana.
 
 ---
@@ -358,6 +383,7 @@ Les cartes avec des coûts de mana hybrides ne sont pas correctement analysées.
 ### Decklist #1 - "Avatar TLA" (pour FB-006, FB-008, FB-009)
 
 Utilisée pour reproduire :
+
 - **FB-006**: Swampsnare Trap détecté comme terrain (NOTE: pas dans cette liste, voir Decklist #2)
 - **FB-008**: United Front avec X dans le coût
 - **FB-009**: Légende Category Distribution tronquée
@@ -399,6 +425,7 @@ Deck
 ### Decklist #2 - "Aang Draft" (pour FB-010, FB-011)
 
 Utilisée pour reproduire :
+
 - **FB-010**: Path to Redemption détecté comme terrain
 - **FB-011**: Wandering Musicians (coût hybride W/R) mal analysé
 
@@ -442,6 +469,7 @@ Le bug est plus subtil : la carte "Foggy Bottom Swamp" (TLA) 269 (un vrai terrai
 **Hypothèse**: Le mot "Swamp" dans "Foggy Bottom Swamp" a déclenché une recherche fuzzy qui a retourné "Swampsnare Trap" à la place.
 
 **À investiguer**:
+
 - Logique de recherche Scryfall (fuzzy match trop permissif ?)
 - Cache qui aurait stocké une mauvaise association
 - Parser qui tronque/modifie le nom de la carte
@@ -454,4 +482,4 @@ Prochains feedbacks à ajouter à partir de FB-012.
 
 ---
 
-*Dernière mise à jour: 2026-01-07*
+_Dernière mise à jour: 2026-01-07_

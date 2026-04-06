@@ -1,4 +1,4 @@
-# ManaTuner Pro - Pre-Production Audit Report
+# ManaTuner - Pre-Production Audit Report
 
 **Date**: 2025-12-26  
 **Version**: 2.0.0  
@@ -398,7 +398,7 @@ onKeyDown={(e) => { if (e.key === 'Enter') handleExpand(); }}
 
 ## Conclusion
 
-ManaTuner Pro is **READY FOR PRODUCTION** with an overall score of **85/100**. The application demonstrates solid architecture, comprehensive features, and good performance characteristics.
+ManaTuner is **READY FOR PRODUCTION** with an overall score of **85/100**. The application demonstrates solid architecture, comprehensive features, and good performance characteristics.
 
 **All P0 blockers have been resolved (2025-12-26):**
 

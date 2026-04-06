@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to ManaTuner Pro will be documented in this file.
+All notable changes to ManaTuner will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -211,7 +211,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 🔗 Links
 
-- **Live Demo**: [manatuner-pro.vercel.app](https://manatuner-pro.vercel.app)
+- **Live Demo**: [manatuner.app](https://manatuner.app)
 - **Repository**: [github.com/gbordes77/manatuner-pro](https://github.com/gbordes77/manatuner-pro)
 - **Issues**: [GitHub Issues](https://github.com/gbordes77/manatuner-pro/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/gbordes77/manatuner-pro/discussions)

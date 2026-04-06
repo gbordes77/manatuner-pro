@@ -54,7 +54,7 @@ export const Footer: React.FC = () => {
             <WUBRGSignature />
 
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              © 2025 ManaTuner. Open source under MIT License.
+              © 2025-2026 ManaTuner. Open source under MIT License.
             </Typography>
 
             {/* Fan Content Policy attribution */}

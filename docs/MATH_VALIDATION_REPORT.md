@@ -1,4 +1,4 @@
-# Rapport de Validation Mathématique - ManaTuner Pro
+# Rapport de Validation Mathématique - ManaTuner
 
 **Date**: 26 décembre 2025  
 **Version**: 1.0  
@@ -8,7 +8,7 @@
 
 ## Résumé Exécutif
 
-Analyse approfondie de toutes les formules mathématiques et algorithmes de calcul utilisés dans ManaTuner Pro. **Tous les composants sont correctement implémentés** et conformes aux méthodologies de référence (Frank Karsten, project-manabase).
+Analyse approfondie de toutes les formules mathématiques et algorithmes de calcul utilisés dans ManaTuner. **Tous les composants sont correctement implémentés** et conformes aux méthodologies de référence (Frank Karsten, project-manabase).
 
 ---
 
@@ -22,7 +22,7 @@ $$P(X = k) = \frac{C(K,k) \times C(N-K, n-k)}{C(N,n)}$$
 
 Où `C(a,b)` est le coefficient binomial "a choose b".
 
-### 1.2 Implémentation dans ManaTuner Pro
+### 1.2 Implémentation dans ManaTuner
 
 **Fichier**: `src/components/ManaCostRow.tsx` (lignes 131-145)
 
@@ -33,7 +33,7 @@ const hypergeometric = (N: number, K: number, n: number, k: number): number => {
     if (b === 0 || b === a) return 1
     let result = 1
     for (let i = 0; i < b; i++) {
-      result = result * (a - i) / (i + 1)
+      result = (result * (a - i)) / (i + 1)
     }
     return result
   }
@@ -41,7 +41,7 @@ const hypergeometric = (N: number, K: number, n: number, k: number): number => {
   // Probabilité cumulative: P(X >= k)
   let probability = 0
   for (let i = k; i <= Math.min(n, K); i++) {
-    probability += combination(K, i) * combination(N - K, n - i) / combination(N, n)
+    probability += (combination(K, i) * combination(N - K, n - i)) / combination(N, n)
   }
   return probability
 }
@@ -72,11 +72,11 @@ cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number 
 
 ### 1.3 Validation
 
-| Test | Formule | Résultat Attendu | Statut |
-|------|---------|------------------|--------|
-| Coefficient binomial C(5,2) | 5!/(2!×3!) | 10 | ✅ |
-| C(60,7) | Standard | 386,206,920 | ✅ |
-| P(X≥1) avec N=60, K=24, n=7, k=1 | Hypergéo | ~0.998 | ✅ |
+| Test                             | Formule    | Résultat Attendu | Statut |
+| -------------------------------- | ---------- | ---------------- | ------ |
+| Coefficient binomial C(5,2)      | 5!/(2!×3!) | 10               | ✅     |
+| C(60,7)                          | Standard   | 386,206,920      | ✅     |
+| P(X≥1) avec N=60, K=24, n=7, k=1 | Hypergéo   | ~0.998           | ✅     |
 
 **Verdict**: ✅ CORRECT - Formule standard bien implémentée
 
@@ -88,10 +88,10 @@ cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number 
 
 Basé sur le site de référence [project-manabase.firebaseapp.com](https://project-manabase.firebaseapp.com/):
 
-| Probabilité | Définition | Usage |
-|-------------|------------|-------|
-| **P1** | Probabilité CONDITIONNELLE | "Assuming you hit all your land drops" |
-| **P2** | Probabilité RÉALISTE | Inclut le risque de mana screw |
+| Probabilité | Définition                 | Usage                                  |
+| ----------- | -------------------------- | -------------------------------------- |
+| **P1**      | Probabilité CONDITIONNELLE | "Assuming you hit all your land drops" |
+| **P2**      | Probabilité RÉALISTE       | Inclut le risque de mana screw         |
 
 **Relation mathématique**: P2 = P1 × P(avoir assez de lands)
 
@@ -115,9 +115,8 @@ for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
   const realSources = actualSourcesForColor > 0 ? actualSourcesForColor : 0
 
   // Parmi 'turn' terrains piochés du deck, proba d'avoir assez de cette couleur
-  const p1Color = realSources > 0
-    ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded)
-    : 0
+  const p1Color =
+    realSources > 0 ? hypergeometric(landsInDeck, realSources, turn, symbolsNeeded) : 0
   p1Probability = Math.min(p1Probability, p1Color)
 }
 
@@ -134,12 +133,12 @@ const p2Probability = p1Probability * probHavingEnoughLands
 
 ### 2.3 Paramètres
 
-| Paramètre | Formule | Description |
-|-----------|---------|-------------|
-| `turn` | `min(CMC, 10)` | Tour cible pour lancer le sort |
-| `cardsSeen` | `7 + (turn - 1)` | Main initiale + pioches |
-| `landsInDeck` | Compte des terrains | Total des lands dans le deck |
-| `deckSize` | 60 (défaut) | Taille du deck |
+| Paramètre     | Formule             | Description                    |
+| ------------- | ------------------- | ------------------------------ |
+| `turn`        | `min(CMC, 10)`      | Tour cible pour lancer le sort |
+| `cardsSeen`   | `7 + (turn - 1)`    | Main initiale + pioches        |
+| `landsInDeck` | Compte des terrains | Total des lands dans le deck   |
+| `deckSize`    | 60 (défaut)         | Taille du deck                 |
 
 ### 2.4 Exemple de Calcul
 
@@ -171,11 +170,11 @@ P2 = 0.239 × 0.96 ≈ 0.229 (22.9%)
 
 ### 2.5 Validation
 
-| Propriété | Attendu | Vérifié |
-|-----------|---------|---------|
-| P2 ≤ P1 toujours | Oui | ✅ |
-| P1 = 0 si 0 sources | Oui | ✅ |
-| P1, P2 ∈ [0, 99] | Oui | ✅ |
+| Propriété           | Attendu | Vérifié |
+| ------------------- | ------- | ------- |
+| P2 ≤ P1 toujours    | Oui     | ✅      |
+| P1 = 0 si 0 sources | Oui     | ✅      |
+| P1, P2 ∈ [0, 99]    | Oui     | ✅      |
 
 **Verdict**: ✅ CORRECT - Méthodologie conforme au site de référence
 
@@ -194,38 +193,41 @@ Article de référence: [How Many Colored Mana Sources Do You Need to Consistent
 ```typescript
 const KARSTEN_TABLES: { [symbols: number]: { [turn: number]: number } } = {
   // Nombre de sources nécessaires pour X symboles de mana au tour Y (90% proba)
-  1: { // 1 symbole coloré
-    1: 14,  // 1 symbole au T1 → 14 sources
-    2: 13,  // 1 symbole au T2 → 13 sources
-    3: 12,  // 1 symbole au T3 → 12 sources
-    4: 11,  // 1 symbole au T4 → 11 sources
-    5: 10,  // 1 symbole au T5 → 10 sources
-    6: 9    // 1 symbole au T6 → 9 sources
+  1: {
+    // 1 symbole coloré
+    1: 14, // 1 symbole au T1 → 14 sources
+    2: 13, // 1 symbole au T2 → 13 sources
+    3: 12, // 1 symbole au T3 → 12 sources
+    4: 11, // 1 symbole au T4 → 11 sources
+    5: 10, // 1 symbole au T5 → 10 sources
+    6: 9, // 1 symbole au T6 → 9 sources
   },
-  2: { // 2 symboles colorés (ex: UU, BB)
-    2: 20,  // UU au T2 → 20 sources
-    3: 18,  // UU au T3 → 18 sources
-    4: 16,  // UU au T4 → 16 sources
-    5: 15,  // UU au T5 → 15 sources
-    6: 14   // UU au T6 → 14 sources
+  2: {
+    // 2 symboles colorés (ex: UU, BB)
+    2: 20, // UU au T2 → 20 sources
+    3: 18, // UU au T3 → 18 sources
+    4: 16, // UU au T4 → 16 sources
+    5: 15, // UU au T5 → 15 sources
+    6: 14, // UU au T6 → 14 sources
   },
-  3: { // 3 symboles colorés (ex: BBB, 1GGG)
-    3: 23,  // BBB au T3 → 23 sources
-    4: 20,  // BBB au T4 → 20 sources
-    5: 19,  // BBB au T5 → 19 sources
-    6: 18   // BBB au T6 → 18 sources
-  }
+  3: {
+    // 3 symboles colorés (ex: BBB, 1GGG)
+    3: 23, // BBB au T3 → 23 sources
+    4: 20, // BBB au T4 → 20 sources
+    5: 19, // BBB au T5 → 19 sources
+    6: 18, // BBB au T6 → 18 sources
+  },
 }
 ```
 
 ### 3.3 Validation Croisée
 
-| Carte Exemple | Coût | Tour | Sources Karsten | ManaTuner |
-|---------------|------|------|-----------------|-----------|
-| Llanowar Elves | {G} | T1 | 14 | 14 ✅ |
-| Counterspell | {U}{U} | T2 | 20 | 20 ✅ |
-| Cryptic Command | {1}{U}{U}{U} | T4 | 20 (UUU) | 20 ✅ |
-| Necropotence | {B}{B}{B} | T3 | 23 | 23 ✅ |
+| Carte Exemple   | Coût         | Tour | Sources Karsten | ManaTuner |
+| --------------- | ------------ | ---- | --------------- | --------- |
+| Llanowar Elves  | {G}          | T1   | 14              | 14 ✅     |
+| Counterspell    | {U}{U}       | T2   | 20              | 20 ✅     |
+| Cryptic Command | {1}{U}{U}{U} | T4   | 20 (UUU)        | 20 ✅     |
+| Necropotence    | {B}{B}{B}    | T3   | 23              | 23 ✅     |
 
 **Verdict**: ✅ CORRECT - Valeurs officielles Karsten
 
@@ -242,23 +244,23 @@ Chaque terrain compte comme UNE source pour CHAQUE couleur qu'il peut produire.
 **Fichier**: `src/services/deckAnalyzer.ts` (lignes 315-325)
 
 ```typescript
-const colorDistribution: Record<ManaColor, number> = {} as Record<ManaColor, number>;
+const colorDistribution: Record<ManaColor, number> = {} as Record<ManaColor, number>
 
 MANA_COLORS.forEach((color) => {
   colorDistribution[color] = lands
     .filter((card) => card.producedMana?.includes(color))
-    .reduce((sum, card) => sum + card.quantity, 0);
-});
+    .reduce((sum, card) => sum + card.quantity, 0)
+})
 ```
 
 ### 4.3 Exemple
 
-| Terrain | Produit | Compte W | Compte U | Compte B | Compte R | Compte G |
-|---------|---------|----------|----------|----------|----------|----------|
-| Plains ×4 | W | +4 | - | - | - | - |
-| Island ×4 | U | - | +4 | - | - | - |
-| Steam Vents ×4 | U, R | - | +4 | - | +4 | - |
-| Scalding Tarn ×4 | (fetch U/R) | - | +4 | - | +4 | - |
+| Terrain          | Produit     | Compte W | Compte U | Compte B | Compte R | Compte G |
+| ---------------- | ----------- | -------- | -------- | -------- | -------- | -------- |
+| Plains ×4        | W           | +4       | -        | -        | -        | -        |
+| Island ×4        | U           | -        | +4       | -        | -        | -        |
+| Steam Vents ×4   | U, R        | -        | +4       | -        | +4       | -        |
+| Scalding Tarn ×4 | (fetch U/R) | -        | +4       | -        | +4       | -        |
 
 **Total**: W=4, U=12, R=8
 
@@ -276,15 +278,15 @@ MANA_COLORS.forEach((color) => {
 
 **Fichier**: `src/services/landService.ts`
 
-| Condition | Logique | Exemples |
-|-----------|---------|----------|
-| `always_untapped` | 100% untapped | Basic lands, Painlands |
-| `always_tapped` | 0% untapped | Triomes, Bounce lands |
-| `pay_life` | Choix du joueur | Shocklands (2 life) |
-| `control_lands_max` | Untapped si ≤N lands | Fastlands (≤2) |
-| `control_lands_min` | Untapped si ≥N lands | Slowlands (≥2) |
-| `control_basic` | Untapped si basic présent | Checklands |
-| `turn_threshold` | Untapped si tour ≤N | Starting Town (≤3) |
+| Condition           | Logique                   | Exemples               |
+| ------------------- | ------------------------- | ---------------------- |
+| `always_untapped`   | 100% untapped             | Basic lands, Painlands |
+| `always_tapped`     | 0% untapped               | Triomes, Bounce lands  |
+| `pay_life`          | Choix du joueur           | Shocklands (2 life)    |
+| `control_lands_max` | Untapped si ≤N lands      | Fastlands (≤2)         |
+| `control_lands_min` | Untapped si ≥N lands      | Slowlands (≥2)         |
+| `control_basic`     | Untapped si basic présent | Checklands             |
+| `turn_threshold`    | Untapped si tour ≤N       | Starting Town (≤3)     |
 
 ### 5.2 Calcul des Lands en Jeu
 
@@ -293,12 +295,12 @@ MANA_COLORS.forEach((color) => {
 const landsInPlay = turn - 1
 ```
 
-| Tour | Lands en jeu avant de jouer | Fastland? | Slowland? |
-|------|----------------------------|-----------|-----------|
-| T1 | 0 | ✅ Untapped | ❌ Tapped |
-| T2 | 1 | ✅ Untapped | ❌ Tapped |
-| T3 | 2 | ✅ Untapped | ✅ Untapped |
-| T4 | 3 | ❌ Tapped | ✅ Untapped |
+| Tour | Lands en jeu avant de jouer | Fastland?   | Slowland?   |
+| ---- | --------------------------- | ----------- | ----------- |
+| T1   | 0                           | ✅ Untapped | ❌ Tapped   |
+| T2   | 1                           | ✅ Untapped | ❌ Tapped   |
+| T3   | 2                           | ✅ Untapped | ✅ Untapped |
+| T4   | 3                           | ❌ Tapped   | ✅ Untapped |
 
 ### 5.3 Évaluation des Probabilités
 
@@ -334,7 +336,7 @@ private evaluateCondition(
     case 'turn_threshold':
       // Starting Town: untapped si tour ≤ seuil
       return turn <= (condition.threshold || 3) ? 1.0 : 0.0
-    
+
     // ... autres conditions
   }
 }
@@ -350,27 +352,28 @@ private evaluateCondition(
 
 **Fichier**: `src/data/landSeed.ts`
 
-| Catégorie | Nombre | ETB Behavior |
-|-----------|--------|--------------|
-| Basic lands | 11 | always_untapped |
-| Fetchlands | 14 | always_untapped |
-| Shocklands | 10 | conditional (pay_life: 2) |
-| Fastlands | 10 | conditional (control_lands_max: 2) |
-| Checklands | 10 | conditional (control_basic) |
-| Painlands | 10 | always_untapped |
-| Slowlands | 10 | conditional (control_lands_min: 2) |
-| Triomes | 10 | always_tapped |
-| Pathways | 20 | always_untapped |
-| Creature lands | 12 | always_tapped |
-| Horizon lands | 6 | always_untapped |
-| Channel lands | 5 | always_untapped |
-| Utility lands | 30+ | varies |
-| Bounce lands | 10 | always_tapped |
-| **TOTAL** | **~195** | - |
+| Catégorie      | Nombre   | ETB Behavior                       |
+| -------------- | -------- | ---------------------------------- |
+| Basic lands    | 11       | always_untapped                    |
+| Fetchlands     | 14       | always_untapped                    |
+| Shocklands     | 10       | conditional (pay_life: 2)          |
+| Fastlands      | 10       | conditional (control_lands_max: 2) |
+| Checklands     | 10       | conditional (control_basic)        |
+| Painlands      | 10       | always_untapped                    |
+| Slowlands      | 10       | conditional (control_lands_min: 2) |
+| Triomes        | 10       | always_tapped                      |
+| Pathways       | 20       | always_untapped                    |
+| Creature lands | 12       | always_tapped                      |
+| Horizon lands  | 6        | always_untapped                    |
+| Channel lands  | 5        | always_untapped                    |
+| Utility lands  | 30+      | varies                             |
+| Bounce lands   | 10       | always_tapped                      |
+| **TOTAL**      | **~195** | -                                  |
 
 ### 6.2 Fallback
 
 Si un terrain n'est pas dans le seed, le système :
+
 1. Interroge l'API Scryfall
 2. Parse automatiquement l'oracle text pour détecter l'ETB
 3. Cache le résultat pour les prochaines utilisations
@@ -381,15 +384,15 @@ Si un terrain n'est pas dans le seed, le système :
 
 ## 7. Tableau Récapitulatif
 
-| Composant | Fichier(s) | Statut | Notes |
-|-----------|------------|--------|-------|
-| Hypergeometric | ManaCostRow.tsx, manaCalculator.ts | ✅ | Formule standard |
-| P1 (conditionnel) | ManaCostRow.tsx | ✅ | MIN des probas couleurs |
-| P2 (réaliste) | ManaCostRow.tsx | ✅ | P1 × P(lands OK) |
-| Tables Karsten | manaCalculator.ts | ✅ | Valeurs officielles 90% |
-| colorDistribution | deckAnalyzer.ts | ✅ | Multi-production gérée |
-| Tempo analysis | landService.ts | ✅ | ETB conditions précises |
-| Land Seed | landSeed.ts | ✅ | 195 terrains référencés |
+| Composant         | Fichier(s)                         | Statut | Notes                   |
+| ----------------- | ---------------------------------- | ------ | ----------------------- |
+| Hypergeometric    | ManaCostRow.tsx, manaCalculator.ts | ✅     | Formule standard        |
+| P1 (conditionnel) | ManaCostRow.tsx                    | ✅     | MIN des probas couleurs |
+| P2 (réaliste)     | ManaCostRow.tsx                    | ✅     | P1 × P(lands OK)        |
+| Tables Karsten    | manaCalculator.ts                  | ✅     | Valeurs officielles 90% |
+| colorDistribution | deckAnalyzer.ts                    | ✅     | Multi-production gérée  |
+| Tempo analysis    | landService.ts                     | ✅     | ETB conditions précises |
+| Land Seed         | landSeed.ts                        | ✅     | 195 terrains référencés |
 
 ---
 
@@ -397,7 +400,7 @@ Si un terrain n'est pas dans le seed, le système :
 
 ### Validation Globale: ✅ PASSÉE
 
-Tous les algorithmes mathématiques de ManaTuner Pro sont **correctement implémentés** et conformes aux références académiques et professionnelles du domaine (Frank Karsten, project-manabase).
+Tous les algorithmes mathématiques de ManaTuner sont **correctement implémentés** et conformes aux références académiques et professionnelles du domaine (Frank Karsten, project-manabase).
 
 ### Points Forts
 
@@ -415,5 +418,5 @@ Tous les algorithmes mathématiques de ManaTuner Pro sont **correctement implém
 
 ---
 
-*Document généré le 26 décembre 2025*  
-*ManaTuner Pro v1.0*
+_Document généré le 26 décembre 2025_  
+_ManaTuner v1.0_

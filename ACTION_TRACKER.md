@@ -1,4 +1,4 @@
-# ManaTuner Pro — Action Tracker
+# ManaTuner — Action Tracker
 
 **Version**: 2.2.0
 **Date de creation**: 2026-04-05
@@ -173,7 +173,7 @@
 
 - [x] Nouvelle og-image-v2.jpg (hero section, 1200x630)
 - [x] og:description mis a jour avec killer feature ramp
-- [x] og:title allonge: "ManaTuner Pro - MTG Manabase Analyzer with Rocks & Dorks" (54 chars)
+- [x] og:title allonge: "ManaTuner - MTG Manabase Analyzer with Rocks & Dorks" (54 chars)
 - [x] Cache invalidation Facebook (re-scrape OK) et Discord (?v=2)
 
 ### Nice-to-have (Futur)

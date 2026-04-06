@@ -1,17 +1,17 @@
-# ManaTuner Pro - Onboarding Nouvelle Équipe
+# ManaTuner - Onboarding Nouvelle Équipe
 
 ## Bienvenue !
 
-Vous rejoignez le projet **ManaTuner Pro** en phase de **feedback utilisateurs et debug**.
+Vous rejoignez le projet **ManaTuner** en phase de **feedback utilisateurs et debug**.
 
-**URL Production**: https://manatuner-pro.vercel.app  
+**URL Production**: https://manatuner.app  
 **Repository**: https://github.com/gbordes77/manatuner-pro
 
 ---
 
 ## 1. Contexte du Projet
 
-### Qu'est-ce que ManaTuner Pro ?
+### Qu'est-ce que ManaTuner ?
 
 Un analyseur de manabase pour **Magic: The Gathering** qui répond à LA question : _"Est-ce que je peux cast mes sorts à temps ?"_
 

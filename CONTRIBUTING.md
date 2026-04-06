@@ -1,6 +1,6 @@
-# Contributing to ManaTuner Pro
+# Contributing to ManaTuner
 
-Thank you for your interest in contributing to ManaTuner Pro! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to ManaTuner! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -140,7 +140,7 @@ src/
 
 ### Frank Karsten Mathematics
 
-ManaTuner Pro uses Frank Karsten's research for mana calculations:
+ManaTuner uses Frank Karsten's research for mana calculations:
 
 - Hypergeometric distribution for probability
 - 90% threshold for reliable casting

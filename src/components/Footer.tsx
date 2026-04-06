@@ -4,7 +4,7 @@ import React from 'react'
 const Footer: React.FC = () => {
   return (
     <Typography variant="body2" color="text.secondary">
-      © 2025 ManaTuner. Inspired by the work of{' '}
+      © 2025-2026 ManaTuner. Inspired by the work of{' '}
       <Link
         href="https://github.com/WickedFridge/magic-project-manabase"
         target="_blank"

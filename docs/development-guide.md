@@ -1,4 +1,4 @@
-# ManaTuner Pro - Development Guide
+# ManaTuner - Development Guide
 
 ## Prerequisites
 

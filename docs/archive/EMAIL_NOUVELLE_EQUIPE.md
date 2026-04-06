@@ -1,18 +1,18 @@
-# Email de Bienvenue - Nouvelle Équipe ManaTuner Pro
+# Email de Bienvenue - Nouvelle Équipe ManaTuner
 
 ---
 
-**Objet**: Bienvenue sur ManaTuner Pro - Phase Feedback & Debug
+**Objet**: Bienvenue sur ManaTuner - Phase Feedback & Debug
 
 ---
 
 Bonjour à tous,
 
-Bienvenue dans l'équipe **ManaTuner Pro** !
+Bienvenue dans l'équipe **ManaTuner** !
 
 ## Le Projet
 
-ManaTuner Pro est un analyseur de manabase pour Magic: The Gathering, actuellement **en production** sur https://manatuner-pro.vercel.app
+ManaTuner est un analyseur de manabase pour Magic: The Gathering, actuellement **en production** sur https://manatuner.app
 
 L'app permet aux joueurs de :
 
@@ -42,7 +42,7 @@ Nous passons maintenant à la phase de **prise en compte des retours utilisateur
 ### 1. Accès
 
 - **Repo GitHub** : https://github.com/gbordes77/manatuner-pro
-- **Production** : https://manatuner-pro.vercel.app
+- **Production** : https://manatuner.app
 - **Vercel** : Déploiement automatique sur push `main`
 
 ### 2. Installation locale
@@ -147,7 +147,7 @@ Bienvenue dans l'équipe ! L'app est solide, votre mission est de l'améliorer g
 
 Bonne prise en main,
 
-L'équipe ManaTuner Pro
+L'équipe ManaTuner
 
 ---
 
@@ -155,5 +155,5 @@ L'équipe ManaTuner Pro
 
 1. `git clone` + `npm install` + `npm run dev`
 2. Lire `ONBOARDING_NOUVELLE_EQUIPE.md`
-3. Explorer https://manatuner-pro.vercel.app
+3. Explorer https://manatuner.app
 4. Commencer par les P1 dans `PRE_PRODUCTION_AUDIT.md`

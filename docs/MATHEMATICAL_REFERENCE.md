@@ -1,6 +1,6 @@
-# ManaTuner Pro - Reference Mathematique Complete
+# ManaTuner - Reference Mathematique Complete
 
-> Document technique exhaustif des preceptes mathematiques, formules, algorithmes et constantes utilises dans ManaTuner Pro. Base sur les recherches de Frank Karsten et la theorie des distributions hypergeometriques.
+> Document technique exhaustif des preceptes mathematiques, formules, algorithmes et constantes utilises dans ManaTuner. Base sur les recherches de Frank Karsten et la theorie des distributions hypergeometriques.
 
 ---
 
@@ -43,10 +43,10 @@ C(n,k) = n! / (k! * (n-k)!)
 binomial(n: number, k: number): number {
   if (k > n || k < 0) return 0;
   if (k === 0 || k === n) return 1;
-  
+
   // Utilise la propriete de symetrie: C(n,k) = C(n,n-k)
   const actualK = Math.min(k, n - k);
-  
+
   let result = 1;
   for (let i = 0; i < actualK; i++) {
     result = result * (n - i) / (i + 1);
@@ -69,25 +69,26 @@ P(X >= k) = SUM[i=k to min(n,K)] P(X = i)
 cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number {
   let probability = 0;
   const maxK = Math.min(n, K);
-  
+
   for (let k = minK; k <= maxK; k++) {
     probability += this.hypergeometric(N, K, n, k);
   }
-  
+
   return Math.min(1, Math.max(0, probability));
 }
 ```
 
 ### 1.3 Application a MTG
 
-| Parametre | Signification MTG | Valeur typique |
-|-----------|-------------------|----------------|
-| `N` | Taille du deck | 60 (Standard/Modern) |
-| `K` | Sources de mana d'une couleur | 14-24 |
-| `n` | Cartes vues (main + pioche) | 7 + tour - 1 |
-| `k` | Symboles de mana requis | 1-3 |
+| Parametre | Signification MTG             | Valeur typique       |
+| --------- | ----------------------------- | -------------------- |
+| `N`       | Taille du deck                | 60 (Standard/Modern) |
+| `K`       | Sources de mana d'une couleur | 14-24                |
+| `n`       | Cartes vues (main + pioche)   | 7 + tour - 1         |
+| `k`       | Symboles de mana requis       | 1-3                  |
 
 **Exemple concret:**
+
 - Deck de 60 cartes avec 14 sources rouges
 - Main de 7 cartes + 2 pioches (tour 3) = 9 cartes vues
 - Probabilite d'avoir au moins 1 source rouge
@@ -115,54 +116,54 @@ Source: [TCGPlayer - How Many Sources Do You Need (2022 Update)](https://www.tcg
 ```typescript
 const KARSTEN_TABLES = {
   // 1 symbole colore (ex: R, 1B, 2W)
-  1: { 
-    1: 14,  // Tour 1: 14 sources
-    2: 13,  // Tour 2: 13 sources
-    3: 12,  // Tour 3: 12 sources
-    4: 11,  // Tour 4: 11 sources
-    5: 10,  // Tour 5: 10 sources
-    6: 9,   // Tour 6: 9 sources
+  1: {
+    1: 14, // Tour 1: 14 sources
+    2: 13, // Tour 2: 13 sources
+    3: 12, // Tour 3: 12 sources
+    4: 11, // Tour 4: 11 sources
+    5: 10, // Tour 5: 10 sources
+    6: 9, // Tour 6: 9 sources
     7: 8,
     8: 8,
     9: 7,
-    10: 7
+    10: 7,
   },
-  
+
   // 2 symboles colores (ex: RR, 1BB, WW)
-  2: { 
-    2: 20,  // Tour 2: 20 sources
-    3: 18,  // Tour 3: 18 sources
-    4: 16,  // Tour 4: 16 sources
+  2: {
+    2: 20, // Tour 2: 20 sources
+    3: 18, // Tour 3: 18 sources
+    4: 16, // Tour 4: 16 sources
     5: 15,
     6: 14,
     7: 13,
     8: 12,
     9: 11,
-    10: 11
+    10: 11,
   },
-  
+
   // 3 symboles colores (ex: RRR, BBB)
-  3: { 
-    3: 23,  // Tour 3: 23 sources
+  3: {
+    3: 23, // Tour 3: 23 sources
     4: 20,
     5: 19,
     6: 18,
     7: 17,
     8: 16,
     9: 15,
-    10: 14
+    10: 14,
   },
-  
+
   // 4 symboles colores (rare)
-  4: { 
+  4: {
     4: 25,
     5: 22,
     6: 21,
     7: 20,
     8: 19,
     9: 18,
-    10: 17
-  }
+    10: 17,
+  },
 }
 ```
 
@@ -172,13 +173,13 @@ Une version simplifiee pour les calculs rapides:
 
 ```typescript
 const KARSTEN_TABLE = {
-  1: { single: 13, double: 20, triple: 27 },  // Tour 1
-  2: { single: 8,  double: 13, triple: 18 },  // Tour 2
-  3: { single: 6,  double: 9,  triple: 12 },  // Tour 3
-  4: { single: 4,  double: 7,  triple: 9 },   // Tour 4
-  5: { single: 4,  double: 6,  triple: 8 },   // Tour 5
-  6: { single: 3,  double: 5,  triple: 7 },   // Tour 6
-};
+  1: { single: 13, double: 20, triple: 27 }, // Tour 1
+  2: { single: 8, double: 13, triple: 18 }, // Tour 2
+  3: { single: 6, double: 9, triple: 12 }, // Tour 3
+  4: { single: 4, double: 7, triple: 9 }, // Tour 4
+  5: { single: 4, double: 6, triple: 8 }, // Tour 5
+  6: { single: 3, double: 5, triple: 7 }, // Tour 6
+}
 ```
 
 ### 2.4 Formule des Cartes Vues
@@ -194,6 +195,7 @@ cardsDrawn = handSize + turn - 1
 - `-1`: Car on ne pioche pas au tour 1 quand on joue en premier
 
 **Variante (a la pioche):**
+
 ```
 cardsDrawn = handSize + turn  // +1 carte au tour 1
 ```
@@ -215,7 +217,7 @@ calculateManaProbability(
 ): ProbabilityResult {
   // Cartes vues = main + pioches
   const cardsSeen = handSize + turn - 1;
-  
+
   // Calcul hypergeometrique cumulatif
   const probability = this.cumulativeHypergeometric(
     deckSize,
@@ -223,10 +225,10 @@ calculateManaProbability(
     cardsSeen,
     symbolsNeeded
   );
-  
+
   // Comparaison avec la table Karsten
   const karstenRequirement = KARSTEN_TABLES[symbolsNeeded]?.[turn] || 0;
-  
+
   return {
     probability,
     meetsThreshold: probability >= 0.90,
@@ -247,12 +249,13 @@ calculateManaProbability(
 // Chaque terrain compte comme UNE source pour chaque couleur qu'il peut produire
 for (const land of deck.lands) {
   for (const color of land.produces) {
-    sources[color] = (sources[color] || 0) + land.quantity;
+    sources[color] = (sources[color] || 0) + land.quantity
   }
 }
 ```
 
 **Exemple:**
+
 - Steam Vents (U/R) compte comme 1 source bleue ET 1 source rouge
 - Scalding Tarn compte comme 1 source pour chaque couleur qu'il peut fetcher
 
@@ -264,7 +267,7 @@ analyzeCard(
   deck: { size: number; sources: { [color: string]: number } }
 ): { [color: string]: ProbabilityResult } {
   const results = {};
-  
+
   // Analyser chaque couleur dans le cout
   for (const [color, count] of Object.entries(card.manaCost.symbols)) {
     if (count > 0) {
@@ -278,7 +281,7 @@ analyzeCard(
       );
     }
   }
-  
+
   return results;
 }
 ```
@@ -290,6 +293,7 @@ analyzeCard(
 ### 4.1 Principe
 
 La simulation Monte Carlo permet d'estimer des probabilites complexes en simulant des milliers de parties. Particulierement utile pour:
+
 - Scenarios avec mulligan
 - Interactions entre plusieurs couleurs
 - Validation des calculs analytiques
@@ -298,13 +302,13 @@ La simulation Monte Carlo permet d'estimer des probabilites complexes en simulan
 
 ```typescript
 interface MonteCarloParams {
-  iterations: number;       // Nombre de simulations (defaut: 10,000)
-  deckSize: number;         // Taille du deck
-  landCount: number;        // Nombre de terrains
-  targetTurn: number;       // Tour cible
-  mulliganStrategy: 'none' | 'aggressive' | 'conservative' | 'optimal';
-  playFirst: boolean;       // True si on joue en premier
-  maxMulligans: number;     // Maximum de mulligans (generalement 2)
+  iterations: number // Nombre de simulations (defaut: 10,000)
+  deckSize: number // Taille du deck
+  landCount: number // Nombre de terrains
+  targetTurn: number // Tour cible
+  mulliganStrategy: 'none' | 'aggressive' | 'conservative' | 'optimal'
+  playFirst: boolean // True si on joue en premier
+  maxMulligans: number // Maximum de mulligans (generalement 2)
 }
 ```
 
@@ -314,38 +318,38 @@ interface MonteCarloParams {
 simulateSingleGame(params: MonteCarloParams): { success: boolean; turnAchieved: number } {
   // 1. Creer et melanger le deck
   const deck = this.createSimulationDeck(deckSize, landCount);
-  
+
   // 2. Simuler les mulligans
   let hand = this.drawHand(deck, 7);
   let mulligans = 0;
-  
+
   while (mulligans < maxMulligans) {
     const decision = this.shouldMulligan(hand, mulliganStrategy);
     if (!decision.shouldMulligan) break;
-    
+
     mulligans++;
     hand = this.drawHand(deck, 7 - mulligans);
   }
-  
+
   // 3. Simuler les tours
   let landsInPlay = hand.filter(card => card === 'land').length;
   let currentTurn = 1;
-  
+
   while (currentTurn <= targetTurn) {
     // Pioche (sauf tour 1 si on joue)
     if (currentTurn > 1 || !playFirst) {
       const drawnCard = this.drawCard(deck);
       if (drawnCard === 'land') landsInPlay++;
     }
-    
+
     // Verification du succes
     if (landsInPlay >= currentTurn) {
       return { success: true, turnAchieved: currentTurn };
     }
-    
+
     currentTurn++;
   }
-  
+
   return { success: false, turnAchieved: targetTurn + 1 };
 }
 ```
@@ -367,16 +371,16 @@ shuffleDeck(deck: string[]): string[] {
 
 ```typescript
 // Ecart-type
-const standardDeviation = Math.sqrt(variance / successfulRuns);
+const standardDeviation = Math.sqrt(variance / successfulRuns)
 
 // Marge d'erreur a 95%
-const margin = 1.96 * (standardDeviation / Math.sqrt(successfulRuns));
+const margin = 1.96 * (standardDeviation / Math.sqrt(successfulRuns))
 
 // Intervalle de confiance
 confidence = {
   lower: Math.max(0, successRate - margin),
-  upper: Math.min(100, successRate + margin)
-};
+  upper: Math.min(100, successRate + margin),
+}
 ```
 
 ---
@@ -387,12 +391,12 @@ confidence = {
 
 ```typescript
 const PROBABILITY_THRESHOLDS = {
-  EXCELLENT_THRESHOLD: 0.95,    // 95%+ = Excellent
-  GOOD_THRESHOLD: 0.90,         // 90%+ = Bon (Standard Karsten)
-  ACCEPTABLE_THRESHOLD: 0.80,   // 80%+ = Acceptable
-  POOR_THRESHOLD: 0.60,         // 60%+ = Faible
+  EXCELLENT_THRESHOLD: 0.95, // 95%+ = Excellent
+  GOOD_THRESHOLD: 0.9, // 90%+ = Bon (Standard Karsten)
+  ACCEPTABLE_THRESHOLD: 0.8, // 80%+ = Acceptable
+  POOR_THRESHOLD: 0.6, // 60%+ = Faible
   // < 60% = Injouable
-};
+}
 ```
 
 ### 5.2 Tailles de Deck par Format
@@ -402,7 +406,7 @@ const DECK_SIZES = {
   STANDARD_DECK_SIZE: 60,
   COMMANDER_DECK_SIZE: 100,
   LIMITED_DECK_SIZE: 40,
-};
+}
 ```
 
 ### 5.3 Constantes de Main et Pioche
@@ -414,36 +418,36 @@ const HAND_CONSTANTS = {
   MIN_MULLIGAN_HAND: 4,
   MAX_ANALYSIS_TURN: 10,
   CRITICAL_EARLY_TURNS: [1, 2, 3, 4],
-};
+}
 ```
 
 ### 5.4 Recommandations de Nombre de Terrains
 
 ```typescript
 const LAND_COUNT_GUIDELINES = {
-  MIN_LANDS_AGGRESSIVE: 20,     // Decks aggro rapides
-  OPTIMAL_LANDS_MIDRANGE: 24,   // Decks midrange
-  MAX_LANDS_CONTROL: 28,        // Decks control
-};
+  MIN_LANDS_AGGRESSIVE: 20, // Decks aggro rapides
+  OPTIMAL_LANDS_MIDRANGE: 24, // Decks midrange
+  MAX_LANDS_CONTROL: 28, // Decks control
+}
 ```
 
 ### 5.5 Seuils d'Intensite de Couleur
 
 ```typescript
 const COLOR_INTENSITY_THRESHOLDS = {
-  SINGLE_COLOR_THRESHOLD: 14,   // Pour 1 symbole (ex: R)
-  DOUBLE_COLOR_THRESHOLD: 20,   // Pour 2 symboles (ex: RR)
-  TRIPLE_COLOR_THRESHOLD: 23,   // Pour 3 symboles (ex: RRR)
-};
+  SINGLE_COLOR_THRESHOLD: 14, // Pour 1 symbole (ex: R)
+  DOUBLE_COLOR_THRESHOLD: 20, // Pour 2 symboles (ex: RR)
+  TRIPLE_COLOR_THRESHOLD: 23, // Pour 3 symboles (ex: RRR)
+}
 ```
 
 ### 5.6 Multiplicateurs de Terrains Speciaux
 
 ```typescript
 const LAND_MULTIPLIERS = {
-  FETCHLAND_MULTIPLIER: 1.5,    // Fetchlands = 1.5x leurs cibles
-  DUAL_LAND_EFFICIENCY: 1.8,    // Dual lands = haute efficacite
-};
+  FETCHLAND_MULTIPLIER: 1.5, // Fetchlands = 1.5x leurs cibles
+  DUAL_LAND_EFFICIENCY: 1.8, // Dual lands = haute efficacite
+}
 ```
 
 ### 5.7 Constantes Monte Carlo
@@ -453,8 +457,8 @@ const MONTE_CARLO_CONSTANTS = {
   DEFAULT_ITERATIONS: 10000,
   MIN_ITERATIONS: 1000,
   MAX_ITERATIONS: 100000,
-  CONFIDENCE_LEVEL: 0.95,       // Intervalle de confiance 95%
-};
+  CONFIDENCE_LEVEL: 0.95, // Intervalle de confiance 95%
+}
 ```
 
 ---
@@ -469,10 +473,10 @@ Le score de consistance est base sur le **ratio de terrains** et la **diversite 
 analyzeDeckConsistency(deck): { overallScore: number; ... } {
   const totalLands = deck.lands.reduce((sum, land) => sum + land.quantity, 0);
   const landRatio = totalLands / deck.totalCards;
-  
+
   // Score de base selon le ratio de terrains
   let baseScore = 0.5;
-  
+
   if (landRatio >= 0.38 && landRatio <= 0.45) {
     baseScore = 0.85;  // Excellent ratio
   } else if (landRatio >= 0.45 && landRatio <= 0.55) {
@@ -484,11 +488,11 @@ analyzeDeckConsistency(deck): { overallScore: number; ... } {
   } else {
     baseScore = 0.50;  // Trop de terrains
   }
-  
+
   // Bonus multicolore
   const colorCount = countDistinctColors(deck.lands);
   if (colorCount >= 2) baseScore += 0.05;
-  
+
   return Math.min(0.95, baseScore);
 }
 ```
@@ -497,10 +501,10 @@ analyzeDeckConsistency(deck): { overallScore: number; ... } {
 
 ```typescript
 function getRating(consistency: number): string {
-  if (consistency >= 0.90) return 'excellent';
-  if (consistency >= 0.80) return 'good';
-  if (consistency >= 0.70) return 'average';
-  return 'poor';
+  if (consistency >= 0.9) return 'excellent'
+  if (consistency >= 0.8) return 'good'
+  if (consistency >= 0.7) return 'average'
+  return 'poor'
 }
 ```
 
@@ -508,14 +512,14 @@ function getRating(consistency: number): string {
 
 ```typescript
 function calculateOverallHealth(avgProbability: number): string {
-  if (avgProbability >= 0.90) {
-    return "Excellente - Manabase tres stable";
+  if (avgProbability >= 0.9) {
+    return 'Excellente - Manabase tres stable'
   } else if (avgProbability >= 0.85) {
-    return "Bonne - Quelques ajustements mineurs recommandes";
-  } else if (avgProbability >= 0.80) {
-    return "Moyenne - Des ameliorations significatives sont necessaires";
+    return 'Bonne - Quelques ajustements mineurs recommandes'
+  } else if (avgProbability >= 0.8) {
+    return 'Moyenne - Des ameliorations significatives sont necessaires'
   } else {
-    return "Faible - Reconstruction majeure de la manabase requise";
+    return 'Faible - Reconstruction majeure de la manabase requise'
   }
 }
 ```
@@ -524,11 +528,11 @@ function calculateOverallHealth(avgProbability: number): string {
 
 ```typescript
 function getKarstenRating(probability: number, deficit: number): string {
-  if (probability >= 0.95) return 'excellent';
-  if (probability >= 0.90) return 'good';
-  if (probability >= 0.80) return 'acceptable';
-  if (probability >= 0.60) return 'poor';
-  return 'unplayable';
+  if (probability >= 0.95) return 'excellent'
+  if (probability >= 0.9) return 'good'
+  if (probability >= 0.8) return 'acceptable'
+  if (probability >= 0.6) return 'poor'
+  return 'unplayable'
 }
 ```
 
@@ -540,10 +544,11 @@ function getKarstenRating(probability: number, deficit: number): string {
 
 ```typescript
 // Formule principale basee sur le CMC moyen
-baseLands = 17 + Math.max(0, (averageCMC - 2) * 2);
+baseLands = 17 + Math.max(0, (averageCMC - 2) * 2)
 ```
 
 **Explication:**
+
 - Base de 17 terrains (minimum pour les decks tres aggro)
 - +2 terrains par point de CMC au-dessus de 2
 
@@ -553,23 +558,23 @@ baseLands = 17 + Math.max(0, (averageCMC - 2) * 2);
 calculateOptimalLandCount(deck): { recommended: number; range: { min, max } } {
   let avgCMC = calculateAverageCMC(deck);
   let baseLands = 17 + Math.max(0, (avgCMC - 2) * 2);
-  
+
   // Commander
   if (deck.format === 'Commander') {
     baseLands = Math.max(35, baseLands * 1.5);
     return { recommended: baseLands, range: { min: 35, max: 40 } };
   }
-  
+
   // Limited (Draft/Sealed)
   if (deck.format === 'Limited') {
     baseLands = Math.max(17, baseLands);
     return { recommended: baseLands, range: { min: 17, max: 18 } };
   }
-  
+
   // Standard/Modern - par archetype
   const isAggro = avgCMC <= 2.5;
   const isControl = avgCMC >= 3.5;
-  
+
   let range;
   if (isAggro) {
     range = { min: 18, max: 22 };
@@ -578,7 +583,7 @@ calculateOptimalLandCount(deck): { recommended: number; range: { min, max } } {
   } else { // Midrange
     range = { min: 20, max: 26 };
   }
-  
+
   return {
     recommended: Math.round(Math.max(range.min, Math.min(range.max, baseLands))),
     range
@@ -590,13 +595,13 @@ calculateOptimalLandCount(deck): { recommended: number; range: { min, max } } {
 
 ```typescript
 function calculateIdealLandRatio(averageCMC: number): number {
-  if (averageCMC <= 1.5) return 0.33;  // 20/60 - Tres agressif
-  if (averageCMC <= 2.0) return 0.35;  // 21/60 - Agressif
-  if (averageCMC <= 2.5) return 0.37;  // 22/60 - Midrange-low
-  if (averageCMC <= 3.0) return 0.40;  // 24/60 - Midrange
-  if (averageCMC <= 3.5) return 0.42;  // 25/60 - Midrange-high
-  if (averageCMC <= 4.0) return 0.43;  // 26/60 - Control-low
-  return 0.45;                          // 27/60 - Control/Ramp
+  if (averageCMC <= 1.5) return 0.33 // 20/60 - Tres agressif
+  if (averageCMC <= 2.0) return 0.35 // 21/60 - Agressif
+  if (averageCMC <= 2.5) return 0.37 // 22/60 - Midrange-low
+  if (averageCMC <= 3.0) return 0.4 // 24/60 - Midrange
+  if (averageCMC <= 3.5) return 0.42 // 25/60 - Midrange-high
+  if (averageCMC <= 4.0) return 0.43 // 26/60 - Control-low
+  return 0.45 // 27/60 - Control/Ramp
 }
 ```
 
@@ -610,29 +615,29 @@ function calculateIdealLandRatio(averageCMC: number): number {
 shouldMulligan(hand: string[], strategy: string): MulliganDecision {
   const landCount = hand.filter(card => card === 'land').length;
   const handSize = hand.length;
-  
+
   switch (strategy) {
     case 'aggressive':
       // Garde si 1-4 terrains et au moins 1 sort jouable
       shouldMulligan = landCount < 1 || landCount > 4;
       break;
-      
+
     case 'conservative':
       // Garde si 2-5 terrains
       shouldMulligan = landCount < 2 || landCount > 5;
       break;
-      
+
     case 'optimal':
       // Logique sophistiquee basee sur la courbe
       const optimalLands = Math.floor(handSize * 0.4); // ~40% terrains
       const deviation = Math.abs(landCount - optimalLands);
       shouldMulligan = deviation > 2;
       break;
-      
+
     default: // 'none'
       shouldMulligan = false;
   }
-  
+
   return { shouldMulligan, reason, handRating };
 }
 ```
@@ -644,14 +649,14 @@ function rateHand(landCount: number, handSize: number, strategy: string): number
   switch (strategy) {
     case 'aggressive':
       // Optimal: 3 terrains, penalite pour deviation
-      return Math.max(0, Math.min(10, 5 + (3 - Math.abs(landCount - 3))));
-      
+      return Math.max(0, Math.min(10, 5 + (3 - Math.abs(landCount - 3))))
+
     case 'conservative':
-      return Math.max(0, Math.min(10, 5 + (2 - Math.abs(landCount - 3))));
-      
+      return Math.max(0, Math.min(10, 5 + (2 - Math.abs(landCount - 3))))
+
     case 'optimal':
-      const deviation = Math.abs(landCount - Math.floor(handSize * 0.4));
-      return Math.max(0, Math.min(10, 8 - deviation * 2));
+      const deviation = Math.abs(landCount - Math.floor(handSize * 0.4))
+      return Math.max(0, Math.min(10, 8 - deviation * 2))
   }
 }
 ```
@@ -671,7 +676,7 @@ analyzeMultivariateRequirements(
 ): MultivariateAnalysis {
   let overallConsistency = 1;
   const bottleneckColors: ManaColor[] = [];
-  
+
   // Analyser chaque exigence de couleur
   for (const requirement of colorRequirements) {
     const analysis = this.calculateKarstenProbability(
@@ -680,16 +685,16 @@ analyzeMultivariateRequirements(
       requirement.criticalTurn,
       requirement.intensity
     );
-    
+
     // Consistance globale = produit des probabilites
     overallConsistency *= analysis.castProbability;
-    
+
     // Identifier les goulots d'etranglement
     if (analysis.castProbability < 0.80) {
       bottleneckColors.push(requirement.color);
     }
   }
-  
+
   return { overallConsistency, bottleneckColors, ... };
 }
 ```
@@ -703,8 +708,9 @@ P(toutes couleurs) = P(couleur1) * P(couleur2) * ... * P(couleurN)
 ```
 
 **Exemple:** Deck Jeskai (WUR)
+
 - P(W) = 92%, P(U) = 94%, P(R) = 88%
-- P(toutes) = 0.92 * 0.94 * 0.88 = **76.1%**
+- P(toutes) = 0.92 _ 0.94 _ 0.88 = **76.1%**
 
 ---
 
@@ -716,7 +722,7 @@ P(toutes couleurs) = P(couleur1) * P(couleur2) * ... * P(couleurN)
 optimizeManabase(deck): { [color: string]: number } {
   // 1. Calculer les besoins pour chaque couleur
   const requirements: { [color: string]: number } = {};
-  
+
   for (const card of deck.cards) {
     for (const [color, count] of Object.entries(card.manaCost.symbols)) {
       if (count > 0) {
@@ -725,15 +731,15 @@ optimizeManabase(deck): { [color: string]: number } {
       }
     }
   }
-  
+
   // 2. Distribuer proportionnellement
   const totalRequired = Object.values(requirements).reduce((sum, r) => sum + r, 0);
   const distribution: { [color: string]: number } = {};
-  
+
   for (const [color, required] of Object.entries(requirements)) {
     distribution[color] = Math.round((required / totalRequired) * deck.totalLands);
   }
-  
+
   return distribution;
 }
 ```
@@ -742,13 +748,13 @@ optimizeManabase(deck): { [color: string]: number } {
 
 ```typescript
 const optimalManabase = {
-  totalLands: 24,           // Exemple midrange
+  totalLands: 24, // Exemple midrange
   colorSources: { W: 12, U: 14, R: 10 },
-  fetchlands: Math.floor(24 * 0.2),   // ~20% = 5 fetchlands
-  duallands: Math.floor(24 * 0.4),    // ~40% = 10 dual lands
-  basics: Math.floor(24 * 0.3),       // ~30% = 7 basics
-  utility: Math.floor(24 * 0.1),      // ~10% = 2 utility lands
-};
+  fetchlands: Math.floor(24 * 0.2), // ~20% = 5 fetchlands
+  duallands: Math.floor(24 * 0.4), // ~40% = 10 dual lands
+  basics: Math.floor(24 * 0.3), // ~30% = 7 basics
+  utility: Math.floor(24 * 0.1), // ~10% = 2 utility lands
+}
 ```
 
 ### 10.3 Distribution de Couleurs Proportionnelle
@@ -756,7 +762,7 @@ const optimalManabase = {
 ```typescript
 calculateOptimalColorDistribution(spells: DeckCard[], totalLands: number): Record<string, number> {
   const colorDemand: Record<string, number> = {};
-  
+
   // Compter la demande pour chaque couleur
   spells.forEach(spell => {
     const colors = extractColors(spell.card.mana_cost);
@@ -766,15 +772,15 @@ calculateOptimalColorDistribution(spells: DeckCard[], totalLands: number): Recor
       colorDemand[color] = (colorDemand[color] || 0) + symbols.length * spell.quantity;
     });
   });
-  
+
   const totalDemand = Object.values(colorDemand).reduce((sum, d) => sum + d, 0);
-  
+
   // Distribuer les terrains proportionnellement a la demande
   const distribution: Record<string, number> = {};
   Object.entries(colorDemand).forEach(([color, demand]) => {
     distribution[color] = Math.round((demand / totalDemand) * totalLands);
   });
-  
+
   return distribution;
 }
 ```
@@ -785,14 +791,14 @@ calculateOptimalColorDistribution(spells: DeckCard[], totalLands: number): Recor
 
 ### A. Glossaire
 
-| Terme | Definition |
-|-------|------------|
-| **CMC** | Converted Mana Cost - Cout total de mana d'une carte |
-| **Source** | Terrain ou permanent qui produit du mana d'une couleur |
-| **Fetchland** | Terrain qui se sacrifie pour chercher un autre terrain |
-| **Shockland** | Terrain dual qui peut entrer degage en payant 2 PV |
-| **Fastland** | Terrain qui entre degage si on controle 2 terrains ou moins |
-| **Mulligan** | Action de remettre sa main dans le deck pour en tirer une nouvelle |
+| Terme         | Definition                                                         |
+| ------------- | ------------------------------------------------------------------ |
+| **CMC**       | Converted Mana Cost - Cout total de mana d'une carte               |
+| **Source**    | Terrain ou permanent qui produit du mana d'une couleur             |
+| **Fetchland** | Terrain qui se sacrifie pour chercher un autre terrain             |
+| **Shockland** | Terrain dual qui peut entrer degage en payant 2 PV                 |
+| **Fastland**  | Terrain qui entre degage si on controle 2 terrains ou moins        |
+| **Mulligan**  | Action de remettre sa main dans le deck pour en tirer une nouvelle |
 
 ### B. References
 
@@ -802,15 +808,15 @@ calculateOptimalColorDistribution(spells: DeckCard[], totalLands: number): Recor
 
 ### C. Fichiers Source
 
-| Fichier | Contenu Principal |
-|---------|-------------------|
+| Fichier             | Contenu Principal                                       |
+| ------------------- | ------------------------------------------------------- |
 | `manaCalculator.ts` | Classe ManaCalculator, tables Karsten, hypergeometrique |
-| `advancedMaths.ts` | AdvancedMathEngine, Monte Carlo, analyse multivariee |
-| `deckAnalyzer.ts` | Analyse de deck, detection de terrains, probabilites |
-| `manabase.ts` | Utilitaires, parsing de couts, simulation de mains |
-| `types/maths.ts` | Types TypeScript et constantes |
+| `advancedMaths.ts`  | AdvancedMathEngine, Monte Carlo, analyse multivariee    |
+| `deckAnalyzer.ts`   | Analyse de deck, detection de terrains, probabilites    |
+| `manabase.ts`       | Utilitaires, parsing de couts, simulation de mains      |
+| `types/maths.ts`    | Types TypeScript et constantes                          |
 
 ---
 
-*Document genere pour ManaTuner Pro v1.0*
-*Derniere mise a jour: 2025*
+_Document genere pour ManaTuner v1.0_
+_Derniere mise a jour: 2025_

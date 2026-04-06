@@ -1,12 +1,12 @@
-# 🚀 Guide de Déploiement Production - ManaTuner Pro
+# 🚀 Guide de Déploiement Production - ManaTuner
 
 ## 🎯 Vue d'ensemble
 
-ManaTuner Pro est déployé sur **Vercel** avec une architecture React + TypeScript + Vite. Ce guide couvre tous les aspects du déploiement en production.
+ManaTuner est déployé sur **Vercel** avec une architecture React + TypeScript + Vite. Ce guide couvre tous les aspects du déploiement en production.
 
 ### ✅ Status Actuel
 
-- **🌐 Production Live** : https://manatuner-pro.vercel.app
+- **🌐 Production Live** : https://manatuner.app
 - **📦 Plateforme** : Vercel (pas Firebase)
 - **🔧 Framework** : Vite + React 18 + TypeScript
 - **🗃️ Base de données** : Supabase (optionnel pour cloud sync)
@@ -346,7 +346,7 @@ vercel logs
 
 ```bash
 # Lighthouse audit
-npx lighthouse https://manatuner-pro.vercel.app
+npx lighthouse https://manatuner.app
 
 # Bundle analyzer
 npm run build:analyze
@@ -373,7 +373,7 @@ GitHub Actions (CI/CD)
        ↓
    Global CDN Deploy
        ↓
-https://manatuner-pro.vercel.app
+https://manatuner.app
 ```
 
 **Stack Technique :**
@@ -386,4 +386,4 @@ https://manatuner-pro.vercel.app
 
 ---
 
-🎉 **ManaTuner Pro est maintenant production-ready avec une architecture moderne et sécurisée !**
+🎉 **ManaTuner est maintenant production-ready avec une architecture moderne et sécurisée !**

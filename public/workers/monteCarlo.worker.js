@@ -214,4 +214,4 @@ const PERF_MONITOR = {
   averageTime: 0
 };
 
-console.log('🚀 ManaTuner Pro Monte Carlo Worker initialized'); 
+console.log('🚀 ManaTuner Monte Carlo Worker initialized'); 

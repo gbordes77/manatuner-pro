@@ -1,5 +1,5 @@
 {
-  "projectName": "ManaTuner Pro",
+  "projectName": "ManaTuner",
   "version": "2.0.0",
   "lastFullScan": "2025-12-26T17:20:00Z",
   "description": "Advanced MTG Manabase Analyzer using Frank Karsten mathematics, Monte Carlo simulation, and Bellman equation for optimal mulligan decisions",
@@ -87,12 +87,21 @@
               {
                 "name": "manaCalculator.ts",
                 "purpose": "Frank Karsten hypergeometric probability calculations with tempo-aware analysis",
-                "exports": ["ManaCalculator", "calculateHypergeometric", "calculateTempoAwareProbability", "analyzeSpellCastability"]
+                "exports": [
+                  "ManaCalculator",
+                  "calculateHypergeometric",
+                  "calculateTempoAwareProbability",
+                  "analyzeSpellCastability"
+                ]
               },
               {
                 "name": "advancedMaths.ts",
                 "purpose": "Advanced mathematical engine with caching, Monte Carlo, and multivariate analysis",
-                "exports": ["AdvancedMathEngine", "calculateKarstenProbability", "runMonteCarloSimulation"]
+                "exports": [
+                  "AdvancedMathEngine",
+                  "calculateKarstenProbability",
+                  "runMonteCarloSimulation"
+                ]
               },
               {
                 "name": "mulliganSimulator.ts",
@@ -151,24 +160,14 @@
               "slices": {
                 "path": "/src/store/slices",
                 "purpose": "Redux Toolkit slices for state management",
-                "keyFiles": [
-                  "analyzerSlice.ts",
-                  "deckSlice.ts",
-                  "analysisSlice.ts",
-                  "uiSlice.ts"
-                ]
+                "keyFiles": ["analyzerSlice.ts", "deckSlice.ts", "analysisSlice.ts", "uiSlice.ts"]
               }
             }
           },
           "types": {
             "path": "/src/types",
             "purpose": "TypeScript type definitions",
-            "keyFiles": [
-              "index.ts",
-              "lands.ts",
-              "maths.ts",
-              "scryfall.ts"
-            ]
+            "keyFiles": ["index.ts", "lands.ts", "maths.ts", "scryfall.ts"]
           },
           "utils": {
             "path": "/src/utils",
@@ -310,7 +309,24 @@
     },
     "tempoAwareCalculations": {
       "purpose": "Account for ETB tapped lands in probability calculations",
-      "landCategories": ["basic", "fetch", "shock", "fast", "slow", "check", "battle", "pain", "filter", "triome", "pathway", "channel", "creature", "bounce", "dual", "utility"]
+      "landCategories": [
+        "basic",
+        "fetch",
+        "shock",
+        "fast",
+        "slow",
+        "check",
+        "battle",
+        "pain",
+        "filter",
+        "triome",
+        "pathway",
+        "channel",
+        "creature",
+        "bounce",
+        "dual",
+        "utility"
+      ]
     }
   },
   "testStatus": {
@@ -396,9 +412,7 @@
     "context-manager": {
       "lastActionSummary": "Initial comprehensive project analysis and context-manager.json creation",
       "lastActivityTimestamp": "2025-12-26T17:20:00Z",
-      "filesModified": [
-        "/sub-agents/context/context-manager.json"
-      ]
+      "filesModified": ["/sub-agents/context/context-manager.json"]
     }
   }
 }

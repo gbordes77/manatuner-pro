@@ -1,10 +1,10 @@
-# AUDIT REPORT -- ManaTuner Pro v2.0.0
+# AUDIT REPORT -- ManaTuner v2.0.0
 
 **Date**: 2026-04-05
 **Auditors**: 9 specialized AI agents (Claude Opus 4.6)
-**Project**: ManaTuner Pro -- Advanced MTG Manabase Analyzer
+**Project**: ManaTuner -- Advanced MTG Manabase Analyzer
 **Stack**: React 18 + TypeScript 5.9 + Vite 7 + MUI 5 + Redux Toolkit
-**Production**: https://manatuner-pro.vercel.app
+**Production**: https://manatuner.app
 **Backup**: `Project Mana base V2 - BACKUP 20260405_161950`
 
 ---

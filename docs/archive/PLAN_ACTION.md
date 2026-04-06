@@ -1,4 +1,4 @@
-# Plan d'Action - ManaTuner Pro
+# Plan d'Action - ManaTuner
 
 **Date**: 25 décembre 2025
 **Version actuelle**: 2.0.0
@@ -56,7 +56,7 @@
 - [x] Relié le projet à Vercel (`manatuner-pro`)
 - [x] Configuration vercel.json avec Vite framework
 - [x] Déploiement réussi en production
-- [x] URL de production : https://manatuner-pro.vercel.app
+- [x] URL de production : https://manatuner.app
 
 ### Notes
 

@@ -1,4 +1,4 @@
-# ManaTuner Pro - Instructions Claude
+# ManaTuner - Instructions Claude
 
 ## RÈGLE CRITIQUE: Rechargement Automatique
 

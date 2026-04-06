@@ -1,4 +1,4 @@
-# ManaTuner Pro - Architecture Documentation
+# ManaTuner - Architecture Documentation
 
 > **Last Updated**: 2026-01-06
 > **Version**: 2.0.0
@@ -29,7 +29,7 @@
 
 ## Executive Summary
 
-**ManaTuner Pro** is a client-side Magic: The Gathering manabase analyzer built on Frank Karsten's mathematical research. The application calculates exact hypergeometric probabilities for spell castability and provides Monte Carlo-based mulligan simulations.
+**ManaTuner** is a client-side Magic: The Gathering manabase analyzer built on Frank Karsten's mathematical research. The application calculates exact hypergeometric probabilities for spell castability and provides Monte Carlo-based mulligan simulations.
 
 ### Key Characteristics
 
@@ -762,7 +762,7 @@ describe('Karsten Methodology', () => {
                               │
                               ▼
         ┌─────────────────────────────────────────┐
-        │  https://manatuner-pro.vercel.app       │
+        │  https://manatuner.app       │
         │                                          │
         │  - SPA rewrites (/* → /index.html)      │
         │  - Security headers                      │

@@ -1,4 +1,4 @@
-# ManaTuner Pro - Idées Futures (À Faire Peut-Être)
+# ManaTuner - Idées Futures (À Faire Peut-Être)
 
 Ce document contient les idées d'améliorations identifiées mais non prioritaires.
 
@@ -22,21 +22,21 @@ Créer un système de "Sources Effectives" avec coefficients de fiabilité :
 Sources Effectives = Terrains + (Dorks × 0.7) + (Rocks × 0.85)
 ```
 
-| Source | Coefficient | Raison |
-|--------|-------------|--------|
-| Terrains | 1.0 | Toujours fiables |
-| Mana Rocks | 0.85 | Robustes, pas de summoning sickness |
-| Mana Dorks | 0.70 | Vulnérables aux removals, summoning sickness |
+| Source     | Coefficient | Raison                                       |
+| ---------- | ----------- | -------------------------------------------- |
+| Terrains   | 1.0         | Toujours fiables                             |
+| Mana Rocks | 0.85        | Robustes, pas de summoning sickness          |
+| Mana Dorks | 0.70        | Vulnérables aux removals, summoning sickness |
 
 ### Prise en Compte du Timing
 
-| Source | Disponible à partir de |
-|--------|------------------------|
-| Land | Tour où joué |
-| Mana Rock (CMC 1) | Tour 2 |
-| Mana Rock (CMC 2) | Tour 3 |
+| Source            | Disponible à partir de      |
+| ----------------- | --------------------------- |
+| Land              | Tour où joué                |
+| Mana Rock (CMC 1) | Tour 2                      |
+| Mana Rock (CMC 2) | Tour 3                      |
 | Mana Dork (CMC 1) | Tour 2 (summoning sickness) |
-| Mana Dork (CMC 2) | Tour 3 |
+| Mana Dork (CMC 2) | Tour 3                      |
 
 ### Implémentation Technique
 
@@ -50,8 +50,13 @@ Sources Effectives = Terrains + (Dorks × 0.7) + (Rocks × 0.85)
 ```typescript
 const MANA_PRODUCERS = {
   'Llanowar Elves': { type: 'dork', cmc: 1, produces: ['G'], reliability: 0.7 },
-  'Birds of Paradise': { type: 'dork', cmc: 1, produces: ['W','U','B','R','G'], reliability: 0.7 },
-  'Sol Ring': { type: 'rock', cmc: 1, produces: ['C','C'], reliability: 0.9 },
+  'Birds of Paradise': {
+    type: 'dork',
+    cmc: 1,
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    reliability: 0.7,
+  },
+  'Sol Ring': { type: 'rock', cmc: 1, produces: ['C', 'C'], reliability: 0.9 },
   'Arcane Signet': { type: 'rock', cmc: 2, produces: ['any'], reliability: 0.85 },
 }
 ```
@@ -79,12 +84,12 @@ const MANA_PRODUCERS = {
 
 ### Verdict
 
-| Critère | Évaluation |
-|---------|------------|
-| **Faisable ?** | ✅ OUI |
-| **Souhaitable ?** | ⚠️ PARTIELLEMENT |
-| **Effort total** | 5-8 jours (20-30h) |
-| **ROI** | Modéré |
+| Critère           | Évaluation         |
+| ----------------- | ------------------ |
+| **Faisable ?**    | ✅ OUI             |
+| **Souhaitable ?** | ⚠️ PARTIELLEMENT   |
+| **Effort total**  | 5-8 jours (20-30h) |
+| **ROI**           | Modéré             |
 
 ### Pourquoi priorité BASSE
 
@@ -96,6 +101,7 @@ const MANA_PRODUCERS = {
 ### Solution technique recommandée
 
 **react-i18next** avec structure :
+
 ```
 src/i18n/
 ├── config.ts
@@ -106,25 +112,26 @@ src/i18n/
 
 ### Règles d'or si implémentation
 
-| Traduire | NE PAS traduire |
-|----------|-----------------|
-| Boutons d'action | Termes MTG (mana, deck, land...) |
-| Textes explicatifs | Noms de cartes (API Scryfall) |
-| Messages d'aide | Types de lands (fetchland, shockland) |
-| Titres de pages | Métriques (CMC, T1, T2, T3) |
+| Traduire           | NE PAS traduire                       |
+| ------------------ | ------------------------------------- |
+| Boutons d'action   | Termes MTG (mana, deck, land...)      |
+| Textes explicatifs | Noms de cartes (API Scryfall)         |
+| Messages d'aide    | Types de lands (fetchland, shockland) |
+| Titres de pages    | Métriques (CMC, T1, T2, T3)           |
 
 ### Option "Quick Wins" (~8h)
 
-| Action | Effort |
-|--------|--------|
-| Sélecteur FR/EN dans footer | 2h |
-| Traduire HomePage | 2h |
-| Traduire 10 boutons principaux | 1h |
-| Traduire GuidePage (Karsten) | 3h |
+| Action                         | Effort |
+| ------------------------------ | ------ |
+| Sélecteur FR/EN dans footer    | 2h     |
+| Traduire HomePage              | 2h     |
+| Traduire 10 boutons principaux | 1h     |
+| Traduire GuidePage (Karsten)   | 3h     |
 
 ### Alternative : Tooltips explicatifs (~4h)
 
 Plutôt que traduction complète :
+
 - Survoler terme technique → explication en FR
 - Interface reste en anglais (cohérence MTG)
 - Valeur pédagogique sans confusion
@@ -151,7 +158,7 @@ Plutôt que traduction complète :
 
 ## 3. [Placeholder pour futures idées]
 
-*Ajouter ici les prochaines idées d'amélioration*
+_Ajouter ici les prochaines idées d'amélioration_
 
 ---
 

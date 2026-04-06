@@ -1,4 +1,4 @@
-# PROJECT_CONTEXT.md - Guide AI pour ManaTuner Pro
+# PROJECT_CONTEXT.md - Guide AI pour ManaTuner
 
 Ce fichier contient le contexte technique pour les assistants AI travaillant sur ce projet.
 
@@ -6,12 +6,12 @@ Ce fichier contient le contexte technique pour les assistants AI travaillant sur
 
 ## Contexte Rapide
 
-**ManaTuner Pro** = Analyseur de manabase MTG base sur les mathematiques de Frank Karsten.
+**ManaTuner** = Analyseur de manabase MTG base sur les mathematiques de Frank Karsten.
 
 ### Stack
 
 - React 18 + TypeScript + Material-UI + Vite
-- Deploye sur Vercel: https://manatuner-pro.vercel.app
+- Deploye sur Vercel: https://manatuner.app
 
 ### Commandes Essentielles
 

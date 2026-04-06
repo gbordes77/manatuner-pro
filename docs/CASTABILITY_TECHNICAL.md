@@ -1,4 +1,4 @@
-# ManaTuner Pro - Castability System Technical Documentation
+# ManaTuner - Castability System Technical Documentation
 
 > **Version**: 1.0  
 > **Last Updated**: December 2025  
@@ -25,12 +25,12 @@
 
 **Castability** measures the probability of being able to cast a spell on curve (at the turn equal to its converted mana cost). In Magic: The Gathering, having the right colors and quantity of mana at the right time is crucial for consistent gameplay.
 
-ManaTuner Pro calculates two probability metrics for each spell:
+ManaTuner calculates two probability metrics for each spell:
 
-| Metric | Name | Description |
-|--------|------|-------------|
-| **P1** | Perfect Scenario | Probability of having the right colored sources, assuming you hit all land drops |
-| **P2** | Realistic Scenario | P1 adjusted for the probability of actually drawing enough lands |
+| Metric | Name               | Description                                                                      |
+| ------ | ------------------ | -------------------------------------------------------------------------------- |
+| **P1** | Perfect Scenario   | Probability of having the right colored sources, assuming you hit all land drops |
+| **P2** | Realistic Scenario | P1 adjusted for the probability of actually drawing enough lands                 |
 
 ### How to Interpret Results
 
@@ -48,12 +48,14 @@ ManaTuner Pro calculates two probability metrics for each spell:
 ### Example Analysis
 
 **Lightning Bolt {R}** in a deck with 20 Mountains:
+
 - CMC: 1, Target turn: 1
 - Cards seen by turn 1: 7 (opening hand)
 - P1 (color): ~99% (very high chance of having 1 red source)
 - P2 (realistic): ~95% (accounting for land draws)
 
 **Cryptic Command {1}{U}{U}{U}** in a deck with 12 Islands:
+
 - CMC: 4, Target turn: 4
 - Cards seen by turn 4: 10 (7 + 3 draws)
 - P1 (color): ~75% (need 3 blue sources by turn 4)
@@ -65,7 +67,7 @@ ManaTuner Pro calculates two probability metrics for each spell:
 
 ### The Hypergeometric Distribution
 
-ManaTuner Pro uses the **hypergeometric distribution** to calculate probabilities. This is the correct statistical model for drawing cards without replacement from a deck.
+ManaTuner uses the **hypergeometric distribution** to calculate probabilities. This is the correct statistical model for drawing cards without replacement from a deck.
 
 #### The Formula
 
@@ -99,7 +101,7 @@ const hypergeometric = (N: number, K: number, n: number, k: number): number => {
 
     let result = 1
     for (let i = 0; i < b; i++) {
-      result = result * (a - i) / (i + 1)
+      result = (result * (a - i)) / (i + 1)
     }
     return result
   }
@@ -107,7 +109,7 @@ const hypergeometric = (N: number, K: number, n: number, k: number): number => {
   // Cumulative: P(X >= k)
   let probability = 0
   for (let i = k; i <= Math.min(n, K); i++) {
-    probability += combination(K, i) * combination(N - K, n - i) / combination(N, n)
+    probability += (combination(K, i) * combination(N - K, n - i)) / combination(N, n)
   }
   return probability
 }
@@ -117,32 +119,35 @@ const hypergeometric = (N: number, K: number, n: number, k: number): number => {
 
 Frank Karsten's famous article ["How Many Colored Mana Sources Do You Need?"](https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-colored-mana-sources-do-you-need-to-consistently-cast-your-spells-a-guilds-of-ravnica-update/) provides lookup tables for 90% casting probability.
 
-ManaTuner Pro implements these tables for recommendations:
+ManaTuner implements these tables for recommendations:
 
 ```typescript
 // From manaCalculator.ts - Karsten's 90% threshold tables
 const KARSTEN_TABLES: { [symbols: number]: { [turn: number]: number } } = {
-  1: { // 1 colored symbol needed
-    1: 14,  // Turn 1: need 14 sources for 90%
-    2: 13,  // Turn 2: need 13 sources
-    3: 12,  // ...
+  1: {
+    // 1 colored symbol needed
+    1: 14, // Turn 1: need 14 sources for 90%
+    2: 13, // Turn 2: need 13 sources
+    3: 12, // ...
     4: 11,
     5: 10,
-    6: 9
+    6: 9,
   },
-  2: { // 2 colored symbols (e.g., {U}{U})
-    2: 20,  // Turn 2: need 20 sources
+  2: {
+    // 2 colored symbols (e.g., {U}{U})
+    2: 20, // Turn 2: need 20 sources
     3: 18,
     4: 16,
     5: 15,
-    6: 14
+    6: 14,
   },
-  3: { // 3 colored symbols (e.g., {U}{U}{U})
+  3: {
+    // 3 colored symbols (e.g., {U}{U}{U})
     3: 23,
     4: 20,
     5: 19,
-    6: 18
-  }
+    6: 18,
+  },
 }
 ```
 
@@ -224,13 +229,13 @@ Turn 4: 10 cards
 
 ### Key Files
 
-| File | Responsibility |
-|------|----------------|
-| `ManaCostRow.tsx` | UI component + probability hook |
+| File                | Responsibility                                      |
+| ------------------- | --------------------------------------------------- |
+| `ManaCostRow.tsx`   | UI component + probability hook                     |
 | `manaCalculator.ts` | Core math, Karsten tables, tempo-aware calculations |
-| `landService.ts` | Land detection, ETB behavior analysis |
-| `deckAnalyzer.ts` | Deck parsing, analysis orchestration |
-| `types/lands.ts` | Type definitions for land system |
+| `landService.ts`    | Land detection, ETB behavior analysis               |
+| `deckAnalyzer.ts`   | Deck parsing, analysis orchestration                |
+| `types/lands.ts`    | Type definitions for land system                    |
 
 ---
 
@@ -239,6 +244,7 @@ Turn 4: 10 cards
 ### Step 1: Parse Mana Cost
 
 The mana cost string (e.g., `{2}{W}{W}`) is parsed to extract:
+
 - Regular colored symbols: `{W}`, `{U}`, `{B}`, `{R}`, `{G}`
 - Hybrid symbols: `{W/U}`, `{R/G}`
 - Generic mana: `{2}`, `{3}`
@@ -250,7 +256,7 @@ const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
 const hybridSymbols = actualManaCost.match(/\{([WUBRG])\/([WUBRG])\}/g) || []
 
 const colorCounts: { [color: string]: number } = {}
-manaCostSymbols.forEach(symbol => {
+manaCostSymbols.forEach((symbol) => {
   const color = symbol.replace(/[{}]/g, '')
   colorCounts[color] = (colorCounts[color] || 0) + 1
 })
@@ -264,15 +270,15 @@ For each color requirement, calculate the probability of having enough sources:
 // For each color in the spell's cost
 for (const [color, symbolsNeeded] of Object.entries(colorCounts)) {
   const sourcesForColor = deckSources?.[color] || 0
-  
+
   // P(having >= symbolsNeeded sources of this color by turn)
   const p1Color = hypergeometric(
-    landsInDeck,      // N: total lands
-    sourcesForColor,  // K: sources of this color
-    turn,             // n: lands drawn by this turn
-    symbolsNeeded     // k: symbols needed
+    landsInDeck, // N: total lands
+    sourcesForColor, // K: sources of this color
+    turn, // n: lands drawn by this turn
+    symbolsNeeded // k: symbols needed
   )
-  
+
   // Overall P1 is minimum across all colors
   p1Probability = Math.min(p1Probability, p1Color)
 }
@@ -288,10 +294,10 @@ const cardsSeen = 7 + (turn - 1)
 
 // Probability of having at least 'turn' lands by turn 'turn'
 const probHavingEnoughLands = hypergeometric(
-  deckSize,     // N: total cards
-  landsInDeck,  // K: total lands
-  cardsSeen,    // n: cards seen
-  turn          // k: lands needed (1 per turn)
+  deckSize, // N: total cards
+  landsInDeck, // K: total lands
+  cardsSeen, // n: cards seen
+  turn // k: lands needed (1 per turn)
 )
 
 // P2 = P1 * P(enough lands)
@@ -317,7 +323,7 @@ Hybrid mana can be paid with **either** color. The calculation uses the **maximu
 
 ```typescript
 // Parse hybrid symbols like {W/R}
-hybridSymbols.forEach(symbol => {
+hybridSymbols.forEach((symbol) => {
   const match = symbol.match(/\{([WUBRG])\/([WUBRG])\}/)
   if (match) {
     hybridMana.push({ color1: match[1], color2: match[2] })
@@ -356,12 +362,13 @@ const getXCountFromManaCost = (manaCost: string | null): number => {
 const calculateEffectiveX = (fixedCmc: number, xCount: number) => {
   const reasonableX = 2
   const xValue = Math.max(1, reasonableX)
-  const targetTurn = fixedCmc + (xValue * xCount)
+  const targetTurn = fixedCmc + xValue * xCount
   return { xValue, targetTurn }
 }
 ```
 
 **Example**: Fireball costs `{X}{R}`.
+
 - Fixed CMC: 1 (the {R})
 - X count: 1
 - Effective X: 2
@@ -392,6 +399,7 @@ const getManaCostFromCard = (cardData: MTGCard | null): string | null => {
 ```
 
 **Example**: Turntimber Symbiosis // Turntimber, Serpentine Wood
+
 - Front face: {4}{G}{G}{G} (spell)
 - Back face: Land (enters tapped unless you pay 3 life)
 - We analyze the **spell side** for castability
@@ -417,16 +425,16 @@ Currently **not** specially handled. Phyrexian mana appears as regular colored s
 
 ### What is NOT Currently Considered
 
-| Limitation | Impact | Reason |
-|------------|--------|--------|
-| **Mana dorks** | Underestimates fast decks | Complex interaction timing |
-| **Mana rocks** | Underestimates ramp decks | Similar to dorks |
-| **Treasure tokens** | Misses temporary mana | Dynamic mana sources |
-| **Rituals** | Dark Ritual not counted | One-shot effects |
-| **Fetchland thinning** | Minor inaccuracy (~1%) | Complexity vs. benefit |
-| **Mulligans** | Assumes 7-card hand | Separate mulligan analysis exists |
-| **Modal DFC lands** | Land side ignored for tempo | Complex dual-purpose |
-| **Channel lands** | Land mode only | Special abilities |
+| Limitation             | Impact                      | Reason                            |
+| ---------------------- | --------------------------- | --------------------------------- |
+| **Mana dorks**         | Underestimates fast decks   | Complex interaction timing        |
+| **Mana rocks**         | Underestimates ramp decks   | Similar to dorks                  |
+| **Treasure tokens**    | Misses temporary mana       | Dynamic mana sources              |
+| **Rituals**            | Dark Ritual not counted     | One-shot effects                  |
+| **Fetchland thinning** | Minor inaccuracy (~1%)      | Complexity vs. benefit            |
+| **Mulligans**          | Assumes 7-card hand         | Separate mulligan analysis exists |
+| **Modal DFC lands**    | Land side ignored for tempo | Complex dual-purpose              |
+| **Channel lands**      | Land mode only              | Special abilities                 |
 
 ### Why These Limitations Exist
 
@@ -441,6 +449,7 @@ Currently **not** specially handled. Phyrexian mana appears as regular colored s
 ### Workarounds
 
 For ramp decks, users can mentally adjust:
+
 - Add ~10-15% to P1/P2 for decks with 4+ mana dorks
 - Consider Sol Ring as effectively +2 land drops
 
@@ -464,6 +473,7 @@ With T1 dork:   T1 land + dork -> T2 land -> Cast 3-drop on T2!
 **How should we calculate P(dork in play at the right time)?**
 
 Considerations:
+
 - P(dork in opening hand) = hypergeometric probability
 - P(dork survives to produce mana) = survival rate factor
 - Timing: T1 dork enables T2 acceleration, T2 dork enables T3 acceleration
@@ -487,13 +497,14 @@ Proposed survival rates:
 Example: "Can I cast Cryptic Command on T3 with mana dorks?"
 
 ```
-P(cast on T3) = 
+P(cast on T3) =
   P(natural T4 mana on T3 with dork acceleration)
   = P(T1 dork) * P(dork produces right color) * P(remaining colors)
   + P(no T1 dork) * P(T4 natural cast)
 ```
 
 This requires:
+
 1. Calculating dork draw probability for each turn
 2. Modeling dork mana contribution
 3. Adjusting subsequent color probabilities
@@ -503,10 +514,12 @@ This requires:
 **How to handle rocks that cost mana themselves?**
 
 Example: Arcane Signet costs {2}
+
 - Can't accelerate until T3 at earliest (T2 play, T3 tap)
 - But still adds to colored mana count
 
 Proposed approach:
+
 ```
 effectiveTurn(rock) = max(rock.cmc + 1, targetSpell.cmc - 1)
 
@@ -523,9 +536,10 @@ if (effectiveTurn >= targetTurn) {
 **How should removal-heavy metagames affect dork value?**
 
 Proposed metagame-aware adjustment:
+
 ```typescript
 interface MetagameContext {
-  removalDensity: 'low' | 'medium' | 'high';
+  removalDensity: 'low' | 'medium' | 'high'
   // low: casual, commander
   // medium: standard, pioneer
   // high: legacy, modern
@@ -533,8 +547,8 @@ interface MetagameContext {
 
 const DORK_SURVIVAL_MODIFIER = {
   low: 0.95,
-  medium: 0.80,
-  high: 0.65
+  medium: 0.8,
+  high: 0.65,
 }
 ```
 
@@ -543,16 +557,19 @@ const DORK_SURVIVAL_MODIFIER = {
 **How to combine dork probability with land probability?**
 
 Option A: **Additive Model**
+
 ```
 effective_sources = land_sources + (dork_sources * survival_rate)
 ```
 
 Option B: **Conditional Model**
+
 ```
 P(color) = P(color from lands) + P(dork) * (1 - P(color from lands)) * P(color from dork)
 ```
 
 Option C: **Monte Carlo Simulation**
+
 ```
 Simulate 10,000 games:
   - Draw opening hand
@@ -564,16 +581,19 @@ Simulate 10,000 games:
 ### Proposed Implementation Phases
 
 #### Phase 1: Static Dork Contribution
+
 - Count mana dorks in deck
 - Apply flat survival rate
 - Add to effective source count
 
 #### Phase 2: Turn-Aware Calculation
+
 - Calculate dork availability by turn
 - Model acceleration effect
 - Adjust target turn for accelerated casts
 
 #### Phase 3: Interactive Model
+
 - User-configurable survival rates
 - Metagame presets
 - Monte Carlo option for accuracy
@@ -582,22 +602,22 @@ Simulate 10,000 games:
 
 ```typescript
 interface ManaProducer {
-  name: string;
-  type: 'dork' | 'rock' | 'ritual' | 'treasure';
-  manaCost: string;  // Cost to play
-  producedColors: LandManaColor[];
-  producesAny: boolean;
-  turnsToActivate: number;  // 0 for haste dorks, 1 normally
-  survivalRate: number;  // 0-1, based on type and format
-  isReusable: boolean;  // false for rituals/treasure
+  name: string
+  type: 'dork' | 'rock' | 'ritual' | 'treasure'
+  manaCost: string // Cost to play
+  producedColors: LandManaColor[]
+  producesAny: boolean
+  turnsToActivate: number // 0 for haste dorks, 1 normally
+  survivalRate: number // 0-1, based on type and format
+  isReusable: boolean // false for rituals/treasure
 }
 
 interface AcceleratedCastabilityResult {
-  base: { p1: number; p2: number };
-  withAcceleration: { p1: number; p2: number };
-  accelerationImpact: number;  // % improvement
-  acceleratedTurn: number;  // New effective turn
-  keyAccelerators: string[];  // Which cards enable this
+  base: { p1: number; p2: number }
+  withAcceleration: { p1: number; p2: number }
+  accelerationImpact: number // % improvement
+  acceleratedTurn: number // New effective turn
+  keyAccelerators: string[] // Which cards enable this
 }
 ```
 
@@ -605,22 +625,22 @@ interface AcceleratedCastabilityResult {
 
 ## 8. Glossary
 
-| Term | Definition |
-|------|------------|
-| **Castability** | Probability of casting a spell on curve |
-| **CMC** | Converted Mana Cost (total mana value) |
-| **Color Pip** | A single colored mana symbol (e.g., {U}) |
-| **DFC** | Double-Faced Card (two sides) |
-| **ETB** | Enters The Battlefield |
+| Term               | Definition                                                |
+| ------------------ | --------------------------------------------------------- |
+| **Castability**    | Probability of casting a spell on curve                   |
+| **CMC**            | Converted Mana Cost (total mana value)                    |
+| **Color Pip**      | A single colored mana symbol (e.g., {U})                  |
+| **DFC**            | Double-Faced Card (two sides)                             |
+| **ETB**            | Enters The Battlefield                                    |
 | **Hypergeometric** | Statistical distribution for sampling without replacement |
-| **Mana Dork** | Creature that produces mana (e.g., Llanowar Elves) |
-| **Mana Rock** | Artifact that produces mana (e.g., Sol Ring) |
-| **Mana Screw** | Not drawing enough lands to cast spells |
-| **On Curve** | Casting a spell the turn its CMC allows |
-| **P1 (Perfect)** | Color probability assuming all land drops |
-| **P2 (Realistic)** | P1 adjusted for land draw probability |
-| **Source** | A land (or other permanent) that can produce a color |
-| **Tempo** | The pace of deploying threats/answers |
+| **Mana Dork**      | Creature that produces mana (e.g., Llanowar Elves)        |
+| **Mana Rock**      | Artifact that produces mana (e.g., Sol Ring)              |
+| **Mana Screw**     | Not drawing enough lands to cast spells                   |
+| **On Curve**       | Casting a spell the turn its CMC allows                   |
+| **P1 (Perfect)**   | Color probability assuming all land drops                 |
+| **P2 (Realistic)** | P1 adjusted for land draw probability                     |
+| **Source**         | A land (or other permanent) that can produce a color      |
+| **Tempo**          | The pace of deploying threats/answers                     |
 
 ---
 
@@ -633,7 +653,7 @@ interface AcceleratedCastabilityResult {
 useProbabilityCalculation(cardData, cardName, deckSources, totalLands, totalCards)
   -> { p1: number, p2: number, hasX: boolean, xInfo: {...} }
 
-// manaCalculator.ts  
+// manaCalculator.ts
 ManaCalculator.calculateManaProbability(deckSize, sources, turn, symbolsNeeded, onPlay, handSize)
   -> ProbabilityResult
 
@@ -658,23 +678,23 @@ landService.getUntappedProbability(land, turn, context)
 
 ```typescript
 interface ProbabilityResult {
-  probability: number;
-  meetsThreshold: boolean;  // >= 90%
-  sourcesNeeded: number;    // Karsten recommendation
-  sourcesAvailable: number;
-  recommendation: string;
+  probability: number
+  meetsThreshold: boolean // >= 90%
+  sourcesNeeded: number // Karsten recommendation
+  sourcesAvailable: number
+  recommendation: string
 }
 
 interface TempoAwareProbability {
-  raw: number;              // Ignoring ETB effects
-  tempoAdjusted: number;    // Accounting for tapped lands
+  raw: number // Ignoring ETB effects
+  tempoAdjusted: number // Accounting for tapped lands
   scenarios: {
-    aggressive: number;     // Pay life for shocks
-    conservative: number;   // Don't pay life
-    balanced: number;       // Weighted average
-  };
-  effectiveSourcesByTurn: number[];
-  tempoImpact: number;      // raw - tempoAdjusted
+    aggressive: number // Pay life for shocks
+    conservative: number // Don't pay life
+    balanced: number // Weighted average
+  }
+  effectiveSourcesByTurn: number[]
+  tempoImpact: number // raw - tempoAdjusted
 }
 ```
 
@@ -715,7 +735,7 @@ Turn 4 calculation:
 - cardsSeen = 10 (7 + 3)
 - Need 3 blue sources
 
-P1 = hypergeom(24, 14, 4, 3) 
+P1 = hypergeom(24, 14, 4, 3)
    = probability of 3+ Islands in first 4 lands
    = ~65%
 
@@ -730,10 +750,10 @@ Result: P1=65%, P2=62%
 
 ## Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | Dec 2025 | ManaTuner Team | Initial comprehensive documentation |
+| Version | Date     | Author         | Changes                             |
+| ------- | -------- | -------------- | ----------------------------------- |
+| 1.0     | Dec 2025 | ManaTuner Team | Initial comprehensive documentation |
 
 ---
 
-*This document is part of the ManaTuner Pro technical documentation suite.*
+_This document is part of the ManaTuner technical documentation suite._

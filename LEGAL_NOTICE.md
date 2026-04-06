@@ -1,20 +1,22 @@
-# Legal Notice - ManaTuner Pro
+# Legal Notice - ManaTuner
 
 ## Trademark Acknowledgments
 
-**Magic: The Gathering** is a trademark of Wizards of the Coast LLC, a subsidiary of Hasbro, Inc. 
+**Magic: The Gathering** is a trademark of Wizards of the Coast LLC, a subsidiary of Hasbro, Inc.
 
-This project (ManaTuner Pro) is **NOT affiliated** with, endorsed by, or sponsored by Wizards of the Coast LLC or Hasbro, Inc.
+This project (ManaTuner) is **NOT affiliated** with, endorsed by, or sponsored by Wizards of the Coast LLC or Hasbro, Inc.
 
 ## Copyright Compliance
 
 ### ✅ What We Use Legally:
+
 - **Mathematical formulas** and statistical analysis (not copyrightable)
 - **Frank Karsten's published methodology** (academic/educational use)
 - **Generic color terminology** (W, U, B, R, G as text)
 - **Our own visual symbols** (circles with letters, not MTG symbols)
 
 ### ❌ What We Avoid:
+
 - **MTG mana symbols** ({W}, {U}, {B}, {R}, {G} graphics)
 - **Wizards artwork** or imagery
 - **Trademarked terminology** beyond fair use
@@ -23,6 +25,7 @@ This project (ManaTuner Pro) is **NOT affiliated** with, endorsed by, or sponsor
 ## Fair Use Declaration
 
 This project constitutes **fair use** under copyright law as:
+
 1. **Educational purpose** - Teaching manabase optimization
 2. **Transformative use** - Mathematical analysis tool, not game content
 3. **Academic reference** - Citing published research (Karsten)
@@ -31,10 +34,13 @@ This project constitutes **fair use** under copyright law as:
 ## Third-Party Content
 
 ### Scryfall API
+
 Card data provided by [Scryfall](https://scryfall.com/), which operates under appropriate licensing agreements with Wizards of the Coast.
 
 ### Frank Karsten Research
+
 Mathematical models based on publicly published research:
+
 - ["How Many Sources Do You Need to Consistently Cast Your Spells? A 2022 Update"](https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/)
 - Academic citations for educational use
 
@@ -52,4 +58,4 @@ If you believe any content violates copyright or trademark rights, please contac
 
 ---
 
-*This notice demonstrates our commitment to respecting intellectual property rights while providing valuable educational tools to the Magic: The Gathering community.* 
+_This notice demonstrates our commitment to respecting intellectual property rights while providing valuable educational tools to the Magic: The Gathering community._

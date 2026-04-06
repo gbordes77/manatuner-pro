@@ -1,6 +1,6 @@
-# ManaTuner Pro
+# ManaTuner
 
-[![Deploy Status](https://img.shields.io/badge/deploy-live-success)](https://manatuner-pro.vercel.app)
+[![Deploy Status](https://img.shields.io/badge/deploy-live-success)](https://manatuner.app)
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -8,13 +8,13 @@
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 
-[Live Demo](https://manatuner-pro.vercel.app) | [Documentation](./docs/ARCHITECTURE.md) | [Guide](https://manatuner-pro.vercel.app/guide)
+[Live Demo](https://manatuner.app) | [Documentation](./docs/ARCHITECTURE.md) | [Guide](https://manatuner.app/guide)
 
 ---
 
 ## Overview
 
-ManaTuner Pro answers the fundamental question every Magic player asks: **"Can I cast my spells on curve?"**
+ManaTuner answers the fundamental question every Magic player asks: **"Can I cast my spells on curve?"**
 
 Built on Frank Karsten's mathematical research, it provides:
 
@@ -44,7 +44,7 @@ Built on Frank Karsten's mathematical research, it provides:
 
 ### Use Online (Recommended)
 
-Visit **[manatuner-pro.vercel.app](https://manatuner-pro.vercel.app)** - no installation required.
+Visit **[manatuner.app](https://manatuner.app)** - no installation required.
 
 ### Local Development
 
@@ -86,7 +86,7 @@ npm run test:e2e     # E2E tests (Playwright)
 
 ## Mathematical Foundation
 
-ManaTuner Pro implements Frank Karsten's research on manabase optimization.
+ManaTuner implements Frank Karsten's research on manabase optimization.
 
 ### Core Formulas
 
@@ -234,4 +234,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-**Ready to optimize your manabase?** [Start analyzing now](https://manatuner-pro.vercel.app)
+**Ready to optimize your manabase?** [Start analyzing now](https://manatuner.app)

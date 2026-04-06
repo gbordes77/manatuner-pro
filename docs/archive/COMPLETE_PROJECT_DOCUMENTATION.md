@@ -1,12 +1,12 @@
-# 📚 ManaTuner Pro - Documentation Complète du Projet
+# 📚 ManaTuner - Documentation Complète du Projet
 
 ## 🎯 Vue d'ensemble du Projet
 
-### Qu'est-ce que ManaTuner Pro ?
+### Qu'est-ce que ManaTuner ?
 
-ManaTuner Pro est un **analyseur de manabase avancé** pour Magic: The Gathering, basé sur la recherche mathématique de **Frank Karsten**. Il permet aux joueurs d'optimiser leurs manabases avec une précision scientifique.
+ManaTuner est un **analyseur de manabase avancé** pour Magic: The Gathering, basé sur la recherche mathématique de **Frank Karsten**. Il permet aux joueurs d'optimiser leurs manabases avec une précision scientifique.
 
-**🔗 Application Live** : https://manatuner-pro.vercel.app
+**🔗 Application Live** : https://manatuner.app
 
 ### 📊 Fonctionnalités Principales
 
@@ -40,7 +40,7 @@ ManaTuner Pro est un **analyseur de manabase avancé** pour Magic: The Gathering
 
 ### Base Mathématique
 
-ManaTuner Pro implémente fidèlement la recherche de Frank Karsten publiée sur TCGPlayer :
+ManaTuner implémente fidèlement la recherche de Frank Karsten publiée sur TCGPlayer :
 
 **📖 Article de Référence** : [How Many Lands Do You Need to Consistently Hit Your Land Drops?](https://tcgplayer.infinite.com/article/How-Many-Lands-Do-You-Need-to-Consistently-Hit-Your-Land-Drops/44ffb8b5-ae9b-45b4-b3d8-3ee9c9d2d0e5/)
 
@@ -453,7 +453,7 @@ npm run build
 # → dist/ folder size: ~739KB (202KB gzipped)
 
 # Performance audit
-npx lighthouse https://manatuner-pro.vercel.app
+npx lighthouse https://manatuner.app
 # → Target: 90+ sur tous les scores
 ```
 
@@ -515,7 +515,7 @@ npm run build:analyze
 
 ## 🎯 Conclusion
 
-ManaTuner Pro représente l'**état de l'art** en matière d'analyse de manabase MTG :
+ManaTuner représente l'**état de l'art** en matière d'analyse de manabase MTG :
 
 ✅ **Mathématiquement Rigoureux** - Basé sur Frank Karsten
 ✅ **Techniquement Moderne** - React 18 + TypeScript + Vercel
@@ -526,4 +526,4 @@ ManaTuner Pro représente l'**état de l'art** en matière d'analyse de manabase
 **🎉 Le projet est maintenant documenté de façon exhaustive et prêt pour tout développeur souhaitant le reprendre, le maintenir ou le faire évoluer.**
 
 _Documentation générée le 22 juin 2025 - Version 2.0.1_
-_Projet ManaTuner Pro - Analyseur de Manabase Avancé pour Magic: The Gathering_
+_Projet ManaTuner - Analyseur de Manabase Avancé pour Magic: The Gathering_

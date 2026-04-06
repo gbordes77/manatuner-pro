@@ -2,11 +2,11 @@
 
 ## Context pour l'IA/Équipe
 
-Tu es assigné à l'implémentation du **P3: Simulation Engine** pour ManaTuner Pro, un outil d'analyse de mana pour Magic: The Gathering.
+Tu es assigné à l'implémentation du **P3: Simulation Engine** pour ManaTuner, un outil d'analyse de mana pour Magic: The Gathering.
 
 ---
 
-## Projet: ManaTuner Pro
+## Projet: ManaTuner
 
 **Stack technique:**
 
@@ -332,7 +332,7 @@ Pour toute question sur:
 ## Prompt de démarrage pour l'IA
 
 ```
-Je travaille sur ManaTuner Pro, un outil d'analyse de mana pour Magic: The Gathering.
+Je travaille sur ManaTuner, un outil d'analyse de mana pour Magic: The Gathering.
 
 Ma mission: Implémenter le P3 Simulation Engine (Monte Carlo) pour gérer les cas
 complexes comme les ENHANCERs (Badgermole Cub) que le moteur analytique ne peut

@@ -1,4 +1,4 @@
-# 🔖 SAUVEGARDE DE RÉFÉRENCE - ManaTuner Pro
+# 🔖 SAUVEGARDE DE RÉFÉRENCE - ManaTuner
 
 **Date :** 22 juin 2025 - 21h00  
 **Version :** 2.0.1-STABLE-REFERENCE  
@@ -37,7 +37,7 @@
 - Architecture modulaire refactorisée
 - Hooks spécialisés (useDeckAnalysis, useProbabilityValidation)
 - Composants optimisés (DeckInputSection, AnalyzerPageRefactored)
-- **Déploiement :** https://manatuner-pro.vercel.app
+- **Déploiement :** https://manatuner.app
 
 ### ✅ **Phase 2 - Moteur Mathématique Frank Karsten** (Implémentée)
 
@@ -177,7 +177,7 @@ src/
 
 ## 🎉 **CONCLUSION**
 
-Cette sauvegarde représente un **état stable et fonctionnel** de ManaTuner Pro avec :
+Cette sauvegarde représente un **état stable et fonctionnel** de ManaTuner avec :
 
 - ✅ **Toutes les fonctionnalités Frank Karsten implémentées**
 - ✅ **Sécurité avancée opérationnelle**

@@ -10,22 +10,75 @@
   "project_root": "/Volumes/DataDisk/_Projects/Project Mana base V2",
   "output_folder": "/Volumes/DataDisk/_Projects/Project Mana base V2/docs",
   "completed_steps": [
-    {"step": "step_1", "status": "completed", "timestamp": "2026-01-06T22:35:00Z", "summary": "Classified as monolith, project_type=web"},
-    {"step": "step_2", "status": "completed", "timestamp": "2026-01-06T22:37:00Z", "summary": "Found 40 existing docs"},
-    {"step": "step_3", "status": "completed", "timestamp": "2026-01-06T22:40:00Z", "summary": "Tech stack: React 18 + TypeScript + Vite"},
-    {"step": "step_4", "status": "completed", "timestamp": "2026-01-06T22:42:00Z", "summary": "109 source files, 34 components, 13 services"},
-    {"step": "step_5", "status": "completed", "timestamp": "2026-01-06T22:44:00Z", "summary": "Source tree documented"},
-    {"step": "step_6", "status": "completed", "timestamp": "2026-01-06T22:45:00Z", "summary": "Dev/deployment info extracted"},
-    {"step": "step_8", "status": "completed", "timestamp": "2026-01-06T22:47:00Z", "summary": "Generated project-overview, source-tree, tech-stack"},
-    {"step": "step_9", "status": "completed", "timestamp": "2026-01-06T22:48:00Z", "summary": "Generated component-inventory, development-guide"},
-    {"step": "step_10", "status": "completed", "timestamp": "2026-01-06T22:49:00Z", "summary": "Generated master index.md"},
-    {"step": "step_11", "status": "completed", "timestamp": "2026-01-06T22:50:00Z", "summary": "Validation complete"},
-    {"step": "step_12", "status": "completed", "timestamp": "2026-01-06T22:50:00Z", "summary": "Workflow finalized"}
+    {
+      "step": "step_1",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:35:00Z",
+      "summary": "Classified as monolith, project_type=web"
+    },
+    {
+      "step": "step_2",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:37:00Z",
+      "summary": "Found 40 existing docs"
+    },
+    {
+      "step": "step_3",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:40:00Z",
+      "summary": "Tech stack: React 18 + TypeScript + Vite"
+    },
+    {
+      "step": "step_4",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:42:00Z",
+      "summary": "109 source files, 34 components, 13 services"
+    },
+    {
+      "step": "step_5",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:44:00Z",
+      "summary": "Source tree documented"
+    },
+    {
+      "step": "step_6",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:45:00Z",
+      "summary": "Dev/deployment info extracted"
+    },
+    {
+      "step": "step_8",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:47:00Z",
+      "summary": "Generated project-overview, source-tree, tech-stack"
+    },
+    {
+      "step": "step_9",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:48:00Z",
+      "summary": "Generated component-inventory, development-guide"
+    },
+    {
+      "step": "step_10",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:49:00Z",
+      "summary": "Generated master index.md"
+    },
+    {
+      "step": "step_11",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:50:00Z",
+      "summary": "Validation complete"
+    },
+    {
+      "step": "step_12",
+      "status": "completed",
+      "timestamp": "2026-01-06T22:50:00Z",
+      "summary": "Workflow finalized"
+    }
   ],
   "current_step": "completed",
-  "project_types": [
-    {"part_id": "main", "project_type_id": "web", "display_name": "ManaTuner Pro"}
-  ],
+  "project_types": [{ "part_id": "main", "project_type_id": "web", "display_name": "ManaTuner" }],
   "findings": {
     "project_classification": {
       "repository_type": "monolith",

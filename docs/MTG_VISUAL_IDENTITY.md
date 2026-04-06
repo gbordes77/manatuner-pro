@@ -1,17 +1,19 @@
 # MTG Visual Identity Design System
 
-**ManaTuner Pro - Magic: The Gathering Visual Integration Guide**
+**ManaTuner - Magic: The Gathering Visual Integration Guide**
 
-> Transform ManaTuner Pro from a functional analyzer into an immersive MTG experience that resonates with players the moment they land on the site.
+> Transform ManaTuner from a functional analyzer into an immersive MTG experience that resonates with players the moment they land on the site.
 
 ---
 
 ## 1. Design Philosophy
 
 ### Vision Statement
+
 Create a visual identity that immediately communicates "Magic: The Gathering" while maintaining professional usability. The design should feel like opening a spellbook or consulting an ancient planeswalker's tome of knowledge.
 
 ### Core Principles
+
 1. **Authentic MTG Feel**: Use official mana colors, symbols, and aesthetic cues
 2. **Professional Clarity**: Never sacrifice usability for aesthetics
 3. **Respectful Fan Content**: Align with Wizards of the Coast Fan Content Policy
@@ -25,14 +27,14 @@ Create a visual identity that immediately communicates "Magic: The Gathering" wh
 
 The five colors of Magic form our primary accent palette. These are the official MTG mana colors adapted for digital interfaces.
 
-| Color | Name | Primary (Light) | Primary (Dark) | Accent | Use Case |
-|-------|------|-----------------|----------------|--------|----------|
-| W | White | `#FFFBD5` | `#F5F5DC` | `#D4AF37` (Gold) | Plains, life gain, order |
-| U | Blue | `#0E68AB` | `#4A90E2` | `#00D4FF` (Cyan) | Islands, control, knowledge |
-| B | Black | `#150B00` | `#2C2C2C` | `#8B4789` (Purple) | Swamps, power, ambition |
-| R | Red | `#D3202A` | `#FF6B6B` | `#FF4500` (Orange) | Mountains, chaos, passion |
-| G | Green | `#00733E` | `#4ECDC4` | `#32CD32` (Lime) | Forests, growth, nature |
-| C | Colorless | `#C6C5C5` | `#888888` | `#A0A0A0` | Artifacts, Eldrazi |
+| Color | Name      | Primary (Light) | Primary (Dark) | Accent             | Use Case                    |
+| ----- | --------- | --------------- | -------------- | ------------------ | --------------------------- |
+| W     | White     | `#FFFBD5`       | `#F5F5DC`      | `#D4AF37` (Gold)   | Plains, life gain, order    |
+| U     | Blue      | `#0E68AB`       | `#4A90E2`      | `#00D4FF` (Cyan)   | Islands, control, knowledge |
+| B     | Black     | `#150B00`       | `#2C2C2C`      | `#8B4789` (Purple) | Swamps, power, ambition     |
+| R     | Red       | `#D3202A`       | `#FF6B6B`      | `#FF4500` (Orange) | Mountains, chaos, passion   |
+| G     | Green     | `#00733E`       | `#4ECDC4`      | `#32CD32` (Lime)   | Forests, growth, nature     |
+| C     | Colorless | `#C6C5C5`       | `#888888`      | `#A0A0A0`          | Artifacts, Eldrazi          |
 
 ### Extended Color Tokens
 
@@ -45,7 +47,7 @@ const mtgDesignTokens = {
       dark: '#F5F5DC',
       accent: '#D4AF37',
       glow: 'rgba(255, 251, 213, 0.4)',
-      text: '#8B4513',  // Readable on white bg
+      text: '#8B4513', // Readable on white bg
     },
     blue: {
       primary: '#0E68AB',
@@ -85,7 +87,8 @@ const mtgDesignTokens = {
   },
   multicolor: {
     gold: '#F8E231',
-    rainbow: 'linear-gradient(135deg, #FFFBD5 0%, #0E68AB 25%, #150B00 50%, #D3202A 75%, #00733E 100%)',
+    rainbow:
+      'linear-gradient(135deg, #FFFBD5 0%, #0E68AB 25%, #150B00 50%, #D3202A 75%, #00733E 100%)',
   },
   // Background atmospheres
   atmosphere: {
@@ -100,7 +103,7 @@ const mtgDesignTokens = {
       shadow: '#252525',
     },
   },
-};
+}
 ```
 
 ### Gradient Combinations
@@ -112,27 +115,27 @@ For hero sections, CTAs, and feature highlights:
 .gradient-wubrg {
   background: linear-gradient(
     135deg,
-    #FFFBD5 0%,
-    #0E68AB 25%,
-    #150B00 50%,
-    #D3202A 75%,
-    #00733E 100%
+    #fffbd5 0%,
+    #0e68ab 25%,
+    #150b00 50%,
+    #d3202a 75%,
+    #00733e 100%
   );
 }
 
 /* Gold multicolor accent */
 .gradient-gold {
-  background: linear-gradient(135deg, #F8E231 0%, #D4AF37 50%, #B8860B 100%);
+  background: linear-gradient(135deg, #f8e231 0%, #d4af37 50%, #b8860b 100%);
 }
 
 /* Blue control theme */
 .gradient-blue-control {
-  background: linear-gradient(135deg, #0E68AB 0%, #00D4FF 100%);
+  background: linear-gradient(135deg, #0e68ab 0%, #00d4ff 100%);
 }
 
 /* Dark mode mystical */
 .gradient-mystical-dark {
-  background: linear-gradient(135deg, #0A0A0A 0%, #1a1a3e 50%, #2d1b4e 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a3e 50%, #2d1b4e 100%);
 }
 ```
 
@@ -145,20 +148,28 @@ For hero sections, CTAs, and feature highlights:
 Use **Mana.rocks** or **Keyrune** webfonts for authentic MTG mana symbols. These are community-maintained and legally safe for fan content.
 
 #### Option A: Mana.rocks (Recommended)
+
 ```html
 <!-- CDN link -->
-<link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.min.css" rel="stylesheet" />
 
 <!-- Usage -->
-<i class="ms ms-w ms-cost"></i>  <!-- White mana -->
-<i class="ms ms-u ms-cost"></i>  <!-- Blue mana -->
-<i class="ms ms-b ms-cost"></i>  <!-- Black mana -->
-<i class="ms ms-r ms-cost"></i>  <!-- Red mana -->
-<i class="ms ms-g ms-cost"></i>  <!-- Green mana -->
-<i class="ms ms-c ms-cost"></i>  <!-- Colorless mana -->
+<i class="ms ms-w ms-cost"></i>
+<!-- White mana -->
+<i class="ms ms-u ms-cost"></i>
+<!-- Blue mana -->
+<i class="ms ms-b ms-cost"></i>
+<!-- Black mana -->
+<i class="ms ms-r ms-cost"></i>
+<!-- Red mana -->
+<i class="ms ms-g ms-cost"></i>
+<!-- Green mana -->
+<i class="ms ms-c ms-cost"></i>
+<!-- Colorless mana -->
 ```
 
 #### Option B: SVG Components (Current approach enhanced)
+
 Enhance the existing `ManaSymbol` component with proper MTG styling:
 
 ```tsx
@@ -193,20 +204,20 @@ const ManaSymbolEnhanced: React.FC<ManaSymbolProps> = ({ color, size = 'medium' 
     >
       {MANA_ICONS[color]}
     </Box>
-  );
-};
+  )
+}
 ```
 
 ### Symbol Placement Guidelines
 
-| Location | Symbol Size | Behavior | Purpose |
-|----------|-------------|----------|---------|
-| Header/Logo | 24-32px | Static with subtle glow | Brand identity |
-| Dashboard Cards | 20-24px | Hover scale | Color indicators |
-| Probability Tables | 16-20px | Hover tooltip | Data labels |
-| Chip/Tag components | 14-16px | Inline | Category markers |
-| Background decoration | 48-64px | Float animation | Atmosphere |
-| Footer | 16px | Static row | WUBRG signature |
+| Location              | Symbol Size | Behavior                | Purpose          |
+| --------------------- | ----------- | ----------------------- | ---------------- |
+| Header/Logo           | 24-32px     | Static with subtle glow | Brand identity   |
+| Dashboard Cards       | 20-24px     | Hover scale             | Color indicators |
+| Probability Tables    | 16-20px     | Hover tooltip           | Data labels      |
+| Chip/Tag components   | 14-16px     | Inline                  | Category markers |
+| Background decoration | 48-64px     | Float animation         | Atmosphere       |
+| Footer                | 16px        | Static row              | WUBRG signature  |
 
 ---
 
@@ -215,23 +226,30 @@ const ManaSymbolEnhanced: React.FC<ManaSymbolProps> = ({ color, size = 'medium' 
 ### Font Stack Recommendations
 
 #### Primary: Beleren (MTG Official Feel)
+
 For headers and important callouts. Beleren is the official MTG font family.
 
 ```css
 /* If Beleren is available */
-font-family: "Beleren Bold", "Beleren", "Plantin MT", Georgia, serif;
+font-family: 'Beleren Bold', 'Beleren', 'Plantin MT', Georgia, serif;
 ```
 
 #### Alternative: System Stack with MTG Feel
+
 ```css
 /* Headers - Elegant serif */
-font-family: "Playfair Display", "Crimson Pro", Georgia, "Times New Roman", serif;
+font-family: 'Playfair Display', 'Crimson Pro', Georgia, 'Times New Roman', serif;
 
 /* Body - Clean readability */
-font-family: "Inter", "Source Sans Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+font-family:
+  'Inter',
+  'Source Sans Pro',
+  -apple-system,
+  BlinkMacSystemFont,
+  sans-serif;
 
 /* Monospace - Data/Stats */
-font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
 ```
 
 ### Typography Scale
@@ -268,7 +286,7 @@ const mtgTypography = {
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
-};
+}
 ```
 
 ---
@@ -281,7 +299,7 @@ const mtgTypography = {
 // Mana-themed card component
 const ManaThemedCard = styled(Card)<{ manaColor?: ManaColor }>(({ theme, manaColor }) => ({
   borderRadius: 16,
-  border: manaColor 
+  border: manaColor
     ? `2px solid ${MANA_COLOR_STYLES[manaColor].border}`
     : '1px solid rgba(255,255,255,0.1)',
   background: manaColor
@@ -294,7 +312,7 @@ const ManaThemedCard = styled(Card)<{ manaColor?: ManaColor }>(({ theme, manaCol
       ? `0 12px 32px ${MANA_COLOR_STYLES[manaColor].bg}40`
       : '0 12px 32px rgba(0,0,0,0.15)',
   },
-}));
+}))
 ```
 
 ### Buttons with Mana Accents
@@ -314,7 +332,7 @@ const ManaButton = styled(Button)(({ theme }) => ({
     boxShadow: '0 8px 24px rgba(248, 226, 49, 0.4)',
     transform: 'translateY(-2px)',
   },
-}));
+}))
 
 // Color-specific button variants
 const ManaColorButton = styled(Button)<{ manaColor: ManaColor }>(({ manaColor }) => ({
@@ -325,7 +343,7 @@ const ManaColorButton = styled(Button)<{ manaColor: ManaColor }>(({ manaColor })
     background: MANA_COLOR_STYLES[manaColor].border,
     boxShadow: `0 4px 16px ${MANA_COLOR_STYLES[manaColor].bg}60`,
   },
-}));
+}))
 ```
 
 ### Chips/Tags with Mana Colors
@@ -344,7 +362,7 @@ const ManaChip = styled(Chip)<{ manaColor: ManaColor }>(({ manaColor }) => ({
     backgroundColor: MANA_COLOR_STYLES[manaColor].border,
     boxShadow: `0 2px 8px ${MANA_COLOR_STYLES[manaColor].bg}40`,
   },
-}));
+}))
 ```
 
 ---
@@ -354,11 +372,12 @@ const ManaChip = styled(Chip)<{ manaColor: ManaColor }>(({ manaColor }) => ({
 ### Header Enhancement
 
 ```
-Current: [Logo] ManaTuner Pro [Nav] [Theme Toggle]
-Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
+Current: [Logo] ManaTuner [Nav] [Theme Toggle]
+Proposed: [WUBRG Symbols] ManaTuner [Nav] [Theme Toggle]
 ```
 
 **Implementation:**
+
 - Replace or augment logo with animated WUBRG mana symbols
 - Symbols subtly pulse/glow on hover
 - Active page indicated by corresponding mana color underline
@@ -367,9 +386,9 @@ Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
 // Header mana decoration
 <Box sx={{ display: 'flex', gap: 0.5, mr: 1 }}>
   {['W', 'U', 'B', 'R', 'G'].map((color) => (
-    <ManaSymbol 
-      key={color} 
-      color={color} 
+    <ManaSymbol
+      key={color}
+      color={color}
       size="small"
       sx={{
         opacity: 0.8,
@@ -383,7 +402,8 @@ Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
 ### HomePage Hero Section
 
 **Current:** Blue gradient text, generic icons
-**Proposed:** 
+**Proposed:**
+
 - WUBRG gradient text for main headline
 - Floating mana symbols as background decoration
 - Animated mana orb as visual focal point
@@ -406,12 +426,13 @@ Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
       />
     ))}
   </Box>
-  
+
   {/* Hero content */}
   <Typography
     variant="h1"
     sx={{
-      background: 'linear-gradient(135deg, #FFFBD5 0%, #0E68AB 25%, #D3202A 50%, #00733E 75%, #F8E231 100%)',
+      background:
+        'linear-gradient(135deg, #FFFBD5 0%, #0E68AB 25%, #D3202A 50%, #00733E 75%, #F8E231 100%)',
       backgroundClip: 'text',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
@@ -425,18 +446,21 @@ Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
 ### Dashboard/Analyzer
 
 **Mana Distribution Section:**
+
 - Replace emoji color indicator with actual mana symbols
 - Color-coded progress bars with mana gradients
 - Mana symbol appears in stat cards
 
 **Health Score Card:**
+
 - Border color matches health status (already good)
 - Add subtle mana pattern background for excellent scores
 
 ### Footer Enhancement
 
 **Current:** Text-based footer
-**Proposed:** 
+**Proposed:**
+
 - WUBRG symbol row as decorative divider
 - "Made with [heart] and [WUBRG]" signature
 
@@ -458,12 +482,14 @@ Proposed: [WUBRG Symbols] ManaTuner Pro [Nav] [Theme Toggle]
 ## 7. Dark/Light Mode Considerations
 
 ### Light Mode
+
 - Parchment-toned backgrounds (`#FAF8F0`, `#F5F0E1`)
 - Mana colors at full saturation
 - Gold accents for multicolor elements
 - Subtle paper texture overlay (optional)
 
 ### Dark Mode
+
 - Deep void backgrounds (`#0A0A0A`, `#1A1A1A`)
 - Mana colors with increased brightness for visibility
 - Cyan/neon accents for contrast
@@ -475,7 +501,7 @@ const getManaColorForMode = (color: ManaColor, isDark: boolean) => ({
   bg: isDark ? MANA_COLORS_DARK[color] : MANA_COLORS_LIGHT[color],
   glow: isDark ? `${MANA_COLORS_DARK[color]}60` : `${MANA_COLORS_LIGHT[color]}40`,
   border: isDark ? `${MANA_COLORS_DARK[color]}` : MANA_COLOR_STYLES[color].border,
-});
+})
 ```
 
 ---
@@ -487,20 +513,34 @@ const getManaColorForMode = (color: ManaColor, isDark: boolean) => ({
 ```css
 /* Gentle pulse for static mana symbols */
 @keyframes manaPulse {
-  0%, 100% { box-shadow: 0 0 8px var(--mana-glow); }
-  50% { box-shadow: 0 0 16px var(--mana-glow); }
+  0%,
+  100% {
+    box-shadow: 0 0 8px var(--mana-glow);
+  }
+  50% {
+    box-shadow: 0 0 16px var(--mana-glow);
+  }
 }
 
 /* Rotation on interaction */
 @keyframes manaRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Floating animation for decorative symbols */
 @keyframes manaFloat {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(5deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
 }
 ```
 
@@ -510,7 +550,7 @@ const getManaColorForMode = (color: ManaColor, isDark: boolean) => ({
 // Smooth color transitions between mana types
 const colorTransition = {
   transition: 'background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-};
+}
 
 // Glow intensification on hover
 const glowHover = (color: ManaColor) => ({
@@ -520,7 +560,7 @@ const glowHover = (color: ManaColor) => ({
       0 0 40px ${MANA_COLOR_STYLES[color].bg}30
     `,
   },
-});
+})
 ```
 
 ### Loading States
@@ -540,7 +580,7 @@ const ManaSpinner = () => (
       />
     ))}
   </Box>
-);
+)
 ```
 
 ---
@@ -549,13 +589,13 @@ const ManaSpinner = () => (
 
 ### Color Contrast Requirements
 
-| Element | Foreground | Background | Ratio | Status |
-|---------|------------|------------|-------|--------|
-| White mana text | `#8B4513` | `#FFFBD5` | 5.2:1 | Pass AA |
-| Blue mana text | `#FFFFFF` | `#0E68AB` | 4.8:1 | Pass AA |
-| Black mana text | `#FFFFFF` | `#150B00` | 16.4:1 | Pass AAA |
-| Red mana text | `#FFFFFF` | `#D3202A` | 4.5:1 | Pass AA |
-| Green mana text | `#FFFFFF` | `#00733E` | 4.9:1 | Pass AA |
+| Element         | Foreground | Background | Ratio  | Status   |
+| --------------- | ---------- | ---------- | ------ | -------- |
+| White mana text | `#8B4513`  | `#FFFBD5`  | 5.2:1  | Pass AA  |
+| Blue mana text  | `#FFFFFF`  | `#0E68AB`  | 4.8:1  | Pass AA  |
+| Black mana text | `#FFFFFF`  | `#150B00`  | 16.4:1 | Pass AAA |
+| Red mana text   | `#FFFFFF`  | `#D3202A`  | 4.5:1  | Pass AA  |
+| Green mana text | `#FFFFFF`  | `#00733E`  | 4.9:1  | Pass AA  |
 
 ### ARIA Labels
 
@@ -581,24 +621,28 @@ const ManaSpinner = () => (
 ## 10. Implementation Roadmap
 
 ### Phase 1: Foundation (Week 1)
+
 1. Install mana-font package or enhance SVG components
 2. Update `manaColors.ts` with extended token system
 3. Create `ManaSymbolEnhanced` component
 4. Update theme with MTG typography
 
 ### Phase 2: Core Components (Week 2)
+
 1. Header: Add WUBRG symbols to logo area
 2. HomePage: Implement hero gradient and floating symbols
 3. DashboardTab: Replace emoji with mana symbols
 4. Footer: Add WUBRG signature
 
 ### Phase 3: Polish (Week 3)
+
 1. Add hover animations and micro-interactions
 2. Implement loading spinners with mana theme
 3. Dark mode refinements
 4. Accessibility audit and fixes
 
 ### Phase 4: Advanced (Future)
+
 1. Background patterns and textures
 2. Card frame-inspired component borders
 3. Animated page transitions
@@ -610,49 +654,52 @@ const ManaSpinner = () => (
 
 ### High Priority (Immediate Visual Impact)
 
-| File | Changes |
-|------|---------|
-| `src/theme/index.ts` | Add MTG typography, extended mana tokens |
-| `src/constants/manaColors.ts` | Add glow colors, dark mode variants |
-| `src/components/common/ManaSymbols.tsx` | Enhanced styling, mana-font integration |
-| `src/components/layout/Header.tsx` | WUBRG symbols in logo, mana-colored active states |
-| `src/pages/HomePage.tsx` | Hero gradient, floating symbols, CTA button |
-| `src/components/layout/Footer.tsx` | WUBRG signature row |
+| File                                    | Changes                                           |
+| --------------------------------------- | ------------------------------------------------- |
+| `src/theme/index.ts`                    | Add MTG typography, extended mana tokens          |
+| `src/constants/manaColors.ts`           | Add glow colors, dark mode variants               |
+| `src/components/common/ManaSymbols.tsx` | Enhanced styling, mana-font integration           |
+| `src/components/layout/Header.tsx`      | WUBRG symbols in logo, mana-colored active states |
+| `src/pages/HomePage.tsx`                | Hero gradient, floating symbols, CTA button       |
+| `src/components/layout/Footer.tsx`      | WUBRG signature row                               |
 
 ### Medium Priority (Consistency)
 
-| File | Changes |
-|------|---------|
-| `src/components/analyzer/DashboardTab.tsx` | Mana symbols in color distribution |
-| `src/components/analyzer/ManaDistributionChart.tsx` | Mana-colored chart segments |
-| `src/components/analyzer/OverviewTab.tsx` | Mana symbol integration |
-| `src/components/analyzer/CastabilityTab.tsx` | Color-coded probability displays |
-| `src/components/export/ManaBlueprint.tsx` | Already good, minor enhancements |
+| File                                                | Changes                            |
+| --------------------------------------------------- | ---------------------------------- |
+| `src/components/analyzer/DashboardTab.tsx`          | Mana symbols in color distribution |
+| `src/components/analyzer/ManaDistributionChart.tsx` | Mana-colored chart segments        |
+| `src/components/analyzer/OverviewTab.tsx`           | Mana symbol integration            |
+| `src/components/analyzer/CastabilityTab.tsx`        | Color-coded probability displays   |
+| `src/components/export/ManaBlueprint.tsx`           | Already good, minor enhancements   |
 
 ### Lower Priority (Enhancement)
 
-| File | Changes |
-|------|---------|
-| `src/components/common/AnimatedContainer.tsx` | Mana-themed animation variants |
-| `src/components/common/BetaBanner.tsx` | Mana accent border |
-| `src/pages/GuidePage.tsx` | Mana symbols in explanations |
-| `src/pages/MathematicsPage.tsx` | Mana-colored formula highlights |
+| File                                          | Changes                         |
+| --------------------------------------------- | ------------------------------- |
+| `src/components/common/AnimatedContainer.tsx` | Mana-themed animation variants  |
+| `src/components/common/BetaBanner.tsx`        | Mana accent border              |
+| `src/pages/GuidePage.tsx`                     | Mana symbols in explanations    |
+| `src/pages/MathematicsPage.tsx`               | Mana-colored formula highlights |
 
 ---
 
 ## 12. Resources
 
 ### Fonts & Icons
+
 - **Mana Font**: https://mana.andrewgioia.com/
 - **Keyrune (Set Symbols)**: https://keyrune.andrewgioia.com/
 - **Beleren Font**: https://www.cufonfonts.com/font/beleren
 
 ### Official References
+
 - **MTG Color Pie**: https://magic.wizards.com/en/news/feature/color-pie
 - **Fan Content Policy**: https://company.wizards.com/fancontentpolicy
 - **Scryfall (Card Images)**: https://scryfall.com/
 
 ### Inspiration
+
 - Official MTG Arena UI
 - MTGGoldfish deck builder
 - Moxfield interface
@@ -678,14 +725,14 @@ Gold:      #F8E231 (primary) | #D4AF37 (secondary) | #B8860B (tertiary)
 
 ```css
 :root {
-  --mana-white: #FFFBD5;
-  --mana-blue: #0E68AB;
-  --mana-black: #150B00;
-  --mana-red: #D3202A;
-  --mana-green: #00733E;
-  --mana-colorless: #C6C5C5;
-  --mana-gold: #F8E231;
-  
+  --mana-white: #fffbd5;
+  --mana-blue: #0e68ab;
+  --mana-black: #150b00;
+  --mana-red: #d3202a;
+  --mana-green: #00733e;
+  --mana-colorless: #c6c5c5;
+  --mana-gold: #f8e231;
+
   --mana-white-glow: rgba(255, 251, 213, 0.4);
   --mana-blue-glow: rgba(14, 104, 171, 0.4);
   --mana-black-glow: rgba(21, 11, 0, 0.6);
@@ -693,18 +740,18 @@ Gold:      #F8E231 (primary) | #D4AF37 (secondary) | #B8860B (tertiary)
   --mana-green-glow: rgba(0, 115, 62, 0.4);
 }
 
-[data-theme="dark"] {
-  --mana-white: #F5F5DC;
-  --mana-blue: #4A90E2;
-  --mana-black: #2C2C2C;
-  --mana-red: #FF6B6B;
-  --mana-green: #4ECDC4;
+[data-theme='dark'] {
+  --mana-white: #f5f5dc;
+  --mana-blue: #4a90e2;
+  --mana-black: #2c2c2c;
+  --mana-red: #ff6b6b;
+  --mana-green: #4ecdc4;
 }
 ```
 
 ---
 
-*Document Version: 1.0*
-*Created: December 2025*
-*Author: UI Designer Agent*
-*Project: ManaTuner Pro MTG Visual Identity*
+_Document Version: 1.0_
+_Created: December 2025_
+_Author: UI Designer Agent_
+_Project: ManaTuner MTG Visual Identity_

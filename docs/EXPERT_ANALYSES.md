@@ -1,7 +1,7 @@
-# ManaTuner Pro - Expert Analyses Collection
+# ManaTuner - Expert Analyses Collection
 
 > **Purpose**: This document collects expert analyses and recommendations for implementing mana rocks, dorks, and non-land mana producers into the castability calculation system.
-> 
+>
 > **Reference**: See `CASTABILITY_TECHNICAL.md` for current system documentation.
 
 ---
@@ -31,13 +31,14 @@
 
 L'évolution du jeu Magic: The Gathering (MTG) vers des formats de plus en plus rapides et interactifs, tels que le Modern, le Legacy et le Commander compétitif (cEDH), a rendu obsolètes les modèles traditionnels d'analyse de base de mana. Historiquement, les calculateurs de probabilités se sont appuyés sur des modèles statiques, principalement la distribution hypergéométrique, pour évaluer la consistance d'un deck. Ces modèles postulent que les terrains (Lands) sont les seules sources fiables de mana. Or, dans la réalité du jeu contemporain, l'accélération de mana via des créatures (mana dorks), des artefacts (mana rocks) et des sorts temporaires (rituels, trésors) constitue l'épine dorsale des stratégies compétitives.
 
-Le projet ManaTuner Pro ambitionne de combler cette lacune technologique. L'objectif est de développer un moteur de calcul capable d'intégrer ces variables dynamiques pour fournir une estimation précise de la "Castability" (probabilité de lancer un sort). Le défi est double : modéliser mathématiquement des interactions complexes (dépendances séquentielles, vulnérabilité aux interactions adverses, coûts d'opportunité) tout en respectant des contraintes de performance strictes (<100ms dans un environnement navigateur client-side).
+Le projet ManaTuner ambitionne de combler cette lacune technologique. L'objectif est de développer un moteur de calcul capable d'intégrer ces variables dynamiques pour fournir une estimation précise de la "Castability" (probabilité de lancer un sort). Le défi est double : modéliser mathématiquement des interactions complexes (dépendances séquentielles, vulnérabilité aux interactions adverses, coûts d'opportunité) tout en respectant des contraintes de performance strictes (<100ms dans un environnement navigateur client-side).
 
 Ce rapport propose une architecture mathématique et algorithmique complète pour répondre à ce besoin. Il ne se contente pas de fournir des formules, mais analyse en profondeur les implications systémiques de chaque choix de modélisation, en s'appuyant sur la théorie des probabilités, l'analyse combinatoire et la simulation de Monte Carlo.
 
 ### 1.2 Limites des Modèles Actuels (P1/P2)
 
-Le système actuel de ManaTuner Pro utilise deux métriques :
+Le système actuel de ManaTuner utilise deux métriques :
+
 - **P1 (Perfect)** : Probabilité hypergéométrique simple d'avoir les sources de couleur requises parmi les terrains.
 - **P2 (Realistic)** : P1 pondéré par la probabilité de piocher le nombre requis de terrains.
 
@@ -48,6 +49,7 @@ De plus, les modèles actuels échouent à capturer la **Vélocité du Mana (Man
 ### 1.3 Objectifs du Rapport
 
 Ce document a pour vocation de :
+
 1. Définir une taxonomie rigoureuse des sources de mana non-terrestres.
 2. Proposer un modèle mathématique pour la disponibilité des ressources (Q1, Q3).
 3. Quantifier le risque et la variance associés aux sources vulnérables (Q4).
@@ -88,7 +90,7 @@ Nous pouvons modéliser l'état du système (le plateau de jeu) comme un vecteur
 S_t = { ManaDispo_t, SourcesActives_t, Main_t, DroitDeJeu_t }
 ```
 
-La transition vers S_{t+1} est probabiliste et décisionnelle :
+La transition vers S\_{t+1} est probabiliste et décisionnelle :
 
 ```
 S_{t+1} = f(S_t, Pioche_{t+1}, Décision_t, Survie_t)
@@ -106,17 +108,17 @@ Pour intégrer correctement les sources dans l'algorithme, nous ne pouvons pas l
 
 ### 3.1 Classification Fonctionnelle
 
-| Type de Source | Exemples | Coût (C) | Délai (Lag) | Risque (R) | Persistance (P) | Notes Spéciales |
-|----------------|----------|----------|-------------|------------|-----------------|-----------------|
-| Basic Land | Forest, Mountain | 0 | 0 | Quasi-nul | Permanente | Référence de base |
-| Tapland | Triome, Gate | 0 | 1 | Quasi-nul | Permanente | Produit à T+1 |
-| Mana Dork | Llanowar Elves | 1 | 1 | Haut | Permanente | Soumis au mal d'invocation |
-| Haste Dork | Orcish Lumberjack | 1 | 0 | Haut | Permanente | Produit immédiatement |
-| Fast Rock | Sol Ring, Mana Crypt | X | 0 | Moyen | Permanente | Souvent Mana Positif (Prod > Cost) |
-| Slow Rock | Arcane Signet | 2 | 0 | Moyen | Permanente | Produit immédiatement mais consomme le tour |
-| Rituel | Dark Ritual, Rite of Flame | X | 0 | Nul (Stack) | Instantanée | Burst mana, non réutilisable |
-| Treasure | Dockside Extortionist | X | 0 | Moyen | Unique | Token sacrifiable |
-| Conditional | Mox Diamond | 0 | 0 | Moyen | Permanente | Coût additionnel (Discard Land) |
+| Type de Source | Exemples                   | Coût (C) | Délai (Lag) | Risque (R)  | Persistance (P) | Notes Spéciales                             |
+| -------------- | -------------------------- | -------- | ----------- | ----------- | --------------- | ------------------------------------------- |
+| Basic Land     | Forest, Mountain           | 0        | 0           | Quasi-nul   | Permanente      | Référence de base                           |
+| Tapland        | Triome, Gate               | 0        | 1           | Quasi-nul   | Permanente      | Produit à T+1                               |
+| Mana Dork      | Llanowar Elves             | 1        | 1           | Haut        | Permanente      | Soumis au mal d'invocation                  |
+| Haste Dork     | Orcish Lumberjack          | 1        | 0           | Haut        | Permanente      | Produit immédiatement                       |
+| Fast Rock      | Sol Ring, Mana Crypt       | X        | 0           | Moyen       | Permanente      | Souvent Mana Positif (Prod > Cost)          |
+| Slow Rock      | Arcane Signet              | 2        | 0           | Moyen       | Permanente      | Produit immédiatement mais consomme le tour |
+| Rituel         | Dark Ritual, Rite of Flame | X        | 0           | Nul (Stack) | Instantanée     | Burst mana, non réutilisable                |
+| Treasure       | Dockside Extortionist      | X        | 0           | Moyen       | Unique          | Token sacrifiable                           |
+| Conditional    | Mox Diamond                | 0        | 0           | Moyen       | Permanente      | Coût additionnel (Discard Land)             |
 
 ### 3.2 Modélisation du "Net Mana Flow" (Réponse à Q3)
 
@@ -125,6 +127,7 @@ La question Q3 concernant les "Rocks avec coût" (Arcane Signet) est centrale. P
 Nous introduisons le concept de **Net Mana Flow (NMF)**.
 
 Pour une source S jouée au tour T_play :
+
 - `Cost(S)` : Mana dépensé au tour T_play
 - `Prod(S)` : Mana produit par la source
 - `Usable(S, T)` : 1 si la source est dégagée et utilisable au tour T, 0 sinon
@@ -138,14 +141,17 @@ NMF(T_play) = -Cost(S) + (Prod(S) × Usable(S, T_play))
 **Exemples :**
 
 **Sol Ring** (Coût 1, Prod 2, Usable T1) :
+
 - `NMF(T_play) = -1 + 2 = +1`
 - ⇒ Accélération immédiate. Le Sol Ring agit comme un terrain supplémentaire et un rituel dès le tour où il est joué.
 
 **Arcane Signet** (Coût 2, Prod 1, Usable T1) :
+
 - `NMF(T_play) = -2 + 1 = -1`
 - ⇒ Décélération immédiate. On perd 1 mana effectif ce tour-ci pour gagner +1 mana permanent aux tours suivants.
 
 **Llanowar Elves** (Coût 1, Prod 1, Lag 1, Usable T+1) :
+
 - `NMF(T_play) = -1 + 0 = -1`
 - `NMF(T_play+1) = +1`
 
@@ -160,6 +166,7 @@ L'algorithme ne doit pas simplement vérifier si la source est "disponible". Il 
 ### 4.1 Modélisation de la Fonction de Survie
 
 La probabilité qu'un Dork survive jusqu'au tour T dépend de deux facteurs :
+
 1. **L'environnement (Format Meta)** : La densité de sorts de gestion (removal) dans les decks adverses.
 2. **L'exposition temporelle** : Plus le dork reste en jeu longtemps, plus la probabilité cumulée qu'il soit détruit augmente.
 
@@ -170,6 +177,7 @@ P(S_t) = (1 - r)^t
 ```
 
 Où :
+
 - `P(S_t)` est la probabilité de survie au temps t (nombre de tours adverses passés)
 - `r` est le "Taux d'Attrition par Tour" (Removal Rate)
 
@@ -201,14 +209,14 @@ C'est le cas le plus complexe.
 
 ### 4.3 Recommandation pour l'Interface Utilisateur
 
-Plutôt que de coder ces valeurs en dur, l'outil ManaTuner Pro devrait offrir un réglage de simulation : **"Interaction Adversaire"**.
+Plutôt que de coder ces valeurs en dur, l'outil ManaTuner devrait offrir un réglage de simulation : **"Interaction Adversaire"**.
 
-| Niveau | Valeur r | Description UX |
-|--------|----------|----------------|
-| Goldfish | 0.00 | Pas d'interaction (Test pur de vitesse) |
-| Faible | 0.10 | Tables Casual EDH, peu de removals |
-| Moyen | 0.25 | Standard, High-Power EDH |
-| Élevé | 0.45 | Modern, Legacy, cEDH (Environnement hostile) |
+| Niveau   | Valeur r | Description UX                               |
+| -------- | -------- | -------------------------------------------- |
+| Goldfish | 0.00     | Pas d'interaction (Test pur de vitesse)      |
+| Faible   | 0.10     | Tables Casual EDH, peu de removals           |
+| Moyen    | 0.25     | Standard, High-Power EDH                     |
+| Élevé    | 0.45     | Modern, Legacy, cEDH (Environnement hostile) |
 
 Pour le calcul de la castability "On Curve" (ex: Sort T3), la probabilité effective du mana d'un dork joué T1 est :
 
@@ -226,11 +234,11 @@ Si r=0.45, le dork ne vaut que **0.30 mana** au tour 3. Cela reflète parfaiteme
 
 La question Q5 interroge sur la méthode de combinaison : Additif, Conditionnel ou Monte Carlo.
 
-| Approche | Verdict | Raison |
-|----------|---------|--------|
-| **Additif** (P_lands + P_dorks) | ❌ Faux | Ne gère pas la dépendance aux couleurs ni le séquençage |
-| **Conditionnel Analytique** | ⚠️ Limité | Possible pour cas simples, explosion combinatoire sinon |
-| **Monte Carlo** | ✅ Recommandé | Norme industrielle pour systèmes complexes |
+| Approche                        | Verdict       | Raison                                                  |
+| ------------------------------- | ------------- | ------------------------------------------------------- |
+| **Additif** (P_lands + P_dorks) | ❌ Faux       | Ne gère pas la dépendance aux couleurs ni le séquençage |
+| **Conditionnel Analytique**     | ⚠️ Limité     | Possible pour cas simples, explosion combinatoire sinon |
+| **Monte Carlo**                 | ✅ Recommandé | Norme industrielle pour systèmes complexes              |
 
 Cependant, le Monte Carlo classique (simuler des parties entières) est trop lent pour le web (<100ms). Nous proposons une variante optimisée : le **"Mana Ramp Simulation" (MRS)**.
 
@@ -274,45 +282,43 @@ Une précision de ±2% est largement suffisante pour un outil d'aide à la déci
 
 ```typescript
 function simulateCastability(deck, targetSpell, targetTurn, removalRate) {
-  let successes = 0;
-  const iterations = 2500;
+  let successes = 0
+  const iterations = 2500
 
   for (let i = 0; i < iterations; i++) {
     // 1. Draw & Mulligan
-    let hand = drawOpeningHand(deck);
-    hand = performSmartMulligan(hand, deck);
+    let hand = drawOpeningHand(deck)
+    hand = performSmartMulligan(hand, deck)
 
-    let board = [];
-    let manaPool = { W:0, U:0, B:0, R:0, G:0, C:0 };
-    
+    let board = []
+    let manaPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
+
     // 2. Turn Loop
     for (let turn = 1; turn <= targetTurn; turn++) {
       // A. Upkeep (Reset Mana)
-      resetMana(manaPool);
-      
+      resetMana(manaPool)
+
       // B. Draw (sauf T1 play)
-      if (turn > 1) hand.push(drawCard(deck));
+      if (turn > 1) hand.push(drawCard(deck))
 
       // C. Survival Check (Q4)
-      board = board.filter(source => 
-        !source.isCreature || Math.random() > removalRate
-      );
+      board = board.filter((source) => !source.isCreature || Math.random() > removalRate)
 
       // D. Generate Potential Mana
-      let potentialMana = calculatePotentialMana(board, manaPool);
-      
+      let potentialMana = calculatePotentialMana(board, manaPool)
+
       // E. Check Castability (Win Condition)
       if (canCast(targetSpell, potentialMana)) {
-        successes++;
-        break;
+        successes++
+        break
       }
 
       // F. Main Phase : Play Sources (Q2 - Recursion)
-      playOptimalLand(hand, board);
-      playOptimalRamp(hand, board, potentialMana);
+      playOptimalLand(hand, board)
+      playOptimalRamp(hand, board, potentialMana)
     }
   }
-  return successes / iterations;
+  return successes / iterations
 }
 ```
 
@@ -345,6 +351,7 @@ Le Dark Ritual ({B} → {B}{B}{B}) est une source de type "Burst".
 L'algorithme doit détecter les **"Sauts de Curve" (Skip Curve)**.
 
 **Exemple** : Main avec Swamp, Dark Ritual, Hypnotic Specter (3 mana).
+
 - Simulation T1 : Land (1B). Check Specter (Non). Check Ritual (Oui).
 - Cast Ritual : Mana Pool passe de 1B à 3B.
 - Check Specter (Oui). Succès.
@@ -374,28 +381,33 @@ C'est un avantage majeur de la méthode Monte Carlo sur l'approche analytique.
 
 ```typescript
 // Enumération efficace pour les types
-enum SourceType { LAND = 1, DORK = 2, ROCK = 3, RITUAL = 4 }
+enum SourceType {
+  LAND = 1,
+  DORK = 2,
+  ROCK = 3,
+  RITUAL = 4,
+}
 
 // Bitmask pour les couleurs (Optimisation CPU)
-const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 };
+const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 }
 
 interface CardData {
-  id: string;
-  name: string;
-  mv: number; // Mana Value
-  colors: number; // Bitmask
-  isManaSource: boolean;
-  
+  id: string
+  name: string
+  mv: number // Mana Value
+  colors: number // Bitmask
+  isManaSource: boolean
+
   // Propriétés de production (si isManaSource = true)
   production?: {
-    requiresTap: boolean;
-    yield: number; // Bitmask des couleurs produites
-    amount: number; // Quantité
-    cost: number; // Coût d'activation
-    enterTapped: boolean; // Lag natif
-    isCreature: boolean; // Pour le removal check
-    isOneShot: boolean; // Pour trésors/rituels
-  };
+    requiresTap: boolean
+    yield: number // Bitmask des couleurs produites
+    amount: number // Quantité
+    cost: number // Coût d'activation
+    enterTapped: boolean // Lag natif
+    isCreature: boolean // Pour le removal check
+    isOneShot: boolean // Pour trésors/rituels
+  }
 }
 ```
 
@@ -404,6 +416,7 @@ interface CardData {
 Pour garantir l'absence de "Main Thread Blocking" (UI freeze), la simulation doit tourner dans un **Web Worker**.
 
 **Architecture :**
+
 1. **Main Thread (React)** : Collecte la decklist, le sort cible, et les paramètres. Envoie un message `postMessage` au Worker.
 2. **Worker Thread** : Reçoit le payload, instancie le moteur de simulation, exécute la boucle (2500 itérations), renvoie les résultats agrégés.
 3. **Main Thread** : Affiche les résultats et met à jour les graphiques.
@@ -424,26 +437,26 @@ Pour les mobiles, réduire dynamiquement à 1000 itérations si la première fra
 
 ### 8.1 Réponses Synthétiques aux 5 Questions
 
-| Question | Réponse |
-|----------|---------|
-| **Q1** (Disponibilité) | Utiliser une matrice de ressources temporelle M(t) calculée par simulation, intégrant coût, lag et condition de couleur |
-| **Q2** (Récursivité) | Oui, impératif. Géré par la boucle "Main Phase" de la simulation Monte Carlo qui tente de jouer les sources en chaîne |
-| **Q3** (Coût Rocks) | Géré par le bilan "Net Mana Flow". Un rock n'est joué que s'il est un investissement rentable pour le tour cible |
-| **Q4** (Survie) | Intégrer un paramètre utilisateur r (Taux d'attrition) qui applique une destruction probabiliste aux créatures à chaque tour simulé |
-| **Q5** (Méthode) | Rejet de l'approche additive. Adoption d'une Simulation Monte Carlo dirigée ("Smart Monte Carlo") sur 2500 itérations, exécutée dans un Web Worker |
+| Question               | Réponse                                                                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Q1** (Disponibilité) | Utiliser une matrice de ressources temporelle M(t) calculée par simulation, intégrant coût, lag et condition de couleur                            |
+| **Q2** (Récursivité)   | Oui, impératif. Géré par la boucle "Main Phase" de la simulation Monte Carlo qui tente de jouer les sources en chaîne                              |
+| **Q3** (Coût Rocks)    | Géré par le bilan "Net Mana Flow". Un rock n'est joué que s'il est un investissement rentable pour le tour cible                                   |
+| **Q4** (Survie)        | Intégrer un paramètre utilisateur r (Taux d'attrition) qui applique une destruction probabiliste aux créatures à chaque tour simulé                |
+| **Q5** (Méthode)       | Rejet de l'approche additive. Adoption d'une Simulation Monte Carlo dirigée ("Smart Monte Carlo") sur 2500 itérations, exécutée dans un Web Worker |
 
 ### 8.2 Roadmap d'Implémentation Proposée
 
-| Phase | Description |
-|-------|-------------|
+| Phase         | Description                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
 | **Semaine 1** | Refactoriser la structure de données des cartes pour inclure les vecteurs de production (Lag, Coût, Type) |
-| **Semaine 2** | Développer le moteur "Smart Monte Carlo" en TypeScript pur (hors UI) avec tests unitaires |
-| **Semaine 3** | Implémenter la logique de Mulligan contextuelle (crucial pour la précision des Dorks) |
-| **Semaine 4** | Intégration Web Worker et UI (Slider de risque, visualisation des résultats) |
+| **Semaine 2** | Développer le moteur "Smart Monte Carlo" en TypeScript pur (hors UI) avec tests unitaires                 |
+| **Semaine 3** | Implémenter la logique de Mulligan contextuelle (crucial pour la précision des Dorks)                     |
+| **Semaine 4** | Intégration Web Worker et UI (Slider de risque, visualisation des résultats)                              |
 
 ### 8.3 Conclusion
 
-L'approche proposée transforme ManaTuner Pro d'une simple calculatrice statique en un véritable simulateur de jeu. En acceptant la nature stochastique de Magic et en modélisant explicitement le temps et le risque, vous offrirez aux utilisateurs une précision inégalée, capable de justifier mathématiquement l'inclusion d'un Birds of Paradise dans un deck pentacolore ou l'exclusion d'un Arcane Signet dans un deck aggro. C'est ce niveau de nuance qui définit un outil "Expert".
+L'approche proposée transforme ManaTuner d'une simple calculatrice statique en un véritable simulateur de jeu. En acceptant la nature stochastique de Magic et en modélisant explicitement le temps et le risque, vous offrirez aux utilisateurs une précision inégalée, capable de justifier mathématiquement l'inclusion d'un Birds of Paradise dans un deck pentacolore ou l'exclusion d'un Arcane Signet dans un deck aggro. C'est ce niveau de nuance qui définit un outil "Expert".
 
 ---
 
@@ -474,6 +487,7 @@ Nous devons définir la valeur d'un accélérateur non pas comme "1 mana", mais 
 Soit un sort cible S de coût `C_target` à lancer au tour `T_target`.
 
 Un accélérateur A (ex: Llanowar Elves) a :
+
 - `C_cast` : Coût pour le jouer (ex: {G})
 - `T_delay` : Mal d'invocation (1 pour créatures, 0 pour artefacts sans tap)
 
@@ -486,6 +500,7 @@ T_latest = T_target - T_delay - 1
 ### Formule de Probabilité Composée
 
 Pour lancer un sort de CMC 4 au Tour 3 (Accélération), les scénarios valides sont :
+
 1. 3 Lands + 1 Dork (Le Dork doit être jouable T1 ou T2)
 2. 2 Lands + 2 Dorks (Rare, mais possible avec Sol Ring / double drop)
 
@@ -504,6 +519,7 @@ Algorithme optimisé pour la performance, évitant la récursivité profonde.
 ### Phase A: Classification (Pré-calcul)
 
 Au chargement du deck, classifiez les cartes :
+
 - **Lands**: Sources statiques
 - **Accelerators**: Sources dynamiques (Dorks, Rocks). Attributs : `cost`, `colors`, `delay`
 
@@ -512,55 +528,49 @@ Au chargement du deck, classifiez les cartes :
 ```typescript
 // Structure pour définir une combinaison valide de ressources
 interface ResourceCombo {
-  landsNeeded: number;
-  dorksNeeded: number;
-  specificColorReq: { [color: string]: number }; // ex: {G: 1} pour l'Elf
+  landsNeeded: number
+  dorksNeeded: number
+  specificColorReq: { [color: string]: number } // ex: {G: 1} pour l'Elf
 }
 
-function calculateAcceleratedProbability(
-  spell: Spell, 
-  turn: number, 
-  deck: DeckAnalysis
-): number {
-
+function calculateAcceleratedProbability(spell: Spell, turn: number, deck: DeckAnalysis): number {
   // 1. Définir le "Mana Cap" théorique max à ce tour
   // ex: Tour 3, max mana possible raisonnablement = 4 ou 5
-  
-  let totalProb = 0;
+
+  let totalProb = 0
 
   // 2. Itérer sur le nombre d'accélérateurs "utiles" (k)
   // On se limite généralement à 0, 1 ou 2 pour la performance (suffisant à 99%)
   for (let k = 0; k <= 2; k++) {
-    
     // Mana restant à couvrir par les lands
-    const manaFromDorks = k; 
-    const manaFromLands = spell.cmc - manaFromDorks;
+    const manaFromDorks = k
+    const manaFromLands = spell.cmc - manaFromDorks
 
     // Si le tour ne permet pas physiquement de poser 'manaFromLands' lands
-    if (manaFromLands > turn) continue;
+    if (manaFromLands > turn) continue
 
     // 3. Calculer la probabilité d'avoir k accélérateurs JOUABLES
     // Pour jouer k dorks, il faut aussi le mana pour les caster (souvent vert)
-    const probDorks = calculateDorkSetupProbability(k, turn, deck);
-    
+    const probDorks = calculateDorkSetupProbability(k, turn, deck)
+
     // 4. Calculer la probabilité d'avoir le reste en lands
     // Attention : On a déjà pioché des cartes pour les dorks
     const probLands = calculateLandProbability(
-       manaFromLands, 
-       turn, 
-       spell.colors, 
-       deck, 
-       k // cartes "consommées" par les dorks
-    );
+      manaFromLands,
+      turn,
+      spell.colors,
+      deck,
+      k // cartes "consommées" par les dorks
+    )
 
     // 5. Appliquer le facteur de survie (Q4)
-    const survivalFactor = Math.pow(getSurvivalRate(format), k);
+    const survivalFactor = Math.pow(getSurvivalRate(format), k)
 
     // Ajouter au total (somme disjointe simplifiée)
-    totalProb += (probDorks * probLands * survivalFactor);
+    totalProb += probDorks * probLands * survivalFactor
   }
 
-  return Math.min(totalProb, 1); // Clamp
+  return Math.min(totalProb, 1) // Clamp
 }
 ```
 
@@ -573,6 +583,7 @@ function calculateAcceleratedProbability(
 **Ne modélisez pas la séquence exacte tour par tour** (trop coûteux). Utilisez une **Approche par Contraintes** :
 
 Pour avoir un Dork actif au Tour T, il faut :
+
 1. L'avoir pioché dans les `7 + (T-2)` premières cartes
 2. Avoir au moins 1 source de sa couleur (souvent verte) non engagée au tour T-1
 
@@ -583,6 +594,7 @@ Pour avoir un Dork actif au Tour T, il faut :
 **Non à la récursivité complète.** C'est un piège de performance.
 
 Utilisez le modèle **"Mana Budget"** :
+
 - Au lieu de simuler la séquence, demandez : "Au tour 3, quelle est la probabilité que mon board state contienne X mana ?"
 - Si 0 Dork : Max 3 mana
 - Si 1 Dork : Max 4 mana
@@ -597,6 +609,7 @@ EffectiveContribution = (Turn_target > (Turn_cast + Sickness)) ? 1 : 0
 ```
 
 **Exemple** : Arcane Signet ({2}, Tapped) et sort cible au Tour 3 :
+
 - On le joue T2. Il untap T3.
 - `3 > (2 + 1)` ? Faux (3 n'est pas > 3). **Il n'accélère pas** un sort de CMC 4 au T3.
 - Il aide seulement pour la **fixation de couleur** (fixing).
@@ -609,21 +622,21 @@ EffectiveContribution = (Turn_target > (Turn_cast + Sickness)) ? 1 : 0
 
 **Proposition de valeurs par défaut :**
 
-| Type | Taux | Raison |
-|------|------|--------|
-| Creature (x/1) | 0.70 | Dies to Bowmasters, Dart, W6 |
-| Creature (x/2+) | 0.80 | Standard Bolt test |
-| Artifact | 0.95 | Rarement visé early game |
-| Enchantment | 0.98 | Très rarement visé |
+| Type            | Taux | Raison                       |
+| --------------- | ---- | ---------------------------- |
+| Creature (x/1)  | 0.70 | Dies to Bowmasters, Dart, W6 |
+| Creature (x/2+) | 0.80 | Standard Bolt test           |
+| Artifact        | 0.95 | Rarement visé early game     |
+| Enchantment     | 0.98 | Très rarement visé           |
 
 **Par format :**
 
 ```typescript
 const SURVIVAL_RATES = {
-  modern: { dork: 0.65, rock: 0.90 },
+  modern: { dork: 0.65, rock: 0.9 },
   commander: { dork: 0.85, rock: 0.98 },
-  legacy: { dork: 0.50, rock: 0.95 }
-};
+  legacy: { dork: 0.5, rock: 0.95 },
+}
 ```
 
 ### Q5 : Combinaison Lands + Dorks
@@ -633,11 +646,12 @@ const SURVIVAL_RATES = {
 L'additif simple (`lands + dorks`) fausse tout (on peut avoir 20 forêts et 4 elfes, mais piocher 0 elfes).
 
 Il faut traiter les sources comme des **buckets distincts** dans l'analyse combinatoire :
+
 - **Bucket A** : Terrains
 - **Bucket B** : Accélérateurs
 
 ```
-Probabilité totale = Σ P(i cartes du Bucket A) × P(j cartes du Bucket B) 
+Probabilité totale = Σ P(i cartes du Bucket A) × P(j cartes du Bucket B)
                      tel que i + j ≥ Coût
 ```
 
@@ -669,26 +683,26 @@ Pour un outil "Pro", le **London Mulligan** est crucial.
 ```typescript
 // Suggestion de structure immédiate
 export interface ManaSourceAnalysis {
-  lands: number;
+  lands: number
   accelerators: {
-    count: number;
-    survivalRate: number; // ex: 0.8
-    effectiveTurnOffset: number; // ex: -1 pour Elf T1 -> T2
-  };
+    count: number
+    survivalRate: number // ex: 0.8
+    effectiveTurnOffset: number // ex: -1 pour Elf T1 -> T2
+  }
 }
 
 export class AcceleratorService {
-  private survivalRates: SurvivalRates;
-  
-  classifyCard(card: Card): 'land' | 'dork' | 'rock' | 'ritual' | 'spell';
-  
-  getEffectiveTurn(accelerator: Card, playTurn: number): number;
-  
+  private survivalRates: SurvivalRates
+
+  classifyCard(card: Card): 'land' | 'dork' | 'rock' | 'ritual' | 'spell'
+
+  getEffectiveTurn(accelerator: Card, playTurn: number): number
+
   calculateAcceleratedCastability(
     spell: Spell,
     targetTurn: number,
     deck: DeckAnalysis
-  ): AcceleratedProbability;
+  ): AcceleratedProbability
 }
 ```
 
@@ -696,14 +710,14 @@ export class AcceleratorService {
 
 ## 7. Comparaison avec Analyse #1
 
-| Aspect | Analyse #1 (Monte Carlo) | Analyse #2 (Scénarios) |
-|--------|--------------------------|------------------------|
-| **Précision** | Très haute | Haute (approximation) |
-| **Performance** | 25-125ms | <10ms |
-| **Complexité code** | Élevée | Modérée |
-| **Mulligan** | Simulation complète | Virtual mulligan |
-| **Survie** | Décroissance `(1-r)^t` | Taux fixe par type |
-| **Récursivité** | Boucle greedy | Mana Budget statique |
+| Aspect              | Analyse #1 (Monte Carlo) | Analyse #2 (Scénarios) |
+| ------------------- | ------------------------ | ---------------------- |
+| **Précision**       | Très haute               | Haute (approximation)  |
+| **Performance**     | 25-125ms                 | <10ms                  |
+| **Complexité code** | Élevée                   | Modérée                |
+| **Mulligan**        | Simulation complète      | Virtual mulligan       |
+| **Survie**          | Décroissance `(1-r)^t`   | Taux fixe par type     |
+| **Récursivité**     | Boucle greedy            | Mana Budget statique   |
 
 **Conclusion** : L'Analyse #2 propose une alternative plus légère et potentiellement suffisante pour une V1, avec possibilité d'évoluer vers Monte Carlo en V2 si la précision est insuffisante.
 
@@ -730,20 +744,21 @@ Frank Karsten est le pionnier du domaine : il a établi des **tables de référe
 Karsten recommande de **pondérer les accélérateurs** plutôt que de les compter comme des terrains à part entière :
 
 > **Format 60 cartes** : Considérer les créatures à mana comme **« une demi-source »** chacune en raison de leur vulnérabilité (d'où le vieil adage "Bolt the Bird")
-> 
-> *Source: tcgplayer.com*
+>
+> _Source: tcgplayer.com_
 
 ### 1.3 Recommandations Commander (EDH)
 
 Pour Commander, Karsten conseille :
 
 > « Commencez avec **42 terrains + 1 Sol Ring**, puis :
+>
 > - Retirez **1 terrain pour chaque 2-3 rocks** ajoutés
 > - Retirez **1 terrain pour chaque 3-4 cantrips** (Ponder, Brainstorm)
 > - Retirez **1 terrain pour chaque 3-4 dorks** (Llanowar Elves, Birds)
 > - **Ne descendez jamais en dessous de ~37 terrains** »
-> 
-> *Source: casus-no.net*
+>
+> _Source: casus-no.net_
 
 **Implication** : Un mana dork vaut ~**0,25-0,33 terrain** en EDH (plus conservateur que la "demi-source" en 60 cartes).
 
@@ -768,16 +783,16 @@ P(couleur requise) = P(par terrains) + P(dork présent) × [1 - P(par terrains)]
 Allen Wu note :
 
 > « La simulation Monte Carlo est la technique utilisée par Frank Karsten pour ses articles de mana base »
-> 
-> *Source: article.hareruyamtg.com*
+>
+> _Source: article.hareruyamtg.com_
 
 **Raison** : Certaines questions (ex: probabilité d'avoir Tron ou un sort double-couleur d'ici T4) sont difficiles à résoudre analytiquement.
 
 ### 2.3 Approche 17Lands (Manabase Evaluator)
 
 > « Pour chaque deck limité soumis, nous simulons des milliers de parties. À chaque permutation du deck, on regarde quand chaque carte devient lançable. L'évaluateur ne se limite pas aux terrains : il inclut toute carte pouvant générer du mana – créatures, artefacts, trésors, etc. »
-> 
-> *Source: blog.17lands.com*
+>
+> _Source: blog.17lands.com_
 
 Cette approche **context-aware** modélise dynamiquement l'apport des accélérateurs (y compris Evolving Wilds, Cultivate, landcycling...).
 
@@ -788,15 +803,17 @@ Cette approche **context-aware** modélise dynamiquement l'apport des accéléra
 ### 3.1 Densité de Ramp pour "Gagner un Tour"
 
 **En Commander** :
+
 - Deck midrange typique : **~50 sources de mana** (37 terrains + ~13 ramp)
 - Avec **~14 cartes de ramp** : ~80% de chances d'en jouer au moins une dans les 3 premiers tours
 - Avec **~20 cartes de ramp** : ~90% mais risque de flood accru
 
 > « Je recommande de débuter avec **10 à 15 accélérateurs** dans un deck EDH moyen »
-> 
-> *Source: Tomer Abram, MTGGoldfish*
+>
+> _Source: Tomer Abram, MTGGoldfish_
 
 **En Modern/Legacy** :
+
 - Au-delà de **8-10 one-drops** (Llanowar Elves, Noble Hierarch), les rendements décroissants
 - Un 11e dork augmente peu la probabilité d'en avoir un en main de départ
 
@@ -811,14 +828,16 @@ D'où l'importance de le gérer immédiatement → **"Bolt the Bird"**
 ### 3.3 Benchmark Karsten - Dorks en Chaîne
 
 Pour lancer un sort **1G au tour 2** avec ~90% de fiabilité :
+
 - Besoin de **14 sources vertes** (incluant les elfes jouables T1)
 - L'elfe compte comme **une demi-source additionnelle** pour le sort suivant
 
 **Calcul récursif suggéré** :
+
 ```
-P(sort coût 3 au T2 avec dork T1) = 
-  P(avoir dork en main ET source pour le caster T1) 
-  × P(survie du dork) 
+P(sort coût 3 au T2 avec dork T1) =
+  P(avoir dork en main ET source pour le caster T1)
+  × P(survie du dork)
   × P(avoir les autres terrains d'ici T2)
 ```
 
@@ -830,7 +849,8 @@ P(sort coût 3 au T2 avec dork T1) =
 
 **Approche** : Probabilité d'avoir X terrains ou plus au tour X via hypergéométrique classique.
 
-**Limitations** : 
+**Limitations** :
+
 - Ne prend pas explicitement en compte les dorks/rocks dans le timing
 - Un deck avec 8 elfes et 32 lands est lu comme "40 sources potentielles" sans modéliser la séquence
 
@@ -839,6 +859,7 @@ P(sort coût 3 au T2 avec dork T1) =
 ### 4.2 Salubrious Snail (Mana Base Analyzer)
 
 **Métriques fournies** :
+
 - **Cast rate** : Probabilité de lancer chaque sort à temps
 - **Average delay** : Retard moyen en tours si la couleur/mana manque
 
@@ -851,13 +872,15 @@ P(sort coût 3 au T2 avec dork T1) =
 **Feature UX clé** : Simule automatiquement l'ajout d'une source supplémentaire et montre l'effet :
 
 > « Si ajouter un terrain basique améliore le cast rate de plus de 1% (~réduit le délai moyen de 0,03), c'est que votre deck manque probablement de lands »
-> 
-> *Source: salubrioussnail.com*
+>
+> _Source: salubrioussnail.com_
 
 **Ce qui est pris en compte** :
+
 - ✅ Mana rocks, mana dorks, tuteurs de terrains
 
 **Ce qui est ignoré** :
+
 - ❌ Rituels one-shot
 - ❌ Trésors/pierres de puissance
 - ❌ Cartes qui untap des lands
@@ -876,17 +899,17 @@ P(sort coût 3 au T2 avec dork T1) =
 
 ## 5. Coefficients de Pondération - Synthèse
 
-| Source | Dork (60 cartes) | Dork (EDH) | Rock |
-|--------|------------------|------------|------|
-| **Karsten** | 0.50 | 0.25-0.33 | ~0.33-0.50 |
-| **Medium empirique** | 0.75 | 0.75 | 0.75 |
-| **Règle Reddit EDH** | - | "1 land pour 3-4 dorks" | "1 land pour 2-3 rocks" |
+| Source               | Dork (60 cartes) | Dork (EDH)              | Rock                    |
+| -------------------- | ---------------- | ----------------------- | ----------------------- |
+| **Karsten**          | 0.50             | 0.25-0.33               | ~0.33-0.50              |
+| **Medium empirique** | 0.75             | 0.75                    | 0.75                    |
+| **Règle Reddit EDH** | -                | "1 land pour 3-4 dorks" | "1 land pour 2-3 rocks" |
 
 ---
 
 ## 6. Recommandations UX Inspirées des Outils Existants
 
-### 6.1 Affichages Suggérés pour ManaTuner Pro
+### 6.1 Affichages Suggérés pour ManaTuner
 
 1. **Probabilité par tour** (style Moxfield)
    - Code couleur par segment de courbe
@@ -915,11 +938,13 @@ Les approches modernes combinent :
 3. **Présentation UX** qui simplifie l'interprétation
 
 **Consensus sur les coefficients** :
+
 - Dork standard : **0.50-0.75** selon le format et le métagame
 - Rock : **0.75-0.90** (plus fiable car non-créature)
 - Minimum terrains EDH : **37** même avec beaucoup de ramp
 
 **Défis identifiés** :
+
 - Comment modéliser la survie d'un dork (métagame-dépendant)
 - L'effet tempo d'un rocher qui coûte 2
 - L'utilisation optimale d'un Trésor à usage unique
@@ -939,11 +964,13 @@ Les approches modernes combinent :
 ### Objectif
 
 Étendre le calcul de castability "on curve" pour intégrer :
+
 - **Dorks** (Birds of Paradise, Noble Hierarch, Llanowar Elves…)
 - **Rocks** (Sol Ring, Arcane Signet, Talismans…)
 - **One-shots** (Treasure tokens, Dark Ritual…) en bonus
 
 En tenant compte de :
+
 - **Disponibilité** : pioché + castable + online au bon tour
 - **Vulnérabilité** : survie dépendante du format/meta
 - **Délai** : summoning sickness, ETB tapped, activation tax
@@ -951,12 +978,12 @@ En tenant compte de :
 
 ### Contraintes Techniques
 
-| Contrainte | Valeur |
-|------------|--------|
-| Environnement | Client-side TS/React |
-| Performance | <100ms par analyse "interactive" |
-| UX | 2–3 contrôles max |
-| Données | JSON local pour dorks/rocks connus + fallback Scryfall (cache) |
+| Contrainte    | Valeur                                                         |
+| ------------- | -------------------------------------------------------------- |
+| Environnement | Client-side TS/React                                           |
+| Performance   | <100ms par analyse "interactive"                               |
+| UX            | 2–3 contrôles max                                              |
+| Données       | JSON local pour dorks/rocks connus + fallback Scryfall (cache) |
 
 ---
 
@@ -964,7 +991,7 @@ En tenant compte de :
 
 ### 1.1 Hypergéométrique
 
-ManaTuner Pro utilise l'hypergéométrique cumulative `P(X≥k)` (tirages sans remise).
+ManaTuner utilise l'hypergéométrique cumulative `P(X≥k)` (tirages sans remise).
 
 ### 1.2 P1 / P2 Existants
 
@@ -981,15 +1008,15 @@ Chaque source non-land n'est pas "+1 mana" : c'est une **fonction du temps**.
 
 ### 2.1 Propriétés Minimales
 
-| Propriété | Description | Exemple |
-|-----------|-------------|---------|
-| `castCost` | Coût pour la mettre en jeu | Sol Ring: 1, Signet: 2 |
-| `delay` | Tours avant d'être utilisable | Dork: 1, Rock ETB untapped: 0 |
-| `produces` | Couleurs produites (bitmask) | Signet: any 2 colors |
-| `producesAny` | Peut produire n'importe quelle couleur | Birds: true |
-| `netPerTurn` | Mana net gagné par tour quand online | Sol Ring: +2, Signet: +1 |
-| `isCreature` | Pour le modèle de survie | Dork: true |
-| `oneShot` | Usage unique | Treasure: true |
+| Propriété     | Description                            | Exemple                       |
+| ------------- | -------------------------------------- | ----------------------------- |
+| `castCost`    | Coût pour la mettre en jeu             | Sol Ring: 1, Signet: 2        |
+| `delay`       | Tours avant d'être utilisable          | Dork: 1, Rock ETB untapped: 0 |
+| `produces`    | Couleurs produites (bitmask)           | Signet: any 2 colors          |
+| `producesAny` | Peut produire n'importe quelle couleur | Birds: true                   |
+| `netPerTurn`  | Mana net gagné par tour quand online   | Sol Ring: +2, Signet: +1      |
+| `isCreature`  | Pour le modèle de survie               | Dork: true                    |
+| `oneShot`     | Usage unique                           | Treasure: true                |
 
 ### 2.2 Exemples de Calcul netPerTurn
 
@@ -997,7 +1024,7 @@ Chaque source non-land n'est pas "+1 mana" : c'est une **fonction du temps**.
 netPerTurn = producesAmount - activationTax
 
 Sol Ring:     produces 2, tax 0 → netPerTurn = 2
-Arcane Signet: produces 2, tax 1 → netPerTurn = 1  
+Arcane Signet: produces 2, tax 1 → netPerTurn = 1
 Talisman:     produces 1 (colored), tax 0 → netPerTurn = 1
 ```
 
@@ -1019,11 +1046,11 @@ Pour qu'un accélérateur A contribue au tour cible T :
 T_latest = T - delay(A) - 1
 ```
 
-| Type | delay | Pour contribuer à T3 | Doit être joué au plus tard |
-|------|-------|---------------------|----------------------------|
-| Dork classique | 1 | T3 | T1 |
-| Rock ETB tapped | 1 | T3 | T1 |
-| Rock ETB untapped | 0 | T3 | T2 |
+| Type              | delay | Pour contribuer à T3 | Doit être joué au plus tard |
+| ----------------- | ----- | -------------------- | --------------------------- |
+| Dork classique    | 1     | T3                   | T1                          |
+| Rock ETB tapped   | 1     | T3                   | T1                          |
+| Rock ETB untapped | 0     | T3                   | T2                          |
 
 ### 3.2 Net Mana Flow (NMF)
 
@@ -1034,11 +1061,13 @@ NMF(T_play) = producesAmount(A) - activationTax(A)
 ```
 
 **Heuristique "accélère avant T"** :
+
 - `onlineTurn = earliestPlayTurn + delay`
 - Si `onlineTurn > T` → contribution ramp = 0
 - Sinon → contribution ≈ netPerTurn
 
 **Exemples** :
+
 - **Arcane Signet** pour sort T3 : `netPerTurn=1`, joué T2, `delay=0` → online T2, accélère T3 ✅
 - **Arcane Signet** pour sort T2 : joué T2, online T2, mais **consomme le mana du T2** → n'accélère PAS T2 ❌
 
@@ -1052,15 +1081,16 @@ NMF(T_play) = producesAmount(A) - activationTax(A)
 P(A online à T) ≈ P(draw A ≤ T_latest) × P(castable à T_latest) × P(survie jusqu'à T)
 ```
 
-| Composante | Méthode |
-|------------|---------|
-| P(draw) | Hypergéométrique sur cartes vues (7 + draws) |
-| P(castable) | Moteur P1/P2 appliqué au coût de A |
-| P(survie) | Modèle géométrique (section 6) |
+| Composante  | Méthode                                      |
+| ----------- | -------------------------------------------- |
+| P(draw)     | Hypergéométrique sur cartes vues (7 + draws) |
+| P(castable) | Moteur P1/P2 appliqué au coût de A           |
+| P(survie)   | Modèle géométrique (section 6)               |
 
 ### 4.2 Pourquoi c'est Mieux que "effective_sources = lands + dorks×survie"
 
 Le modèle additif (Option A des analyses) ignore :
+
 - La **dépendance couleur** : un dork {G} exige déjà une source verte
 - La **contrainte temporelle** : un dork T2 n'accélère pas T2
 - Les **chaînes** : Sol Ring → Signet → …
@@ -1071,19 +1101,19 @@ Le modèle additif (Option A des analyses) ignore :
 
 ### Comparaison des 4 Options
 
-| Option | Vitesse | Précision | Complexité | Verdict |
-|--------|---------|-----------|------------|---------|
-| **A. Additif** | <1ms | ❌ Faux | Triviale | Fallback uniquement |
-| **B. Conditionnel** | <5ms | ⚠️ Limité | Modérée | Cas simples (1 accel) |
-| **C. Monte Carlo** | 25-125ms | ✅ Exact | Élevée | Mode avancé (V2) |
-| **D. Scénarios Disjoints** | <10ms | ✅ Haute | Modérée | **Recommandé V1** |
+| Option                     | Vitesse  | Précision | Complexité | Verdict               |
+| -------------------------- | -------- | --------- | ---------- | --------------------- |
+| **A. Additif**             | <1ms     | ❌ Faux   | Triviale   | Fallback uniquement   |
+| **B. Conditionnel**        | <5ms     | ⚠️ Limité | Modérée    | Cas simples (1 accel) |
+| **C. Monte Carlo**         | 25-125ms | ✅ Exact  | Élevée     | Mode avancé (V2)      |
+| **D. Scénarios Disjoints** | <10ms    | ✅ Haute  | Modérée    | **Recommandé V1**     |
 
 ### Recommandation Hybride
 
-| Mode | Méthode | Quand |
-|------|---------|-------|
-| **Instant** (défaut) | Scénarios Disjoints (k ≤ 2) + survie + NMF | UI interactive |
-| **Analyse Avancée** | Monte Carlo deck-level (1 simulation → tous les sorts) | Toggle optionnel |
+| Mode                 | Méthode                                                | Quand            |
+| -------------------- | ------------------------------------------------------ | ---------------- |
+| **Instant** (défaut) | Scénarios Disjoints (k ≤ 2) + survie + NMF             | UI interactive   |
+| **Analyse Avancée**  | Monte Carlo deck-level (1 simulation → tous les sorts) | Toggle optionnel |
 
 ---
 
@@ -1099,18 +1129,18 @@ Où `n` = nombre de tours adverses exposés.
 
 ### 6.2 UX : Slider "Interaction Adverse"
 
-| Niveau | Valeur r | Description |
-|--------|----------|-------------|
-| Goldfish | 0.00 | Pas d'interaction (test pur) |
-| Faible | 0.10 | Casual EDH, peu de removals |
-| Moyen | 0.25 | Standard, High-Power EDH |
-| Élevé | 0.45 | Modern, Legacy, cEDH |
+| Niveau   | Valeur r | Description                  |
+| -------- | -------- | ---------------------------- |
+| Goldfish | 0.00     | Pas d'interaction (test pur) |
+| Faible   | 0.10     | Casual EDH, peu de removals  |
+| Moyen    | 0.25     | Standard, High-Power EDH     |
+| Élevé    | 0.45     | Modern, Legacy, cEDH         |
 
 ### 6.3 Différencier Dork vs Rock
 
-| Type | Taux utilisé | Raison |
-|------|--------------|--------|
-| Dork (créature) | r complet | Spot removal + wipes |
+| Type            | Taux utilisé              | Raison               |
+| --------------- | ------------------------- | -------------------- |
+| Dork (créature) | r complet                 | Spot removal + wipes |
 | Rock (artefact) | r/3 ou constant 0.95-0.99 | Rarement ciblé early |
 
 ---
@@ -1141,11 +1171,11 @@ Où `n` = nombre de tours adverses exposés.
 
 ```typescript
 interface AcceleratedCastabilityResult {
-  base: { p1: number; p2: number };
-  withAcceleration: { p1: number; p2: number };
-  accelerationImpact: number;           // delta P2
-  acceleratedTurn: number | null;       // T-1 si ramp permet
-  keyAccelerators: string[];            // ["Sol Ring", "Llanowar Elves"]
+  base: { p1: number; p2: number }
+  withAcceleration: { p1: number; p2: number }
+  accelerationImpact: number // delta P2
+  acceleratedTurn: number | null // T-1 si ramp permet
+  keyAccelerators: string[] // ["Sol Ring", "Llanowar Elves"]
 }
 ```
 
@@ -1158,9 +1188,11 @@ interface AcceleratedCastabilityResult {
 Pour un sort S de mana value MV et un tour cible T :
 
 **Étape 1 : Lister les accélérateurs candidats**
+
 - Filtre : `onlineTurn <= T` ET `netPerTurn > 0` (ou fixing requis)
 
 **Étape 2 : Estimer la distribution de K**
+
 - K = nombre d'accélérateurs online utiles, tronqué à 0..2
 - Chaque accel a `p_i = P(accel_i online à T)`
 
@@ -1193,42 +1225,41 @@ P1_colors = recalcul avec fixing des accels
 
 ```typescript
 function calculateAcceleratedCastability(
-  spell: Spell, 
-  turn: number, 
+  spell: Spell,
+  turn: number,
   deck: DeckAnalysis,
   removalRate: number
 ): AcceleratedCastabilityResult {
-  
   // 1. Base calculation (existing)
-  const base = calculateBaseCastability(spell, turn, deck);
-  
+  const base = calculateBaseCastability(spell, turn, deck)
+
   // 2. Get candidate accelerators
-  const candidates = getAcceleratorsOnlineByTurn(deck, turn, removalRate);
-  
+  const candidates = getAcceleratorsOnlineByTurn(deck, turn, removalRate)
+
   // 3. Calculate P(exactly k accelerators online)
-  const probs = candidates.map(a => a.onlineProb);
-  const p0 = probs.reduce((acc, p) => acc * (1 - p), 1);
+  const probs = candidates.map((a) => a.onlineProb)
+  const p0 = probs.reduce((acc, p) => acc * (1 - p), 1)
   const p1 = probs.reduce((sum, pj, j) => {
-    const others = probs.filter((_, i) => i !== j);
-    return sum + pj * others.reduce((acc, p) => acc * (1 - p), 1);
-  }, 0);
-  const p2 = Math.max(0, 1 - p0 - p1);
-  
+    const others = probs.filter((_, i) => i !== j)
+    return sum + pj * others.reduce((acc, p) => acc * (1 - p), 1)
+  }, 0)
+  const p2 = Math.max(0, 1 - p0 - p1)
+
   // 4. Calculate P(cast | K=k) for each scenario
-  const pCast0 = base.p2;
-  const pCast1 = calculateCastWithExtraMana(spell, turn, deck, 1);
-  const pCast2 = calculateCastWithExtraMana(spell, turn, deck, 2);
-  
+  const pCast0 = base.p2
+  const pCast1 = calculateCastWithExtraMana(spell, turn, deck, 1)
+  const pCast2 = calculateCastWithExtraMana(spell, turn, deck, 2)
+
   // 5. Weighted sum
-  const withAccelP2 = p0 * pCast0 + p1 * pCast1 + p2 * pCast2;
-  
+  const withAccelP2 = p0 * pCast0 + p1 * pCast1 + p2 * pCast2
+
   return {
     base,
     withAcceleration: { p1: base.p1, p2: withAccelP2 },
     accelerationImpact: withAccelP2 - base.p2,
     acceleratedTurn: canCastEarlier(spell, deck) ? turn - 1 : null,
-    keyAccelerators: candidates.slice(0, 3).map(a => a.name)
-  };
+    keyAccelerators: candidates.slice(0, 3).map((a) => a.name),
+  }
 }
 ```
 
@@ -1245,52 +1276,51 @@ function calculateAcceleratedCastability(
 
 ```typescript
 function simulateManaRamp(deck: Card[], targetSpells: Spell[], iterations: number) {
-  const results = new Map<string, number[]>();
-  
+  const results = new Map<string, number[]>()
+
   for (let i = 0; i < iterations; i++) {
     // 1. Draw + Mulligan London (heuristique ramp-aware)
-    let hand = drawOpeningHand(deck);
-    hand = performSmartMulligan(hand, deck);
-    
-    let board: Source[] = [];
-    let library = shuffleRemaining(deck, hand);
-    
+    let hand = drawOpeningHand(deck)
+    hand = performSmartMulligan(hand, deck)
+
+    let board: Source[] = []
+    let library = shuffleRemaining(deck, hand)
+
     // 2. Turn Loop
     for (let turn = 1; turn <= 10; turn++) {
       // A. Reset mana
-      resetMana();
-      
+      resetMana()
+
       // B. Draw (sauf T1 play)
-      if (turn > 1) hand.push(library.shift()!);
-      
+      if (turn > 1) hand.push(library.shift()!)
+
       // C. Survival Check (dorks only)
-      board = board.filter(source => 
-        !source.isCreature || Math.random() > removalRate
-      );
-      
+      board = board.filter((source) => !source.isCreature || Math.random() > removalRate)
+
       // D. Calculate available mana
-      const manaPool = calculateManaFromBoard(board);
-      
+      const manaPool = calculateManaFromBoard(board)
+
       // E. Check castability for each target spell
       for (const spell of targetSpells) {
         if (canCast(spell, manaPool)) {
-          recordCastable(spell, turn);
+          recordCastable(spell, turn)
         }
       }
-      
+
       // F. Main Phase: Play optimal sources (greedy)
-      playOptimalLand(hand, board);
-      playOptimalRamp(hand, board, manaPool);
+      playOptimalLand(hand, board)
+      playOptimalRamp(hand, board, manaPool)
     }
   }
-  
-  return computeStatistics(results);
+
+  return computeStatistics(results)
 }
 ```
 
 ### 9.3 Mulligan Heuristique (Critique pour Dorks)
 
 Conserver si :
+
 - 2–5 lands
 - OU 1 land + 1 ramp low-cost castable + couleur OK
 - OU main "fast rock" (Sol Ring/Crypt) + 1 land
@@ -1300,55 +1330,55 @@ Conserver si :
 ## 10. Structures TypeScript (Référence)
 
 ```typescript
-enum SourceType { 
-  LAND = 1, 
-  DORK = 2, 
-  ROCK = 3, 
-  RITUAL = 4, 
-  TREASURE = 5, 
-  CONDITIONAL = 6 
+enum SourceType {
+  LAND = 1,
+  DORK = 2,
+  ROCK = 3,
+  RITUAL = 4,
+  TREASURE = 5,
+  CONDITIONAL = 6,
 }
 
-const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 } as const;
-type ColorMask = number;
+const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 } as const
+type ColorMask = number
 
 interface ManaProducer {
-  name: string;
-  type: SourceType;
+  name: string
+  type: SourceType
 
   // Casting requirements
-  castCostGeneric: number;
-  castCostColors: ColorMask;    // ex: {G} => COLOR.G
+  castCostGeneric: number
+  castCostColors: ColorMask // ex: {G} => COLOR.G
 
   // Timing
-  delay: number;                // 1 dork, 0 rock ETB untapped, 1 ETB tapped
-  
+  delay: number // 1 dork, 0 rock ETB untapped, 1 ETB tapped
+
   // Production
-  producesAmount: number;       // Sol Ring=2, Signet=2
-  activationTax: number;        // Signet=1, Sol Ring=0
-  producesMask: ColorMask;      // couleurs produites
-  producesAny: boolean;
+  producesAmount: number // Sol Ring=2, Signet=2
+  activationTax: number // Signet=1, Sol Ring=0
+  producesMask: ColorMask // couleurs produites
+  producesAny: boolean
 
   // Vulnerability
-  isCreature: boolean;
-  oneShot: boolean;             // ritual/treasure
-  survivalBase?: number;        // override du slider r
+  isCreature: boolean
+  oneShot: boolean // ritual/treasure
+  survivalBase?: number // override du slider r
 }
 
 interface AcceleratorSettings {
-  format: 'modern' | 'legacy' | 'standard' | 'commander' | 'cedh' | 'custom';
-  removalRate: number;          // 0.00 - 0.45
-  showAcceleratedProb: boolean;
-  advancedMode: boolean;        // Monte Carlo
+  format: 'modern' | 'legacy' | 'standard' | 'commander' | 'cedh' | 'custom'
+  removalRate: number // 0.00 - 0.45
+  showAcceleratedProb: boolean
+  advancedMode: boolean // Monte Carlo
 }
 
 const FORMAT_PRESETS = {
-  modern:    { dork: 0.50, rock: 0.90, removalRate: 0.35 },
-  legacy:    { dork: 0.50, rock: 0.95, removalRate: 0.40 },
-  standard:  { dork: 0.75, rock: 0.95, removalRate: 0.20 },
+  modern: { dork: 0.5, rock: 0.9, removalRate: 0.35 },
+  legacy: { dork: 0.5, rock: 0.95, removalRate: 0.4 },
+  standard: { dork: 0.75, rock: 0.95, removalRate: 0.2 },
   commander: { dork: 0.75, rock: 0.98, removalRate: 0.15 },
-  cedh:      { dork: 0.60, rock: 0.92, removalRate: 0.30 },
-};
+  cedh: { dork: 0.6, rock: 0.92, removalRate: 0.3 },
+}
 ```
 
 ---
@@ -1357,31 +1387,31 @@ const FORMAT_PRESETS = {
 
 ### 11.1 Treasures
 
-| Version | Traitement |
-|---------|------------|
+| Version       | Traitement                                             |
+| ------------- | ------------------------------------------------------ |
 | V1 Analytique | Ignorer ou "+1 one-shot" si carte génératrice reconnue |
-| Simulation | Stock consommable (retirer du board après usage) |
+| Simulation    | Stock consommable (retirer du board après usage)       |
 
 ### 11.2 Rituels (Dark Ritual)
 
-| Version | Traitement |
-|---------|------------|
-| V1 Analytique | Simulation-only (trop contextuel) |
-| Simulation | Jouer si débloque immédiatement le spell cible |
+| Version       | Traitement                                     |
+| ------------- | ---------------------------------------------- |
+| V1 Analytique | Simulation-only (trop contextuel)              |
+| Simulation    | Jouer si débloque immédiatement le spell cible |
 
 ### 11.3 Lands Multi-Mana (Ancient Tomb)
 
-| Version | Traitement |
-|---------|------------|
+| Version    | Traitement                                       |
+| ---------- | ------------------------------------------------ |
 | Analytique | Intégrer dans landService effectiveSourcesByTurn |
-| Simulation | Trivial |
+| Simulation | Trivial                                          |
 
 ### 11.4 Gaea's Cradle / Nykthos / Tron
 
-| Version | Traitement |
-|---------|------------|
+| Version    | Traitement                                  |
+| ---------- | ------------------------------------------- |
 | Analytique | ❌ Non recommandé (trop dépendant du board) |
-| Simulation | ✅ Recommandé |
+| Simulation | ✅ Recommandé                               |
 
 ---
 
@@ -1418,13 +1448,13 @@ const FORMAT_PRESETS = {
 
 ## 13. Notes de Rigueur
 
-| Piège | Solution |
-|-------|----------|
-| Simuler par sort | ❌ Simule UNE partie mana → évalue tous les spells |
-| Additionner k=0..2 naïvement | ❌ Éviter double comptage via "exactement k" |
-| 50 paramètres de survie | ❌ Slider r suffit pour V1 |
-| Ignorer NMF | ❌ NMF unifie Sol Ring / Signets / rocks ETB tapped / dorks |
-| Formule fermée pour chaînage | ❌ Trop complexe → Monte Carlo pour chaînes |
+| Piège                        | Solution                                                    |
+| ---------------------------- | ----------------------------------------------------------- |
+| Simuler par sort             | ❌ Simule UNE partie mana → évalue tous les spells          |
+| Additionner k=0..2 naïvement | ❌ Éviter double comptage via "exactement k"                |
+| 50 paramètres de survie      | ❌ Slider r suffit pour V1                                  |
+| Ignorer NMF                  | ❌ NMF unifie Sol Ring / Signets / rocks ETB tapped / dorks |
+| Formule fermée pour chaînage | ❌ Trop complexe → Monte Carlo pour chaînes                 |
 
 ---
 
@@ -1432,19 +1462,19 @@ const FORMAT_PRESETS = {
 
 ### Cas de Test
 
-| Deck | Scénario | Attendu |
-|------|----------|---------|
-| Mono-G Elves (8 dorks, 20 lands) | Sort CMC 3, T2 | P ≈ 35-45% (avec survie Modern) |
-| Artifact Storm (12 rocks, 15 lands) | Sort CMC 5, T3 | P > 50% (Sol Ring chains) |
-| Control (0 ramp, 26 lands) | Tout | P = calcul actuel (pas de changement) |
-| EDH (37 lands, 10 ramp) | Sort CMC 5, T4 | P > 80% (survie haute EDH) |
+| Deck                                | Scénario       | Attendu                               |
+| ----------------------------------- | -------------- | ------------------------------------- |
+| Mono-G Elves (8 dorks, 20 lands)    | Sort CMC 3, T2 | P ≈ 35-45% (avec survie Modern)       |
+| Artifact Storm (12 rocks, 15 lands) | Sort CMC 5, T3 | P > 50% (Sol Ring chains)             |
+| Control (0 ramp, 26 lands)          | Tout           | P = calcul actuel (pas de changement) |
+| EDH (37 lands, 10 ramp)             | Sort CMC 5, T4 | P > 80% (survie haute EDH)            |
 
 ### Benchmarks de Performance
 
-| Métrique | Target | Méthode |
-|----------|--------|---------|
-| Castability analytique | <10ms | Scénarios disjoints |
-| Classification deck | <50ms | Une seule passe |
+| Métrique                | Target | Méthode               |
+| ----------------------- | ------ | --------------------- |
+| Castability analytique  | <10ms  | Scénarios disjoints   |
+| Classification deck     | <50ms  | Une seule passe       |
 | Monte Carlo (optionnel) | <150ms | Web Worker, 2500 iter |
 
 ---
@@ -1453,25 +1483,25 @@ const FORMAT_PRESETS = {
 
 ## Consensus Final (Analyses #1-4)
 
-| Topic | Décision Finale | Justification |
-|-------|-----------------|---------------|
-| **Méthode V1** | Scénarios Disjoints (k≤2) | Performance <10ms, précision suffisante |
-| **Méthode V2** | Monte Carlo Web Worker | Précision max pour edge cases |
-| **Survie** | Slider UX 4 niveaux (r=0-0.45) | Simple, configurable, format-aware |
-| **NMF** | Oui, obligatoire | Unifie tous les types d'accélérateurs |
-| **Chaînage** | V2 seulement (Monte Carlo) | Trop complexe analytiquement |
-| **Données** | JSON local + Scryfall fallback | Couverture 95% + extensibilité |
+| Topic          | Décision Finale                | Justification                           |
+| -------------- | ------------------------------ | --------------------------------------- |
+| **Méthode V1** | Scénarios Disjoints (k≤2)      | Performance <10ms, précision suffisante |
+| **Méthode V2** | Monte Carlo Web Worker         | Précision max pour edge cases           |
+| **Survie**     | Slider UX 4 niveaux (r=0-0.45) | Simple, configurable, format-aware      |
+| **NMF**        | Oui, obligatoire               | Unifie tous les types d'accélérateurs   |
+| **Chaînage**   | V2 seulement (Monte Carlo)     | Trop complexe analytiquement            |
+| **Données**    | JSON local + Scryfall fallback | Couverture 95% + extensibilité          |
 
 ## Priorités Finales
 
-| Priorité | Feature | Effort | Impact |
-|----------|---------|--------|--------|
-| **P0** | `mana_producers.json` + classification | 2 jours | Fondation |
-| **P0** | Slider survie + presets format | 0.5 jour | UX critique |
-| **P1** | Scénarios disjoints k≤2 | 3 jours | Core feature |
-| **P1** | UI "With Accelerators" + badges | 1 jour | Valeur visible |
-| **P2** | Tooltips explicatifs | 0.5 jour | Pédagogie |
-| **P3** | Monte Carlo Web Worker | 4 jours | Précision V2 |
+| Priorité | Feature                                | Effort   | Impact         |
+| -------- | -------------------------------------- | -------- | -------------- |
+| **P0**   | `mana_producers.json` + classification | 2 jours  | Fondation      |
+| **P0**   | Slider survie + presets format         | 0.5 jour | UX critique    |
+| **P1**   | Scénarios disjoints k≤2                | 3 jours  | Core feature   |
+| **P1**   | UI "With Accelerators" + badges        | 1 jour   | Valeur visible |
+| **P2**   | Tooltips explicatifs                   | 0.5 jour | Pédagogie      |
+| **P3**   | Monte Carlo Web Worker                 | 4 jours  | Précision V2   |
 
 ## Résultat Attendu
 
@@ -1519,6 +1549,7 @@ M_T = L_T + Σ(A_i × σ_i × δ_i)
 ```
 
 Où :
+
 - **L_T** : Nombre de terrains joués (limité par T)
 - **A_i** : Accélérateur i pioché et castable
 - **σ_i** : Taux de survie (Survival Rate, ex: 0.7 pour un Dork)
@@ -1527,6 +1558,7 @@ Où :
 ### Alignement avec les Références
 
 Cette approche s'aligne avec :
+
 - **Frank Karsten** : Compter les dorks comme une fraction de source
 - **Salubrious Snail** : Calcul du retard moyen (average delay)
 - **17Lands** : Turn Drawn at which castable
@@ -1538,22 +1570,22 @@ Cette approche s'aligne avec :
 ### Structure Recommandée
 
 ```typescript
-type AcceleratorType = 'dork' | 'rock' | 'ritual' | 'treasure';
+type AcceleratorType = 'dork' | 'rock' | 'ritual' | 'treasure'
 
 interface ManaAccelerator {
-  name: string;
-  type: AcceleratorType;
-  cost: number;             // CMC (ex: 1 pour Birds, 2 pour Signet)
-  produces: string[];       // Couleurs ['G', 'Any']
-  activationDelay: number;  // 1 pour Dork (sick), 0 pour Rock (sauf tapped)
-  survivalRate: number;     // Base rate (ex: 0.75)
-  isOneShot: boolean;       // True pour Ritual/Treasure
+  name: string
+  type: AcceleratorType
+  cost: number // CMC (ex: 1 pour Birds, 2 pour Signet)
+  produces: string[] // Couleurs ['G', 'Any']
+  activationDelay: number // 1 pour Dork (sick), 0 pour Rock (sauf tapped)
+  survivalRate: number // Base rate (ex: 0.75)
+  isOneShot: boolean // True pour Ritual/Treasure
 }
 
 // Configuration injectable (Dependency Injection)
 interface FormatContext {
-  format: 'standard' | 'modern' | 'commander' | 'legacy';
-  removalDensity: 'low' | 'medium' | 'high'; // low=0.9, medium=0.75, high=0.5
+  format: 'standard' | 'modern' | 'commander' | 'legacy'
+  removalDensity: 'low' | 'medium' | 'high' // low=0.9, medium=0.75, high=0.5
 }
 ```
 
@@ -1568,6 +1600,7 @@ Pour garantir la rapidité, nous évitons la récursion profonde. Nous utilisons
 ### Algorithme : calculateDynamicCastability
 
 **Pré-calcul du Deck :**
+
 1. Séparer les sources en `Lands` et `Accelerators`
 2. Calculer les probabilités hypergéométriques de piocher k accélérateurs au tour T
 
@@ -1575,39 +1608,38 @@ Pour garantir la rapidité, nous évitons la récursion profonde. Nous utilisons
 
 ```typescript
 function getCastability(spell, targetTurn, deck, context) {
-  let probabilitySum = 0;
+  let probabilitySum = 0
 
   // On itère sur les scénarios de "Ramp" possibles (0, 1, ou 2 accélérateurs)
   // Limiter à 2 accélérateurs couvre 99% des cas réalistes et sauve le CPU.
   for (let rampCount = 0; rampCount <= 2; rampCount++) {
-    
     // 1. Probabilité d'avoir 'rampCount' accélérateurs ACTIFS au tour 'targetTurn'
     // Implique: Piochés, Castés (mana dispo tôt), et Survivants
-    const pRamp = getRampProbability(rampCount, targetTurn, deck, context);
-    
-    if (pRamp === 0) continue;
+    const pRamp = getRampProbability(rampCount, targetTurn, deck, context)
+
+    if (pRamp === 0) continue
 
     // 2. Mana restant à couvrir par les lands
-    const landsNeeded = Math.max(0, spell.cmc - rampCount);
-    
+    const landsNeeded = Math.max(0, spell.cmc - rampCount)
+
     // 3. Probabilité d'avoir ces lands (Hypergéométrique standard)
     // Note: On soustrait les cartes 'ramp' de la population du deck
-    const pLands = getLandProbability(landsNeeded, targetTurn, deck, rampCount);
+    const pLands = getLandProbability(landsNeeded, targetTurn, deck, rampCount)
 
     // 4. Somme pondérée (Probabilités disjointes simplifiées)
-    probabilitySum += (pRamp * pLands);
+    probabilitySum += pRamp * pLands
   }
-  
-  return Math.min(1, probabilitySum);
+
+  return Math.min(1, probabilitySum)
 }
 ```
 
 ### Gestion des Cas Spéciaux
 
-| Cas | Traitement |
-|-----|------------|
+| Cas                              | Traitement                                                                             |
+| -------------------------------- | -------------------------------------------------------------------------------------- |
 | **Rocks à coût** (Arcane Signet) | `getRampProbability` vérifie `currentTurn > (rockCost + 1)`. Si faux, contribution = 0 |
-| **Trésors/Rituels** | Traités avec `isOneShot: true`. Boost le tour actuel mais pas le mana soutenu |
+| **Trésors/Rituels**              | Traités avec `isOneShot: true`. Boost le tour actuel mais pas le mana soutenu          |
 
 ---
 
@@ -1615,12 +1647,12 @@ function getCastability(spell, targetTurn, deck, context) {
 
 ### Tableau Comparatif par Format
 
-| Paramètre | Commander (Casual) | Modern/Legacy (Compétitif) |
-|-----------|-------------------|----------------------------|
+| Paramètre              | Commander (Casual)       | Modern/Legacy (Compétitif)  |
+| ---------------------- | ------------------------ | --------------------------- |
 | **Dork Survival Base** | 0.90 (Peu de removal T1) | 0.60 ("Bolt the Bird" rule) |
-| **Rock Survival Base** | 0.98 (Sol Ring safe) | 0.90 (Karn/Ouphe/Boseiju) |
-| **Ramp Density Goal** | ~10-15 sources | 6-8 (Spécifique deck) |
-| **Land Count Logic** | -1 land pour 2-3 rocks | Strictement optimisé |
+| **Rock Survival Base** | 0.98 (Sol Ring safe)     | 0.90 (Karn/Ouphe/Boseiju)   |
+| **Ramp Density Goal**  | ~10-15 sources           | 6-8 (Spécifique deck)       |
+| **Land Count Logic**   | -1 land pour 2-3 rocks   | Strictement optimisé        |
 
 ### Implémentation UX
 
@@ -1628,10 +1660,10 @@ function getCastability(spell, targetTurn, deck, context) {
 
 ```typescript
 const REMOVAL_DENSITY_MULTIPLIERS = {
-  low: 1.0,      // Casual EDH
-  medium: 0.85,  // Standard, High-Power EDH
-  high: 0.65     // Modern, Legacy, cEDH
-};
+  low: 1.0, // Casual EDH
+  medium: 0.85, // Standard, High-Power EDH
+  high: 0.65, // Modern, Legacy, cEDH
+}
 ```
 
 ---
@@ -1669,7 +1701,7 @@ Probabilité de cast T3:
 ### Tips Contextuels (Snail-style)
 
 ```
-💡 Insight: Ajouter 1 Birds of Paradise augmenterait 
+💡 Insight: Ajouter 1 Birds of Paradise augmenterait
    votre probabilité T2 de +4%
 ```
 
@@ -1677,13 +1709,13 @@ Probabilité de cast T3:
 
 ## 6. Comparaison avec les Analyses Précédentes
 
-| Aspect | Analyses #1-4 | Analyse #5 | Verdict |
-|--------|---------------|------------|---------|
-| **Formule** | Scénarios Disjoints k≤2 | M_T = L_T + Σ(A×σ×δ) | ✅ Équivalent, notation différente |
-| **Performance** | O(n²) Poisson-binomial | O(1) itérations fixes | ✅ #5 plus explicite sur O(1) |
-| **UX Barres** | Non mentionné | Segmented bar | ✅ Nouveauté utile |
-| **Tips contextuels** | Tooltip simple | "+4% avec Birds" | ✅ Nouveauté utile |
-| **survivalRate** | Slider r | removalDensity multiplier | ✅ Équivalent |
+| Aspect               | Analyses #1-4           | Analyse #5                | Verdict                            |
+| -------------------- | ----------------------- | ------------------------- | ---------------------------------- |
+| **Formule**          | Scénarios Disjoints k≤2 | M_T = L_T + Σ(A×σ×δ)      | ✅ Équivalent, notation différente |
+| **Performance**      | O(n²) Poisson-binomial  | O(1) itérations fixes     | ✅ #5 plus explicite sur O(1)      |
+| **UX Barres**        | Non mentionné           | Segmented bar             | ✅ Nouveauté utile                 |
+| **Tips contextuels** | Tooltip simple          | "+4% avec Birds"          | ✅ Nouveauté utile                 |
+| **survivalRate**     | Slider r                | removalDensity multiplier | ✅ Équivalent                      |
 
 ### Éléments Nouveaux Utiles de l'Analyse #5
 
@@ -1701,24 +1733,24 @@ Probabilité de cast T3:
 ```typescript
 interface ManaProducer {
   // ... existing from Analysis #4 ...
-  
+
   // Ajout Analysis #5
-  survivalRate: number;     // Base rate modifié par format
-  isOneShot: boolean;       // Pour rituels/trésors
+  survivalRate: number // Base rate modifié par format
+  isOneShot: boolean // Pour rituels/trésors
 }
 
 interface FormatContext {
-  format: 'standard' | 'modern' | 'commander' | 'legacy' | 'cedh';
-  removalDensity: 'goldfish' | 'low' | 'medium' | 'high';
+  format: 'standard' | 'modern' | 'commander' | 'legacy' | 'cedh'
+  removalDensity: 'goldfish' | 'low' | 'medium' | 'high'
 }
 
 // Mapping vers les valeurs r de l'Analyse #4
 const REMOVAL_TO_R = {
-  goldfish: 0.00,
-  low: 0.10,
+  goldfish: 0.0,
+  low: 0.1,
   medium: 0.25,
-  high: 0.45
-};
+  high: 0.45,
+}
 ```
 
 ### UX Enrichie
@@ -1752,11 +1784,11 @@ const REMOVAL_TO_R = {
 
 ### Nouveautés à Intégrer
 
-| Feature | Priorité | Effort |
-|---------|----------|--------|
-| **Barre segmentée** (Lands vs Ramp) | P1 | 2h |
-| **Tips "+X% avec carte"** | P2 | 3h |
-| **FormatContext injectable** | P0 | 1h |
+| Feature                             | Priorité | Effort |
+| ----------------------------------- | -------- | ------ |
+| **Barre segmentée** (Lands vs Ramp) | P1       | 2h     |
+| **Tips "+X% avec carte"**           | P2       | 3h     |
+| **FormatContext injectable**        | P0       | 1h     |
 
 ---
 
@@ -1764,28 +1796,28 @@ const REMOVAL_TO_R = {
 
 ## Consensus Final (Analyses #1-5)
 
-| Topic | Décision Finale | Sources |
-|-------|-----------------|---------|
-| **Méthode V1** | Scénarios Disjoints k≤2 / M_T formule | #1, #2, #4, #5 |
-| **Performance** | O(1) itérations, <10ms | #2, #4, #5 |
-| **Survie** | Slider + format presets | #1, #3, #4, #5 |
-| **UX Barres** | Segmentée (Base + Ramp) | #5 (nouveau) |
-| **Tips contextuels** | "+X% avec carte Y" | #3 (Snail), #5 |
-| **Monte Carlo V2** | Web Worker, deck-level | #1, #4 |
+| Topic                | Décision Finale                       | Sources        |
+| -------------------- | ------------------------------------- | -------------- |
+| **Méthode V1**       | Scénarios Disjoints k≤2 / M_T formule | #1, #2, #4, #5 |
+| **Performance**      | O(1) itérations, <10ms                | #2, #4, #5     |
+| **Survie**           | Slider + format presets               | #1, #3, #4, #5 |
+| **UX Barres**        | Segmentée (Base + Ramp)               | #5 (nouveau)   |
+| **Tips contextuels** | "+X% avec carte Y"                    | #3 (Snail), #5 |
+| **Monte Carlo V2**   | Web Worker, deck-level                | #1, #4         |
 
 ## Priorités Finales Mises à Jour
 
-| Priorité | Feature | Effort | Source |
-|----------|---------|--------|--------|
-| **P0** | `mana_producers.json` + classification | 2 jours | #4 |
-| **P0** | FormatContext injectable | 0.5 jour | #5 |
-| **P0** | Slider survie + presets format | 0.5 jour | #1-5 |
-| **P1** | Scénarios disjoints k≤2 | 3 jours | #2, #4, #5 |
-| **P1** | UI "With Accelerators" + badges | 1 jour | #4 |
-| **P1** | Barre segmentée (Lands vs Ramp) | 0.5 jour | #5 |
-| **P2** | Tooltips explicatifs | 0.5 jour | #4 |
-| **P2** | Tips "+X% avec carte" | 1 jour | #5 |
-| **P3** | Monte Carlo Web Worker | 4 jours | #1, #4 |
+| Priorité | Feature                                | Effort   | Source     |
+| -------- | -------------------------------------- | -------- | ---------- |
+| **P0**   | `mana_producers.json` + classification | 2 jours  | #4         |
+| **P0**   | FormatContext injectable               | 0.5 jour | #5         |
+| **P0**   | Slider survie + presets format         | 0.5 jour | #1-5       |
+| **P1**   | Scénarios disjoints k≤2                | 3 jours  | #2, #4, #5 |
+| **P1**   | UI "With Accelerators" + badges        | 1 jour   | #4         |
+| **P1**   | Barre segmentée (Lands vs Ramp)        | 0.5 jour | #5         |
+| **P2**   | Tooltips explicatifs                   | 0.5 jour | #4         |
+| **P2**   | Tips "+X% avec carte"                  | 1 jour   | #5         |
+| **P3**   | Monte Carlo Web Worker                 | 4 jours  | #1, #4     |
 
 ---
 
@@ -1981,68 +2013,75 @@ Base de données locale des producteurs de mana connus. Extensible sans modifica
 
 ```typescript
 // src/castability/types.ts
-export const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 } as const;
-export type ColorLetter = keyof typeof COLOR;
-export type ColorMask = number;
+export const COLOR = { W: 1, U: 2, B: 4, R: 8, G: 16, C: 32 } as const
+export type ColorLetter = keyof typeof COLOR
+export type ColorMask = number
 
-export type SourceType = "LAND" | "DORK" | "ROCK" | "RITUAL" | "ONE_SHOT" | "TREASURE" | "CONDITIONAL";
+export type SourceType =
+  | 'LAND'
+  | 'DORK'
+  | 'ROCK'
+  | 'RITUAL'
+  | 'ONE_SHOT'
+  | 'TREASURE'
+  | 'CONDITIONAL'
 
 export interface ManaCost {
-  mv: number; // total mana value
-  generic: number;
-  pips: Partial<Record<ColorLetter, number>>;
+  mv: number // total mana value
+  generic: number
+  pips: Partial<Record<ColorLetter, number>>
 }
 
 export interface DeckManaProfile {
-  deckSize: number; // 60 or 99
-  totalLands: number;
+  deckSize: number // 60 or 99
+  totalLands: number
   // how many cards in the deck can produce each color as a land source
-  landColorSources: Partial<Record<ColorLetter, number>>;
+  landColorSources: Partial<Record<ColorLetter, number>>
 }
 
 export interface ManaProducerDef {
-  name: string;
-  type: SourceType;
+  name: string
+  type: SourceType
 
-  castCostGeneric: number;
-  castCostColors: Partial<Record<ColorLetter, number>>;
+  castCostGeneric: number
+  castCostColors: Partial<Record<ColorLetter, number>>
 
-  delay: number; // 1 for dorks (summoning sickness) or ETB tapped
-  isCreature: boolean;
+  delay: number // 1 for dorks (summoning sickness) or ETB tapped
+  isCreature: boolean
 
-  producesAmount: number; // raw amount produced
-  activationTax: number;  // e.g. signets cost 1 to activate
-  producesMask: ColorMask; // which colors it can produce (or C)
-  producesAny: boolean;
+  producesAmount: number // raw amount produced
+  activationTax: number // e.g. signets cost 1 to activate
+  producesMask: ColorMask // which colors it can produce (or C)
+  producesAny: boolean
 
-  oneShot: boolean;
-  survivalBase?: number;
+  oneShot: boolean
+  survivalBase?: number
 }
 
 export interface ProducerInDeck {
-  def: ManaProducerDef;
-  copies: number;
+  def: ManaProducerDef
+  copies: number
 }
 
 export interface AccelContext {
-  playDraw: "PLAY" | "DRAW";
+  playDraw: 'PLAY' | 'DRAW'
   // removal attrition rate per exposed turn for creatures (0..1)
-  removalRate: number;
+  removalRate: number
   // used when producer is not creature; if survivalBase not set
-  defaultRockSurvival: number; // e.g. 0.98
+  defaultRockSurvival: number // e.g. 0.98
 }
 
 export interface CastabilityResult {
-  p1: number;
-  p2: number;
+  p1: number
+  p2: number
 }
 
 export interface AcceleratedCastabilityResult {
-  base: CastabilityResult;
-  withAcceleration: CastabilityResult;
-  accelerationImpact: number; // withAccel.p2 - base.p2
-  acceleratedTurn: number | null; // earliest turn where cast becomes possible
-  keyAccelerators: string[];
+  base: CastabilityResult
+  withAcceleration: CastabilityResult
+  accelerationImpact: number // withAccel.p2 - base.p2
+  acceleratedTurn: number | null // earliest turn where cast becomes possible
+  keyAccelerators: string[]
 }
 ```
 
@@ -2055,76 +2094,73 @@ export interface AcceleratedCastabilityResult {
 // Fast-enough hypergeometric utilities for N<=100 (MTG decks).
 // Uses log-factorials to stay numerically stable.
 
-export type PlayDraw = "PLAY" | "DRAW";
+export type PlayDraw = 'PLAY' | 'DRAW'
 
 export function cardsSeenByTurn(turn: number, playDraw: PlayDraw): number {
   // Convention: starting hand = 7
   // PLAY: no draw on turn 1 => seen = 7 + (turn-1)
   // DRAW: draw on turn 1      => seen = 7 + turn
-  if (turn <= 0) return 0;
-  return playDraw === "PLAY" ? 7 + Math.max(0, turn - 1) : 7 + turn;
+  if (turn <= 0) return 0
+  return playDraw === 'PLAY' ? 7 + Math.max(0, turn - 1) : 7 + turn
 }
 
 function buildLogFactorials(maxN: number): Float64Array {
-  const lf = new Float64Array(maxN + 1);
-  lf[0] = 0;
-  for (let i = 1; i <= maxN; i++) lf[i] = lf[i - 1] + Math.log(i);
-  return lf;
+  const lf = new Float64Array(maxN + 1)
+  lf[0] = 0
+  for (let i = 1; i <= maxN; i++) lf[i] = lf[i - 1] + Math.log(i)
+  return lf
 }
 
 export class Hypergeom {
-  private lf: Float64Array;
-  private maxN: number;
+  private lf: Float64Array
+  private maxN: number
 
   constructor(maxN: number) {
-    this.maxN = maxN;
-    this.lf = buildLogFactorials(maxN);
+    this.maxN = maxN
+    this.lf = buildLogFactorials(maxN)
   }
 
   private logChoose(n: number, k: number): number {
-    if (k < 0 || k > n) return -Infinity;
-    return this.lf[n] - this.lf[k] - this.lf[n - k];
+    if (k < 0 || k > n) return -Infinity
+    return this.lf[n] - this.lf[k] - this.lf[n - k]
   }
 
   pmf(N: number, K: number, n: number, k: number): number {
     // P(X=k) where X~Hypergeom(N,K,n)
-    if (N < 0 || K < 0 || n < 0) return 0;
-    if (K > N || n > N) return 0;
-    const kMin = Math.max(0, n - (N - K));
-    const kMax = Math.min(K, n);
-    if (k < kMin || k > kMax) return 0;
+    if (N < 0 || K < 0 || n < 0) return 0
+    if (K > N || n > N) return 0
+    const kMin = Math.max(0, n - (N - K))
+    const kMax = Math.min(K, n)
+    if (k < kMin || k > kMax) return 0
 
-    const logP =
-      this.logChoose(K, k) +
-      this.logChoose(N - K, n - k) -
-      this.logChoose(N, n);
+    const logP = this.logChoose(K, k) + this.logChoose(N - K, n - k) - this.logChoose(N, n)
 
-    return Math.exp(logP);
+    return Math.exp(logP)
   }
 
   atLeast(N: number, K: number, n: number, kMin: number): number {
     // P(X >= kMin)
-    const kMax = Math.min(K, n);
-    if (kMin <= 0) return 1;
-    if (kMin > kMax) return 0;
-    let sum = 0;
-    for (let k = kMin; k <= kMax; k++) sum += this.pmf(N, K, n, k);
-    return Math.min(1, Math.max(0, sum));
+    const kMax = Math.min(K, n)
+    if (kMin <= 0) return 1
+    if (kMin > kMax) return 0
+    let sum = 0
+    for (let k = kMin; k <= kMax; k++) sum += this.pmf(N, K, n, k)
+    return Math.min(1, Math.max(0, sum))
   }
 
   atMost(N: number, K: number, n: number, kMax: number): number {
-    const kMin = Math.max(0, n - (N - K));
-    if (kMax < kMin) return 0;
-    let sum = 0;
-    for (let k = kMin; k <= Math.min(kMax, K, n); k++) sum += this.pmf(N, K, n, k);
-    return Math.min(1, Math.max(0, sum));
+    const kMin = Math.max(0, n - (N - K))
+    if (kMax < kMin) return 0
+    let sum = 0
+    for (let k = kMin; k <= Math.min(kMax, K, n); k++) sum += this.pmf(N, K, n, k)
+    return Math.min(1, Math.max(0, sum))
   }
 
   atLeastOneCopy(deckSize: number, copies: number, cardsSeen: number): number {
-    if (copies <= 0) return 0;
+    if (copies <= 0) return 0
     // 1 - P(0 copies)
-    const p0 = this.pmf(deckSize, copies, cardsSeen, 0);
-    return Math.min(1, Math.max(0, 1 - p0));
+    const p0 = this.pmf(deckSize, copies, cardsSeen, 0)
+    return Math.min(1, Math.max(0, 1 - p0))
   }
 }
 ```
@@ -2135,20 +2171,27 @@ export class Hypergeom {
 
 ```typescript
 // src/castability/acceleratedAnalyticEngine.ts
-import { Hypergeom, cardsSeenByTurn } from "./hypergeom";
-import { 
-  COLOR, ColorLetter, ColorMask, ManaCost, DeckManaProfile, 
-  ProducerInDeck, AccelContext, CastabilityResult, AcceleratedCastabilityResult 
-} from "./types";
+import { Hypergeom, cardsSeenByTurn } from './hypergeom'
+import {
+  COLOR,
+  ColorLetter,
+  ColorMask,
+  ManaCost,
+  DeckManaProfile,
+  ProducerInDeck,
+  AccelContext,
+  CastabilityResult,
+  AcceleratedCastabilityResult,
+} from './types'
 
 function colorMaskFromLetters(letters: ColorLetter[]): ColorMask {
-  return letters.reduce((m, c) => m | COLOR[c], 0);
+  return letters.reduce((m, c) => m | COLOR[c], 0)
 }
 
 export function parseProducerJsonEntry(name: string, raw: any): ProducerInDeck {
-  const producesMask = raw.producesAny 
-    ? (COLOR.W|COLOR.U|COLOR.B|COLOR.R|COLOR.G|COLOR.C) 
-    : colorMaskFromLetters(raw.produces ?? []);
+  const producesMask = raw.producesAny
+    ? COLOR.W | COLOR.U | COLOR.B | COLOR.R | COLOR.G | COLOR.C
+    : colorMaskFromLetters(raw.produces ?? [])
   return {
     def: {
       name,
@@ -2165,32 +2208,36 @@ export function parseProducerJsonEntry(name: string, raw: any): ProducerInDeck {
       survivalBase: raw.survivalBase,
     },
     copies: raw.copies ?? 0,
-  };
+  }
 }
 
-function sumPips(pips: ManaCost["pips"]): number {
-  let s = 0;
-  for (const k of Object.keys(pips) as ColorLetter[]) s += pips[k] ?? 0;
-  return s;
+function sumPips(pips: ManaCost['pips']): number {
+  let s = 0
+  for (const k of Object.keys(pips) as ColorLetter[]) s += pips[k] ?? 0
+  return s
 }
 
 function popcountMask(mask: number): number {
-  let x = mask >>> 0, c = 0;
-  while (x) { x &= (x - 1) >>> 0; c++; }
-  return c;
+  let x = mask >>> 0,
+    c = 0
+  while (x) {
+    x &= (x - 1) >>> 0
+    c++
+  }
+  return c
 }
 
 function producerOptionsForCost(
-  producesAny: boolean, 
-  producesMask: ColorMask, 
+  producesAny: boolean,
+  producesMask: ColorMask,
   neededColors: ColorLetter[]
 ): ColorLetter[] {
-  if (producesAny) return neededColors;
-  const opts: ColorLetter[] = [];
+  if (producesAny) return neededColors
+  const opts: ColorLetter[] = []
   for (const c of neededColors) {
-    if ((producesMask & COLOR[c]) !== 0) opts.push(c);
+    if ((producesMask & COLOR[c]) !== 0) opts.push(c)
   }
-  return opts;
+  return opts
 }
 
 // Conservative "can cast this cost by turn" estimate using only lands.
@@ -2202,23 +2249,21 @@ function estimateCanCastCostByTurn(
   turn: number,
   ctx: AccelContext
 ): number {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw);
+  const seen = cardsSeenByTurn(turn, ctx.playDraw)
 
-  const colorLetters = Object.keys(costColors) as ColorLetter[];
+  const colorLetters = Object.keys(costColors) as ColorLetter[]
   const pColor = colorLetters.map((cl) => {
-    const need = costColors[cl] ?? 0;
-    if (need <= 0) return 1;
-    const K = deck.landColorSources[cl] ?? 0;
-    return hg.atLeast(deck.deckSize, K, seen, need);
-  });
+    const need = costColors[cl] ?? 0
+    if (need <= 0) return 1
+    const K = deck.landColorSources[cl] ?? 0
+    return hg.atLeast(deck.deckSize, K, seen, need)
+  })
 
-  const totalNeededMana = costGeneric + colorLetters.reduce(
-    (a, cl) => a + (costColors[cl] ?? 0), 0
-  );
-  const pLands = hg.atLeast(deck.deckSize, deck.totalLands, seen, totalNeededMana);
+  const totalNeededMana = costGeneric + colorLetters.reduce((a, cl) => a + (costColors[cl] ?? 0), 0)
+  const pLands = hg.atLeast(deck.deckSize, deck.totalLands, seen, totalNeededMana)
 
-  const pMin = Math.min(pLands, ...pColor);
-  return Math.max(0, Math.min(1, pMin));
+  const pMin = Math.min(pLands, ...pColor)
+  return Math.max(0, Math.min(1, pMin))
 }
 
 export function producerOnlineProbByTurn(
@@ -2228,23 +2273,28 @@ export function producerOnlineProbByTurn(
   turnTarget: number,
   ctx: AccelContext
 ): number {
-  const def = producer.def;
-  const tLatest = turnTarget - def.delay - 1;
-  if (tLatest < 1) return 0;
-  const seenLatest = cardsSeenByTurn(tLatest, ctx.playDraw);
+  const def = producer.def
+  const tLatest = turnTarget - def.delay - 1
+  if (tLatest < 1) return 0
+  const seenLatest = cardsSeenByTurn(tLatest, ctx.playDraw)
 
-  const pDraw = hg.atLeastOneCopy(deck.deckSize, producer.copies, seenLatest);
+  const pDraw = hg.atLeastOneCopy(deck.deckSize, producer.copies, seenLatest)
   const pCastable = estimateCanCastCostByTurn(
-    hg, deck, def.castCostGeneric, def.castCostColors, tLatest, ctx
-  );
+    hg,
+    deck,
+    def.castCostGeneric,
+    def.castCostColors,
+    tLatest,
+    ctx
+  )
 
-  const exposure = Math.max(0, turnTarget - tLatest);
+  const exposure = Math.max(0, turnTarget - tLatest)
   const pSurvive = def.isCreature
     ? Math.pow(1 - ctx.removalRate, exposure)
-    : (def.survivalBase ?? ctx.defaultRockSurvival);
+    : (def.survivalBase ?? ctx.defaultRockSurvival)
 
-  const p = pDraw * pCastable * pSurvive;
-  return Math.max(0, Math.min(1, p));
+  const p = pDraw * pCastable * pSurvive
+  return Math.max(0, Math.min(1, p))
 }
 
 function computeBaseCastability(
@@ -2254,23 +2304,23 @@ function computeBaseCastability(
   turn: number,
   ctx: AccelContext
 ): CastabilityResult {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw);
+  const seen = cardsSeenByTurn(turn, ctx.playDraw)
 
   // P1: for each required color, have at least that many sources
-  const colors = Object.keys(spell.pips) as ColorLetter[];
+  const colors = Object.keys(spell.pips) as ColorLetter[]
   const pColors = colors.map((cl) => {
-    const need = spell.pips[cl] ?? 0;
-    if (need <= 0) return 1;
-    const K = deck.landColorSources[cl] ?? 0;
-    return hg.atLeast(deck.deckSize, K, seen, need);
-  });
-  const p1 = Math.min(...pColors, 1);
+    const need = spell.pips[cl] ?? 0
+    if (need <= 0) return 1
+    const K = deck.landColorSources[cl] ?? 0
+    return hg.atLeast(deck.deckSize, K, seen, need)
+  })
+  const p1 = Math.min(...pColors, 1)
 
   // P2: multiply by probability to have enough lands
-  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, turn);
-  const p2 = p1 * pLandsEnough;
+  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, turn)
+  const p2 = p1 * pLandsEnough
 
-  return { p1, p2 };
+  return { p1, p2 }
 }
 
 // Best allocation of <=2 online producers to cover colored pips.
@@ -2283,58 +2333,59 @@ function bestP1GivenOnlineProducers(
   ctx: AccelContext,
   onlineProducers: ProducerInDeck[]
 ): number {
-  const seen = cardsSeenByTurn(turn, ctx.playDraw);
+  const seen = cardsSeenByTurn(turn, ctx.playDraw)
 
-  const neededColors = (Object.keys(spell.pips) as ColorLetter[])
-    .filter((c) => (spell.pips[c] ?? 0) > 0);
-  if (neededColors.length === 0) return 1;
+  const neededColors = (Object.keys(spell.pips) as ColorLetter[]).filter(
+    (c) => (spell.pips[c] ?? 0) > 0
+  )
+  if (neededColors.length === 0) return 1
 
-  const baseRemaining: Record<ColorLetter, number> = { W:0, U:0, B:0, R:0, G:0, C:0 };
-  for (const c of neededColors) baseRemaining[c] = spell.pips[c] ?? 0;
+  const baseRemaining: Record<ColorLetter, number> = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
+  for (const c of neededColors) baseRemaining[c] = spell.pips[c] ?? 0
 
   const prodOptions: Array<(ColorLetter | null)[]> = onlineProducers.map((p) => {
-    const opts = producerOptionsForCost(p.def.producesAny, p.def.producesMask, neededColors);
-    return [null, ...opts];
-  });
+    const opts = producerOptionsForCost(p.def.producesAny, p.def.producesMask, neededColors)
+    return [null, ...opts]
+  })
 
-  let best = 0;
+  let best = 0
 
   function evalAssignment(assignment: Array<ColorLetter | null>) {
-    const rem: Record<ColorLetter, number> = { ...baseRemaining };
+    const rem: Record<ColorLetter, number> = { ...baseRemaining }
     for (const a of assignment) {
-      if (a && rem[a] > 0) rem[a] -= 1;
+      if (a && rem[a] > 0) rem[a] -= 1
     }
 
-    let minP = 1;
+    let minP = 1
     for (const c of neededColors) {
-      const need = rem[c];
-      if (need <= 0) continue;
-      const K = deck.landColorSources[c] ?? 0;
-      const p = hg.atLeast(deck.deckSize, K, seen, need);
-      minP = Math.min(minP, p);
-      if (minP === 0) break;
+      const need = rem[c]
+      if (need <= 0) continue
+      const K = deck.landColorSources[c] ?? 0
+      const p = hg.atLeast(deck.deckSize, K, seen, need)
+      minP = Math.min(minP, p)
+      if (minP === 0) break
     }
-    best = Math.max(best, minP);
+    best = Math.max(best, minP)
   }
 
   function dfs(i: number, assignment: Array<ColorLetter | null>) {
     if (i === onlineProducers.length) {
-      evalAssignment(assignment);
-      return;
+      evalAssignment(assignment)
+      return
     }
     for (const opt of prodOptions[i]) {
-      assignment.push(opt);
-      dfs(i + 1, assignment);
-      assignment.pop();
+      assignment.push(opt)
+      dfs(i + 1, assignment)
+      assignment.pop()
     }
   }
 
-  dfs(0, []);
-  return best;
+  dfs(0, [])
+  return best
 }
 
 function netPerTurn(p: ProducerInDeck): number {
-  return Math.max(0, (p.def.producesAmount ?? 0) - (p.def.activationTax ?? 0));
+  return Math.max(0, (p.def.producesAmount ?? 0) - (p.def.activationTax ?? 0))
 }
 
 function castabilityGivenOnlineSet(
@@ -2345,17 +2396,17 @@ function castabilityGivenOnlineSet(
   ctx: AccelContext,
   onlineSet: ProducerInDeck[]
 ): CastabilityResult {
-  const extraMana = onlineSet.reduce((s, p) => s + netPerTurn(p), 0);
+  const extraMana = onlineSet.reduce((s, p) => s + netPerTurn(p), 0)
 
-  const landsNeeded = Math.max(0, spell.mv - extraMana);
-  if (landsNeeded > turn) return { p1: 0, p2: 0 };
+  const landsNeeded = Math.max(0, spell.mv - extraMana)
+  if (landsNeeded > turn) return { p1: 0, p2: 0 }
 
-  const seen = cardsSeenByTurn(turn, ctx.playDraw);
-  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, onlineSet);
-  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, landsNeeded);
-  const p2 = p1 * pLandsEnough;
+  const seen = cardsSeenByTurn(turn, ctx.playDraw)
+  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, onlineSet)
+  const pLandsEnough = hg.atLeast(deck.deckSize, deck.totalLands, seen, landsNeeded)
+  const p2 = p1 * pLandsEnough
 
-  return { p1, p2 };
+  return { p1, p2 }
 }
 
 // Approx. disjoint scenario calculation for K=0,1,2 online useful producers.
@@ -2371,89 +2422,91 @@ export function computeAcceleratedCastabilityAtTurn(
   const p = producers
     .filter((pd) => pd.copies > 0)
     .map((pd) => ({ pd, pOnline: producerOnlineProbByTurn(hg, deck, pd, turn, ctx) }))
-    .filter((x) => x.pOnline > 0);
+    .filter((x) => x.pOnline > 0)
 
   if (p.length === 0 || kMax === 0) {
-    return computeBaseCastability(hg, deck, spell, turn, ctx);
+    return computeBaseCastability(hg, deck, spell, turn, ctx)
   }
 
   // Keep only most relevant producers
-  p.sort((a, b) => (b.pOnline * netPerTurn(b.pd)) - (a.pOnline * netPerTurn(a.pd)));
-  const candidates = p.slice(0, 18);
+  p.sort((a, b) => b.pOnline * netPerTurn(b.pd) - a.pOnline * netPerTurn(a.pd))
+  const candidates = p.slice(0, 18)
 
-  const probs = candidates.map((x) => x.pOnline);
-  const list = candidates.map((x) => x.pd);
+  const probs = candidates.map((x) => x.pOnline)
+  const list = candidates.map((x) => x.pd)
 
   // p0 = Π(1-pi)
-  let p0 = 1;
-  for (const pi of probs) p0 *= (1 - pi);
-  p0 = Math.max(0, Math.min(1, p0));
+  let p0 = 1
+  for (const pi of probs) p0 *= 1 - pi
+  p0 = Math.max(0, Math.min(1, p0))
 
   // weights for exactly-1
-  const w1: number[] = [];
-  let p1 = 0;
+  const w1: number[] = []
+  let p1 = 0
   for (let i = 0; i < probs.length; i++) {
-    const pi = probs[i];
-    const wi = (pi >= 1) ? 0 : (pi * p0) / (1 - pi);
-    w1.push(wi);
-    p1 += wi;
+    const pi = probs[i]
+    const wi = pi >= 1 ? 0 : (pi * p0) / (1 - pi)
+    w1.push(wi)
+    p1 += wi
   }
-  p1 = Math.max(0, Math.min(1, p1));
+  p1 = Math.max(0, Math.min(1, p1))
 
-  let p2 = 0;
+  let p2 = 0
   if (kMax >= 2) {
-    p2 = Math.max(0, Math.min(1, 1 - p0 - p1));
+    p2 = Math.max(0, Math.min(1, 1 - p0 - p1))
   }
 
-  const k0 = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, []);
+  const k0 = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [])
 
-  let outP1 = p0 * k0.p1;
-  let outP2 = p0 * k0.p2;
+  let outP1 = p0 * k0.p1
+  let outP2 = p0 * k0.p2
 
   if (kMax >= 1 && p1 > 0) {
-    let accP1 = 0, accP2 = 0;
+    let accP1 = 0,
+      accP2 = 0
     for (let i = 0; i < list.length; i++) {
-      const wi = w1[i] / p1;
-      const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[i]]);
-      accP1 += wi * res.p1;
-      accP2 += wi * res.p2;
+      const wi = w1[i] / p1
+      const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[i]])
+      accP1 += wi * res.p1
+      accP2 += wi * res.p2
     }
-    outP1 += p1 * accP1;
-    outP2 += p1 * accP2;
+    outP1 += p1 * accP1
+    outP2 += p1 * accP2
   }
 
   if (kMax >= 2 && p2 > 0 && list.length >= 2) {
-    let sumPairs = 0;
-    const pairWeights: Array<{ i: number; j: number; w: number }> = [];
+    let sumPairs = 0
+    const pairWeights: Array<{ i: number; j: number; w: number }> = []
 
     for (let i = 0; i < probs.length; i++) {
-      const pi = probs[i];
-      if (pi <= 0 || pi >= 1) continue;
+      const pi = probs[i]
+      if (pi <= 0 || pi >= 1) continue
       for (let j = i + 1; j < probs.length; j++) {
-        const pj = probs[j];
-        if (pj <= 0 || pj >= 1) continue;
-        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj));
+        const pj = probs[j]
+        if (pj <= 0 || pj >= 1) continue
+        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj))
         if (w > 0) {
-          pairWeights.push({ i, j, w });
-          sumPairs += w;
+          pairWeights.push({ i, j, w })
+          sumPairs += w
         }
       }
     }
 
     if (sumPairs > 0) {
-      let accP1 = 0, accP2 = 0;
+      let accP1 = 0,
+        accP2 = 0
       for (const pw of pairWeights) {
-        const wNorm = pw.w / sumPairs;
-        const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[pw.i], list[pw.j]]);
-        accP1 += wNorm * res.p1;
-        accP2 += wNorm * res.p2;
+        const wNorm = pw.w / sumPairs
+        const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[pw.i], list[pw.j]])
+        accP1 += wNorm * res.p1
+        accP2 += wNorm * res.p2
       }
-      outP1 += p2 * accP1;
-      outP2 += p2 * accP2;
+      outP1 += p2 * accP1
+      outP2 += p2 * accP2
     }
   }
 
-  return { p1: Math.max(0, Math.min(1, outP1)), p2: Math.max(0, Math.min(1, outP2)) };
+  return { p1: Math.max(0, Math.min(1, outP1)), p2: Math.max(0, Math.min(1, outP2)) }
 }
 
 export function findAcceleratedTurn(
@@ -2464,12 +2517,12 @@ export function findAcceleratedTurn(
   ctx: AccelContext,
   minProb: number = 0.05
 ): { acceleratedTurn: number | null; withAccelAtTurn?: CastabilityResult } {
-  const naturalTurn = spell.mv;
+  const naturalTurn = spell.mv
   for (let t = 1; t < naturalTurn; t++) {
-    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, t, producers, ctx, 2);
-    if (res.p2 >= minProb) return { acceleratedTurn: t, withAccelAtTurn: res };
+    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, t, producers, ctx, 2)
+    if (res.p2 >= minProb) return { acceleratedTurn: t, withAccelAtTurn: res }
   }
-  return { acceleratedTurn: null };
+  return { acceleratedTurn: null }
 }
 
 export function computeAcceleratedCastability(
@@ -2478,20 +2531,28 @@ export function computeAcceleratedCastability(
   producers: ProducerInDeck[],
   ctx: AccelContext
 ): AcceleratedCastabilityResult {
-  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20));
+  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
 
-  const naturalTurn = spell.mv;
-  const base = computeBaseCastability(hg, deck, spell, naturalTurn, ctx);
+  const naturalTurn = spell.mv
+  const base = computeBaseCastability(hg, deck, spell, naturalTurn, ctx)
   const withAcceleration = computeAcceleratedCastabilityAtTurn(
-    hg, deck, spell, naturalTurn, producers, ctx, 2
-  );
+    hg,
+    deck,
+    spell,
+    naturalTurn,
+    producers,
+    ctx,
+    2
+  )
 
-  const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, 0.05);
+  const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, 0.05)
 
-  const scored = producers.map((pd) => {
-    const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx);
-    return { name: pd.def.name, score: pOnline * netPerTurn(pd) };
-  }).sort((a, b) => b.score - a.score);
+  const scored = producers
+    .map((pd) => {
+      const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx)
+      return { name: pd.def.name, score: pOnline * netPerTurn(pd) }
+    })
+    .sort((a, b) => b.score - a.score)
 
   return {
     base,
@@ -2499,7 +2560,7 @@ export function computeAcceleratedCastability(
     accelerationImpact: withAcceleration.p2 - base.p2,
     acceleratedTurn: accel.acceleratedTurn,
     keyAccelerators: scored.slice(0, 3).map((x) => x.name),
-  };
+  }
 }
 ```
 
@@ -2509,28 +2570,31 @@ export function computeAcceleratedCastability(
 
 ```typescript
 // src/castability/__tests__/acceleratedAnalyticEngine.test.ts
-import { describe, it, expect } from "vitest";
-import { Hypergeom } from "../hypergeom";
-import { computeAcceleratedCastabilityAtTurn, producerOnlineProbByTurn } from "../acceleratedAnalyticEngine";
-import type { DeckManaProfile, ManaCost, ProducerInDeck, AccelContext } from "../types";
-import { COLOR } from "../types";
+import { describe, it, expect } from 'vitest'
+import { Hypergeom } from '../hypergeom'
+import {
+  computeAcceleratedCastabilityAtTurn,
+  producerOnlineProbByTurn,
+} from '../acceleratedAnalyticEngine'
+import type { DeckManaProfile, ManaCost, ProducerInDeck, AccelContext } from '../types'
+import { COLOR } from '../types'
 
-const ctx: AccelContext = { playDraw: "PLAY", removalRate: 0.25, defaultRockSurvival: 0.98 };
+const ctx: AccelContext = { playDraw: 'PLAY', removalRate: 0.25, defaultRockSurvival: 0.98 }
 
 function mkDeck(): DeckManaProfile {
   return {
     deckSize: 60,
     totalLands: 24,
-    landColorSources: { G: 14, U: 10, R: 10, B: 8, W: 8 }
-  };
+    landColorSources: { G: 14, U: 10, R: 10, B: 8, W: 8 },
+  }
 }
 
 function mkElf(copies: number): ProducerInDeck {
   return {
     copies,
     def: {
-      name: "Llanowar Elves",
-      type: "DORK",
+      name: 'Llanowar Elves',
+      type: 'DORK',
       castCostGeneric: 0,
       castCostColors: { G: 1 },
       delay: 1,
@@ -2541,60 +2605,60 @@ function mkElf(copies: number): ProducerInDeck {
       producesAny: false,
       oneShot: false,
       survivalBase: 0.75,
-    }
-  };
+    },
+  }
 }
 
 function mkSignet(copies: number): ProducerInDeck {
   return {
     copies,
     def: {
-      name: "Arcane Signet",
-      type: "ROCK",
+      name: 'Arcane Signet',
+      type: 'ROCK',
       castCostGeneric: 2,
       castCostColors: {},
       delay: 0,
       isCreature: false,
       producesAmount: 1,
       activationTax: 0,
-      producesMask: COLOR.W|COLOR.U|COLOR.B|COLOR.R|COLOR.G,
+      producesMask: COLOR.W | COLOR.U | COLOR.B | COLOR.R | COLOR.G,
       producesAny: true,
       oneShot: false,
       survivalBase: 0.98,
-    }
-  };
+    },
+  }
 }
 
-describe("producerOnlineProbByTurn", () => {
-  it("returns 0 if cannot be online in time (tLatest<1)", () => {
-    const hg = new Hypergeom(200);
-    const deck = mkDeck();
-    const elf = mkElf(4);
-    const p = producerOnlineProbByTurn(hg, deck, elf, 2, ctx);
-    expect(p).toBe(0);
-  });
-});
+describe('producerOnlineProbByTurn', () => {
+  it('returns 0 if cannot be online in time (tLatest<1)', () => {
+    const hg = new Hypergeom(200)
+    const deck = mkDeck()
+    const elf = mkElf(4)
+    const p = producerOnlineProbByTurn(hg, deck, elf, 2, ctx)
+    expect(p).toBe(0)
+  })
+})
 
-describe("computeAcceleratedCastabilityAtTurn", () => {
-  it("Elf package increases probability to cast MV3 on turn 2 (ramp)", () => {
-    const hg = new Hypergeom(200);
-    const deck = mkDeck();
+describe('computeAcceleratedCastabilityAtTurn', () => {
+  it('Elf package increases probability to cast MV3 on turn 2 (ramp)', () => {
+    const hg = new Hypergeom(200)
+    const deck = mkDeck()
 
-    const spell: ManaCost = { mv: 3, generic: 2, pips: { G: 1 } }; // 2G
-    const noProd = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 2, [], ctx, 2);
-    const withElf = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 2, [mkElf(4)], ctx, 2);
+    const spell: ManaCost = { mv: 3, generic: 2, pips: { G: 1 } } // 2G
+    const noProd = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 2, [], ctx, 2)
+    const withElf = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 2, [mkElf(4)], ctx, 2)
 
-    expect(withElf.p2).toBeGreaterThan(noProd.p2);
-  });
+    expect(withElf.p2).toBeGreaterThan(noProd.p2)
+  })
 
-  it("Arcane Signet does not meaningfully enable MV2 on turn 1 (obvious)", () => {
-    const hg = new Hypergeom(200);
-    const deck = mkDeck();
-    const spell: ManaCost = { mv: 2, generic: 2, pips: {} }; // {2}
-    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 1, [mkSignet(4)], ctx, 2);
-    expect(res.p2).toBe(0);
-  });
-});
+  it('Arcane Signet does not meaningfully enable MV2 on turn 1 (obvious)', () => {
+    const hg = new Hypergeom(200)
+    const deck = mkDeck()
+    const spell: ManaCost = { mv: 2, generic: 2, pips: {} } // {2}
+    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 1, [mkSignet(4)], ctx, 2)
+    expect(res.p2).toBe(0)
+  })
+})
 ```
 
 ---
@@ -2611,123 +2675,135 @@ Usage:
   worker.onmessage = (ev) => { ... }
 */
 
-import { COLOR, type ColorLetter, type ColorMask, type ManaCost, type ManaProducerDef } from "./types";
+import {
+  COLOR,
+  type ColorLetter,
+  type ColorMask,
+  type ManaCost,
+  type ManaProducerDef,
+} from './types'
 
 export type SimCard =
-  | { kind: "LAND"; producesMask: ColorMask; entersTapped?: boolean }
-  | { kind: "PRODUCER"; producer: ManaProducerDef }
-  | { kind: "SPELL"; id: string; cost: ManaCost };
+  | { kind: 'LAND'; producesMask: ColorMask; entersTapped?: boolean }
+  | { kind: 'PRODUCER'; producer: ManaProducerDef }
+  | { kind: 'SPELL'; id: string; cost: ManaCost }
 
 export interface SimRequest {
-  type: "RUN";
+  type: 'RUN'
   payload: {
-    deck: SimCard[];           // deck list as flat array
-    spells: { id: string; cost: ManaCost }[]; // spells to track
-    maxTurn: number;           // how far to simulate
-    iterations: number;        // 1000..2500 typical
-    playDraw: "PLAY" | "DRAW";
-    removalRate: number;       // attrition per exposed turn for creatures
-  };
+    deck: SimCard[] // deck list as flat array
+    spells: { id: string; cost: ManaCost }[] // spells to track
+    maxTurn: number // how far to simulate
+    iterations: number // 1000..2500 typical
+    playDraw: 'PLAY' | 'DRAW'
+    removalRate: number // attrition per exposed turn for creatures
+  }
 }
 
 export interface SimResponse {
-  type: "RESULT";
+  type: 'RESULT'
   payload: {
-    iterations: number;
-    maxTurn: number;
-    castableByTurn: Record<string, number[]>; // [spellId][t] = P(castable by turn t+1)
-    avgCastTurn: Record<string, number>;      // expected turn of first cast
-    durationMs: number;
-  };
+    iterations: number
+    maxTurn: number
+    castableByTurn: Record<string, number[]> // [spellId][t] = P(castable by turn t+1)
+    avgCastTurn: Record<string, number> // expected turn of first cast
+    durationMs: number
+  }
 }
 
 function shuffle<T>(arr: T[]): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = (Math.random() * (i + 1)) | 0;
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const j = (Math.random() * (i + 1)) | 0
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return arr;
+  return arr
 }
 
 function countPips(cost: ManaCost): number {
-  return Object.values(cost.pips).reduce((a, v) => a + (v ?? 0), 0);
+  return Object.values(cost.pips).reduce((a, v) => a + (v ?? 0), 0)
 }
 
 function canPay(
-  cost: ManaCost, 
+  cost: ManaCost,
   available: { totalMana: number; colorSources: Record<ColorLetter, number> }
 ): boolean {
-  if (available.totalMana < cost.mv) return false;
+  if (available.totalMana < cost.mv) return false
   for (const c of Object.keys(cost.pips) as ColorLetter[]) {
-    const need = cost.pips[c] ?? 0;
-    if ((available.colorSources[c] ?? 0) < need) return false;
+    const need = cost.pips[c] ?? 0
+    if ((available.colorSources[c] ?? 0) < need) return false
   }
-  return true;
+  return true
 }
 
 function landChoiceScore(producesMask: ColorMask, haveMask: ColorMask): number {
-  const newColors = producesMask & ~haveMask;
-  return popcount(newColors);
+  const newColors = producesMask & ~haveMask
+  return popcount(newColors)
 }
 
 function popcount(x: number): number {
-  x >>>= 0;
-  let c = 0;
-  while (x) { x &= (x - 1) >>> 0; c++; }
-  return c;
+  x >>>= 0
+  let c = 0
+  while (x) {
+    x &= (x - 1) >>> 0
+    c++
+  }
+  return c
 }
 
 function maskToColorCounts(mask: ColorMask): Record<ColorLetter, number> {
   return {
-    W: (mask & COLOR.W) ? 1 : 0,
-    U: (mask & COLOR.U) ? 1 : 0,
-    B: (mask & COLOR.B) ? 1 : 0,
-    R: (mask & COLOR.R) ? 1 : 0,
-    G: (mask & COLOR.G) ? 1 : 0,
-    C: (mask & COLOR.C) ? 1 : 0,
-  };
+    W: mask & COLOR.W ? 1 : 0,
+    U: mask & COLOR.U ? 1 : 0,
+    B: mask & COLOR.B ? 1 : 0,
+    R: mask & COLOR.R ? 1 : 0,
+    G: mask & COLOR.G ? 1 : 0,
+    C: mask & COLOR.C ? 1 : 0,
+  }
 }
 
 function producerNetPerTurn(p: ManaProducerDef): number {
-  return Math.max(0, (p.producesAmount ?? 0) - (p.activationTax ?? 0));
+  return Math.max(0, (p.producesAmount ?? 0) - (p.activationTax ?? 0))
 }
 
 function producerProducesMask(p: ManaProducerDef): ColorMask {
-  return p.producesAny ? (COLOR.W|COLOR.U|COLOR.B|COLOR.R|COLOR.G|COLOR.C) : p.producesMask;
+  return p.producesAny ? COLOR.W | COLOR.U | COLOR.B | COLOR.R | COLOR.G | COLOR.C : p.producesMask
 }
 
 type OnlineProducerState = {
-  p: ManaProducerDef;
-  onlineAt: number;
-  isCreature: boolean;
-};
+  p: ManaProducerDef
+  onlineAt: number
+  isCreature: boolean
+}
 
 function drawHand(deck: SimCard[], size: number): SimCard[] {
-  return deck.slice(0, size);
+  return deck.slice(0, size)
 }
 
 // TODO: Replace with London Mulligan heuristic (deck-aware).
 function keepHandSimple(hand: SimCard[]): boolean {
-  const lands = hand.filter((c) => c.kind === "LAND").length;
-  return lands >= 2 && lands <= 5;
+  const lands = hand.filter((c) => c.kind === 'LAND').length
+  return lands >= 2 && lands <= 5
 }
 
 function mulliganSimple(deck: SimCard[]): { hand: SimCard[]; bottomed: SimCard[] } {
-  const h7 = drawHand(deck, 7);
-  if (keepHandSimple(h7)) return { hand: h7, bottomed: [] };
-  const h6 = drawHand(deck, 7);
-  let idx = -1;
-  let bestMv = -1;
+  const h7 = drawHand(deck, 7)
+  if (keepHandSimple(h7)) return { hand: h7, bottomed: [] }
+  const h6 = drawHand(deck, 7)
+  let idx = -1
+  let bestMv = -1
   for (let i = 0; i < h6.length; i++) {
-    const c = h6[i];
-    if (c.kind === "SPELL") {
-      if (c.cost.mv > bestMv) { bestMv = c.cost.mv; idx = i; }
+    const c = h6[i]
+    if (c.kind === 'SPELL') {
+      if (c.cost.mv > bestMv) {
+        bestMv = c.cost.mv
+        idx = i
+      }
     }
   }
-  if (idx < 0) idx = h6.length - 1;
-  const bottomed = [h6[idx]];
-  const hand = h6.filter((_, i) => i !== idx);
-  return { hand, bottomed };
+  if (idx < 0) idx = h6.length - 1
+  const bottomed = [h6[idx]]
+  const hand = h6.filter((_, i) => i !== idx)
+  return { hand, bottomed }
 }
 
 function computeAvailableMana(
@@ -2735,70 +2811,77 @@ function computeAvailableMana(
   landsInPlay: SimCard[],
   producersInPlay: OnlineProducerState[],
   removalRate: number
-): { totalMana: number; colorSources: Record<ColorLetter, number>; producersInPlay: OnlineProducerState[] } {
-  const survivors: OnlineProducerState[] = [];
+): {
+  totalMana: number
+  colorSources: Record<ColorLetter, number>
+  producersInPlay: OnlineProducerState[]
+} {
+  const survivors: OnlineProducerState[] = []
   for (const s of producersInPlay) {
     if (s.isCreature && turn > 1) {
-      if (Math.random() < removalRate) continue;
+      if (Math.random() < removalRate) continue
     }
-    survivors.push(s);
+    survivors.push(s)
   }
 
-  let total = landsInPlay.length;
-  let haveMask: ColorMask = 0;
-  let colorCounts: Record<ColorLetter, number> = { W:0,U:0,B:0,R:0,G:0,C:0 };
+  let total = landsInPlay.length
+  let haveMask: ColorMask = 0
+  let colorCounts: Record<ColorLetter, number> = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
 
   for (const l of landsInPlay) {
-    if (l.kind !== "LAND") continue;
-    const m = l.producesMask;
-    haveMask |= m;
-    const cc = maskToColorCounts(m);
-    for (const k in cc) colorCounts[k as ColorLetter] += cc[k as ColorLetter];
+    if (l.kind !== 'LAND') continue
+    const m = l.producesMask
+    haveMask |= m
+    const cc = maskToColorCounts(m)
+    for (const k in cc) colorCounts[k as ColorLetter] += cc[k as ColorLetter]
   }
 
   for (const s of survivors) {
     if (turn >= s.onlineAt) {
-      const net = producerNetPerTurn(s.p);
-      total += net;
-      const m = producerProducesMask(s.p);
-      const cc = maskToColorCounts(m);
-      for (const k in cc) colorCounts[k as ColorLetter] += cc[k as ColorLetter];
+      const net = producerNetPerTurn(s.p)
+      total += net
+      const m = producerProducesMask(s.p)
+      const cc = maskToColorCounts(m)
+      for (const k in cc) colorCounts[k as ColorLetter] += cc[k as ColorLetter]
     }
   }
 
-  return { totalMana: total, colorSources: colorCounts, producersInPlay: survivors };
+  return { totalMana: total, colorSources: colorCounts, producersInPlay: survivors }
 }
 
 function canCastProducerNow(
-  p: ManaProducerDef, 
-  availableTotal: number, 
+  p: ManaProducerDef,
+  availableTotal: number,
   availableColors: Record<ColorLetter, number>
 ): boolean {
-  const needTotal = p.castCostGeneric + Object.values(p.castCostColors ?? {})
-    .reduce((a, v) => a + (v ?? 0), 0);
-  if (availableTotal < needTotal) return false;
+  const needTotal =
+    p.castCostGeneric + Object.values(p.castCostColors ?? {}).reduce((a, v) => a + (v ?? 0), 0)
+  if (availableTotal < needTotal) return false
   for (const c of Object.keys(p.castCostColors ?? {}) as ColorLetter[]) {
-    const need = p.castCostColors[c] ?? 0;
-    if ((availableColors[c] ?? 0) < need) return false;
+    const need = p.castCostColors[c] ?? 0
+    if ((availableColors[c] ?? 0) < need) return false
   }
-  return true;
+  return true
 }
 
 function playLandGreedy(hand: SimCard[], landsInPlay: SimCard[], haveMask: ColorMask): boolean {
-  let bestIdx = -1;
-  let bestScore = -1;
+  let bestIdx = -1
+  let bestScore = -1
   for (let i = 0; i < hand.length; i++) {
-    const c = hand[i];
-    if (c.kind !== "LAND") continue;
-    const score = landChoiceScore(c.producesMask, haveMask);
-    if (score > bestScore) { bestScore = score; bestIdx = i; }
+    const c = hand[i]
+    if (c.kind !== 'LAND') continue
+    const score = landChoiceScore(c.producesMask, haveMask)
+    if (score > bestScore) {
+      bestScore = score
+      bestIdx = i
+    }
   }
   if (bestIdx >= 0) {
-    landsInPlay.push(hand[bestIdx]);
-    hand.splice(bestIdx, 1);
-    return true;
+    landsInPlay.push(hand[bestIdx])
+    hand.splice(bestIdx, 1)
+    return true
   }
-  return false;
+  return false
 }
 
 function playRampGreedy(
@@ -2809,109 +2892,119 @@ function playRampGreedy(
   availableTotal: number,
   availableColors: Record<ColorLetter, number>
 ): boolean {
-  let bestIdx = -1;
-  let bestScore = -1;
+  let bestIdx = -1
+  let bestScore = -1
 
   for (let i = 0; i < hand.length; i++) {
-    const c = hand[i];
-    if (c.kind !== "PRODUCER") continue;
-    const p = c.producer;
-    if (!canCastProducerNow(p, availableTotal, availableColors)) continue;
+    const c = hand[i]
+    if (c.kind !== 'PRODUCER') continue
+    const p = c.producer
+    if (!canCastProducerNow(p, availableTotal, availableColors)) continue
 
-    const net = producerNetPerTurn(p);
-    const breadth = popcount(producerProducesMask(p));
-    const score = net * 10 + breadth;
+    const net = producerNetPerTurn(p)
+    const breadth = popcount(producerProducesMask(p))
+    const score = net * 10 + breadth
 
-    if (score > bestScore) { bestScore = score; bestIdx = i; }
+    if (score > bestScore) {
+      bestScore = score
+      bestIdx = i
+    }
   }
 
   if (bestIdx >= 0) {
-    const card = hand[bestIdx] as any;
-    const p: ManaProducerDef = card.producer;
-    producersInPlay.push({ p, onlineAt: turn + (p.delay ?? 0), isCreature: !!p.isCreature });
-    hand.splice(bestIdx, 1);
-    return true;
+    const card = hand[bestIdx] as any
+    const p: ManaProducerDef = card.producer
+    producersInPlay.push({ p, onlineAt: turn + (p.delay ?? 0), isCreature: !!p.isCreature })
+    hand.splice(bestIdx, 1)
+    return true
   }
-  return false;
+  return false
 }
 
 function initOutcome(spells: { id: string; cost: ManaCost }[], maxTurn: number) {
-  const castableByTurn: Record<string, number[]> = {};
-  const firstCastTurnSum: Record<string, number> = {};
+  const castableByTurn: Record<string, number[]> = {}
+  const firstCastTurnSum: Record<string, number> = {}
   for (const s of spells) {
-    castableByTurn[s.id] = new Array(maxTurn).fill(0);
-    firstCastTurnSum[s.id] = 0;
+    castableByTurn[s.id] = new Array(maxTurn).fill(0)
+    firstCastTurnSum[s.id] = 0
   }
-  return { castableByTurn, firstCastTurnSum };
+  return { castableByTurn, firstCastTurnSum }
 }
 
-function runSimulation(req: SimRequest["payload"]): SimResponse["payload"] {
-  const t0 = performance.now();
-  const { deck, spells, maxTurn, iterations, playDraw, removalRate } = req;
+function runSimulation(req: SimRequest['payload']): SimResponse['payload'] {
+  const t0 = performance.now()
+  const { deck, spells, maxTurn, iterations, playDraw, removalRate } = req
 
-  const { castableByTurn, firstCastTurnSum } = initOutcome(spells, maxTurn);
+  const { castableByTurn, firstCastTurnSum } = initOutcome(spells, maxTurn)
 
   for (let it = 0; it < iterations; it++) {
-    const d = shuffle(deck.slice());
-    const { hand } = mulliganSimple(d);
-    let libraryIndex = 7;
-    const handCards = hand.slice();
+    const d = shuffle(deck.slice())
+    const { hand } = mulliganSimple(d)
+    let libraryIndex = 7
+    const handCards = hand.slice()
 
-    const landsInPlay: SimCard[] = [];
-    const producersInPlay: OnlineProducerState[] = [];
-    let haveMask: ColorMask = 0;
+    const landsInPlay: SimCard[] = []
+    const producersInPlay: OnlineProducerState[] = []
+    let haveMask: ColorMask = 0
 
-    const firstCast: Record<string, number> = {};
-    for (const s of spells) firstCast[s.id] = maxTurn + 1;
+    const firstCast: Record<string, number> = {}
+    for (const s of spells) firstCast[s.id] = maxTurn + 1
 
     for (let turn = 1; turn <= maxTurn; turn++) {
-      const doDraw = !(turn === 1 && playDraw === "PLAY");
+      const doDraw = !(turn === 1 && playDraw === 'PLAY')
       if (doDraw && libraryIndex < d.length) {
-        handCards.push(d[libraryIndex++]);
+        handCards.push(d[libraryIndex++])
       }
 
-      const avail0 = computeAvailableMana(turn, landsInPlay, producersInPlay, removalRate);
-      playLandGreedy(handCards, landsInPlay, haveMask);
-      for (const l of landsInPlay) if (l.kind === "LAND") haveMask |= l.producesMask;
+      const avail0 = computeAvailableMana(turn, landsInPlay, producersInPlay, removalRate)
+      playLandGreedy(handCards, landsInPlay, haveMask)
+      for (const l of landsInPlay) if (l.kind === 'LAND') haveMask |= l.producesMask
 
-      const avail1 = computeAvailableMana(turn, landsInPlay, avail0.producersInPlay, removalRate);
-      playRampGreedy(turn, handCards, landsInPlay, avail1.producersInPlay, avail1.totalMana, avail1.colorSources);
+      const avail1 = computeAvailableMana(turn, landsInPlay, avail0.producersInPlay, removalRate)
+      playRampGreedy(
+        turn,
+        handCards,
+        landsInPlay,
+        avail1.producersInPlay,
+        avail1.totalMana,
+        avail1.colorSources
+      )
 
-      const avail2 = computeAvailableMana(turn, landsInPlay, avail1.producersInPlay, removalRate);
+      const avail2 = computeAvailableMana(turn, landsInPlay, avail1.producersInPlay, removalRate)
 
       for (const s of spells) {
-        if (firstCast[s.id] <= maxTurn) continue;
+        if (firstCast[s.id] <= maxTurn) continue
         if (canPay(s.cost, { totalMana: avail2.totalMana, colorSources: avail2.colorSources })) {
-          firstCast[s.id] = turn;
+          firstCast[s.id] = turn
         }
       }
     }
 
     for (const s of spells) {
-      const fc = firstCast[s.id];
-      firstCastTurnSum[s.id] += fc;
+      const fc = firstCast[s.id]
+      firstCastTurnSum[s.id] += fc
       for (let t = 1; t <= maxTurn; t++) {
-        if (fc <= t) castableByTurn[s.id][t - 1] += 1;
+        if (fc <= t) castableByTurn[s.id][t - 1] += 1
       }
     }
   }
 
   for (const s of spells) {
-    for (let t = 0; t < maxTurn; t++) castableByTurn[s.id][t] /= iterations;
+    for (let t = 0; t < maxTurn; t++) castableByTurn[s.id][t] /= iterations
   }
-  const avgCastTurn: Record<string, number> = {};
-  for (const s of spells) avgCastTurn[s.id] = firstCastTurnSum[s.id] / iterations;
+  const avgCastTurn: Record<string, number> = {}
+  for (const s of spells) avgCastTurn[s.id] = firstCastTurnSum[s.id] / iterations
 
-  const durationMs = performance.now() - t0;
-  return { iterations, maxTurn, castableByTurn, avgCastTurn, durationMs };
+  const durationMs = performance.now() - t0
+  return { iterations, maxTurn, castableByTurn, avgCastTurn, durationMs }
 }
 
 self.onmessage = (ev: MessageEvent<SimRequest>) => {
-  if (!ev.data || ev.data.type !== "RUN") return;
-  const result = runSimulation(ev.data.payload);
-  const msg: SimResponse = { type: "RESULT", payload: result };
-  self.postMessage(msg);
-};
+  if (!ev.data || ev.data.type !== 'RUN') return
+  const result = runSimulation(ev.data.payload)
+  const msg: SimResponse = { type: 'RESULT', payload: result }
+  self.postMessage(msg)
+}
 ```
 
 ---
@@ -2927,24 +3020,24 @@ self.onmessage = (ev: MessageEvent<SimRequest>) => {
 const deckProfile: DeckManaProfile = {
   deckSize: 60,
   totalLands: 24,
-  landColorSources: { G: 14, U: 10, R: 8 }
-};
+  landColorSources: { G: 14, U: 10, R: 8 },
+}
 
 // Charge mana_producers.json et map decklist → ProducerInDeck[]
 const producers: ProducerInDeck[] = [
-  { def: manaProducersJson["Llanowar Elves"], copies: 4 },
-  { def: manaProducersJson["Sol Ring"], copies: 1 }
-];
+  { def: manaProducersJson['Llanowar Elves'], copies: 4 },
+  { def: manaProducersJson['Sol Ring'], copies: 1 },
+]
 
 // Contexte
 const ctx: AccelContext = {
-  playDraw: "PLAY",
-  removalRate: 0.25,    // Medium interaction
-  defaultRockSurvival: 0.98
-};
+  playDraw: 'PLAY',
+  removalRate: 0.25, // Medium interaction
+  defaultRockSurvival: 0.98,
+}
 
 // Calcul
-const result = computeAcceleratedCastability(deckProfile, spellCost, producers, ctx);
+const result = computeAcceleratedCastability(deckProfile, spellCost, producers, ctx)
 ```
 
 **2. Simulation (toggle "Analyse avancée")**
@@ -2973,5 +3066,5 @@ worker.postMessage({
 
 ---
 
-*Document maintained by the ManaTuner Pro development team.*
-*Last updated: December 2025*
+_Document maintained by the ManaTuner development team._
+_Last updated: December 2025_
