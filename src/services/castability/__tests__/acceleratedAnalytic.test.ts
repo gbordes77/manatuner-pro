@@ -367,18 +367,18 @@ describe('producerOnlineProbByTurn', () => {
     expect(pDork).toBeGreaterThanOrEqual(0)
   })
 
-  it('should return 0 for ENHANCER type producers', () => {
+  it('should compute positive online probability for ENHANCER type producers', () => {
     const deck = makeGruulDeck()
     const ctx = makeGoldfishCtx()
     const enhancer: ProducerInDeck = {
       def: {
-        name: 'Generic Enhancer',
+        name: 'Badgermole Cub',
         type: 'ENHANCER',
         castCostGeneric: 1,
         castCostColors: { G: 1 },
-        delay: 1,
+        delay: 0, // ETB ramp
         isCreature: true,
-        producesAmount: 0,
+        producesAmount: 1,
         activationTax: 0,
         producesMask: COLOR_MASK.G,
         producesAny: false,
@@ -390,17 +390,18 @@ describe('producerOnlineProbByTurn', () => {
       copies: 4,
     }
 
+    // ENHANCER should have real online probability (treated like creature for draw/cast/survive)
     const p = producerOnlineProbByTurn(hg, deck, enhancer, 5, ctx)
-    expect(p).toBe(0)
+    expect(p).toBeGreaterThan(0)
   })
 
-  it('should model Badgermole Cub as immediate ramp (delay 0)', () => {
+  it('should model Badgermole Cub ENHANCER as immediate ramp (delay 0)', () => {
     const deck = makeGruulDeck()
     const ctx = makeGoldfishCtx()
     const cub: ProducerInDeck = {
       def: {
         name: 'Badgermole Cub',
-        type: 'DORK',
+        type: 'ENHANCER',
         castCostGeneric: 1,
         castCostColors: { G: 1 },
         delay: 0, // ETB ramp is immediate
@@ -410,6 +411,9 @@ describe('producerOnlineProbByTurn', () => {
         producesMask: COLOR_MASK.G,
         producesAny: false,
         oneShot: false,
+        enhancerBonus: 1,
+        enhancerBonusMask: COLOR_MASK.G,
+        enhancesTypes: ['DORK'],
       },
       copies: 4,
     }
@@ -626,20 +630,20 @@ describe('computeAcceleratedCastability', () => {
     }
   })
 
-  it('should not include ENHANCERs in keyAccelerators', () => {
+  it('should include ENHANCERs in keyAccelerators with synergy scoring', () => {
     const deck = makeGruulDeck()
     const spell = make4ManaGruulSpell()
     const ctx = makeGoldfishCtx()
 
     const enhancer: ProducerInDeck = {
       def: {
-        name: 'Generic Enhancer',
+        name: 'Badgermole Cub',
         type: 'ENHANCER',
         castCostGeneric: 1,
         castCostColors: { G: 1 },
-        delay: 1,
+        delay: 0,
         isCreature: true,
-        producesAmount: 0,
+        producesAmount: 1,
         activationTax: 0,
         producesMask: COLOR_MASK.G,
         producesAny: false,
@@ -654,7 +658,43 @@ describe('computeAcceleratedCastability', () => {
     const producers = [makeLlanowarElves(), enhancer]
     const result = computeAcceleratedCastability(deck, spell, producers, ctx)
 
-    expect(result.keyAccelerators).not.toContain('Generic Enhancer')
+    // ENHANCER should now appear in key accelerators
+    expect(result.keyAccelerators).toContain('Badgermole Cub')
+  })
+
+  it('should show higher acceleration impact with ENHANCER + dorks than dork alone', () => {
+    const deck = makeGruulDeck()
+    const spell = make4ManaGruulSpell()
+    const ctx = makeGoldfishCtx()
+
+    const elves = makeLlanowarElves()
+    const cub: ProducerInDeck = {
+      def: {
+        name: 'Badgermole Cub',
+        type: 'ENHANCER',
+        castCostGeneric: 1,
+        castCostColors: { G: 1 },
+        delay: 0,
+        isCreature: true,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: COLOR_MASK.G,
+        producesAny: false,
+        oneShot: false,
+        enhancerBonus: 1,
+        enhancerBonusMask: COLOR_MASK.G,
+        enhancesTypes: ['DORK'],
+      },
+      copies: 4,
+    }
+
+    // With just Elves
+    const elvesOnly = computeAcceleratedCastability(deck, spell, [elves], ctx)
+    // With Elves + Cub (Cub enhances Elves for +1G synergy in K=2)
+    const withCub = computeAcceleratedCastability(deck, spell, [elves, cub], ctx)
+
+    // Adding Cub should increase acceleration impact due to synergy
+    expect(withCub.accelerationImpact).toBeGreaterThan(elvesOnly.accelerationImpact)
   })
 })
 

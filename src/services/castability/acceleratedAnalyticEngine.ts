@@ -71,6 +71,65 @@ function producerOptionsForCost(
 }
 
 /**
+ * Calculate total bonus mana from ENHANCERs in an online set.
+ *
+ * Each ENHANCER adds enhancerBonus per compatible producer in the set.
+ * ENHANCERs also enhance other ENHANCERs (their earthbent land-creatures
+ * are creatures that tap for mana).
+ *
+ * Examples with Badgermole Cub (enhancerBonus=1, enhancesTypes=['DORK']):
+ *   [Cub]              → 0 bonus (no other producers to enhance)
+ *   [Cub, Elves]       → 1 bonus (Cub enhances Elves)
+ *   [Cub, Cub]         → 2 bonus (each Cub enhances the other's earthbend)
+ *   [Cub, Elves, Birds] → 2 bonus (Cub enhances both dorks)
+ */
+function enhancerBonusMana(onlineSet: ProducerInDeck[]): number {
+  let bonus = 0
+  for (const p of onlineSet) {
+    if (p.def.type !== 'ENHANCER' || !p.def.enhancerBonus) continue
+    const enhTypes = p.def.enhancesTypes ?? ['DORK']
+    const compatibles = onlineSet.filter((other) => {
+      if (other === p) return false
+      // Direct type match (e.g., DORK)
+      if (enhTypes.includes(other.def.type)) return true
+      // Other ENHANCERs that are creatures count as creature producers
+      // (their earthbent land-creature taps for mana)
+      if (other.def.type === 'ENHANCER' && other.def.isCreature) return true
+      return false
+    })
+    bonus += p.def.enhancerBonus * compatibles.length
+  }
+  return bonus
+}
+
+/**
+ * Build virtual producer entries for ENHANCER bonus color coverage.
+ *
+ * For the P1 color-assignment DFS, each enhancer bonus adds a virtual
+ * "producer slot" that can cover one pip of the bonus color.
+ */
+function buildEnhancerVirtualSlots(
+  onlineSet: ProducerInDeck[]
+): Array<{ producesAny: boolean; producesMask: number }> {
+  const slots: Array<{ producesAny: boolean; producesMask: number }> = []
+  for (const p of onlineSet) {
+    if (p.def.type !== 'ENHANCER' || !p.def.enhancerBonus) continue
+    const enhTypes = p.def.enhancesTypes ?? ['DORK']
+    const bonusMask = p.def.enhancerBonusMask ?? p.def.producesMask
+    const compatibles = onlineSet.filter((other) => {
+      if (other === p) return false
+      if (enhTypes.includes(other.def.type)) return true
+      if (other.def.type === 'ENHANCER' && other.def.isCreature) return true
+      return false
+    })
+    for (let i = 0; i < compatibles.length; i++) {
+      slots.push({ producesAny: false, producesMask: bonusMask })
+    }
+  }
+  return slots
+}
+
+/**
  * Calculate survival probability using unified model
  *
  * P_survive(n) = (1 - r_effective)^n
@@ -273,10 +332,8 @@ export function producerOnlineProbByTurn(
 ): number {
   const def = producer.def
 
-  // Skip ENHANCERs in instant mode - they require simulation
-  if (def.type === 'ENHANCER') {
-    return 0
-  }
+  // ENHANCERs are treated like creatures for draw/cast/survival probability.
+  // Their synergistic mana contribution is calculated in castabilityGivenOnlineSet.
 
   // Latest turn we can cast to have it online by turnTarget
   const tLatest = turnTarget - def.delay - 1
@@ -329,19 +386,25 @@ function bestP1GivenOnlineProducers(
     baseRemaining[c] = spell.pips[c] ?? 0
   }
 
-  // Filter to non-ENHANCER producers (ENHANCERs don't produce mana in instant mode)
-  const manaProducers = onlineProducers.filter((p) => p.def.type !== 'ENHANCER')
-
-  if (manaProducers.length === 0) {
-    // No producers, just use base land probability
+  // All producers (including ENHANCERs) contribute base color coverage
+  if (onlineProducers.length === 0) {
     return colorsOkGivenLands(hg, deck, spell, turn)
   }
 
-  // Each producer can cover at most 1 pip per turn
-  const prodOptions: Array<(LandManaColor | null)[]> = manaProducers.map((p) => {
+  // Each producer can cover at most 1 pip per turn from its base production
+  const prodOptions: Array<(LandManaColor | null)[]> = onlineProducers.map((p) => {
     const opts = producerOptionsForCost(p.def.producesAny, p.def.producesMask, neededColors)
     return [null, ...opts]
   })
+
+  // Add virtual slots for ENHANCER bonus colors (one G pip per enhanced dork)
+  const virtualSlots = buildEnhancerVirtualSlots(onlineProducers)
+  for (const slot of virtualSlots) {
+    const opts = producerOptionsForCost(slot.producesAny, slot.producesMask, neededColors)
+    if (opts.length > 0) {
+      prodOptions.push([null, ...opts])
+    }
+  }
 
   let best = 0
 
@@ -365,7 +428,7 @@ function bestP1GivenOnlineProducers(
   }
 
   function dfs(i: number, assignment: Array<LandManaColor | null>) {
-    if (i === manaProducers.length) {
+    if (i === prodOptions.length) {
       evalAssignment(assignment)
       return
     }
@@ -392,11 +455,10 @@ function castabilityGivenOnlineSet(
   ctx: AccelContext,
   onlineSet: ProducerInDeck[]
 ): CastabilityResult {
-  // Filter out ENHANCERs (disabled in instant mode)
-  const activeProducers = onlineSet.filter((p) => p.def.type !== 'ENHANCER')
-
-  // Calculate extra mana from online producers
-  const extraMana = activeProducers.reduce((s, p) => s + netManaPerTurn(p.def), 0)
+  // Calculate extra mana: base production + ENHANCER synergy bonus
+  const baseMana = onlineSet.reduce((s, p) => s + netManaPerTurn(p.def), 0)
+  const bonusMana = enhancerBonusMana(onlineSet)
+  const extraMana = baseMana + bonusMana
   const landsNeeded = Math.max(0, spell.mv - extraMana)
 
   if (landsNeeded > turn) return { p1: 0, p2: 0 }
@@ -410,9 +472,9 @@ function castabilityGivenOnlineSet(
     pips: { ...spell.pips },
   }
 
-  // Allocate producer colors to reduce pip requirements
+  // Allocate base producer colors to reduce pip requirements
   // (each producer can cover 1 pip of a color it produces)
-  for (const producer of activeProducers) {
+  for (const producer of onlineSet) {
     const colors = colorsFromMask(producer.def.producesMask)
     for (const color of colors) {
       if (producer.def.producesAny || colors.includes(color)) {
@@ -425,8 +487,21 @@ function castabilityGivenOnlineSet(
     }
   }
 
-  // Best P1 considering producer color contributions
-  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, activeProducers)
+  // Allocate ENHANCER bonus colors (one per enhanced compatible producer)
+  const virtualSlots = buildEnhancerVirtualSlots(onlineSet)
+  for (const slot of virtualSlots) {
+    const bonusColors = colorsFromMask(slot.producesMask)
+    for (const color of bonusColors) {
+      const current = reducedSpell.pips[color] ?? 0
+      if (current > 0) {
+        reducedSpell.pips[color] = current - 1
+        break
+      }
+    }
+  }
+
+  // Best P1 considering producer color contributions (including enhancer synergies)
+  const p1 = bestP1GivenOnlineProducers(hg, deck, spell, turn, ctx, onlineSet)
 
   // P2 = sum over possible land counts with reduced requirements
   let p2 = 0
@@ -469,8 +544,10 @@ export function computeAcceleratedCastabilityAtTurn(
   kMax: 0 | 1 | 2 = 2
 ): CastabilityResult {
   // Filter to producers with copies and non-zero online probability
+  // ENHANCERs are included: their base netMana > 0, and their synergy bonus
+  // is calculated dynamically in castabilityGivenOnlineSet
   const candidatesRaw = producers
-    .filter((pd) => pd.copies > 0 && pd.def.type !== 'ENHANCER') // Skip ENHANCERs
+    .filter((pd) => pd.copies > 0)
     .map((pd) => ({
       pd,
       pOnline: producerOnlineProbByTurn(hg, deck, pd, turn, ctx),
@@ -632,12 +709,21 @@ export function computeAcceleratedCastability(
 
   const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, DEFAULT_ACCELERATION_THRESHOLD)
 
-  // Key accelerators: top by marginal impact (excluding ENHANCERs)
+  // Key accelerators: top by marginal impact
+  // For ENHANCERs, estimate effective mana = base + bonus * avg dork co-online probability
+  const dorkPOnlineSum = producers
+    .filter((pd) => pd.def.type === 'DORK' && pd.copies > 0)
+    .reduce((s, pd) => s + producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx), 0)
+
   const scored = producers
-    .filter((pd) => pd.def.type !== 'ENHANCER')
     .map((pd) => {
       const pOnline = producerOnlineProbByTurn(hg, deck, pd, naturalTurn, ctx)
-      return { name: pd.def.name, score: pOnline * netManaPerTurn(pd.def) }
+      let effectiveMana = netManaPerTurn(pd.def)
+      if (pd.def.type === 'ENHANCER' && pd.def.enhancerBonus) {
+        // Expected bonus = enhancerBonus × expected number of co-online dorks
+        effectiveMana += pd.def.enhancerBonus * dorkPOnlineSum
+      }
+      return { name: pd.def.name, score: pOnline * effectiveMana }
     })
     .sort((a, b) => b.score - a.score)
 

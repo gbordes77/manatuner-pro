@@ -83,17 +83,29 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     // "Whenever you tap a creature for mana, add an additional {G}."
     // The earthbent land-creature taps for its normal mana + {G} from Cub.
     // If Cub dies, the +{G} bonus disappears (it's Cub's static ability).
-    // Modeled as DORK: +1 mana while alive, vulnerable to creature removal.
-    type: 'DORK',
+    //
+    // ENHANCER model:
+    //   producesAmount: 1  → earthbent land-creature gets +G from Cub's ability
+    //   enhancerBonus: 1   → each other creature dork also gets +G per tap
+    //   delay: 0           → Earthbend on ETB + land-creature has haste
+    //
+    // K-scenario impact:
+    //   K=1 (Cub alone):          +1G (earthbend bonus only)
+    //   K=2 (Cub + 1 dork):       +1G (base) + 1G (dork normal) + 1G (bonus) = 3G
+    //   K=2 (Cub + Cub):          +1G + 1G + mutual bonuses = 4G
+    type: 'ENHANCER',
     castCostGeneric: 1,
     castCostColors: { G: 1 },
     delay: 0, // Earthbend on ETB + haste = land-creature taps immediately
     isCreature: true,
-    producesAmount: 1, // +1G per turn while Cub is alive
+    producesAmount: 1, // +1G from earthbent land-creature triggering Cub's ability
     activationTax: 0,
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
+    enhancerBonus: 1, // +1G per creature that taps for mana
+    enhancerBonusMask: mask('G'),
+    enhancesTypes: ['DORK'], // Enhances creature mana producers
   },
 
   // 2-CMC Dorks
