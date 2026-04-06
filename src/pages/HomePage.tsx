@@ -138,8 +138,8 @@ export const HomePage: React.FC = () => {
       borderColor: theme.palette.mana.green,
     },
     {
-      title: '99% Accurate',
-      desc: 'Exact draw probability math',
+      title: 'Exact Math',
+      desc: 'Hypergeometric distribution',
       formula: 'P(X≥k)',
       manaColor: 'u' as const,
       color: isDark ? 'rgba(14, 104, 171, 0.15)' : '#e3f2fd',
