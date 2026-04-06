@@ -2,7 +2,76 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-06 (Fetchlands + Turn Plan audit) | **Tests:** 197 pass, 0 fail | **Build:** OK | **Commit:** 2a52182
+**Latest Session:** 2026-04-06 (ENHANCER + K=3 + Hybrid Mana) | **Tests:** 213 pass, 0 fail | **Build:** OK | **Commit:** 75e607d
+
+---
+
+## Session 2026-04-06 (part 4) — ENHANCER Type, K=3 Triples, Hybrid Mana
+
+### What Was Completed
+
+6 commits implementing proper mana enhancer modeling, extending the acceleration engine, and fixing hybrid mana:
+
+| Commit    | Description                                                               |
+| --------- | ------------------------------------------------------------------------- |
+| `51b7d9e` | ENHANCER type: Badgermole Cub scales with dork count                      |
+| `5b212f6` | Exclude Sticky Fingers from ramp (combat damage conditional)              |
+| `1bd4ab9` | K=3 triples + Gene Pollinator/Spider Manifestation seed + new sample deck |
+| `f2c3cef` | Hybrid mana `{R/G}` assigned to best color in accelerated castability     |
+| `75e607d` | Hybrid mana symbol rendering using mana-font `ms-rg` classes              |
+
+### Key Changes
+
+**1. ENHANCER Producer Type (was disabled, now fully implemented)**
+
+Badgermole Cub changed from `type: 'DORK'` (flat +1G) to `type: 'ENHANCER'` with `enhancerBonus: 1`. The engine now dynamically computes bonus mana based on how many creature dorks are co-online:
+
+- `enhancerBonusMana()` — synergy calculation
+- `buildEnhancerVirtualSlots()` — color assignment for bonus pips
+- Removed all `type !== 'ENHANCER'` filters from the analytic engine
+- ENHANCERs now have real draw/cast/survive probability (treated like creatures)
+- ENHANCERs included in keyAccelerators with synergy-aware scoring
+
+Files: `acceleratedAnalyticEngine.ts`, `manaProducerSeed.ts`, `manaProducers.ts`
+
+**2. K=3 Triple Scenarios (was capped at K=2 pairs)**
+
+Extended `computeAcceleratedCastabilityAtTurn` from K=0/1/2 to K=0/1/2/3:
+
+- P(K=2 exact) computed from pair weights (was P(K≥2) catch-all)
+- P(K≥3) = remainder, distributed across triples
+- C(n,3) evaluations — negligible perf cost with n=4-18 producer types
+- Default kMax changed from 2 to 3 in all call sites
+
+**3. Hybrid Mana Fixes**
+
+- `ManaCostRow.tsx` `useAcceleratedCastability`: hybrid `{R/G}` assigned to color with most deck sources (was `.find()` → always first alphabetically)
+- `ManaCostRow.tsx` `KeyruneManaSymbol`: renders `<i class="ms ms-rg ms-cost">` for split bicolor circle (was showing single-color icon)
+- `manaProducerService.ts` `parseManaCost`: now handles `/` in mana cost symbols
+
+**4. Ramp Detection Fix**
+
+- Combat-damage treasure creators excluded: `deals combat damage...create Treasure` pattern filtered out
+- Affects: Sticky Fingers, Professional Face-Breaker
+- Does NOT affect: Dockside Extortionist (ETB), Smothering Tithe (passive)
+
+**5. New Seed Cards & Sample Deck**
+
+- Gene Pollinator (DORK, G, any-color production)
+- Spider Manifestation (DORK, 1{R/G}, R/G production)
+- Sample deck: Nature's Rhythm / Badgermole Cub (Standard, 60 cards)
+
+### Current State
+
+- All features working, verified visually
+- 213 tests pass, 2 skipped
+- Server running on localhost:3000
+
+### What Needs To Be Done Next
+
+- The K=3 truncation still underestimates K=4+ scenarios (Cub + 3 dorks). Could extend to K=4 if needed but diminishing returns.
+- `castCostColors` in `ManaProducerDef` doesn't natively support hybrid casting costs. Currently picks one color. Would need type extension for full modeling.
+- Users with old `manatuner_producer_cache` in localStorage may still see Sticky Fingers as ramp until cache expires (7 days TTL).
 
 ---
 

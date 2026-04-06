@@ -119,3 +119,30 @@ AccelerationSettings → AccelerationContext → CastabilityTab → ManaCostRow
 **Bellman equation** is in `mulliganSimulatorAdvanced.ts:922-941`. The thresholds (keep7/6/5) are derived from backward induction EVs. Do not modify without understanding the recursive structure.
 
 **Fisher-Yates shuffle** — Every shuffle in the codebase MUST use the backward Fisher-Yates pattern. Never use `.sort(() => Math.random() - 0.5)` — it produces biased distributions.
+
+### ENHANCER Type & K=3 Engine (2026-04-06)
+
+**ENHANCER producer type** — Cards like Badgermole Cub that boost other dorks. Uses 3 fields:
+
+- `enhancerBonus: number` — mana added per enhanced creature
+- `enhancerBonusMask: ColorMask` — color of bonus
+- `enhancesTypes: ManaProducerType[]` — what types it enhances (default: `['DORK']`)
+
+**K=3 triple scenarios** — Engine evaluates K=0/1/2/3 producers online simultaneously (was K=0/1/2). Default `kMax=3`. Critical for ENHANCER + 2 dorks combos:
+
+```
+K=1 (Cub alone):     extraMana = 1G
+K=2 (Cub + Elves):   extraMana = 3G (1 base + 1 dork + 1 bonus)
+K=3 (Cub + 2 dorks): extraMana = 5G (1 base + 2 dorks + 2 bonuses)
+```
+
+**Hybrid mana** — `{R/G}` symbols in mana costs:
+
+- Base P1/P2 in `ManaCostRow.tsx`: `Math.max(pColor1, pColor2)` — correct
+- Accelerated castability: assigns to color with most deck sources
+- Display: uses mana-font `ms-rg` class for bicolor split circle
+- `parseManaCost` in `manaProducerService.ts`: handles `/` symbols
+
+**Combat-damage treasure exclusion** — `analyzeOracleForMana()` in `manaProducerService.ts` filters out `"deals combat damage...create Treasure"` pattern. Sticky Fingers = NOT ramp.
+
+**Sample deck** — Nature's Rhythm / Badgermole Cub (Standard). 4 producer types in seed: Llanowar Elves, Gene Pollinator, Spider Manifestation, Badgermole Cub.

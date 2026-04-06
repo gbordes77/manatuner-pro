@@ -5,6 +5,50 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-04-06
+
+### Mana Acceleration Engine v2.0 — ENHANCER Type & K=3 Triples
+
+Major upgrade to the mana acceleration system: properly models cards that enhance other mana producers, extends the probability engine from pairs to triples, and fixes hybrid mana handling throughout.
+
+### Added
+
+- **ENHANCER producer type**: Badgermole Cub now modeled as ENHANCER instead of flat DORK. Its "whenever you tap a creature for mana, add {G}" scales with co-online dorks:
+  - K=1 (Cub alone): +1G (earthbend bonus only)
+  - K=2 (Cub + 1 dork): +3G (base + dork + bonus)
+  - K=3 (Cub + 2 dorks): +5G (base + 2 dorks + 2 bonuses)
+- **K=3 triple scenarios**: Engine extended from K=0/1/2 to K=0/1/2/3. Evaluates all C(n,3) triples of producers for accurate multi-accelerator modeling. Critical for ENHANCER synergies.
+- **Gene Pollinator** added to seed: 1-CMC any-color DORK (`{T}, Tap a permanent: Add any`)
+- **Spider Manifestation** added to seed: 2-CMC R/G DORK (`{T}: Add {R} or {G}`)
+- **Hybrid mana symbol rendering**: `{R/G}`, `{W/U}`, etc. now display as proper bicolor split circles using mana-font's `ms-rg`, `ms-wu` classes
+- **Hybrid mana in accelerated castability**: `{R/G}` pips assigned to the color with most deck sources (was always picking first color alphabetically)
+- **New sample deck**: Nature's Rhythm / Badgermole Cub (Standard) replaces Light-Paws Auras
+
+### Fixed
+
+- **Sticky Fingers false ramp detection**: Combat-damage-conditional treasure creators (`"deals combat damage...create Treasure"`) excluded from ramp detection. Dockside Extortionist (ETB) still correctly detected.
+- **Hybrid mana cost parsing in producer service**: `parseManaCost()` now handles `{R/G}` symbols for Scryfall-detected producers
+- **ENHANCER tests updated**: 42 tests (was 41), including K=3 synergy verification
+
+### Architecture
+
+New helper functions in `acceleratedAnalyticEngine.ts`:
+
+- `enhancerBonusMana(onlineSet)` — computes synergy bonus for any online producer set
+- `buildEnhancerVirtualSlots(onlineSet)` — creates virtual color slots for P1 DFS color assignment
+
+ENHANCER fields in `ManaProducerDef` (existed in types, now used):
+
+- `enhancerBonus: number` — mana added per enhanced dork
+- `enhancerBonusMask: ColorMask` — color of bonus mana
+- `enhancesTypes: ManaProducerType[]` — which producer types are enhanced
+
+### Tests
+
+- 213 pass, 2 skipped (was 212)
+- New test: "K=3 should capture Cub + 2 dorks synergy better than K=2"
+- Updated ENHANCER tests from "should return 0" to "should compute positive probability"
+
 ## [2.2.0] - 2026-04-06
 
 ### Rebrand

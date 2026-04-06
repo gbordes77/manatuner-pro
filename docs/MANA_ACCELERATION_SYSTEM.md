@@ -15,7 +15,7 @@
 4. [Multi-Mana Lands — Random Variable Model](#4-multi-mana-lands--random-variable-model)
 5. [Mana Producers (Dorks/Rocks) — "Online by T"](#5-mana-producers-dorksrocks--online-by-t)
 6. [Survival — Unified Model](#6-survival--unified-model)
-7. [Combined Model: Lands + Producers — Disjoint Scenarios K=0/1/2](#7-combined-model-lands--producers--disjoint-scenarios-k012)
+7. [Combined Model: Lands + Producers — Disjoint Scenarios K=0/1/2/3](#7-combined-model-lands--producers--disjoint-scenarios-k0123)
 8. [Acceleration (Casting Before Natural Turn)](#8-acceleration-casting-before-natural-turn)
 9. [Advanced Mode — Smart Monte Carlo](#9-advanced-mode--smart-monte-carlo)
 10. [TypeScript Pseudo-Code (v1.1 Aligned)](#10-typescript-pseudo-code-v11-aligned)
@@ -763,16 +763,115 @@ interface ProducerInDeck {
 
 ---
 
+## 13) ENHANCER Producer Type (v2.0)
+
+### 13.1 Motivation
+
+Cards like **Badgermole Cub** don't produce mana themselves — they enhance other creature mana producers. Cub's ability: _"Whenever you tap a creature for mana, add an additional {G}."_ Plus Earthbend 1 (ETB: land becomes a creature with haste).
+
+This creates a **multiplicative effect**: the more dorks on the board, the more mana Cub generates. A flat `producesAmount: 1` drastically underestimates Cub in dork-heavy decks.
+
+### 13.2 Model
+
+ENHANCER fields in `ManaProducerDef`:
+
+```typescript
+enhancerBonus: number        // +1G per creature that taps for mana
+enhancerBonusMask: ColorMask // Color of the bonus (G for Cub)
+enhancesTypes: ManaProducerType[] // Which types it enhances (['DORK'])
+```
+
+In `castabilityGivenOnlineSet`, the total extra mana from an online set is:
+
+```
+extraMana = Σ netMana(regular_i)           // Base production from dorks/rocks
+          + Σ netMana(enhancer_j)          // Enhancer's own production (earthbend)
+          + Σ_j enhancerBonus_j × |compatible_j|  // Bonus per enhanced dork
+```
+
+Where `compatible_j` = other producers in the online set that match `enhancesTypes`. ENHANCERs also enhance other ENHANCERs' earthbent land-creatures (they're creatures that tap for mana).
+
+### 13.3 K-Scenario Impact
+
+| Online Set          | Extra Mana | Calculation                             |
+| ------------------- | ---------- | --------------------------------------- |
+| Cub alone           | 1G         | 1 base (earthbend)                      |
+| Cub + Elves         | 3G         | 1 base + 1 (Elves) + 1 (bonus on Elves) |
+| Cub + Cub           | 4G         | 1+1 base + 1+1 mutual bonus             |
+| Cub + Elves + Birds | 5G         | 1 base + 1+1 (dorks) + 1+1 (bonuses)    |
+
+### 13.4 Color Assignment
+
+ENHANCERs also add virtual color slots for the P1 DFS color assignment. `buildEnhancerVirtualSlots()` creates one `{producesAny: false, producesMask: enhancerBonusMask}` entry per enhanced dork, so the engine can allocate bonus G pips to reduce spell color requirements.
+
+---
+
+## 14) K=3 Triple Scenarios (v2.0)
+
+### 14.1 Why K=3
+
+The v1.1 engine truncated at K=2 (pairs). In a deck with 4 Llanowar Elves + 4 Badgermole Cub + 4 Gene Pollinator, having 3 producers online by T3-T4 is common. K=2 missed the critical ENHANCER + 2 dorks scenario.
+
+### 14.2 Implementation
+
+The probability mass is split exactly:
+
+```
+P(K=0)       = Π(1 - pᵢ)
+P(K=1 exact) = Σⱼ pⱼ × Π_{i≠j}(1 - pᵢ)
+P(K=2 exact) = Σ_{i<j} pᵢ pⱼ × P₀ / ((1-pᵢ)(1-pⱼ))
+P(K≥3)       = 1 - P₀ - P₁ - P₂
+
+Triple weights:
+w_{i,j,k} = pᵢ pⱼ pₖ × P₀ / ((1-pᵢ)(1-pⱼ)(1-pₖ))
+```
+
+For each K scenario, we evaluate `castabilityGivenOnlineSet()` with the specific producer set and weight by the scenario probability.
+
+### 14.3 Performance
+
+With n ≤ 18 candidate producers (after `MAX_PRODUCER_CANDIDATES` cap):
+
+- K=2: C(18,2) = 153 pairs
+- K=3: C(18,3) = 816 triples
+- Each evaluation: ~200 iterations (land count loop)
+- Total: < 1ms on modern hardware
+
+---
+
+## 15) Hybrid Mana Handling (v2.0)
+
+### 15.1 Display
+
+Hybrid symbols `{R/G}` use mana-font's built-in split classes (`ms-rg`, `ms-wu`, etc.) for proper bicolor circle rendering.
+
+### 15.2 Base Castability (P1/P2)
+
+In `useProbabilityCalculation()`, hybrid mana uses `Math.max(pColor1, pColor2)` — player can choose the more available color.
+
+### 15.3 Accelerated Castability
+
+In `useAcceleratedCastability()`, hybrid pips are assigned to the color with the most deck sources. This is a conservative approximation (doesn't model the fallback color) but accurate for typical decks where one color dominates.
+
+### 15.4 Ramp Detection
+
+Combat-damage-conditional treasure creation (`"deals combat damage...create Treasure"`) is excluded from ramp detection. Only ETB/passive treasure makers (Dockside Extortionist, Smothering Tithe) qualify as ramp.
+
+---
+
 ## Conclusion
 
-Version 1.1 fixes the fundamental mathematical issues in v1.0:
+Version 2.0 adds three major capabilities to the acceleration engine:
 
 1. **Proper conditioning** — Color probability depends on actual lands drawn, not assumed
 2. **Multi-mana as random variable** — No more deterministic "all copies in play"
-3. **Disjoint scenarios** — K=0/1/2 model avoids probability double-counting
+3. **Disjoint scenarios** — K=0/1/2/3 model avoids probability double-counting
 4. **Unified survival** — Single formula `(1-r)^n` with configurable slider
 5. **No magic numbers** — All constants justified or configurable
 6. **Clean separation** — `delay` replaces conceptually flawed `activationTurn`
+7. **ENHANCER type** — Multiplicative dork enhancement (Badgermole Cub)
+8. **K=3 triples** — Captures 3-producer combos critical for ENHANCER synergies
+9. **Hybrid mana** — Correct display, probability, and ramp assignment
 
 The result is a mathematically rigorous system that answers the real question players care about:
 
@@ -780,6 +879,6 @@ The result is a mathematically rigorous system that answers the real question pl
 
 ---
 
-_Document Version: 1.1_  
-_Last Updated: December 2025_  
-_ManaTuner v2.1_
+_Document Version: 2.0_  
+_Last Updated: April 2026_  
+_ManaTuner v2.3_
