@@ -138,7 +138,10 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
         </Typography>
 
         {/* Acceleration Settings Panel */}
-        <AccelerationSettings producersInDeck={producersInDeck} />
+        <AccelerationSettings
+          producersInDeck={producersInDeck}
+          deckSize={analysisResult?.totalCards || 60}
+        />
 
         {/* Ramp detection banner */}
         {producersInDeck.length > 0 && (
@@ -147,11 +150,14 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
               mb: 2,
               p: 1.5,
               bgcolor: 'success.main',
-              color: 'success.contrastText',
               display: 'flex',
               alignItems: 'center',
+              flexWrap: 'wrap',
               gap: 1,
               borderRadius: 1,
+              '& .MuiTypography-root': {
+                color: '#fff !important',
+              },
             }}
           >
             <Typography variant="body2" fontWeight="bold">
@@ -166,18 +172,18 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
 
         {nonLandCards.length > 0 ? (
           <Box>
-            <Grid container spacing={1} sx={{ mb: 2 }}>
-              <Grid item xs={4}>
+            <Grid container spacing={1} sx={{ mb: 2, display: { xs: 'none', md: 'flex' } }}>
+              <Grid item md={4}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Card
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={2}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Mana Cost
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={6}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Probabilities
                 </Typography>
@@ -215,32 +221,31 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
             sx={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 0.5 }}
           >
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-              <strong>P1</strong>
+              <strong>Best Case</strong>
               <Tooltip
-                title="P1 (Play First): Probability of casting this spell assuming you hit all your land drops. This is the optimistic scenario where you always draw the lands you need on curve."
+                title="Probability of casting this spell assuming you hit all your land drops on curve. This is the optimistic scenario."
                 arrow
               >
                 <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
                   <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                 </IconButton>
               </Tooltip>
-              = Perfect scenario (all lands on curve)
+              = All lands on curve
             </Box>
             <Box component="span" sx={{ mx: 1 }}>
               |
             </Box>
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-              <strong>P2</strong>
+              <strong>Realistic</strong>
               <Tooltip
-                title="P2 (Draw First): Realistic probability that accounts for mana screw (not drawing enough lands). This factors in the chance of missing land drops, giving you a more accurate picture of castability."
+                title="Realistic probability that accounts for mana screw (not drawing enough lands). This is the number you should trust for deckbuilding decisions."
                 arrow
               >
                 <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
                   <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                 </IconButton>
               </Tooltip>
-              = Realistic (accounts for mana screw
-              {producersInDeck.length > 0 ? ' + mana rocks/dorks' : ''})
+              = Accounts for mana screw{producersInDeck.length > 0 ? ' + mana rocks/dorks' : ''}
             </Box>
           </Typography>
         </Box>

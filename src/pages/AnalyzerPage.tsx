@@ -2,8 +2,11 @@ import {
   Analytics as AnalyticsIcon,
   Assessment as AssessmentIcon,
   Casino as CasinoIcon,
+  Dashboard as DashboardIcon,
+  Download as DownloadIcon,
   Functions as FunctionsIcon,
   ShowChart as ShowChartIcon,
+  Terrain as TerrainIcon,
 } from '@mui/icons-material'
 import {
   Alert,
@@ -107,6 +110,11 @@ const AnalyzerPage: React.FC = () => {
     try {
       const result = await DeckAnalyzer.analyzeDeck(deckList)
       dispatch(setAnalysisResult(result))
+
+      // Auto-minimize deck on mobile to show results
+      if (isMobile) {
+        dispatch(setIsDeckMinimized(true))
+      }
 
       // Auto-save to PrivacyStorage
       try {
@@ -382,24 +390,10 @@ const AnalyzerPage: React.FC = () => {
               sx={{
                 p: isMobile ? 2 : 3,
                 minHeight: isMobile ? 400 : 600,
-                cursor: analysisResult && !isDeckMinimized ? 'pointer' : 'default',
                 transition: 'all 0.3s ease-in-out',
                 borderRadius: 3,
                 border: '1px solid',
                 borderColor: 'divider',
-                '&:hover':
-                  analysisResult && !isDeckMinimized
-                    ? {
-                        transform: isMobile ? 'none' : 'scale(1.005)',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                        borderColor: 'primary.light',
-                      }
-                    : {},
-              }}
-              onClick={() => {
-                if (analysisResult && !isDeckMinimized && !isMobile) {
-                  dispatch(setIsDeckMinimized(true))
-                }
               }}
             >
               {isAnalyzing ? (
@@ -420,7 +414,7 @@ const AnalyzerPage: React.FC = () => {
                       width: 100,
                       height: 100,
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+                      background: `linear-gradient(135deg, ${theme.palette.info.light}40 0%, ${theme.palette.secondary.light}40 100%)`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -450,9 +444,21 @@ const AnalyzerPage: React.FC = () => {
                       mt: 1,
                     }}
                   >
-                    <Chip label="Health Score" size="small" sx={{ bgcolor: '#e8f5e9' }} />
-                    <Chip label="Castability" size="small" sx={{ bgcolor: '#e3f2fd' }} />
-                    <Chip label="Mulligan" size="small" sx={{ bgcolor: '#f3e5f5' }} />
+                    <Chip
+                      label="Health Score"
+                      size="small"
+                      sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}
+                    />
+                    <Chip
+                      label="Castability"
+                      size="small"
+                      sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}
+                    />
+                    <Chip
+                      label="Mulligan"
+                      size="small"
+                      sx={{ bgcolor: 'secondary.light', color: 'secondary.contrastText' }}
+                    />
                   </Box>
                 </Box>
               ) : (
@@ -467,12 +473,23 @@ const AnalyzerPage: React.FC = () => {
                       gap: 1,
                     }}
                   >
-                    📊 Analysis Results
+                    Analysis Results
                     {!isDeckMinimized && !isMobile && (
                       <Chip
-                        label="Click to expand"
+                        label="Expand full width"
                         size="small"
-                        sx={{ ml: 1, bgcolor: '#e3f2fd', fontSize: '0.7rem' }}
+                        clickable
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          dispatch(setIsDeckMinimized(true))
+                        }}
+                        sx={{
+                          ml: 1,
+                          bgcolor: 'primary.main',
+                          color: 'primary.contrastText',
+                          fontSize: '0.7rem',
+                          '&:hover': { bgcolor: 'primary.dark' },
+                        }}
                       />
                     )}
                   </Typography>
@@ -508,18 +525,42 @@ const AnalyzerPage: React.FC = () => {
                       },
                     }}
                   >
-                    <Tab label="📊 Dashboard" aria-label="Dashboard - Overview and health score" />
                     <Tab
-                      label="🎯 Castability"
+                      icon={<DashboardIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Dashboard"
+                      aria-label="Dashboard - Overview and health score"
+                    />
+                    <Tab
+                      icon={<ShowChartIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Castability"
                       aria-label="Castability - Spell casting probabilities"
                     />
-                    <Tab label="🎲 Mulligan" aria-label="Mulligan - Hand simulation and strategy" />
-                    <Tab label="⚡ Analysis" aria-label="Analysis - Detailed spell analysis" />
-                    <Tab label="🏔️ Manabase" aria-label="Manabase - Land breakdown" />
                     <Tab
+                      icon={<CasinoIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Mulligan"
+                      aria-label="Mulligan - Hand simulation and strategy"
+                    />
+                    <Tab
+                      icon={<AnalyticsIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Analysis"
+                      aria-label="Analysis - Detailed spell analysis"
+                    />
+                    <Tab
+                      icon={<TerrainIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Manabase"
+                      aria-label="Manabase - Land breakdown"
+                    />
+                    <Tab
+                      icon={<DownloadIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          📋 Blueprint
+                          Blueprint
                           <Box
                             component="span"
                             sx={{

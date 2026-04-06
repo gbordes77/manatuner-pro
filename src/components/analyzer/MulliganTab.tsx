@@ -767,7 +767,7 @@ const SampleHandsSection: React.FC<SampleHandsSectionProps> = ({ sampleHands }) 
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body2">
-              {cat.label} ({cat.hands.length} exemples)
+              {cat.label} ({cat.hands.length} examples)
             </Typography>
           </AccordionSummary>
           <AccordionDetails>

@@ -63,10 +63,29 @@ const FORMAT_OPTIONS: Array<{ value: FormatPreset; label: string; description: s
 interface AccelerationSettingsProps {
   /** Mana producers detected in the deck */
   producersInDeck?: ProducerInDeck[]
+  /** Total cards in deck (for hypergeometric calculation) */
+  deckSize?: number
+}
+
+/**
+ * P(at least 1 success in n draws from N population with K successes)
+ * = 1 - C(N-K, n) / C(N, n)
+ */
+function pAtLeastOneInHand(deckSize: number, rampCount: number, cardsSeen: number): number {
+  if (rampCount <= 0 || cardsSeen <= 0) return 0
+  if (rampCount >= deckSize) return 1
+  const n = Math.min(cardsSeen, deckSize)
+  // C(N-K, n) / C(N, n) = product of (N-K-i)/(N-i) for i=0..n-1
+  let pZero = 1
+  for (let i = 0; i < n; i++) {
+    pZero *= (deckSize - rampCount - i) / (deckSize - i)
+  }
+  return Math.max(0, Math.min(1, 1 - pZero))
 }
 
 export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
   producersInDeck = [],
+  deckSize = 60,
 }) => {
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
@@ -106,7 +125,8 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 1,
           p: 1.5,
           cursor: 'pointer',
           '&:hover': {
@@ -115,34 +135,48 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
         }}
         onClick={() => setExpanded(!expanded)}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SettingsIcon fontSize="small" color="action" />
-          <Typography variant="subtitle2">Acceleration Settings</Typography>
-          <Tooltip
-            title="Configure how mana dorks and rocks are factored into castability calculations. The removal rate affects creature survival probability."
-            arrow
-          >
-            <HelpOutlineIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'help' }} />
-          </Tooltip>
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Quick status */}
+        {/* Left side: ramp badge + probas + format */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
           {producersInDeck.length > 0 ? (
-            <Typography
-              variant="caption"
-              sx={{
-                bgcolor: theme.palette.success.main,
-                color: '#fff',
-                px: 0.75,
-                py: 0.25,
-                borderRadius: 1,
-                fontSize: '0.65rem',
-                fontWeight: 'bold',
-              }}
-            >
-              {producersInDeck.reduce((sum, p) => sum + p.copies, 0)} ramp cards
-            </Typography>
+            <>
+              <Typography
+                variant="caption"
+                sx={{
+                  bgcolor: theme.palette.success.main,
+                  color: '#fff',
+                  px: 0.75,
+                  py: 0.25,
+                  borderRadius: 1,
+                  fontSize: '0.65rem',
+                  fontWeight: 'bold',
+                }}
+              >
+                {producersInDeck.reduce((sum, p) => sum + p.copies, 0)} ramp cards
+              </Typography>
+              {(() => {
+                const totalRamp = producersInDeck.reduce((sum, p) => sum + p.copies, 0)
+                const pOpener = Math.round(pAtLeastOneInHand(deckSize, totalRamp, 7) * 100)
+                const pByT2 = Math.round(pAtLeastOneInHand(deckSize, totalRamp, 8) * 100)
+                const pByT3 = Math.round(pAtLeastOneInHand(deckSize, totalRamp, 9) * 100)
+                return (
+                  <Tooltip
+                    title={`Chance of drawing at least 1 ramp card: Opener (7 cards): ${pOpener}% | By T2 (8 cards): ${pByT2}% | By T3 (9 cards): ${pByT3}%`}
+                    arrow
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: '0.65rem',
+                        cursor: 'help',
+                      }}
+                    >
+                      {pOpener}% in opener | {pByT2}% by T2
+                    </Typography>
+                  </Tooltip>
+                )
+              })()}
+            </>
           ) : (
             <Typography
               variant="caption"
@@ -158,11 +192,6 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
               No ramp detected
             </Typography>
           )}
-          <Typography variant="caption" color="text.secondary">
-            {settings.format.replace('_', ' ')} | {Math.round(removalRate * 100)}% removal
-          </Typography>
-
-          {/* Toggle acceleration display - disabled when no ramp cards */}
           <FormControlLabel
             control={
               <Switch
@@ -184,8 +213,39 @@ export const AccelerationSettings: React.FC<AccelerationSettingsProps> = ({
               </Typography>
             }
             onClick={(e) => e.stopPropagation()}
-            sx={{ mr: 1 }}
+            sx={{ mr: 0 }}
           />
+        </Box>
+
+        {/* Right side: format info + configure */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
+          <Tooltip
+            title={`Format: ${settings.format.replace('_', ' ')}. Creature removal rate: ${Math.round(removalRate * 100)}%. This affects dork survival — rocks are mostly unaffected (~98%).`}
+            arrow
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                cursor: 'help',
+                px: 0.75,
+                py: 0.25,
+                borderRadius: 1,
+                bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: '0.65rem', fontWeight: 500 }}
+              >
+                {settings.format.replace('_', ' ')} | {Math.round(removalRate * 100)}% removal
+              </Typography>
+              <HelpOutlineIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+            </Box>
+          </Tooltip>
 
           <Box
             sx={{

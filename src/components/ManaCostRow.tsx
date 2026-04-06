@@ -860,95 +860,74 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
               </Box>
             </Grid>
 
-            {/* P1 (Perfect) with progress bar */}
-            <Grid item xs={4} md={3}>
-              <Box>
-                <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-                  <Typography variant="caption" color="text.secondary">
-                    P1 (Perfect):
-                  </Typography>
-                  <Tooltip title="Probability assuming you hit all land drops on curve" arrow>
-                    <HelpOutlineIcon
-                      sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }}
-                    />
-                  </Tooltip>
-                  <Box
-                    sx={{
-                      bgcolor: getProbabilityColor(probabilities.p1, theme),
-                      color: '#fff',
-                      px: 1,
-                      py: 0.25,
-                      borderRadius: 1,
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      ml: 'auto',
-                    }}
-                  >
-                    {probabilities.p1}%
-                  </Box>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={probabilities.p1}
-                  sx={{
-                    height: 6,
-                    borderRadius: 3,
-                    bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                    '& .MuiLinearProgress-bar': {
-                      borderRadius: 3,
-                      bgcolor: getProbabilityColor(probabilities.p1, theme),
-                    },
-                  }}
-                />
-              </Box>
-            </Grid>
-
-            {/* P2 (Realistic) with progress bar - uses SegmentedProbabilityBar when acceleration enabled */}
-            <Grid item xs={4} md={3}>
+            {/* Realistic (primary) + Best Case (secondary reference) */}
+            <Grid item xs={8} md={6}>
               {showAcceleration && acceleratedResult ? (
-                <SegmentedProbabilityBar
-                  baseProbability={Math.round(acceleratedResult.base.p2 * 100)}
-                  totalProbability={Math.round(acceleratedResult.withAcceleration.p2 * 100)}
-                  height={6}
-                  showLabels={true}
-                  label="P2 (Lands + Rocks):"
-                  tooltipContent={
-                    <Box sx={{ p: 0.5 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
-                        Castability with Mana Acceleration
-                      </Typography>
-                      <Typography variant="caption" component="div" sx={{ mb: 1 }}>
-                        Unlike basic calculators, ManaTuner factors in your mana rocks, dorks, and
-                        rituals with format-aware removal survival rates.
-                      </Typography>
-                      <Typography variant="caption" component="div">
-                        • Lands only: {Math.round(acceleratedResult.base.p2 * 100)}%
-                      </Typography>
-                      <Typography variant="caption" component="div">
-                        • Lands + Rocks: {Math.round(acceleratedResult.withAcceleration.p2 * 100)}%
-                      </Typography>
-                      <Typography variant="caption" component="div" sx={{ color: 'success.light' }}>
-                        • Ramp bonus: +{Math.round(acceleratedResult.accelerationImpact * 100)}%
-                      </Typography>
-                      {acceleratedResult.acceleratedTurn !== null && (
+                <Box>
+                  <SegmentedProbabilityBar
+                    baseProbability={Math.round(acceleratedResult.base.p2 * 100)}
+                    totalProbability={Math.round(acceleratedResult.withAcceleration.p2 * 100)}
+                    height={8}
+                    showLabels={true}
+                    label="Realistic:"
+                    tooltipContent={
+                      <Box sx={{ p: 0.5 }}>
+                        <Typography variant="body2" fontWeight="bold" gutterBottom>
+                          Castability with Mana Acceleration
+                        </Typography>
+                        <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                          Unlike basic calculators, ManaTuner factors in your mana rocks, dorks, and
+                          rituals with format-aware removal survival rates.
+                        </Typography>
+                        <Typography variant="caption" component="div">
+                          • Lands only: {Math.round(acceleratedResult.base.p2 * 100)}%
+                        </Typography>
+                        <Typography variant="caption" component="div">
+                          • Lands + Rocks: {Math.round(acceleratedResult.withAcceleration.p2 * 100)}
+                          %
+                        </Typography>
                         <Typography
                           variant="caption"
                           component="div"
-                          sx={{ mt: 1, color: 'success.light' }}
+                          sx={{ color: 'success.light' }}
                         >
-                          Accelerated turn: {acceleratedResult.acceleratedTurn}
+                          • Ramp bonus: +{Math.round(acceleratedResult.accelerationImpact * 100)}%
                         </Typography>
-                      )}
-                    </Box>
-                  }
-                />
+                        {acceleratedResult.acceleratedTurn !== null && (
+                          <Typography
+                            variant="caption"
+                            component="div"
+                            sx={{ mt: 1, color: 'success.light' }}
+                          >
+                            Accelerated turn: {acceleratedResult.acceleratedTurn}
+                          </Typography>
+                        )}
+                      </Box>
+                    }
+                  />
+                  <Tooltip
+                    title="Best case: probability assuming you hit all land drops on curve"
+                    arrow
+                  >
+                    <Typography
+                      variant="caption"
+                      color="text.disabled"
+                      sx={{ mt: 0.5, display: 'block', fontSize: '0.65rem' }}
+                    >
+                      Best case: {probabilities.p1}%
+                    </Typography>
+                  </Tooltip>
+                </Box>
               ) : (
                 <Box>
                   <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
                     <Typography variant="caption" color="text.secondary">
-                      P2 (Realistic):
+                      Realistic:
                     </Typography>
-                    <Tooltip title="Realistic probability accounting for mana screw" arrow>
+                    <Tooltip
+                      title="Realistic: accounts for mana screw (not drawing enough lands)"
+                      arrow
+                    >
                       <HelpOutlineIcon
                         sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }}
                       />
@@ -972,15 +951,27 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
                     variant="determinate"
                     value={probabilities.p2}
                     sx={{
-                      height: 6,
-                      borderRadius: 3,
+                      height: 8,
+                      borderRadius: 4,
                       bgcolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
                       '& .MuiLinearProgress-bar': {
-                        borderRadius: 3,
+                        borderRadius: 4,
                         bgcolor: getProbabilityColor(probabilities.p2, theme),
                       },
                     }}
                   />
+                  <Tooltip
+                    title="Best case: probability assuming you hit all land drops on curve"
+                    arrow
+                  >
+                    <Typography
+                      variant="caption"
+                      color="text.disabled"
+                      sx={{ mt: 0.5, display: 'block', fontSize: '0.65rem' }}
+                    >
+                      Best case: {probabilities.p1}%
+                    </Typography>
+                  </Tooltip>
                 </Box>
               )}
             </Grid>

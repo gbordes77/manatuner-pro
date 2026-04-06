@@ -131,15 +131,15 @@ export const HomePage: React.FC = () => {
   const mathFoundations = [
     {
       title: 'Karsten Tables',
-      desc: 'Mana source requirements',
+      desc: 'Pro-level mana source rules',
       formula: '90%',
       manaColor: 'g' as const,
       color: isDark ? 'rgba(0, 115, 62, 0.15)' : '#e8f5e9',
       borderColor: theme.palette.mana.green,
     },
     {
-      title: 'Hypergeometric',
-      desc: 'Exact probability calculation',
+      title: '99% Accurate',
+      desc: 'Exact draw probability math',
       formula: 'P(X≥k)',
       manaColor: 'u' as const,
       color: isDark ? 'rgba(14, 104, 171, 0.15)' : '#e3f2fd',
@@ -147,15 +147,15 @@ export const HomePage: React.FC = () => {
     },
     {
       title: 'Monte Carlo',
-      desc: '3,000 hands simulated',
-      formula: 'n=3000',
+      desc: '10,000 hands simulated',
+      formula: 'n=10k',
       manaColor: 'b' as const,
       color: isDark ? 'rgba(90, 60, 90, 0.2)' : '#f3e5f5',
       borderColor: '#9c27b0',
     },
     {
-      title: 'Bellman Equation',
-      desc: 'Optimal stopping theory',
+      title: 'Smart Mulligan',
+      desc: 'Optimal keep/mull math',
       formula: 'E[V₇]',
       manaColor: 'r' as const,
       color: isDark ? 'rgba(211, 32, 42, 0.15)' : '#fff3e0',
@@ -235,6 +235,21 @@ export const HomePage: React.FC = () => {
             <strong>exactly when to mulligan</strong>.
           </Typography>
 
+          {/* Killer feature callout */}
+          <Typography
+            variant="body1"
+            sx={{
+              maxWidth: 550,
+              mx: 'auto',
+              mb: 2,
+              fontWeight: 500,
+              color: theme.palette.success.main,
+              lineHeight: 1.5,
+            }}
+          >
+            The only mana calculator that factors in your mana rocks and dorks — not just lands.
+          </Typography>
+
           {/* Tags with mana symbols */}
           <Box
             sx={{
@@ -246,7 +261,14 @@ export const HomePage: React.FC = () => {
             }}
           >
             <Chip
-              icon={<i className="ms ms-u ms-cost" style={{ fontSize: 14 }} />}
+              icon={
+                <i
+                  className="ms ms-u ms-cost"
+                  style={{ fontSize: 14 }}
+                  aria-label="Blue mana"
+                  role="img"
+                />
+              }
               label="Turn-by-Turn Probabilities"
               sx={{
                 bgcolor: isDark ? 'rgba(14, 104, 171, 0.2)' : '#e3f2fd',
@@ -256,21 +278,36 @@ export const HomePage: React.FC = () => {
               }}
             />
             <Chip
-              icon={<i className="ms ms-b ms-cost" style={{ fontSize: 14 }} />}
-              label="Monte Carlo Mulligan"
+              icon={
+                <i
+                  className="ms ms-c ms-cost"
+                  style={{ fontSize: 14 }}
+                  aria-label="Colorless mana"
+                  role="img"
+                />
+              }
+              label="Rocks & Dorks Included"
               sx={{
-                bgcolor: isDark ? 'rgba(90, 60, 90, 0.3)' : '#f3e5f5',
-                color: isDark ? '#CE93D8' : '#7b1fa2',
-                fontWeight: 600,
+                bgcolor: isDark ? 'rgba(0, 115, 62, 0.25)' : '#e8f5e9',
+                color: isDark ? theme.palette.success.light : '#2e7d32',
+                fontWeight: 700,
+                border: `1px solid ${isDark ? 'rgba(0, 115, 62, 0.4)' : '#a5d6a7'}`,
                 '& .MuiChip-icon': { ml: 1 },
               }}
             />
             <Chip
-              icon={<i className="ms ms-g ms-cost" style={{ fontSize: 14 }} />}
-              label="Proven Mathematics"
+              icon={
+                <i
+                  className="ms ms-b ms-cost"
+                  style={{ fontSize: 14 }}
+                  aria-label="Black mana"
+                  role="img"
+                />
+              }
+              label="Monte Carlo Mulligan"
               sx={{
-                bgcolor: isDark ? 'rgba(0, 115, 62, 0.2)' : '#e8f5e9',
-                color: isDark ? theme.palette.mana.green : '#2e7d32',
+                bgcolor: isDark ? 'rgba(90, 60, 90, 0.3)' : '#f3e5f5',
+                color: isDark ? '#CE93D8' : '#7b1fa2',
                 fontWeight: 600,
                 '& .MuiChip-icon': { ml: 1 },
               }}
