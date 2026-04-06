@@ -23,6 +23,10 @@ export interface SimulatedCard {
     symbols: Record<string, number>
   }
   quantity: number
+  /** Colors this land can produce (e.g. ['U', 'R'] for Steam Vents) */
+  producedMana?: string[]
+  /** True if this land always enters tapped (e.g. Wind-Scarred Crag) */
+  etbTapped?: boolean
 }
 
 export interface SimulatedHand {
@@ -55,12 +59,20 @@ export function prepareDeckForSimulation(cards: DeckCard[]): SimulatedCard[] {
         parsedManaCost = { colorless: 0, symbols: {} }
       }
 
+      // Determine if land always enters tapped from LandMetadata
+      let etbTapped: boolean | undefined
+      if (card.isLand && card.landMetadata?.etbBehavior) {
+        etbTapped = card.landMetadata.etbBehavior.type === 'always_tapped'
+      }
+
       simulatedDeck.push({
         name: card.name,
         cmc: card.cmc,
         isLand: card.isLand,
         manaCost: parsedManaCost,
         quantity: 1,
+        producedMana: card.isLand ? card.producedMana : undefined,
+        etbTapped,
       })
     }
   }
@@ -558,58 +570,187 @@ function calculateLandBalance(hand: SimulatedHand, config: ArchetypeConfig): num
 // SAMPLE HAND GENERATION
 // =============================================================================
 
+/**
+ * Check if available color pool can pay for a spell's color requirements.
+ * colorPool: Record<color, count> of available colored mana
+ * spell.manaCost.symbols: Record<color, pips needed>
+ */
+function canPayColors(colorPool: Record<string, number>, spell: SimulatedCard): boolean {
+  for (const [color, needed] of Object.entries(spell.manaCost.symbols)) {
+    if ((colorPool[color] ?? 0) < needed) return false
+  }
+  return true
+}
+
+/**
+ * Choose which land to play this turn. Strategy:
+ * - Prefer untapped lands (give mana immediately)
+ * - Among untapped, prefer the one that enables the most spells in hand
+ * - If only tapped lands remain, play one (it'll give mana next turn)
+ */
+function chooseLandDrop(
+  landsInHand: SimulatedCard[],
+  spellsInHand: SimulatedCard[],
+  currentColorPool: Record<string, number>
+): { land: SimulatedCard; index: number } | null {
+  if (landsInHand.length === 0) return null
+
+  // Separate untapped vs tapped
+  const untapped: number[] = []
+  const tapped: number[] = []
+  for (let i = 0; i < landsInHand.length; i++) {
+    if (landsInHand[i].etbTapped) tapped.push(i)
+    else untapped.push(i)
+  }
+
+  // Prefer untapped. Score each by how many new spell colors it enables.
+  const candidates = untapped.length > 0 ? untapped : tapped
+
+  let bestIdx = candidates[0]
+  let bestScore = -1
+
+  for (const idx of candidates) {
+    const land = landsInHand[idx]
+    const colors = land.producedMana ?? []
+    // Score = number of spells in hand whose unmet color needs this land helps
+    let score = 0
+    for (const spell of spellsInHand) {
+      for (const [color, needed] of Object.entries(spell.manaCost.symbols)) {
+        if ((currentColorPool[color] ?? 0) < needed && colors.includes(color)) {
+          score++
+        }
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score
+      bestIdx = idx
+    }
+  }
+
+  return { land: landsInHand[bestIdx], index: bestIdx }
+}
+
 function generateTurnPlan(hand: SimulatedHand, library: SimulatedCard[]): TurnPlan[] {
   const plans: TurnPlan[] = []
   const landsInHand = [...hand.lands]
   const spellsInHand = [...hand.spells]
-  let landsInPlay = 0
+
+  // Track lands in play with their colors and tapped state
+  const landsInPlayUntapped: SimulatedCard[] = [] // available this turn
+  const landsInPlayTapped: SimulatedCard[] = [] // will untap next turn
+
   let deckIndex = 0
-  const remainingDeck = library // Already the correct library
+  const remainingDeck = library
 
   for (let turn = 1; turn <= 4; turn++) {
-    // Draw
+    // Untap step: all previously tapped lands become available
+    landsInPlayUntapped.push(...landsInPlayTapped.splice(0))
+
+    // Draw (except T1)
     if (turn > 1 && deckIndex < remainingDeck.length) {
       const drawn = remainingDeck[deckIndex++]
       if (drawn.isLand) landsInHand.push(drawn)
       else spellsInHand.push(drawn)
     }
 
-    // Land drop
-    let landDrop: string | null = null
-    if (landsInHand.length > 0) {
-      landDrop = landsInHand[0].name
-      landsInHand.shift()
-      landsInPlay++
+    // Build current color pool from untapped lands
+    const colorPool: Record<string, number> = {}
+    for (const land of landsInPlayUntapped) {
+      const colors = land.producedMana ?? []
+      for (const c of colors) {
+        colorPool[c] = (colorPool[c] ?? 0) + 1
+      }
     }
 
-    // Cast spells
+    // Land drop — choose best land
+    let landDrop: string | null = null
+    const landChoice = chooseLandDrop(landsInHand, spellsInHand, colorPool)
+    if (landChoice) {
+      const land = landChoice.land
+      landDrop = land.name
+      landsInHand.splice(landChoice.index, 1)
+
+      if (land.etbTapped) {
+        // Enters tapped — won't provide mana this turn
+        landsInPlayTapped.push(land)
+      } else {
+        // Enters untapped — add to available pool immediately
+        landsInPlayUntapped.push(land)
+        const colors = land.producedMana ?? []
+        for (const c of colors) {
+          colorPool[c] = (colorPool[c] ?? 0) + 1
+        }
+      }
+    }
+
+    const manaAvailable = landsInPlayUntapped.length
+
+    // Cast spells — prefer curve-out (highest CMC that fits) over greedy packing
     const plays: string[] = []
-    let manaLeft = landsInPlay
-    spellsInHand.sort((a, b) => a.cmc - b.cmc)
+    let manaLeft = manaAvailable
+
+    // Sort descending by CMC: prefer playing the biggest spell that fits on curve
+    spellsInHand.sort((a, b) => b.cmc - a.cmc)
 
     const toRemove: number[] = []
     for (let i = 0; i < spellsInHand.length; i++) {
-      if (spellsInHand[i].cmc <= manaLeft && spellsInHand[i].cmc > 0) {
-        manaLeft -= spellsInHand[i].cmc
-        plays.push(spellsInHand[i].name)
-        toRemove.push(i)
+      const spell = spellsInHand[i]
+      if (spell.cmc <= 0) continue
+      if (spell.cmc > manaLeft) continue
+      if (!canPayColors(colorPool, spell)) continue
+
+      manaLeft -= spell.cmc
+      plays.push(spell.name)
+      toRemove.push(i)
+
+      // Consume colored mana from pool for this spell
+      for (const [color, needed] of Object.entries(spell.manaCost.symbols)) {
+        colorPool[color] = (colorPool[color] ?? 0) - needed
       }
     }
-    for (let i = toRemove.length - 1; i >= 0; i--) {
-      spellsInHand.splice(toRemove[i], 1)
+
+    // After playing biggest spell, try to fill remaining mana with smaller spells (ascending)
+    if (manaLeft > 0) {
+      const remaining = spellsInHand
+        .map((s, i) => ({ s, i }))
+        .filter(({ i }) => !toRemove.includes(i))
+        .sort((a, b) => a.s.cmc - b.s.cmc)
+
+      for (const { s: spell, i } of remaining) {
+        if (spell.cmc <= 0) continue
+        if (spell.cmc > manaLeft) continue
+        if (!canPayColors(colorPool, spell)) continue
+
+        manaLeft -= spell.cmc
+        plays.push(spell.name)
+        toRemove.push(i)
+
+        for (const [color, needed] of Object.entries(spell.manaCost.symbols)) {
+          colorPool[color] = (colorPool[color] ?? 0) - needed
+        }
+      }
+    }
+
+    // Remove played spells (reverse order to keep indices valid)
+    toRemove.sort((a, b) => b - a)
+    for (const i of toRemove) {
+      spellsInHand.splice(i, 1)
     }
 
     plans.push({
       turn,
       landDrop,
       plays,
-      manaUsed: landsInPlay - manaLeft,
-      manaAvailable: landsInPlay,
+      manaUsed: manaAvailable - manaLeft,
+      manaAvailable,
     })
   }
 
   return plans
 }
+
+// Exported for testing
+export { generateTurnPlan as _generateTurnPlanForTest }
 
 function generateReasoningForHand(
   hand: SimulatedHand,
