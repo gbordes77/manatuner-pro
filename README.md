@@ -54,7 +54,7 @@ node --version  # v18.0.0 or higher
 
 # Clone and install
 git clone https://github.com/gbordes77/manatuner.git
-cd manatuner-pro
+cd manatuner
 npm install
 
 # Start development server

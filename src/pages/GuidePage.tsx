@@ -102,7 +102,7 @@ export const GuidePage: React.FC = () => {
     },
     {
       title: 'Monte Carlo',
-      formula: 'n=3000',
+      formula: 'n=10k',
       desc: 'Hands simulated with Fisher-Yates shuffle',
       color: '#f3e5f5',
       borderColor: '#9c27b0',
