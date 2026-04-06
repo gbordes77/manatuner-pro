@@ -1,8 +1,8 @@
 # ManaTuner Pro — Action Tracker
 
-**Version**: 2.1.0
+**Version**: 2.2.0
 **Date de creation**: 2026-04-05
-**Derniere mise a jour**: 2026-04-05
+**Derniere mise a jour**: 2026-04-06
 
 ---
 
@@ -100,7 +100,7 @@
 ### Priorite Moyenne
 
 - [ ] Bouton Import JSON dans My Analyses (le code existe dans privacy.ts, pas expose en UI)
-- [ ] Remplacer click-to-expand panel par un bouton explicite (expand/collapse)
+- [x] Remplacer click-to-expand panel par un bouton explicite (expand/collapse)
 - [ ] Ajouter "Load A/B in Analyzer" directement depuis CompareView dialog
 - [ ] Export CSV du tableau Compare A/B
 - [ ] Reactiver/reecrire special-lands.spec.js (parseDeckList est privee)
@@ -123,6 +123,59 @@
       Actuellement deux systemes paralleles avec des logiques differentes
 - [ ] Tester contre des donnees de 17Lands pour calibrer les poids d'archetype
 
+## SESSION 2026-04-05/06 — London Mulligan + Castability Fixes + UX Audit
+
+### London Mulligan Engine
+
+- [x] Implementer London Mulligan complet (chooseBottom, simulateSingleGame, re-shuffle, bottomed cards)
+- [x] 15 nouveaux tests London Mulligan
+- [x] Fusionner les 2 simulateurs (mulliganSimulator + mulliganSimulatorAdvanced) en un seul
+- [x] Supprimer MulliganDecisionChart.tsx (dead code, importe nulle part)
+
+### Bugs Castability Critiques
+
+- [x] Fix regex extraction couleurs lands: "Add {W} or {B}" ne detectait que {W}
+      Impact: Glasswing Grace (4 copies) comptait comme W seulement au lieu de W+B
+      Cause: regex `add {X}` ne matchait pas apres "or". Fix: extraire toute la clause Add.
+- [x] Fix MDFCs: utiliser Scryfall `produced_mana` comme source primaire pour les couleurs
+      Avant: regex oracle text seul. Apres: produced_mana autoritatif, regex en fallback.
+- [x] Fix detection ramp: Pentad Prism (charge counters), Solar Transformer (energy) non detectes
+      Cause: patterns ne couvraient que `{T}: Add`. Fix: refactoring complet analyzeOracleForMana
+- [x] Fix ramp detection sync-only: CastabilityTab ne fetchait jamais Scryfall pour les cartes hors seed
+      Fix: ajout phase async avec manaProducerService.getProducer() pour les cartes inconnues
+- [x] Fix couleurs ramp: Talisman of Hierarchy detecte comme {C} seulement au lieu de {W}/{B}/{C}
+      Fix: utiliser Scryfall produced_mana comme source primaire pour les producteurs aussi
+- [x] Bump cache versions (lands v2.0, producers v2.0) pour invalider les donnees stales
+
+### UX Audit (10 Actions)
+
+- [x] Renommer P1/P2 → "Best Case" / "Realistic" (P1/P2 = Player 1/2 en MTG, contresens)
+- [x] Hierarchie visuelle: Realistic en principal (barre large), Best Case en petit texte dessous
+- [x] Homepage: phrase verte killer feature "mana rocks and dorks — not just lands"
+- [x] Homepage: chip "Rocks & Dorks Included" dans les tags hero
+- [x] Remplacer onClick full-panel par bouton explicite "Expand full width"
+- [x] Emojis tabs → MUI Icons (Dashboard, ShowChart, Casino, Analytics, Terrain, Download)
+- [x] AccelerationSettings responsive avec flexWrap pour mobile
+- [x] Auto-minimize deck sur mobile apres analyse
+- [x] Simplifier Math Foundations: "Exact Math" + "Smart Mulligan" (accessible Leo/Sarah)
+- [x] Fix Monte Carlo homepage 3000 → 10000 + "exemples" → "examples" dans MulliganTab
+
+### Ramp UX
+
+- [x] Ajouter proba ramp in opener dans AccelerationSettings: "74% in opener | 79% by T2"
+- [x] Calcul hypergeometrique P(au moins 1 ramp en N cartes)
+- [x] Deplacer "Show ramp" toggle a gauche (pres des infos ramp)
+- [x] Format/removal avec tooltip explicatif et style visible
+- [x] Banner vert "12 mana rocks/dorks detected" avec texte blanc force (fix contrast-fixes.css)
+- [x] Bouton "Configure" explicite avec label Hide/Configure
+
+### SEO / Open Graph
+
+- [x] Nouvelle og-image-v2.jpg (hero section, 1200x630)
+- [x] og:description mis a jour avec killer feature ramp
+- [x] og:title allonge: "ManaTuner Pro - MTG Manabase Analyzer with Rocks & Dorks" (54 chars)
+- [x] Cache invalidation Facebook (re-scrape OK) et Discord (?v=2)
+
 ### Nice-to-have (Futur)
 
 - [ ] Import depuis URL Moxfield/Archidekt
@@ -139,20 +192,18 @@
 
 ## METRIQUES
 
-| Metrique             | Debut session | Fin session     |
-| -------------------- | ------------- | --------------- |
-| Score audit global   | 60/100        | ~82/100         |
-| Score personas moyen | 3.61/5        | 4.08/5          |
-| Tests passants       | 96            | 180             |
-| Vulnerabilites prod  | 1 critique    | 0               |
-| Temps analyse deck   | ~7-8s         | ~1-2s           |
-| Dead code files      | 15+           | 0               |
-| Deps fantomes        | 13+           | 0               |
-| ScryfallCard defs    | 4             | 1               |
-| ManaColor defs       | 4             | 1               |
-| Monte Carlo default  | 3000 (bugged) | 10000 (correct) |
+| Metrique             | v2.0 (debut) | v2.1.0 (session 1) | v2.2.0 (session 2)                                   |
+| -------------------- | ------------ | ------------------ | ---------------------------------------------------- |
+| Score audit global   | 60/100       | ~82/100            | ~90/100                                              |
+| Score personas moyen | 3.61/5       | 4.08/5             | 4.50/5                                               |
+| Tests passants       | 96           | 180                | 196                                                  |
+| Vulnerabilites prod  | 1 critique   | 0                  | 0                                                    |
+| Ramp detection       | 0 types      | 1 type (tap only)  | 6 types (tap, charge, energy, sac, treasure, ritual) |
+| Simulateurs mulligan | 2 dupliques  | 2 dupliques        | 1 fusionne (London)                                  |
+| Dead code files      | 15+          | 0                  | -1 (MulliganDecisionChart supprime)                  |
+| Castability bugs     | inconnu      | 3 critiques        | 0 (tous fixes)                                       |
 
-## COMMITS DE CETTE SESSION
+## COMMITS SESSION 1 (v2.1.0)
 
 | Hash    | Message                                                   |
 | ------- | --------------------------------------------------------- |
@@ -167,3 +218,14 @@
 | 2a7b7f4 | QW2: My Analyses — deck names, health scores, load/delete |
 | 049766b | QW3: A/B manabase comparison with colored deltas          |
 | 49b8224 | My Analyses UX: tips bar, fix typo, auto-name by colors   |
+
+## COMMITS SESSION 2 (v2.2.0 — 2026-04-05/06)
+
+| Hash    | Message                                                                 |
+| ------- | ----------------------------------------------------------------------- |
+| 37e5ccf | London Mulligan engine + fix castability detection (lands, ramp, MDFCs) |
+| e2ddc57 | Make ramp acceleration feature visible + improve UX discoverability     |
+| 0d9f24d | UX audit: 10 actions — rename P1/P2, promote ramp feature               |
+| 915e9d8 | Fix math foundation labels: Exact Math + Hypergeometric distribution    |
+| b2be8d7 | Update og:image with new hero screenshot + killer feature description   |
+| 2c42e34 | Improve og:title for SEO — add "with Rocks & Dorks"                     |
