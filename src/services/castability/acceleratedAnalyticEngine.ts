@@ -528,11 +528,13 @@ function castabilityGivenOnlineSet(
 // =============================================================================
 
 /**
- * Compute accelerated castability using disjoint scenarios (K=0,1,2)
+ * Compute accelerated castability using disjoint scenarios (K=0,1,2,3)
  *
- * P(cast at T) = Σₖ₌₀² P(K=k) × P(cast at T | K=k)
+ * P(cast at T) = Σₖ₌₀³ P(K=k) × P(cast at T | K=k)
  *
- * Where K = number of producers online and useful (truncated to 2 for performance)
+ * Where K = number of producers online and useful.
+ * K=3 is critical for ENHANCER synergies (e.g., Badgermole Cub + 2 dorks = 5G).
+ * With n distinct producer types, C(n,3) triples is typically < 100 — negligible cost.
  */
 export function computeAcceleratedCastabilityAtTurn(
   hg: Hypergeom,
@@ -541,7 +543,7 @@ export function computeAcceleratedCastabilityAtTurn(
   turn: number,
   producers: ProducerInDeck[],
   ctx: AccelContext,
-  kMax: 0 | 1 | 2 = 2
+  kMax: 0 | 1 | 2 | 3 = 3
 ): CastabilityResult {
   // Filter to producers with copies and non-zero online probability
   // ENHANCERs are included: their base netMana > 0, and their synergy bonus
@@ -586,10 +588,66 @@ export function computeAcceleratedCastabilityAtTurn(
   }
   p1Sum = clamp01(p1Sum)
 
-  // P(K≥2) = 1 - P(K=0) - P(K=1), truncated to P(K=2)
-  let p2Sum = 0
-  if (kMax >= 2) {
-    p2Sum = clamp01(1 - p0 - p1Sum)
+  // === Compute pair weights (needed for both K=2 and K=3) ===
+  let sumPairsExact = 0
+  const pairWeights: Array<{ i: number; j: number; w: number }> = []
+
+  if (kMax >= 2 && list.length >= 2) {
+    for (let i = 0; i < probs.length; i++) {
+      const pi = probs[i]
+      if (pi <= 0 || pi >= 1) continue
+      for (let j = i + 1; j < probs.length; j++) {
+        const pj = probs[j]
+        if (pj <= 0 || pj >= 1) continue
+        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj))
+        if (w > 0) {
+          pairWeights.push({ i, j, w })
+          sumPairsExact += w
+        }
+      }
+    }
+  }
+
+  // === Compute triple weights (for K=3) ===
+  let sumTriplesExact = 0
+  const tripleWeights: Array<{ i: number; j: number; k: number; w: number }> = []
+
+  if (kMax >= 3 && list.length >= 3) {
+    for (let i = 0; i < probs.length; i++) {
+      const pi = probs[i]
+      if (pi <= 0 || pi >= 1) continue
+      for (let j = i + 1; j < probs.length; j++) {
+        const pj = probs[j]
+        if (pj <= 0 || pj >= 1) continue
+        for (let k = j + 1; k < probs.length; k++) {
+          const pk = probs[k]
+          if (pk <= 0 || pk >= 1) continue
+          const w = (pi * pj * pk * p0) / ((1 - pi) * (1 - pj) * (1 - pk))
+          if (w > 0) {
+            tripleWeights.push({ i, j, k, w })
+            sumTriplesExact += w
+          }
+        }
+      }
+    }
+  }
+
+  // === Assign probability mass to each K scenario ===
+  // P(K≥2) = 1 - P(K=0) - P(K=1)
+  const pKGe2 = clamp01(1 - p0 - p1Sum)
+
+  let p2Weight: number
+  let p3Weight: number
+
+  if (kMax >= 3 && sumTriplesExact > 0) {
+    // Split P(K≥2) into exact K=2 and K≥3
+    // P(K=2 exact) = sumPairsExact, P(K≥3) = remainder
+    p2Weight = clamp01(Math.min(sumPairsExact, pKGe2))
+    p3Weight = clamp01(pKGe2 - p2Weight)
+  } else {
+    // Fallback: all P(K≥2) goes to K=2 (original behavior)
+    p2Weight = pKGe2
+    p3Weight = 0
   }
 
   // === Scenario K=0: no producers online ===
@@ -612,37 +670,36 @@ export function computeAcceleratedCastabilityAtTurn(
     outP2 += p1Sum * accP2
   }
 
-  // === Scenario K=2: two producers online ===
-  if (kMax >= 2 && p2Sum > 0 && list.length >= 2) {
-    let sumPairs = 0
-    const pairWeights: Array<{ i: number; j: number; w: number }> = []
-
-    for (let i = 0; i < probs.length; i++) {
-      const pi = probs[i]
-      if (pi <= 0 || pi >= 1) continue
-      for (let j = i + 1; j < probs.length; j++) {
-        const pj = probs[j]
-        if (pj <= 0 || pj >= 1) continue
-        const w = (pi * pj * p0) / ((1 - pi) * (1 - pj))
-        if (w > 0) {
-          pairWeights.push({ i, j, w })
-          sumPairs += w
-        }
-      }
+  // === Scenario K=2: exactly two producers online ===
+  if (kMax >= 2 && p2Weight > 0 && sumPairsExact > 0) {
+    let accP1 = 0
+    let accP2 = 0
+    for (const pw of pairWeights) {
+      const wNorm = pw.w / sumPairsExact
+      const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[pw.i], list[pw.j]])
+      accP1 += wNorm * res.p1
+      accP2 += wNorm * res.p2
     }
+    outP1 += p2Weight * accP1
+    outP2 += p2Weight * accP2
+  }
 
-    if (sumPairs > 0) {
-      let accP1 = 0
-      let accP2 = 0
-      for (const pw of pairWeights) {
-        const wNorm = pw.w / sumPairs
-        const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [list[pw.i], list[pw.j]])
-        accP1 += wNorm * res.p1
-        accP2 += wNorm * res.p2
-      }
-      outP1 += p2Sum * accP1
-      outP2 += p2Sum * accP2
+  // === Scenario K=3: three producers online ===
+  if (kMax >= 3 && p3Weight > 0 && sumTriplesExact > 0) {
+    let accP1 = 0
+    let accP2 = 0
+    for (const tw of tripleWeights) {
+      const wNorm = tw.w / sumTriplesExact
+      const res = castabilityGivenOnlineSet(hg, deck, spell, turn, ctx, [
+        list[tw.i],
+        list[tw.j],
+        list[tw.k],
+      ])
+      accP1 += wNorm * res.p1
+      accP2 += wNorm * res.p2
     }
+    outP1 += p3Weight * accP1
+    outP2 += p3Weight * accP2
   }
 
   return {
@@ -671,7 +728,7 @@ export function findAcceleratedTurn(
   const naturalTurn = spell.mv
 
   for (let t = 1; t < naturalTurn; t++) {
-    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, t, producers, ctx, 2)
+    const res = computeAcceleratedCastabilityAtTurn(hg, deck, spell, t, producers, ctx, 3)
     if (res.p2 >= threshold) {
       return { acceleratedTurn: t, withAccelAtTurn: res }
     }
@@ -704,7 +761,7 @@ export function computeAcceleratedCastability(
     naturalTurn,
     producers,
     ctx,
-    2
+    3
   )
 
   const accel = findAcceleratedTurn(hg, deck, spell, producers, ctx, DEFAULT_ACCELERATION_THRESHOLD)
@@ -776,7 +833,7 @@ export function computeCastabilityByTurn(
       turn,
       producers,
       ctx,
-      2
+      3
     )
     results.push({ turn, base, withAcceleration })
   }

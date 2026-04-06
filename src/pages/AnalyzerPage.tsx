@@ -63,28 +63,26 @@ import {
 // Lazy-load Onboarding (includes react-joyride ~50KB)
 const Onboarding = React.lazy(() => import('../components/Onboarding'))
 
-const SAMPLE_DECK = `4 Light-Paws, Emperor's Voice (NEO) 25
-2 Inspiring Vantage (KLR) 283
-4 Esper Sentinel (MH2) 12
-4 Giver of Runes (MH1) 13
-4 Kor Spiritdancer (JMP) 116
-4 Ethereal Armor (DSK) 7
-1 Sentinel's Eyes (THB) 36
-4 Shardmage's Rescue (DSK) 29
-1 Combat Research (DMU) 44
-1 Sunbaked Canyon (MH1) 247
-1 Kaya's Ghostform (WAR) 94
-1 Plains (PIP) 317
-1 Cartouche of Zeal (AKR) 145
-3 Sticky Fingers (SNC) 124
-3 Sheltered by Ghosts (DSK) 30
-4 Demonic Ruckus (OTJ) 120
-1 Surge of Salvation (MOM) 41
-4 Sacred Foundry (GRN) 254
-4 Mana Confluence (JOU) 163
-4 Godless Shrine (RNA) 248
-1 Wingspan Stride (TDM) 66
-4 Starting Town (FIN) 289`
+const SAMPLE_DECK = `4 Llanowar Elves (FDN) 227
+4 Gene Pollinator (EOE) 186
+4 Spider Manifestation (SPM) 148
+4 Badgermole Cub (TLA) 167
+4 Nature's Rhythm (TDM) 150
+4 Ouroboroid (EOE) 201
+4 Brightglass Gearhulk (DFT) 191
+2 Archdruid's Charm (MKM) 151
+1 Craterhoof Behemoth (TDM) 138
+1 Insidious Fungus (DSK) 186
+1 Nurturing Pixie (OTJ) 20
+1 Meltstrider's Resolve (EOE) 199
+2 Seam Rip (EOE) 34
+1 Soul-Guide Lantern (EOC) 143
+3 Abandoned Air Temple (TLA) 263
+4 Hushwood Verge (DSK) 261
+4 Temple Garden (ECL) 268
+2 Multiversal Passage (SPM) 180
+2 Plains (FDN) 295
+8 Forest (FDN) 291`
 
 const AnalyzerPage: React.FC = () => {
   const theme = useTheme()

@@ -108,6 +108,44 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     enhancesTypes: ['DORK'], // Enhances creature mana producers
   },
 
+  // ===========================================================================
+  // MANA DORKS - Standard (TLA / current)
+  // ===========================================================================
+
+  'Gene Pollinator': {
+    // {T}, Tap an untapped permanent you control: Add one mana of any color.
+    // 1-drop creature that taps for any color but requires tapping another permanent.
+    // The extra permanent tap is an opportunity cost, not mana — model as activationTax: 0.
+    // Badgermole Cub's ENHANCER bonus triggers on this (it's a creature tapping for mana).
+    type: 'DORK',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+  },
+
+  'Spider Manifestation': {
+    // {T}: Add {R} or {G}.
+    // Whenever you cast a spell with mana value 4 or greater, untap this creature.
+    // Classic 2-drop dork with R/G production. The untap ability is upside
+    // but doesn't change the base model (still 1 mana per turn for castability).
+    type: 'DORK',
+    castCostGeneric: 1,
+    castCostColors: { G: 1 }, // Hybrid {1}{R/G} — model as G for green decks
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('R', 'G'),
+    producesAny: false,
+    oneShot: false,
+  },
+
   // 2-CMC Dorks
 
   'Fyndhorn Elves': {

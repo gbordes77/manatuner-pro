@@ -696,6 +696,46 @@ describe('computeAcceleratedCastability', () => {
     // Adding Cub should increase acceleration impact due to synergy
     expect(withCub.accelerationImpact).toBeGreaterThan(elvesOnly.accelerationImpact)
   })
+
+  it('K=3 should capture Cub + 2 dorks synergy better than K=2', () => {
+    const hg = new Hypergeom(200)
+    const deck = makeGruulDeck()
+    // 6-mana spell: needs significant acceleration to cast early
+    const spell = { mv: 6, generic: 4, pips: { G: 2 } }
+    const ctx = makeGoldfishCtx()
+
+    const elves = makeLlanowarElves()
+    const birds = makeBirdsOfParadise()
+    const cub: ProducerInDeck = {
+      def: {
+        name: 'Badgermole Cub',
+        type: 'ENHANCER',
+        castCostGeneric: 1,
+        castCostColors: { G: 1 },
+        delay: 0,
+        isCreature: true,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: COLOR_MASK.G,
+        producesAny: false,
+        oneShot: false,
+        enhancerBonus: 1,
+        enhancerBonusMask: COLOR_MASK.G,
+        enhancesTypes: ['DORK'],
+      },
+      copies: 4,
+    }
+
+    const producers = [elves, birds, cub]
+
+    // K=2: Cub + 1 dork = 3G extra max
+    const resK2 = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 4, producers, ctx, 2)
+    // K=3: Cub + 2 dorks = 5G extra (1 base + 2 bonus + 2 dork normal)
+    const resK3 = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 4, producers, ctx, 3)
+
+    // K=3 should give higher or equal probability (captures the triple scenario)
+    expect(resK3.p2).toBeGreaterThanOrEqual(resK2.p2 - 1e-9)
+  })
 })
 
 // =============================================================================
