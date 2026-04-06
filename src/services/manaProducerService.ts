@@ -256,8 +256,13 @@ function analyzeOracleForMana(oracleText: string): {
       result.type = 'ROCK'
       result.oneShot = true
     }
-    // Create Treasure tokens
-    else if (/create.*treasure/i.test(oracleText)) {
+    // Create Treasure tokens — but NOT when gated behind combat damage
+    // (e.g., Sticky Fingers: "Whenever enchanted creature deals combat damage... create a Treasure")
+    // Combat-conditional treasure is not reliable ramp
+    else if (
+      /create.*treasure/i.test(oracleText) &&
+      !/deals?\s+combat\s+damage[^.]*create.*treasure/i.test(oracleText)
+    ) {
       result.type = 'TREASURE'
       result.producesAny = true
     }
