@@ -127,25 +127,21 @@ const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol
     )
   }
 
-  // Hybrid mana (e.g., "W/U", "2/W")
+  // Hybrid mana (e.g., "R/G", "W/U", "2/W")
+  // mana-font supports hybrid symbols: ms-rg, ms-wu, ms-2w, etc.
   if (cleanSymbol.includes('/')) {
     const parts = cleanSymbol.split('/')
-    const firstPart = parts[0]
-    const secondPart = parts[1]
-
-    // Try to use the color part
-    const colorPart = symbolMap[firstPart] || symbolMap[secondPart]
-    if (colorPart) {
-      return (
-        <i
-          className={`ms ms-${colorPart} ms-cost`}
-          style={{
-            fontSize: size,
-            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-          }}
-        />
-      )
-    }
+    // Build hybrid class: lowercase both parts joined (e.g., "R/G" → "rg", "2/W" → "2w")
+    const hybridClass = parts.map((p) => p.toLowerCase()).join('')
+    return (
+      <i
+        className={`ms ms-${hybridClass} ms-cost`}
+        style={{
+          fontSize: size,
+          filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+        }}
+      />
+    )
   }
 
   // Standard color symbols with Keyrune
