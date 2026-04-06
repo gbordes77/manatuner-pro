@@ -33,6 +33,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
+import { SEO } from '../components/common/SEO'
 
 const MathematicsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -70,6 +71,11 @@ const MathematicsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      <SEO
+        title="MTG Mana Math Explained - Hypergeometric & Monte Carlo | ManaTuner"
+        description="The mathematics behind ManaTuner: hypergeometric distribution, Monte Carlo simulation (10,000 hands), Bellman equation for mulligan decisions, and Frank Karsten's research."
+        path="/mathematics"
+      />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
 
@@ -150,7 +156,7 @@ const MathematicsPage: React.FC = () => {
           >
             Core Concepts
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Mathematical Foundations
           </Typography>
         </Box>
@@ -212,7 +218,7 @@ const MathematicsPage: React.FC = () => {
           >
             Deep Dive
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             <ScienceIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
             Mathematical Models Explained
           </Typography>
@@ -585,7 +591,7 @@ const MathematicsPage: React.FC = () => {
           >
             Practical Use
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             How This Applies to Your Deck
           </Typography>
         </Box>
@@ -670,7 +676,7 @@ const MathematicsPage: React.FC = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Ready to Apply the Math?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>

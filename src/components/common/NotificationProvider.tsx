@@ -3,8 +3,6 @@ import { ThemeProvider } from '@mui/material/styles'
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { darkTheme, lightTheme } from '../../theme'
 
-
-
 interface NotificationContextType {
   showNotification: (message: string, severity?: AlertColor) => void
 }
@@ -24,7 +22,7 @@ export const useNotification = () => {
     throw new Error('useNotification must be used within NotificationProvider')
   }
   return {
-    showNotification: context.showNotification
+    showNotification: context.showNotification,
   }
 }
 
@@ -35,7 +33,7 @@ export const useTheme = () => {
   }
   return {
     isDark: context.isDark,
-    toggleTheme: context.toggleTheme
+    toggleTheme: context.toggleTheme,
   }
 }
 
@@ -75,15 +73,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }
 
   const toggleTheme = () => {
-    setIsDark(prev => !prev)
-    showNotification(
-      `Thème ${!isDark ? 'sombre' : 'clair'} activé`,
-      'success'
-    )
+    setIsDark((prev) => !prev)
+    showNotification(`${!isDark ? 'Dark' : 'Light'} theme enabled`, 'success')
   }
 
   const handleClose = () => {
-    setNotification(prev => ({ ...prev, open: false }))
+    setNotification((prev) => ({ ...prev, open: false }))
   }
 
   const contextValue: CombinedContextType = {
@@ -107,7 +102,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             '& .MuiSnackbarContent-root': {
               borderRadius: 2,
               backdropFilter: 'blur(10px)',
-            }
+            },
           }}
         >
           <Alert
@@ -119,7 +114,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
               fontWeight: 500,
               '& .MuiAlert-icon': {
                 fontSize: '1.2rem',
-              }
+              },
             }}
           >
             {notification.message}

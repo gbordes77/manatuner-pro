@@ -41,7 +41,7 @@
   </g>
 
   <!-- Main title -->
-  <text x="900" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="72" fill="#ffffff" text-anchor="middle" font-weight="bold">ManaTuner Pro</text>
+  <text x="900" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="72" fill="#ffffff" text-anchor="middle" font-weight="bold">ManaTuner</text>
 
   <!-- Subtitle -->
   <text x="900" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#e94560" text-anchor="middle">MTG Manabase Analyzer</text>

@@ -21,6 +21,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer } from '../common/AnimatedContainer'
 import { FloatingManaSymbols } from '../common/FloatingManaSymbols'
+import { SEO } from '../common/SEO'
 
 export const AboutPage: React.FC = () => {
   const navigate = useNavigate()
@@ -48,6 +49,11 @@ export const AboutPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      <SEO
+        title="About ManaTuner - Open Source MTG Mana Base Tool"
+        description="ManaTuner is a free, open source MTG mana base analyzer built on Frank Karsten's research, hypergeometric math, Monte Carlo simulation, and Bellman equations."
+        path="/about"
+      />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
 
@@ -112,7 +118,12 @@ export const AboutPage: React.FC = () => {
 
       {/* Features Grid */}
       <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography
+          variant="h4"
+          component="h2"
+          fontWeight={700}
+          sx={{ textAlign: 'center', mb: 4 }}
+        >
           Built on Proven Mathematics
         </Typography>
         <Grid container spacing={3}>
@@ -278,7 +289,7 @@ export const AboutPage: React.FC = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Ready to Optimize?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>
@@ -315,6 +326,11 @@ export const AboutPage: React.FC = () => {
 
 export const PrivacyPage: React.FC = () => (
   <Container maxWidth="lg" sx={{ py: 4 }}>
+    <SEO
+      title="Privacy Policy | ManaTuner"
+      description="ManaTuner privacy policy. 100% local processing, no cookies, no tracking, no account required. Your deck data never leaves your browser."
+      path="/privacy"
+    />
     <Box sx={{ textAlign: 'center', mb: 4 }}>
       <Typography
         variant="h3"

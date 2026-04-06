@@ -28,6 +28,7 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { SEO } from '../components/common/SEO'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
 
@@ -136,6 +137,11 @@ export const GuidePage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      <SEO
+        title="How to Build a Perfect MTG Mana Base - Guide | ManaTuner"
+        description="Step-by-step guide to building optimal mana bases in Magic: The Gathering. Learn to read your Health Score, castability charts, Monte Carlo mulligan, and more."
+        path="/guide"
+      />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
 
@@ -215,7 +221,7 @@ export const GuidePage: React.FC = () => {
           >
             Your Results
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             The 5 Analysis Tabs
           </Typography>
         </Box>
@@ -309,7 +315,7 @@ export const GuidePage: React.FC = () => {
           >
             Getting Started
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Step-by-Step Guide
           </Typography>
         </Box>
@@ -483,7 +489,7 @@ export const GuidePage: React.FC = () => {
           >
             Under the Hood
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             The Math Behind ManaTuner
           </Typography>
           <Typography
@@ -579,7 +585,7 @@ export const GuidePage: React.FC = () => {
           >
             Format Specific
           </Typography>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Quick Tips by Format
           </Typography>
         </Box>
@@ -653,7 +659,7 @@ export const GuidePage: React.FC = () => {
       {/* FAQ */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Frequently Asked Questions
           </Typography>
         </Box>
@@ -713,7 +719,7 @@ export const GuidePage: React.FC = () => {
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" component="h2" fontWeight={700}>
             Ready to Analyze?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>

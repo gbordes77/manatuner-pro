@@ -1,5 +1,5 @@
-import { Box, useTheme } from '@mui/material';
-import React from 'react';
+import { Box, useTheme } from '@mui/material'
+import React from 'react'
 
 // Mana symbol component using Mana Font
 const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g' | 'c'; size?: number }> = ({
@@ -8,20 +8,22 @@ const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g' | 'c'; size?: nu
 }) => (
   <i
     className={`ms ms-${color} ms-cost`}
+    aria-hidden="true"
     style={{
       fontSize: size,
       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
     }}
   />
-);
+)
 
 // Floating mana symbols background decoration
 export const FloatingManaSymbols: React.FC = () => {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
 
   return (
     <Box
+      aria-hidden="true"
       sx={{
         position: 'fixed',
         top: 0,
@@ -64,7 +66,7 @@ export const FloatingManaSymbols: React.FC = () => {
         </Box>
       ))}
     </Box>
-  );
-};
+  )
+}
 
-export default FloatingManaSymbols;
+export default FloatingManaSymbols

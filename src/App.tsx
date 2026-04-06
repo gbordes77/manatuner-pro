@@ -1,6 +1,7 @@
 import { Box, Button, Container, Typography } from '@mui/material'
 import React, { Suspense } from 'react'
-import { Link, Route, Routes } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import { BetaBanner } from './components'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { NotificationProvider } from './components/common/NotificationProvider'
@@ -51,6 +52,7 @@ const PageLoader = () => {
             >
               <i
                 className={`ms ms-${color} ms-cost`}
+                aria-hidden="true"
                 style={{
                   fontSize: 28,
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
@@ -111,48 +113,84 @@ const NotFoundPage = () => (
 
 function App() {
   return (
-    <ErrorBoundary>
-      <NotificationProvider>
-        <AccelerationProvider>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: '100vh',
-            }}
-          >
-            <BetaBanner />
-            <Header />
-
+    <HelmetProvider>
+      <ErrorBoundary>
+        <NotificationProvider>
+          <AccelerationProvider>
             <Box
-              component="main"
               sx={{
-                flexGrow: 1,
                 display: 'flex',
                 flexDirection: 'column',
+                minHeight: '100vh',
               }}
             >
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/analyzer" element={<AnalyzerPage />} />
-                  <Route path="/guide" element={<GuidePage />} />
-                  <Route path="/mathematics" element={<MathematicsPage />} />
-                  <Route path="/my-analyses" element={<MyAnalysesPage />} />
-                  <Route path="/mes-analyses" element={<MyAnalysesPage />} />
-                  <Route path="/land-glossary" element={<LandGlossaryPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </Suspense>
-            </Box>
+              {/* Skip navigation for keyboard/screen reader users */}
+              <Box
+                component="a"
+                href="#main-content"
+                sx={{
+                  position: 'absolute',
+                  left: '-9999px',
+                  top: 'auto',
+                  width: '1px',
+                  height: '1px',
+                  overflow: 'hidden',
+                  '&:focus': {
+                    position: 'fixed',
+                    top: 8,
+                    left: 8,
+                    width: 'auto',
+                    height: 'auto',
+                    overflow: 'visible',
+                    zIndex: 9999,
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 1,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    boxShadow: 3,
+                  },
+                }}
+              >
+                Skip to main content
+              </Box>
 
-            <Footer />
-          </Box>
-        </AccelerationProvider>
-      </NotificationProvider>
-    </ErrorBoundary>
+              <BetaBanner />
+              <Header />
+
+              <Box
+                component="main"
+                id="main-content"
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/analyzer" element={<AnalyzerPage />} />
+                    <Route path="/guide" element={<GuidePage />} />
+                    <Route path="/mathematics" element={<MathematicsPage />} />
+                    <Route path="/my-analyses" element={<MyAnalysesPage />} />
+                    <Route path="/mes-analyses" element={<Navigate to="/my-analyses" replace />} />
+                    <Route path="/land-glossary" element={<LandGlossaryPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </Suspense>
+              </Box>
+
+              <Footer />
+            </Box>
+          </AccelerationProvider>
+        </NotificationProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   )
 }
 

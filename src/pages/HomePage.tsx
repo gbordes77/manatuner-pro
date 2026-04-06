@@ -23,6 +23,7 @@ import {
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
+import { SEO } from '../components/common/SEO'
 
 // Mana symbol component using Keyrune font
 const ManaSymbol: React.FC<{
@@ -32,6 +33,7 @@ const ManaSymbol: React.FC<{
 }> = ({ color, size = 24, glow = false }) => (
   <i
     className={`ms ms-${color} ms-cost`}
+    aria-hidden="true"
     style={{
       fontSize: size,
       filter: glow ? 'drop-shadow(0 0 8px currentColor)' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
@@ -165,6 +167,11 @@ export const HomePage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ position: 'relative' }}>
+      <SEO
+        title="ManaTuner - Free MTG Mana Base Calculator with Rocks & Dorks"
+        description="The only mana calculator that factors in your mana rocks and dorks — not just lands. Exact probabilities + Monte Carlo mulligan for Magic: The Gathering."
+        path="/"
+      />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
 
@@ -396,7 +403,12 @@ export const HomePage: React.FC = () => {
           >
             Powered By
           </Typography>
-          <Typography variant="h4" fontWeight={700} sx={{ mt: 0.5, fontFamily: '"Cinzel", serif' }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight={700}
+            sx={{ mt: 0.5, fontFamily: '"Cinzel", serif' }}
+          >
             Rigorous Mathematics
           </Typography>
           <Typography
@@ -472,6 +484,7 @@ export const HomePage: React.FC = () => {
       <Box sx={{ my: 3, position: 'relative', zIndex: 1 }}>
         <Typography
           variant="h4"
+          component="h2"
           fontWeight={700}
           sx={{ mb: 2.5, textAlign: 'center', fontFamily: '"Cinzel", serif' }}
         >
@@ -590,6 +603,7 @@ export const HomePage: React.FC = () => {
         <CardContent sx={{ py: 3, px: 4 }}>
           <Typography
             variant="h4"
+            component="h2"
             fontWeight={700}
             sx={{ mb: 2.5, textAlign: 'center', fontFamily: '"Cinzel", serif' }}
           >
@@ -705,12 +719,18 @@ export const HomePage: React.FC = () => {
         }}
       >
         {[
-          { icon: <i className="ms ms-w ms-cost" style={{ fontSize: 16 }} />, text: '100% Local' },
           {
-            icon: <i className="ms ms-u ms-cost" style={{ fontSize: 16 }} />,
+            icon: <i className="ms ms-w ms-cost" aria-hidden="true" style={{ fontSize: 16 }} />,
+            text: '100% Local',
+          },
+          {
+            icon: <i className="ms ms-u ms-cost" aria-hidden="true" style={{ fontSize: 16 }} />,
             text: 'No account required',
           },
-          { icon: <i className="ms ms-g ms-cost" style={{ fontSize: 16 }} />, text: 'Auto-saved' },
+          {
+            icon: <i className="ms ms-g ms-cost" aria-hidden="true" style={{ fontSize: 16 }} />,
+            text: 'Auto-saved',
+          },
         ].map((item, index) => (
           <Typography
             key={index}
@@ -755,7 +775,7 @@ export const HomePage: React.FC = () => {
         </Box>
 
         <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography variant="h4" fontWeight={700} fontFamily='"Cinzel", serif'>
+          <Typography variant="h4" component="h2" fontWeight={700} fontFamily='"Cinzel", serif'>
             Ready to Optimize?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>

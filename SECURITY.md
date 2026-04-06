@@ -37,7 +37,7 @@ default-src 'self';
 script-src 'self';
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
 img-src 'self' data: https://cards.scryfall.io https://c1.scryfall.com;
-connect-src 'self' https://api.scryfall.com;
+connect-src 'self' https://api.scryfall.com https://*.ingest.sentry.io;
 frame-ancestors 'none';
 ```
 
@@ -51,7 +51,7 @@ frame-ancestors 'none';
 
 ### Data Privacy
 
-- All deck data stored in browser `localStorage` with AES-256 encryption
+- All deck data stored in browser `localStorage` as JSON (no server transmission)
 - No cookies, no tracking, no analytics
 - Export/import feature for data portability
 - One-click data deletion

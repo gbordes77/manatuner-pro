@@ -1,14 +1,12 @@
 import {
   Analytics as AnalyticsIcon,
   Close as CloseIcon,
-  DarkMode as DarkModeIcon,
   Functions as FunctionsIcon,
   GitHub as GitHubIcon,
   MenuBook as GuideIcon,
   History as HistoryIcon,
   Home as HomeIcon,
   Info as InfoIcon,
-  LightMode as LightModeIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material'
 import {
@@ -40,6 +38,7 @@ const ManaSymbol: React.FC<{ color: 'w' | 'u' | 'b' | 'r' | 'g'; size?: number }
 }) => (
   <i
     className={`ms ms-${color} ms-cost`}
+    aria-hidden="true"
     style={{
       fontSize: size,
       filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
@@ -80,7 +79,7 @@ const prefetchAnalyzer = () => {
 
 export const Header: React.FC = () => {
   const muiTheme = useMuiTheme()
-  const { isDark, toggleTheme } = useTheme()
+  const { isDark } = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
   const location = useLocation()
   const navigate = useNavigate()
@@ -118,34 +117,33 @@ export const Header: React.FC = () => {
     >
       <Toolbar>
         {/* Logo with WUBRG */}
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/')}
-          >
-            {/* Mana symbols as logo accent */}
-            <ManaBar />
+        <Box
+          component={RouterLink}
+          to="/"
+          aria-label="ManaTuner - Back to home"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+        >
+          {/* Mana symbols as logo accent */}
+          <ManaBar />
 
-            <Typography
-              variant="h6"
-              component="span"
-              sx={{
-                textDecoration: 'none',
-                color: 'inherit',
-                fontWeight: 700,
-                fontFamily: '"Cinzel", serif',
-                letterSpacing: '0.05em',
-                ml: 0.5,
-              }}
-            >
-              ManaTuner
-            </Typography>
-          </Box>
+          <Typography
+            variant="h6"
+            component="span"
+            sx={{
+              fontWeight: 700,
+              fontFamily: '"Cinzel", serif',
+              letterSpacing: '0.05em',
+              ml: 0.5,
+            }}
+          >
+            ManaTuner
+          </Typography>
         </Box>
 
         {/* Navigation - Centré */}
@@ -209,23 +207,6 @@ export const Header: React.FC = () => {
             })}
           </Box>
         )}
-
-        {/* Theme Toggle */}
-        <Tooltip title={`Switch to ${isDark ? 'light' : 'dark'} theme`}>
-          <IconButton
-            color="inherit"
-            onClick={toggleTheme}
-            sx={{
-              ml: 1,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'rotate(180deg)',
-              },
-            }}
-          >
-            {isDark ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
-        </Tooltip>
 
         {/* GitHub link */}
         <Tooltip title="View source code on GitHub">
@@ -369,16 +350,7 @@ export const Header: React.FC = () => {
 
         <Divider sx={{ my: 1 }} />
 
-        {/* Theme Toggle in Drawer */}
         <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={toggleTheme} sx={{ py: 1.5 }}>
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                {isDark ? <LightModeIcon /> : <DarkModeIcon />}
-              </ListItemIcon>
-              <ListItemText primary={isDark ? 'Light Mode' : 'Dark Mode'} />
-            </ListItemButton>
-          </ListItem>
           <ListItem disablePadding>
             <ListItemButton
               component="a"

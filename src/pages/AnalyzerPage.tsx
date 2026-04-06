@@ -28,6 +28,7 @@ import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
 import { TabPanel } from '../components/analyzer/TabPanel'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
+import { SEO } from '../components/common/SEO'
 import PrivacySettings from '../components/PrivacySettings'
 
 // Lazy-loaded tabs (only loaded when selected)
@@ -172,6 +173,11 @@ const AnalyzerPage: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title="MTG Deck Analyzer - Calculate Mana Base Probabilities | ManaTuner"
+        description="Analyze your MTG deck's mana base with exact hypergeometric probabilities. Includes mana rocks, dorks, Monte Carlo mulligan simulation, and castability per spell."
+        path="/analyzer"
+      />
       <React.Suspense fallback={null}>
         <Onboarding hasAnalysisResult={!!analysisResult} />
       </React.Suspense>

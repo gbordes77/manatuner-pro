@@ -13,6 +13,7 @@ import {
   Sort as SortIcon,
   Storage as StorageIcon,
 } from '@mui/icons-material'
+import { SEO } from '../components/common/SEO'
 import {
   Box,
   Button,
@@ -607,6 +608,11 @@ const MyAnalysesPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
+      <SEO
+        title="My Saved Deck Analyses | ManaTuner"
+        description="View and manage your saved MTG deck analyses. Compare mana base results, reload past analyses, and track your deck building progress."
+        path="/my-analyses"
+      />
       <FloatingManaSymbols />
 
       {/* Header */}
