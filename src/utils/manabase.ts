@@ -7,17 +7,14 @@ import type {
   SimulationResult,
   TurnAnalysis,
 } from '@/types'
+import { hypergeom } from '../services/castability/hypergeom'
 
-// Constants based on Frank Karsten's 2022 research (TCGPlayer)
-// Key = turn number, values = sources needed for 90% probability at that turn
-// single = 1 colored pip, double = 2 pips (CC), triple = 3 pips (CCC)
-const KARSTEN_TABLE = {
-  1: { single: 14, double: 20, triple: 23 },
-  2: { single: 13, double: 18, triple: 20 },
-  3: { single: 12, double: 16, triple: 19 },
-  4: { single: 11, double: 15, triple: 18 },
-  5: { single: 10, double: 14, triple: 17 },
-  6: { single: 9, double: 13, triple: 16 },
+// Karsten tables — unified from types/maths.ts (single source of truth)
+import { KARSTEN_TABLES } from '../types/maths'
+
+/** Lookup Karsten sources needed: intensity = 1/2/3 colored pips, turn = 1-10 */
+function getKarstenSources(intensity: number, turn: number): number {
+  return KARSTEN_TABLES[intensity]?.[turn] || 0
 }
 
 // Couleurs MTG (display names)
@@ -87,23 +84,16 @@ export const calculateRequiredSources = (
   const colors = extractColors(cost)
   if (colors.length === 0) return 0
 
-  const table = KARSTEN_TABLE[Math.min(turn, 6) as keyof typeof KARSTEN_TABLE]
-  if (!table) return 0
-
-  // Détermine l'intensité basée sur le nombre de symboles
+  // Détermine l'intensité basée sur le nombre de symboles colorés
   const symbols = parseManaCost(cost)
   const colorCount = symbols.filter((s) => s in COLORS || s.includes('/')).length
 
-  let intensity: 'single' | 'double' | 'triple'
-  if (colorCount >= 3) intensity = 'triple'
-  else if (colorCount >= 2) intensity = 'double'
-  else intensity = 'single'
-
-  return table[intensity]
+  const intensity = Math.min(Math.max(colorCount, 1), 4)
+  return getKarstenSources(intensity, turn)
 }
 
 /**
- * Distribution hypergéométrique - probabilité de tirer X succès
+ * Distribution hypergéométrique — delegates to unified log-space engine
  */
 export const hypergeometric = (
   population: number,
@@ -111,25 +101,7 @@ export const hypergeometric = (
   draws: number,
   target: number
 ): number => {
-  if (target > successes || target > draws) return 0
-  if (target < 0) return 0
-
-  const combinations = (n: number, k: number): number => {
-    if (k > n || k < 0) return 0
-    if (k === 0 || k === n) return 1
-
-    let result = 1
-    for (let i = 0; i < k; i++) {
-      result = (result * (n - i)) / (i + 1)
-    }
-    return result
-  }
-
-  const favorable =
-    combinations(successes, target) * combinations(population - successes, draws - target)
-  const total = combinations(population, draws)
-
-  return total > 0 ? favorable / total : 0
+  return hypergeom.pmf(population, successes, draws, target)
 }
 
 /**
@@ -141,14 +113,7 @@ export const calculateCastProbability = (
   deckSize: number,
   cardsDrawn: number
 ): number => {
-  // Probabilité d'avoir au moins X sources dans les Y cartes tirées
-  let probability = 0
-
-  for (let i = requiredSources; i <= Math.min(availableSources, cardsDrawn); i++) {
-    probability += hypergeometric(deckSize, availableSources, cardsDrawn, i)
-  }
-
-  return Math.min(1, probability)
+  return hypergeom.atLeast(deckSize, availableSources, cardsDrawn, requiredSources)
 }
 
 /**

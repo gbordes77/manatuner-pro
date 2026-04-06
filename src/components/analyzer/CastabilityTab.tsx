@@ -7,7 +7,9 @@ import { manaProducerService, producerCacheService } from '../../services/manaPr
 import type { Card } from '../../types'
 import type { ProducerInDeck, UnconditionalMultiManaGroup } from '../../types/manaProducers'
 import ManaCostRow from '../ManaCostRow'
+import { Term } from '../common/Term'
 import { AccelerationSettings } from './AccelerationSettings'
+import { SideboardSwapEditor, type SideboardSwap } from './SideboardSwapEditor'
 
 interface CastabilityTabProps {
   deckList: string
@@ -19,15 +21,47 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
     // Get acceleration context
     const { settings, accelContext } = useAcceleration()
 
+    // Sideboard swap state
+    const [activeSwaps, setActiveSwaps] = useState<SideboardSwap[]>([])
+
+    // Separate maindeck and sideboard cards
+    const maindeckCards = useMemo(
+      () => (analysisResult?.cards || []).filter((c) => !c.isSideboard),
+      [analysisResult?.cards]
+    )
+    const sideboardCards = useMemo(
+      () => (analysisResult?.cards || []).filter((c) => c.isSideboard),
+      [analysisResult?.cards]
+    )
+
+    // Apply sideboard swaps to get the post-board card list
+    const effectiveCards = useMemo(() => {
+      if (activeSwaps.length === 0) return maindeckCards
+      const cardMap = new Map(maindeckCards.map((c) => [c.name, { ...c }]))
+
+      for (const swap of activeSwaps) {
+        // Remove OUT cards
+        const outCard = cardMap.get(swap.cardOut)
+        if (outCard) {
+          outCard.quantity = Math.max(0, (outCard.quantity || 1) - swap.quantity)
+          if (outCard.quantity === 0) cardMap.delete(swap.cardOut)
+        }
+        // Add IN cards (find from sideboard for metadata)
+        const sbCard = sideboardCards.find((c) => c.name === swap.cardIn)
+        const existing = cardMap.get(swap.cardIn)
+        if (existing) {
+          existing.quantity = (existing.quantity || 1) + swap.quantity
+        } else if (sbCard) {
+          cardMap.set(swap.cardIn, { ...sbCard, isSideboard: false, quantity: swap.quantity })
+        }
+      }
+      return Array.from(cardMap.values())
+    }, [maindeckCards, sideboardCards, activeSwaps])
+
     // Filter out lands using Scryfall metadata from analysisResult
     const nonLandCards = useMemo(() => {
-      if (!analysisResult?.cards) return []
-
-      return analysisResult.cards.filter((card) => {
-        // Use isLand flag - lands are handled separately
-        return card.isLand !== true
-      })
-    }, [analysisResult?.cards])
+      return effectiveCards.filter((card) => card.isLand !== true)
+    }, [effectiveCards])
 
     // Detect mana producers in the deck (sync seed/cache + async Scryfall fallback)
     const [producersInDeck, setProducersInDeck] = useState<ProducerInDeck[]>([])
@@ -221,7 +255,7 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
 
             {nonLandCards.map((card, index) => (
               <ManaCostRow
-                key={index}
+                key={`${card.name}-${index}`}
                 cardName={card.name}
                 quantity={card.quantity || 1}
                 deckSources={analysisResult?.colorDistribution}
@@ -234,6 +268,23 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
                 initialCardData={cardDataMap.get(card.name) ?? null}
               />
             ))}
+
+            {/* Sideboard swap editor */}
+            {sideboardCards.length > 0 && (
+              <SideboardSwapEditor
+                maindeckCards={maindeckCards}
+                sideboardCards={sideboardCards}
+                onSwapsChange={setActiveSwaps}
+              />
+            )}
+            {activeSwaps.length > 0 && (
+              <Box sx={{ mt: 1, p: 1.5, bgcolor: 'info.main', borderRadius: 1, opacity: 0.9 }}>
+                <Typography variant="caption" color="info.contrastText" fontWeight={600}>
+                  Showing post-board castability (
+                  {activeSwaps.reduce((s, sw) => s + sw.quantity, 0)} swaps applied)
+                </Typography>
+              </Box>
+            )}
           </Box>
         ) : (
           <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -250,31 +301,20 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
             sx={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 0.5 }}
           >
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-              <strong>Best Case</strong>
-              <Tooltip
-                title="Probability of casting this spell assuming you hit all your land drops on curve. This is the optimistic scenario."
-                arrow
-              >
-                <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
-                  <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
-                </IconButton>
-              </Tooltip>
-              = All lands on curve
+              <strong>
+                <Term id="best-case">Best Case</Term>
+              </strong>
+              &nbsp;= All lands on curve
             </Box>
             <Box component="span" sx={{ mx: 1 }}>
               |
             </Box>
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-              <strong>Realistic</strong>
-              <Tooltip
-                title="Realistic probability accounting for mana screw (not drawing enough lands). This is a single-draw probability — your chance with one hand. Karsten's 90% target includes the option to mulligan, so values here will be lower than 90% even with the recommended number of sources."
-                arrow
-              >
-                <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>
-                  <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
-                </IconButton>
-              </Tooltip>
-              = Accounts for mana screw{producersInDeck.length > 0 ? ' + mana rocks/dorks' : ''}
+              <strong>
+                <Term id="realistic">Realistic</Term>
+              </strong>
+              &nbsp;= Accounts for mana screw
+              {producersInDeck.length > 0 ? ' + mana rocks/dorks' : ''}
             </Box>
           </Typography>
         </Box>

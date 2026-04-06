@@ -1,6 +1,7 @@
 // Advanced Mathematical Engine for ManaTuner
 // Based on Frank Karsten's research and hypergeometric distribution theory
 
+import { hypergeom } from './castability/hypergeom'
 import {
   KARSTEN_TABLES,
   MAGIC_CONSTANTS,
@@ -51,90 +52,21 @@ export class AdvancedMathEngine {
   }
 
   /**
-   * Calculate binomial coefficient C(n,k) with memoization
-   */
-  private binomial(n: number, k: number): number {
-    if (k > n || k < 0) return 0
-    if (k === 0 || k === n) return 1
-    if (k === 1) return n
-
-    const key = `${n},${k}`
-    if (this.cache.binomial.has(key)) {
-      this.metrics.cacheHits++
-      return this.cache.binomial.get(key)!
-    }
-
-    this.metrics.cacheMisses++
-
-    // Use symmetry property: C(n,k) = C(n,n-k)
-    const actualK = Math.min(k, n - k)
-
-    let result = 1
-    for (let i = 0; i < actualK; i++) {
-      result = (result * (n - i)) / (i + 1)
-    }
-
-    // Cache the result if cache isn't full
-    if (this.cache.binomial.size < this.cache.maxSize) {
-      this.cache.binomial.set(key, result)
-    }
-
-    return result
-  }
-
-  /**
-   * Hypergeometric distribution - exact probability
+   * Hypergeometric distribution — delegates to the unified log-space engine.
    * P(X = k) = C(K,k) * C(N-K,n-k) / C(N,n)
    */
   hypergeometric(params: HypergeometricParams): number {
     const { populationSize: N, successStates: K, sampleSize: n, successesWanted: k } = params
-
-    // Validation
-    if (k > n || k > K || n > N || k < 0) return 0
-    if (K === 0) return k === 0 ? 1 : 0
-
-    const key = `${N},${K},${n},${k}`
-    if (this.cache.hypergeometric.has(key)) {
-      this.metrics.cacheHits++
-      return this.cache.hypergeometric.get(key)!
-    }
-
-    this.metrics.cacheMisses++
-
-    const numerator = this.binomial(K, k) * this.binomial(N - K, n - k)
-    const denominator = this.binomial(N, n)
-
-    const result = denominator > 0 ? numerator / denominator : 0
-
-    // Cache the result
-    if (this.cache.hypergeometric.size < this.cache.maxSize) {
-      this.cache.hypergeometric.set(key, result)
-    }
-
-    return result
+    return hypergeom.pmf(N, K, n, k)
   }
 
   /**
-   * Cumulative hypergeometric distribution - probability of at least k successes
+   * Cumulative hypergeometric — delegates to the unified log-space engine.
    * P(X >= k) = sum(P(X = i)) for i = k to min(n, K)
    */
   cumulativeHypergeometric(params: HypergeometricParams): ProbabilityResult {
     const { populationSize: N, successStates: K, sampleSize: n, successesWanted: k } = params
-
-    let probability = 0
-    const maxK = Math.min(n, K)
-
-    for (let i = k; i <= maxK; i++) {
-      probability += this.hypergeometric({
-        populationSize: N,
-        successStates: K,
-        sampleSize: n,
-        successesWanted: i,
-      })
-    }
-
-    // Ensure probability is within bounds
-    probability = Math.min(1, Math.max(0, probability))
+    const probability = hypergeom.atLeast(N, K, n, k)
 
     return {
       probability,

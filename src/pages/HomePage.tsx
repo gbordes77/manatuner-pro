@@ -22,6 +22,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
 import { SEO } from '../components/common/SEO'
+import { Term } from '../components/common/Term'
 
 // Mana symbol component using Keyrune font
 const ManaSymbol: React.FC<{
@@ -99,21 +100,35 @@ export const HomePage: React.FC = () => {
     {
       icon: <TimelineIcon sx={{ fontSize: 40 }} />,
       title: 'Health Score',
-      description: 'Instant manabase health percentage based on hypergeometric probability.',
+      description: (
+        <>
+          Instant manabase health percentage based on <Term id="hypergeometric">exact math</Term>.
+        </>
+      ),
       color: theme.palette.mana.green,
       manaColor: 'g' as const,
     },
     {
       icon: <ShowChartIcon sx={{ fontSize: 40 }} />,
       title: 'Castability',
-      description: 'Exact cast probability including mana rocks and dorks — not just lands.',
+      description: (
+        <>
+          Exact <Term id="castability">cast probability</Term> including mana rocks and dorks — not
+          just lands.
+        </>
+      ),
       color: theme.palette.mana.blue,
       manaColor: 'u' as const,
     },
     {
       icon: <CasinoIcon sx={{ fontSize: 40 }} />,
       title: 'Mulligan Simulator',
-      description: 'Monte Carlo simulation tells you exactly when to keep or mulligan.',
+      description: (
+        <>
+          <Term id="monte-carlo">10,000 simulated hands</Term> tell you exactly when to keep or
+          mulligan.
+        </>
+      ),
       color: '#9c27b0',
       manaColor: 'b' as const,
     },

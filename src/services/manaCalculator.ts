@@ -1,6 +1,7 @@
 // manaCalculator.ts - Implémentation correcte selon Frank Karsten
 
 import type { ParsedManaCost } from '@/types'
+import { hypergeom } from './castability/hypergeom'
 
 // Local alias for backward compatibility within this file
 type ManaCost = ParsedManaCost
@@ -13,34 +14,8 @@ interface ProbabilityResult {
   recommendation: string
 }
 
-// Tables de Frank Karsten pour 90% de probabilité
-const KARSTEN_TABLES: { [symbols: number]: { [turn: number]: number } } = {
-  // Nombre de sources nécessaires pour X symboles de mana au tour Y
-  1: {
-    // 1 symbole
-    1: 14,
-    2: 13,
-    3: 12,
-    4: 11,
-    5: 10,
-    6: 9,
-  },
-  2: {
-    // 2 symboles
-    2: 20,
-    3: 18,
-    4: 16,
-    5: 15,
-    6: 14,
-  },
-  3: {
-    // 3 symboles
-    3: 23,
-    4: 20,
-    5: 19,
-    6: 18,
-  },
-}
+// Karsten tables — unified from types/maths.ts (single source of truth)
+import { KARSTEN_TABLES } from '../types/maths'
 
 export const calculateHypergeometric = (params: {
   deckSize: number
@@ -334,46 +309,14 @@ export const calculateOptimalLandCount = (deck: {
 }
 
 export class ManaCalculator {
-  private memoCache: Map<string, number> = new Map()
-
-  // Coefficient binomial avec mémoïsation
-  private binomial(n: number, k: number): number {
-    if (k > n) return 0
-    if (k === 0 || k === n) return 1
-
-    const key = `${n},${k}`
-    if (this.memoCache.has(key)) {
-      return this.memoCache.get(key)!
-    }
-
-    let result = 1
-    for (let i = 0; i < k; i++) {
-      result = (result * (n - i)) / (i + 1)
-    }
-
-    this.memoCache.set(key, result)
-    return result
-  }
-
-  // Distribution hypergeométrique
+  // Distribution hypergeométrique — delegates to unified log-space engine
   hypergeometric(N: number, K: number, n: number, k: number): number {
-    if (N <= 0 || K < 0 || n < 0 || k < 0) return 0
-    if (K > N || n > N) return 0
-    const denom = this.binomial(N, n)
-    if (denom === 0) return 0
-    return (this.binomial(K, k) * this.binomial(N - K, n - k)) / denom
+    return hypergeom.pmf(N, K, n, k)
   }
 
   // Probabilité cumulative (au moins k succès)
   cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number {
-    let probability = 0
-    const maxK = Math.min(n, K)
-
-    for (let k = minK; k <= maxK; k++) {
-      probability += this.hypergeometric(N, K, n, k)
-    }
-
-    return probability
+    return hypergeom.atLeast(N, K, n, minK)
   }
 
   // Calcul principal selon Karsten

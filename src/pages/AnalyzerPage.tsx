@@ -20,7 +20,8 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import React, { Suspense, useCallback } from 'react'
+import ShareIcon from '@mui/icons-material/Share'
+import React, { Suspense, useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
@@ -60,6 +61,7 @@ import {
   setIsDeckMinimized,
   showSnackbar,
 } from '../store/slices/analyzerSlice'
+import { buildShareUrl, parseShareParams } from '../utils/urlCodec'
 // Lazy-load Onboarding (includes react-joyride ~50KB)
 const Onboarding = React.lazy(() => import('../components/Onboarding'))
 
@@ -93,6 +95,31 @@ const AnalyzerPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { deckList, deckName, analysisResult, isAnalyzing, isDeckMinimized, activeTab, snackbar } =
     useSelector((state: RootState) => state.analyzer)
+
+  // URL share: hydrate deck from URL params on mount (once)
+  const hydratedRef = useRef(false)
+  useEffect(() => {
+    if (hydratedRef.current) return
+    hydratedRef.current = true
+
+    const shared = parseShareParams()
+    if (shared && shared.deckList) {
+      dispatch(setDeckList(shared.deckList))
+      if (shared.deckName) dispatch(setDeckName(shared.deckName))
+      if (shared.tab > 0) dispatch(setActiveTab(shared.tab))
+      // Clean URL without reloading
+      window.history.replaceState({}, '', '/analyzer')
+    }
+  }, [dispatch])
+
+  const handleShare = useCallback(() => {
+    if (!deckList.trim()) return
+    const url = buildShareUrl({ deckList, deckName, tab: activeTab })
+    if (!url) return
+    navigator.clipboard.writeText(url).then(() => {
+      dispatch(showSnackbar({ message: 'Share link copied to clipboard!', severity: 'success' }))
+    })
+  }, [deckList, deckName, activeTab, dispatch])
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     dispatch(setActiveTab(newValue))
@@ -476,6 +503,15 @@ const AnalyzerPage: React.FC = () => {
                     }}
                   >
                     Analysis Results
+                    <Chip
+                      icon={<ShareIcon sx={{ fontSize: 16 }} />}
+                      label="Share"
+                      size="small"
+                      variant="outlined"
+                      clickable
+                      onClick={handleShare}
+                      sx={{ fontSize: '0.75rem' }}
+                    />
                     {!isDeckMinimized && !isMobile && (
                       <Chip
                         label="Expand full width"
@@ -560,29 +596,8 @@ const AnalyzerPage: React.FC = () => {
                     <Tab
                       icon={<DownloadIcon sx={{ fontSize: 18 }} />}
                       iconPosition="start"
-                      label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          Blueprint
-                          <Box
-                            component="span"
-                            sx={{
-                              bgcolor: '#00D9FF',
-                              color: '#0A1628',
-                              fontSize: '0.6rem',
-                              fontWeight: 800,
-                              px: 0.8,
-                              py: 0.2,
-                              borderRadius: 1,
-                              letterSpacing: 0.5,
-                              boxShadow: '0 0 8px rgba(0, 217, 255, 0.5)',
-                            }}
-                          >
-                            NEW
-                          </Box>
-                        </Box>
-                      }
+                      label="Blueprint"
                       aria-label="Blueprint - Export analysis as PNG, PDF or JSON"
-                      sx={{ color: '#00D9FF' }}
                     />
                   </Tabs>
 
