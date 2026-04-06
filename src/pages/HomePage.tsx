@@ -1,13 +1,11 @@
-import {
-  Analytics as AnalyticsIcon,
-  ArrowForward as ArrowForwardIcon,
-  Book as BookIcon,
-  Casino as CasinoIcon,
-  MenuBook as MenuBookIcon,
-  Psychology as PsychologyIcon,
-  ShowChart as ShowChartIcon,
-  Timeline as TimelineIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import BookIcon from '@mui/icons-material/Book'
+import CasinoIcon from '@mui/icons-material/Casino'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import PsychologyIcon from '@mui/icons-material/Psychology'
+import ShowChartIcon from '@mui/icons-material/ShowChart'
+import TimelineIcon from '@mui/icons-material/Timeline'
 import {
   Box,
   Button,
@@ -171,6 +169,18 @@ export const HomePage: React.FC = () => {
         title="ManaTuner - Free MTG Mana Base Calculator with Rocks & Dorks"
         description="The only mana calculator that factors in your mana rocks and dorks — not just lands. Exact probabilities + Monte Carlo mulligan for Magic: The Gathering."
         path="/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'ManaTuner',
+          url: 'https://www.manatuner.app',
+          description:
+            'Free MTG mana base calculator with mana rocks and dorks support. Hypergeometric probabilities, Monte Carlo mulligan simulation, and Bellman equation optimization.',
+          applicationCategory: 'UtilityApplication',
+          operatingSystem: 'Any',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          author: { '@type': 'Person', name: 'Guillaume Bordes' },
+        }}
       />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
@@ -740,6 +750,35 @@ export const HomePage: React.FC = () => {
           >
             {item.icon} {item.text}
           </Typography>
+        ))}
+      </Box>
+
+      {/* Social Proof */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: { xs: 2, md: 4 },
+          py: 2,
+          flexWrap: 'wrap',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {[
+          { value: 'Free & Open Source', sub: 'MIT License' },
+          { value: '10,000', sub: 'Hands simulated per analysis' },
+          { value: '6', sub: 'Analysis tabs' },
+          { value: '0', sub: 'Data sent to servers' },
+        ].map((stat, index) => (
+          <Box key={index} sx={{ textAlign: 'center', minWidth: 100 }}>
+            <Typography variant="h6" fontWeight={700} color="primary" sx={{ lineHeight: 1.2 }}>
+              {stat.value}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {stat.sub}
+            </Typography>
+          </Box>
         ))}
       </Box>
 

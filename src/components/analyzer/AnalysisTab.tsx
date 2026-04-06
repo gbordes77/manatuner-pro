@@ -1,8 +1,6 @@
-import {
-  BarChart as BarChartIcon,
-  Bolt as BoltIcon,
-  Lightbulb as LightbulbIcon,
-} from '@mui/icons-material'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import BoltIcon from '@mui/icons-material/Bolt'
+import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import { Box, CircularProgress, Tab, Tabs } from '@mui/material'
 import React, { Suspense, memo, useState } from 'react'
 import { AnalysisResult, DeckCard } from '../../services/deckAnalyzer'

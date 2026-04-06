@@ -1,4 +1,5 @@
-import { Terrain as TerrainIcon, ViewList as ViewListIcon } from '@mui/icons-material'
+import TerrainIcon from '@mui/icons-material/Terrain'
+import ViewListIcon from '@mui/icons-material/ViewList'
 import { Box, Tab, Tabs } from '@mui/material'
 import React, { memo, useState } from 'react'
 import { AnalysisResult } from '../../services/deckAnalyzer'

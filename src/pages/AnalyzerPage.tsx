@@ -1,13 +1,11 @@
-import {
-  Analytics as AnalyticsIcon,
-  Assessment as AssessmentIcon,
-  Casino as CasinoIcon,
-  Dashboard as DashboardIcon,
-  Download as DownloadIcon,
-  Functions as FunctionsIcon,
-  ShowChart as ShowChartIcon,
-  Terrain as TerrainIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import AssessmentIcon from '@mui/icons-material/Assessment'
+import CasinoIcon from '@mui/icons-material/Casino'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import DownloadIcon from '@mui/icons-material/Download'
+import FunctionsIcon from '@mui/icons-material/Functions'
+import ShowChartIcon from '@mui/icons-material/ShowChart'
+import TerrainIcon from '@mui/icons-material/Terrain'
 import {
   Alert,
   Box,

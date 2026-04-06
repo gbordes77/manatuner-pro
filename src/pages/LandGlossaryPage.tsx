@@ -1,8 +1,6 @@
-import {
-  ArrowBack as ArrowBackIcon,
-  Terrain as TerrainIcon,
-  EmojiEvents as TrophyIcon,
-} from '@mui/icons-material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import TerrainIcon from '@mui/icons-material/Terrain'
+import TrophyIcon from '@mui/icons-material/EmojiEvents'
 import {
   Box,
   Button,
@@ -558,6 +556,20 @@ export const LandGlossaryPage: React.FC = () => {
           ))}
         </Grid>
       </Paper>
+
+      {/* Cross-links */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4, flexWrap: 'wrap' }}>
+        <Button variant="contained" onClick={() => navigate('/analyzer')} sx={{ borderRadius: 3 }}>
+          Analyze Your Deck
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/mathematics')}
+          sx={{ borderRadius: 3 }}
+        >
+          The Math Behind It
+        </Button>
+      </Box>
     </Container>
   )
 }

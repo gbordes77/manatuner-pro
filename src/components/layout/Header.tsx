@@ -1,14 +1,12 @@
-import {
-  Analytics as AnalyticsIcon,
-  Close as CloseIcon,
-  Functions as FunctionsIcon,
-  GitHub as GitHubIcon,
-  MenuBook as GuideIcon,
-  History as HistoryIcon,
-  Home as HomeIcon,
-  Info as InfoIcon,
-  Menu as MenuIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import CloseIcon from '@mui/icons-material/Close'
+import FunctionsIcon from '@mui/icons-material/Functions'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import GuideIcon from '@mui/icons-material/MenuBook'
+import HistoryIcon from '@mui/icons-material/History'
+import HomeIcon from '@mui/icons-material/Home'
+import InfoIcon from '@mui/icons-material/Info'
+import MenuIcon from '@mui/icons-material/Menu'
 import {
   AppBar,
   Box,

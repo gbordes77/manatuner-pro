@@ -1,4 +1,4 @@
-import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import {
   Box,
   CircularProgress,

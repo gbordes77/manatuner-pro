@@ -3,28 +3,52 @@ import { screen, fireEvent, waitFor } from "@testing-library/react";
 import { expect, describe, it, vi, beforeEach } from "vitest";
 import AnalyzerPage from "../../src/pages/AnalyzerPage";
 import { renderWithProviders } from "../test-utils";
+import { DeckAnalyzer } from "../../src/services/deckAnalyzer";
 
-// Mock des services - use importOriginal to include all exports
-vi.mock("../../src/services/manaCalculator", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    calculateManabase: vi.fn(() =>
-      Promise.resolve({
-        totalCards: 60,
-        totalLands: 24,
-        averageCMC: 2.5,
-        landRatio: 0.4,
-        colorDistribution: { W: 10, U: 8, B: 6, R: 0, G: 0 },
-        recommendations: ["Add more red sources"],
-      }),
-    ),
-  };
-});
+// Mock result matching DeckAnalyzer's AnalysisResult interface
+const mockAnalysisResult = {
+  totalCards: 60,
+  totalLands: 24,
+  totalNonLands: 36,
+  colorDistribution: { W: 10, U: 8, B: 6, R: 0, G: 0 },
+  manaRequirements: { W: 6, U: 5, B: 3, R: 0, G: 0 },
+  recommendations: ["Add more red sources"],
+  probabilities: {
+    turn1: { anyColor: 0.9, specificColors: { W: 0.8, U: 0.7, B: 0.5, R: 0, G: 0 } },
+    turn2: { anyColor: 0.95, specificColors: { W: 0.85, U: 0.75, B: 0.6, R: 0, G: 0 } },
+    turn3: { anyColor: 0.97, specificColors: { W: 0.9, U: 0.8, B: 0.7, R: 0, G: 0 } },
+    turn4: { anyColor: 0.99, specificColors: { W: 0.95, U: 0.9, B: 0.8, R: 0, G: 0 } },
+  },
+  consistency: 0.85,
+  rating: "good",
+  averageCMC: 2.5,
+  landRatio: 0.4,
+  manaCurve: { "0": 0, "1": 8, "2": 12, "3": 8, "4": 4, "5": 2, "6": 1, "7+": 1 },
+  mulliganAnalysis: {
+    perfectHand: 0.35,
+    goodHand: 0.45,
+    averageHand: 0.1,
+    poorHand: 0.07,
+    terribleHand: 0.03,
+  },
+  spellAnalysis: {},
+  cards: [],
+};
+
+// Mock DeckAnalyzer - the service actually used by AnalyzerPage
+vi.mock("../../src/services/deckAnalyzer", () => ({
+  DeckAnalyzer: {
+    analyzeDeck: vi.fn(() => Promise.resolve(mockAnalysisResult)),
+  },
+}));
 
 describe("AnalyzerPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Re-setup the mock since clearAllMocks resets implementations
+    DeckAnalyzer.analyzeDeck.mockImplementation(() =>
+      Promise.resolve(mockAnalysisResult),
+    );
   });
 
   it("affiche le formulaire d'analyse", () => {
@@ -60,7 +84,7 @@ describe("AnalyzerPage", () => {
     });
     fireEvent.click(analyzeButton);
 
-    // Vérifie qu'on voit le loading puis les résultats
+    // Vérifie qu'on voit les résultats
     await waitFor(
       () => {
         expect(screen.getByTestId("analysis-results")).toBeInTheDocument();
@@ -81,21 +105,22 @@ describe("AnalyzerPage", () => {
     });
     fireEvent.click(analyzeButton);
 
-    // Vérifier les onglets après chargement des résultats
+    // Attendre que les résultats soient affichés
     await waitFor(
       () => {
-        expect(
-          screen.getByRole("tab", { name: /dashboard/i }),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByRole("tab", { name: /castability/i }),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByRole("tab", { name: /analysis/i }),
-        ).toBeInTheDocument();
+        expect(screen.getByTestId("analysis-results")).toBeInTheDocument();
       },
       { timeout: 5000 },
     );
+
+    // Vérifier les onglets après chargement des résultats
+    const allTabs = screen.getAllByRole("tab");
+    const tabNames = allTabs.map(
+      (tab) => tab.getAttribute("aria-label") || tab.textContent,
+    );
+    expect(tabNames.some((name) => /dashboard/i.test(name))).toBe(true);
+    expect(tabNames.some((name) => /castability/i.test(name))).toBe(true);
+    expect(tabNames.some((name) => /analysis/i.test(name))).toBe(true);
   });
 
   it.skip("gère les erreurs d'analyse", async () => {
@@ -126,21 +151,10 @@ describe("AnalyzerPage", () => {
 
   it("affiche le loading pendant l'analyse", async () => {
     // Mock une analyse lente
-    const { calculateManabase } =
-      await import("../../src/services/manaCalculator");
-    calculateManabase.mockImplementation(
+    DeckAnalyzer.analyzeDeck.mockImplementation(
       () =>
         new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                totalCards: 60,
-                totalLands: 24,
-                averageCMC: 2.5,
-                landRatio: 0.4,
-              }),
-            1000,
-          ),
+          setTimeout(() => resolve(mockAnalysisResult), 1000),
         ),
     );
 

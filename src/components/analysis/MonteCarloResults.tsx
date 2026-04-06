@@ -1,34 +1,32 @@
+import AssessmentIcon from '@mui/icons-material/Assessment'
+import SpeedIcon from '@mui/icons-material/Speed'
+import TimelineIcon from '@mui/icons-material/Timeline'
 import {
-    Assessment as AssessmentIcon,
-    Speed as SpeedIcon,
-    Timeline as TimelineIcon
-} from '@mui/icons-material'
-import {
-    Alert,
-    Box,
-    Card,
-    CardContent,
-    Chip,
-    Divider,
-    Grid,
-    LinearProgress,
-    Typography,
-    useMediaQuery,
-    useTheme
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  LinearProgress,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import React, { useMemo } from 'react'
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts'
 import type { MonteCarloResult } from '../../types/maths'
 
@@ -45,7 +43,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
   title = 'Monte Carlo Simulation Results',
   showDistribution = true,
   showConfidence = true,
-  compactMode = false
+  compactMode = false,
 }) => {
   const theme = useTheme()
   // Note: useMediaQuery available for responsive layout if needed
@@ -55,11 +53,13 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
   const distributionData = useMemo(() => {
     if (!result) return []
 
-    return result.distribution.map((count, turn) => ({
-      turn: turn === 0 ? 'Failed' : `Turn ${turn}`,
-      count,
-      percentage: ((count / result.iterations) * 100).toFixed(1)
-    })).filter(item => item.count > 0)
+    return result.distribution
+      .map((count, turn) => ({
+        turn: turn === 0 ? 'Failed' : `Turn ${turn}`,
+        count,
+        percentage: ((count / result.iterations) * 100).toFixed(1),
+      }))
+      .filter((item) => item.count > 0)
   }, [result])
 
   // Prepare success/failure pie data
@@ -69,7 +69,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
     const failed = result.iterations - result.successfulRuns
     return [
       { name: 'Success', value: result.successfulRuns, color: theme.palette.success.main },
-      { name: 'Failed', value: failed, color: theme.palette.error.main }
+      { name: 'Failed', value: failed, color: theme.palette.error.main },
     ]
   }, [result, theme])
 
@@ -107,9 +107,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
     <Card>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h6">
-            {title}
-          </Typography>
+          <Typography variant="h6">{title}</Typography>
           <Chip
             icon={<AssessmentIcon />}
             label={`${result.iterations.toLocaleString()} iterations`}
@@ -137,8 +135,8 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
                   borderRadius: 3,
                   backgroundColor: 'grey.300',
                   '& .MuiLinearProgress-bar': {
-                    backgroundColor: getSuccessRateColor(result.successRate)
-                  }
+                    backgroundColor: getSuccessRateColor(result.successRate),
+                  },
                 }}
               />
             </Box>
@@ -155,7 +153,13 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
               <Chip
                 icon={<TimelineIcon />}
                 label={getConfidenceLevel(result.successRate)}
-                color={result.successRate >= 90 ? 'success' : result.successRate >= 80 ? 'warning' : 'error'}
+                color={
+                  result.successRate >= 90
+                    ? 'success'
+                    : result.successRate >= 80
+                      ? 'warning'
+                      : 'error'
+                }
                 size="small"
                 sx={{ mt: 1 }}
               />
@@ -215,11 +219,11 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
                     borderRadius: 4,
                     backgroundColor: 'grey.200',
                     '& .MuiLinearProgress-bar1': {
-                      backgroundColor: getSuccessRateColor(result.successRate)
+                      backgroundColor: getSuccessRateColor(result.successRate),
                     },
                     '& .MuiLinearProgress-bar2': {
-                      backgroundColor: 'grey.300'
-                    }
+                      backgroundColor: 'grey.300',
+                    },
                   }}
                 />
               </Box>
@@ -228,7 +232,8 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
               </Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              True success rate is likely between {result.confidence.lower.toFixed(1)}% and {result.confidence.upper.toFixed(1)}%
+              True success rate is likely between {result.confidence.lower.toFixed(1)}% and{' '}
+              {result.confidence.upper.toFixed(1)}%
             </Typography>
           </Box>
         )}
@@ -252,14 +257,10 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
                     <Tooltip
                       formatter={(value: number) => [
                         `${value} runs (${((value / result.iterations) * 100).toFixed(1)}%)`,
-                        'Count'
+                        'Count',
                       ]}
                     />
-                    <Bar
-                      dataKey="count"
-                      fill={theme.palette.primary.main}
-                      radius={[4, 4, 0, 0]}
-                    />
+                    <Bar dataKey="count" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
@@ -289,7 +290,7 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
                     <Tooltip
                       formatter={(value: number) => [
                         `${value.toLocaleString()} runs (${((value / result.iterations) * 100).toFixed(1)}%)`,
-                        'Count'
+                        'Count',
                       ]}
                     />
                     <Legend />
@@ -306,9 +307,10 @@ export const MonteCarloResults: React.FC<MonteCarloResultsProps> = ({
             Interpretation
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            This Monte Carlo simulation ran {result.iterations.toLocaleString()} games to estimate the probability
-            of meeting your mana requirements. The success rate of {result.successRate.toFixed(1)}% means that
-            in a typical game, you have about a {Math.round(result.successRate)}% chance of having the mana you need.
+            This Monte Carlo simulation ran {result.iterations.toLocaleString()} games to estimate
+            the probability of meeting your mana requirements. The success rate of{' '}
+            {result.successRate.toFixed(1)}% means that in a typical game, you have about a{' '}
+            {Math.round(result.successRate)}% chance of having the mana you need.
           </Typography>
 
           {result.successRate >= 90 && (

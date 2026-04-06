@@ -8,11 +8,9 @@ import {
   Chip,
   Tooltip,
 } from '@mui/material'
-import {
-  ExpandMore as ExpandMoreIcon,
-  Settings as SettingsIcon,
-  Info as InfoIcon,
-} from '@mui/icons-material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import SettingsIcon from '@mui/icons-material/Settings'
+import InfoIcon from '@mui/icons-material/Info'
 
 interface ProgressiveDisclosureProps {
   title: string

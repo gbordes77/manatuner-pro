@@ -9,12 +9,10 @@
  * - Distribution charts
  */
 
-import {
-  Casino as CasinoIcon,
-  ExpandMore as ExpandMoreIcon,
-  Help as HelpIcon,
-  Refresh as RefreshIcon,
-} from '@mui/icons-material'
+import CasinoIcon from '@mui/icons-material/Casino'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import HelpIcon from '@mui/icons-material/Help'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import {
   Accordion,
   AccordionDetails,

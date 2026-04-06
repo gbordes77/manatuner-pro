@@ -1,6 +1,7 @@
-import { GitHub as GitHubIcon } from '@mui/icons-material'
+import GitHubIcon from '@mui/icons-material/GitHub'
 import { Box, Container, Divider, Grid, Link, Typography, useTheme } from '@mui/material'
 import React from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 
 // WUBRG signature row
 const WUBRGSignature: React.FC = () => {
@@ -83,7 +84,41 @@ export const Footer: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+          <Grid item xs={12} md={6}>
+            {/* Site navigation */}
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2,
+                justifyContent: { xs: 'flex-start', md: 'flex-end' },
+                flexWrap: 'wrap',
+                mb: 1.5,
+              }}
+            >
+              {[
+                { label: 'Analyzer', path: '/analyzer' },
+                { label: 'Guide', path: '/guide' },
+                { label: 'Mathematics', path: '/mathematics' },
+                { label: 'Land Glossary', path: '/land-glossary' },
+                { label: 'About', path: '/about' },
+                { label: 'Privacy', path: '/privacy' },
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  component={RouterLink}
+                  to={item.path}
+                  color="inherit"
+                  sx={{
+                    transition: 'color 0.2s ease',
+                    '&:hover': { color: theme.palette.primary.main },
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </Box>
+
+            {/* External links */}
             <Box
               sx={{
                 display: 'flex',
@@ -102,9 +137,7 @@ export const Footer: React.FC = () => {
                   alignItems: 'center',
                   gap: 0.5,
                   transition: 'color 0.2s ease',
-                  '&:hover': {
-                    color: theme.palette.primary.main,
-                  },
+                  '&:hover': { color: theme.palette.primary.main },
                 }}
               >
                 <GitHubIcon fontSize="small" />
@@ -120,9 +153,7 @@ export const Footer: React.FC = () => {
                 color="inherit"
                 sx={{
                   transition: 'color 0.2s ease',
-                  '&:hover': {
-                    color: theme.palette.mana.blue,
-                  },
+                  '&:hover': { color: theme.palette.mana.blue },
                 }}
               >
                 Scryfall API
@@ -137,32 +168,19 @@ export const Footer: React.FC = () => {
                 color="inherit"
                 sx={{
                   transition: 'color 0.2s ease',
-                  '&:hover': {
-                    color: theme.palette.mana.multicolor,
-                  },
+                  '&:hover': { color: theme.palette.mana.multicolor },
                 }}
               >
                 Keyrune Icons
               </Link>
-
-              <Divider orientation="vertical" flexItem />
-
-              <Link
-                href="/privacy"
-                color="inherit"
-                sx={{
-                  transition: 'color 0.2s ease',
-                  '&:hover': {
-                    color: theme.palette.mana.green,
-                  },
-                }}
-              >
-                Privacy
-              </Link>
             </Box>
 
             {/* Mathematical credit */}
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5, display: 'block' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1.5, display: 'block', textAlign: { xs: 'left', md: 'right' } }}
+            >
               Probability mathematics based on{' '}
               <Link
                 href="https://www.channelfireball.com/articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/"

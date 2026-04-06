@@ -1,4 +1,4 @@
-import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import { Box, Grid, IconButton, Paper, Tooltip, Typography } from '@mui/material'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useAcceleration } from '../../contexts/AccelerationContext'

@@ -1,42 +1,40 @@
+import BalanceIcon from '@mui/icons-material/Balance'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
+import InfoIcon from '@mui/icons-material/Info'
+import LightbulbIcon from '@mui/icons-material/Lightbulb'
+import SecurityIcon from '@mui/icons-material/Security'
+import SpeedIcon from '@mui/icons-material/Speed'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import WarningIcon from '@mui/icons-material/Warning'
 import {
-    Balance as BalanceIcon,
-    CheckCircle as CheckCircleIcon,
-    Error as ErrorIcon,
-    Info as InfoIcon,
-    Lightbulb as LightbulbIcon,
-    Security as SecurityIcon,
-    Speed as SpeedIcon,
-    TrendingUp as TrendingUpIcon,
-    Warning as WarningIcon
-} from '@mui/icons-material';
-import {
-    Alert,
-    Box,
-    Button,
-    Chip,
-    Grid,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Paper,
-    Typography
-} from '@mui/material';
-import React from 'react';
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Typography,
+} from '@mui/material'
+import React from 'react'
 
 interface EnhancedRecommendationsProps {
-  recommendations: string[];
+  recommendations: string[]
   analysis: {
-    consistency: number;
-    colorScrew: number;
-    landRatio: number;
-    avgCMC: number;
-  };
+    consistency: number
+    colorScrew: number
+    landRatio: number
+    avgCMC: number
+  }
 }
 
 const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
   recommendations,
-  analysis
+  analysis,
 }) => {
   // Categorize recommendations by priority and type
   const categorizeRecommendations = () => {
@@ -44,83 +42,100 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
       critical: [] as string[],
       high: [] as string[],
       medium: [] as string[],
-      low: [] as string[]
-    };
+      low: [] as string[],
+    }
 
-    recommendations.forEach(rec => {
-      const lowerRec = rec.toLowerCase();
+    recommendations.forEach((rec) => {
+      const lowerRec = rec.toLowerCase()
 
-      if (lowerRec.includes('critical') || lowerRec.includes('urgent') ||
-          lowerRec.includes('must') || analysis.consistency < 0.6) {
-        categories.critical.push(rec);
-      } else if (lowerRec.includes('important') || lowerRec.includes('should') ||
-                 analysis.consistency < 0.75) {
-        categories.high.push(rec);
+      if (
+        lowerRec.includes('critical') ||
+        lowerRec.includes('urgent') ||
+        lowerRec.includes('must') ||
+        analysis.consistency < 0.6
+      ) {
+        categories.critical.push(rec)
+      } else if (
+        lowerRec.includes('important') ||
+        lowerRec.includes('should') ||
+        analysis.consistency < 0.75
+      ) {
+        categories.high.push(rec)
       } else if (lowerRec.includes('consider') || lowerRec.includes('might')) {
-        categories.medium.push(rec);
+        categories.medium.push(rec)
       } else {
-        categories.low.push(rec);
+        categories.low.push(rec)
       }
-    });
+    })
 
-    return categories;
-  };
+    return categories
+  }
 
-  const categories = categorizeRecommendations();
+  const categories = categorizeRecommendations()
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
-      case 'critical': return <ErrorIcon sx={{ color: 'var(--mtg-red)' }} />;
-      case 'high': return <WarningIcon sx={{ color: '#ff9800' }} />;
-      case 'medium': return <InfoIcon sx={{ color: 'var(--mtg-blue)' }} />;
-      case 'low': return <LightbulbIcon sx={{ color: 'var(--mtg-green)' }} />;
-      default: return <InfoIcon />;
+      case 'critical':
+        return <ErrorIcon sx={{ color: 'var(--mtg-red)' }} />
+      case 'high':
+        return <WarningIcon sx={{ color: '#ff9800' }} />
+      case 'medium':
+        return <InfoIcon sx={{ color: 'var(--mtg-blue)' }} />
+      case 'low':
+        return <LightbulbIcon sx={{ color: 'var(--mtg-green)' }} />
+      default:
+        return <InfoIcon />
     }
-  };
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'error';
-      case 'high': return 'warning';
-      case 'medium': return 'info';
-      case 'low': return 'success';
-      default: return 'info';
+      case 'critical':
+        return 'error'
+      case 'high':
+        return 'warning'
+      case 'medium':
+        return 'info'
+      case 'low':
+        return 'success'
+      default:
+        return 'info'
     }
-  };
+  }
 
   const getHealthScore = () => {
-    let score = 100;
+    let score = 100
 
     // Consistency penalty
-    if (analysis.consistency < 0.6) score -= 30;
-    else if (analysis.consistency < 0.75) score -= 15;
-    else if (analysis.consistency < 0.85) score -= 5;
+    if (analysis.consistency < 0.6) score -= 30
+    else if (analysis.consistency < 0.75) score -= 15
+    else if (analysis.consistency < 0.85) score -= 5
 
     // Color screw penalty
-    if (analysis.colorScrew > 0.3) score -= 20;
-    else if (analysis.colorScrew > 0.2) score -= 10;
+    if (analysis.colorScrew > 0.3) score -= 20
+    else if (analysis.colorScrew > 0.2) score -= 10
 
     // Land ratio penalty
-    if (analysis.landRatio < 0.35 || analysis.landRatio > 0.45) score -= 10;
+    if (analysis.landRatio < 0.35 || analysis.landRatio > 0.45) score -= 10
 
-    return Math.max(score, 0);
-  };
+    return Math.max(score, 0)
+  }
 
-  const healthScore = getHealthScore();
+  const healthScore = getHealthScore()
 
   const getScoreColor = (score: number) => {
-    if (score >= 85) return 'var(--mtg-green)';
-    if (score >= 70) return 'var(--mtg-blue)';
-    if (score >= 55) return 'var(--mtg-gold)';
-    return 'var(--mtg-red)';
-  };
+    if (score >= 85) return 'var(--mtg-green)'
+    if (score >= 70) return 'var(--mtg-blue)'
+    if (score >= 55) return 'var(--mtg-gold)'
+    return 'var(--mtg-red)'
+  }
 
   const getScoreLabel = (score: number) => {
-    if (score >= 85) return 'Excellent';
-    if (score >= 70) return 'Good';
-    if (score >= 55) return 'Average';
-    return 'Needs Work';
-  };
+    if (score >= 85) return 'Excellent'
+    if (score >= 70) return 'Good'
+    if (score >= 55) return 'Average'
+    return 'Needs Work'
+  }
 
   return (
     <Box className="animate-fadeIn">
@@ -200,7 +215,7 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
       {/* Recommendations by Priority */}
       <Grid container spacing={3}>
         {Object.entries(categories).map(([priority, recs]) => {
-          if (recs.length === 0) return null;
+          if (recs.length === 0) return null
 
           return (
             <Grid item xs={12} lg={6} key={priority}>
@@ -227,10 +242,14 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
                             height: 8,
                             borderRadius: '50%',
                             backgroundColor: getScoreColor(
-                              priority === 'critical' ? 20 :
-                              priority === 'high' ? 50 :
-                              priority === 'medium' ? 75 : 90
-                            )
+                              priority === 'critical'
+                                ? 20
+                                : priority === 'high'
+                                  ? 50
+                                  : priority === 'medium'
+                                    ? 75
+                                    : 90
+                            ),
                           }}
                         />
                       </ListItemIcon>
@@ -238,7 +257,7 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
                         primary={rec}
                         primaryTypographyProps={{
                           variant: 'body2',
-                          sx: { lineHeight: 1.4 }
+                          sx: { lineHeight: 1.4 },
                         }}
                       />
                     </ListItem>
@@ -246,7 +265,7 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
                 </List>
               </Paper>
             </Grid>
-          );
+          )
         })}
       </Grid>
 
@@ -308,24 +327,18 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
       </Paper>
 
       {/* Pro Tips */}
-      <Alert
-        severity="info"
-        icon={<LightbulbIcon />}
-        sx={{ mt: 3 }}
-        className="animate-slideIn"
-      >
+      <Alert severity="info" icon={<LightbulbIcon />} sx={{ mt: 3 }} className="animate-slideIn">
         <Typography variant="subtitle2" fontWeight="600" mb={1}>
           💡 Pro Tips from Frank Karsten's Research
         </Typography>
         <Typography variant="body2">
-          • For 2-color decks, aim for 13+ sources of each color
-          • Fetchlands count as 0.5 sources for each fetchable color
-          • Consider your curve: aggressive decks need more colored sources early
-          • Shocklands are excellent but watch your life total in aggressive metas
+          • For 2-color decks, aim for 13+ sources of each color • Fetchlands count as 0.5 sources
+          for each fetchable color • Consider your curve: aggressive decks need more colored sources
+          early • Shocklands are excellent but watch your life total in aggressive metas
         </Typography>
       </Alert>
     </Box>
-  );
-};
+  )
+}
 
-export default EnhancedRecommendations;
+export default EnhancedRecommendations

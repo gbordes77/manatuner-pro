@@ -1,4 +1,5 @@
-import { HelpOutline as HelpOutlineIcon, Terrain as TerrainIcon } from '@mui/icons-material'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import TerrainIcon from '@mui/icons-material/Terrain'
 import {
   Box,
   Card,

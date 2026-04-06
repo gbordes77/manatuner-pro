@@ -15,16 +15,23 @@ import {
   useTheme,
   useMediaQuery,
   Tooltip,
-  Alert
+  Alert,
 } from '@mui/material'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import WarningIcon from '@mui/icons-material/Warning'
+import ErrorIcon from '@mui/icons-material/Error'
 import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  CheckCircle as CheckIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon
-} from '@mui/icons-material'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from 'recharts'
 import type { TurnAnalysis } from '../../types/maths'
 
 interface TurnByTurnAnalysisProps {
@@ -40,18 +47,18 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
   title = 'Turn-by-Turn Analysis',
   showChart = true,
   showTable = true,
-  compactMode = false
+  compactMode = false,
 }) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   // Prepare chart data
   const chartData = useMemo(() => {
-    return turnAnalysis.map(analysis => ({
+    return turnAnalysis.map((analysis) => ({
       turn: analysis.turn,
       probability: Math.round(analysis.castProbability * 100),
       cardsDrawn: analysis.cardsDrawn,
-      threshold: 90 // Frank Karsten's 90% threshold
+      threshold: 90, // Frank Karsten's 90% threshold
     }))
   }, [turnAnalysis])
 
@@ -59,21 +66,23 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
   const summary = useMemo(() => {
     if (turnAnalysis.length === 0) return null
 
-    const criticalTurn = turnAnalysis.find(analysis => 
-      analysis.castProbability < 0.90
-    )?.turn || null
+    const criticalTurn =
+      turnAnalysis.find((analysis) => analysis.castProbability < 0.9)?.turn || null
 
-    const averageProbability = turnAnalysis.reduce((sum, analysis) => 
-      sum + analysis.castProbability, 0) / turnAnalysis.length
+    const averageProbability =
+      turnAnalysis.reduce((sum, analysis) => sum + analysis.castProbability, 0) /
+      turnAnalysis.length
 
-    const trend = turnAnalysis.length > 1 ? 
-      turnAnalysis[turnAnalysis.length - 1].castProbability - turnAnalysis[0].castProbability : 0
+    const trend =
+      turnAnalysis.length > 1
+        ? turnAnalysis[turnAnalysis.length - 1].castProbability - turnAnalysis[0].castProbability
+        : 0
 
     return {
       criticalTurn,
       averageProbability,
       trend,
-      meetsKarstenStandard: criticalTurn === null
+      meetsKarstenStandard: criticalTurn === null,
     }
   }, [turnAnalysis])
 
@@ -97,7 +106,7 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
       good: 'info' as const,
       acceptable: 'warning' as const,
       poor: 'error' as const,
-      unplayable: 'error' as const
+      unplayable: 'error' as const,
     }
 
     return (
@@ -129,9 +138,7 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
     <Card>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">
-            {title}
-          </Typography>
+          <Typography variant="h6">{title}</Typography>
           {summary && (
             <Box display="flex" gap={1} alignItems="center">
               {summary.trend > 0 ? (
@@ -159,7 +166,10 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                 <Typography variant="body2" color="text.secondary">
                   Average Probability
                 </Typography>
-                <Typography variant="h6" color={getProbabilityColor(summary.averageProbability * 100)}>
+                <Typography
+                  variant="h6"
+                  color={getProbabilityColor(summary.averageProbability * 100)}
+                >
                   {(summary.averageProbability * 100).toFixed(1)}%
                 </Typography>
               </Box>
@@ -177,7 +187,10 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                 <Typography variant="body2" color="text.secondary">
                   Frank Karsten Standard
                 </Typography>
-                <Typography variant="h6" color={summary.meetsKarstenStandard ? 'success.main' : 'error.main'}>
+                <Typography
+                  variant="h6"
+                  color={summary.meetsKarstenStandard ? 'success.main' : 'error.main'}
+                >
                   {summary.meetsKarstenStandard ? 'Met' : 'Failed'}
                 </Typography>
               </Box>
@@ -194,23 +207,23 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="turn" 
+                <XAxis
+                  dataKey="turn"
                   label={{ value: 'Turn', position: 'insideBottom', offset: -5 }}
                 />
-                <YAxis 
+                <YAxis
                   domain={[0, 100]}
                   label={{ value: 'Probability (%)', angle: -90, position: 'insideLeft' }}
                 />
-                <RechartsTooltip 
+                <RechartsTooltip
                   formatter={(value: number, name: string) => [
                     `${value}%`,
-                    name === 'probability' ? 'Cast Probability' : name
+                    name === 'probability' ? 'Cast Probability' : name,
                   ]}
                   labelFormatter={(turn: number) => `Turn ${turn}`}
                 />
-                <ReferenceLine 
-                  y={90} 
+                <ReferenceLine
+                  y={90}
                   stroke={theme.palette.warning.main}
                   strokeDasharray="5 5"
                   label="Karsten 90% Standard"
@@ -231,7 +244,7 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
         {/* Table */}
         {showTable && (
           <TableContainer>
-            <Table size={compactMode ? "small" : "medium"}>
+            <Table size={compactMode ? 'small' : 'medium'}>
               <TableHead>
                 <TableRow>
                   <TableCell>Turn</TableCell>
@@ -250,22 +263,20 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                         <Typography variant="body2" fontWeight="bold">
                           {analysis.turn}
                         </Typography>
-                        {analysis.castProbability < 0.90 && (
+                        {analysis.castProbability < 0.9 && (
                           <WarningIcon color="warning" fontSize="small" />
                         )}
                       </Box>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="body2">
-                        {analysis.cardsDrawn}
-                      </Typography>
+                      <Typography variant="body2">{analysis.cardsDrawn}</Typography>
                     </TableCell>
                     <TableCell align="center">
                       <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
                         {getProbabilityIcon(analysis.castProbability * 100)}
                         <Box>
-                          <Typography 
-                            variant="body2" 
+                          <Typography
+                            variant="body2"
                             fontWeight="bold"
                             color={getProbabilityColor(analysis.castProbability * 100)}
                           >
@@ -274,13 +285,15 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                           <LinearProgress
                             variant="determinate"
                             value={analysis.castProbability * 100}
-                            sx={{ 
-                              width: 60, 
+                            sx={{
+                              width: 60,
                               height: 4,
                               backgroundColor: 'grey.300',
                               '& .MuiLinearProgress-bar': {
-                                backgroundColor: getProbabilityColor(analysis.castProbability * 100)
-                              }
+                                backgroundColor: getProbabilityColor(
+                                  analysis.castProbability * 100
+                                ),
+                              },
                             }}
                           />
                         </Box>
@@ -294,11 +307,7 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                         <Typography variant="body2">
                           {analysis.karstenRating.sourcesNeeded}
                           {analysis.karstenRating.deficit > 0 && (
-                            <Typography 
-                              component="span" 
-                              color="error.main" 
-                              sx={{ ml: 1 }}
-                            >
+                            <Typography component="span" color="error.main" sx={{ ml: 1 }}>
                               (+{analysis.karstenRating.deficit})
                             </Typography>
                           )}
@@ -308,11 +317,7 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
                     {!compactMode && (
                       <TableCell>
                         <Tooltip title={analysis.karstenRating.recommendation}>
-                          <Typography 
-                            variant="body2" 
-                            noWrap 
-                            sx={{ maxWidth: 200 }}
-                          >
+                          <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>
                             {analysis.karstenRating.recommendation}
                           </Typography>
                         </Tooltip>
@@ -328,11 +333,11 @@ export const TurnByTurnAnalysis: React.FC<TurnByTurnAnalysisProps> = ({
         {/* Frank Karsten Attribution */}
         <Box mt={2} pt={2} borderTop={1} borderColor="divider">
           <Typography variant="caption" color="text.secondary">
-            Analysis based on Frank Karsten's hypergeometric methodology. 
-            90% probability threshold represents competitive play standard.
+            Analysis based on Frank Karsten's hypergeometric methodology. 90% probability threshold
+            represents competitive play standard.
           </Typography>
         </Box>
       </CardContent>
     </Card>
   )
-} 
+}

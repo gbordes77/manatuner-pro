@@ -1,4 +1,5 @@
-import { Analytics as AnalyticsIcon, Speed as SpeedIcon } from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import SpeedIcon from '@mui/icons-material/Speed'
 import { Box, Button, LinearProgress, Paper, TextField, Typography } from '@mui/material'
 import React, { memo } from 'react'
 import { AnalysisResult } from '../../services/deckAnalyzer'

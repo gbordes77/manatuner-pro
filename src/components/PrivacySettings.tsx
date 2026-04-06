@@ -1,11 +1,9 @@
-import {
-  Close as CloseIcon,
-  DeleteForever as DeleteIcon,
-  Download as DownloadIcon,
-  Info as InfoIcon,
-  Storage as StorageIcon,
-  Upload as UploadIcon,
-} from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/DeleteForever'
+import DownloadIcon from '@mui/icons-material/Download'
+import InfoIcon from '@mui/icons-material/Info'
+import StorageIcon from '@mui/icons-material/Storage'
+import UploadIcon from '@mui/icons-material/Upload'
 import {
   Alert,
   Box,

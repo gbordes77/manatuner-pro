@@ -9,12 +9,10 @@
  * @version 1.0
  */
 
-import {
-  ExpandMore as ExpandMoreIcon,
-  HelpOutline as HelpOutlineIcon,
-  Restore as RestoreIcon,
-  Settings as SettingsIcon,
-} from '@mui/icons-material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import RestoreIcon from '@mui/icons-material/Restore'
+import SettingsIcon from '@mui/icons-material/Settings'
 import {
   Box,
   Collapse,

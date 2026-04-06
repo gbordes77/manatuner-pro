@@ -5,6 +5,7 @@ interface SEOProps {
   description: string
   path: string
   ogImage?: string
+  jsonLd?: Record<string, unknown>
 }
 
 const BASE_URL = 'https://www.manatuner.app'
@@ -14,6 +15,7 @@ export const SEO: React.FC<SEOProps> = ({
   description,
   path,
   ogImage = `${BASE_URL}/og-image-v2.jpg`,
+  jsonLd,
 }) => {
   const url = `${BASE_URL}${path}`
 
@@ -35,6 +37,8 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+
+      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>
   )
 }

@@ -2,6 +2,7 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
+import { HelmetProvider } from 'react-helmet-async'
 import analyzerReducer from '../src/store/slices/analyzerSlice'
 
 // Créer un store de test
@@ -24,7 +25,9 @@ export const renderWithProviders = (
   } = {}
 ) => {
   const Wrapper = ({ children }) => (
-    <Provider store={store}>{children}</Provider>
+    <HelmetProvider>
+      <Provider store={store}>{children}</Provider>
+    </HelmetProvider>
   )
 
   return {

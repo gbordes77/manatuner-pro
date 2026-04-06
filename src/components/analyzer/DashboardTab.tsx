@@ -1,12 +1,10 @@
-import {
-  CheckCircle as CheckIcon,
-  Error as ErrorIcon,
-  HelpOutline as HelpOutlineIcon,
-  Terrain as TerrainIcon,
-  TrendingUp as TrendingIcon,
-  ViewList as ViewListIcon,
-  Warning as WarningIcon,
-} from '@mui/icons-material'
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import TerrainIcon from '@mui/icons-material/Terrain'
+import TrendingIcon from '@mui/icons-material/TrendingUp'
+import ViewListIcon from '@mui/icons-material/ViewList'
+import WarningIcon from '@mui/icons-material/Warning'
 import {
   Box,
   Card,

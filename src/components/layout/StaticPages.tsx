@@ -1,11 +1,9 @@
-import {
-  Analytics as AnalyticsIcon,
-  ArrowForward as ArrowForwardIcon,
-  Casino as CasinoIcon,
-  Functions as FunctionsIcon,
-  GitHub as GitHubIcon,
-  ShowChart as ShowChartIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CasinoIcon from '@mui/icons-material/Casino'
+import FunctionsIcon from '@mui/icons-material/Functions'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import ShowChartIcon from '@mui/icons-material/ShowChart'
 import {
   Box,
   Button,

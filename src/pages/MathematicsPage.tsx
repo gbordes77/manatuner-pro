@@ -1,13 +1,11 @@
-import {
-  ArrowForward as ArrowForwardIcon,
-  Calculate as CalculateIcon,
-  Casino as CasinoIcon,
-  ExpandMore as ExpandMoreIcon,
-  Functions as FunctionsIcon,
-  Science as ScienceIcon,
-  Timeline as TimelineIcon,
-  TrendingUp as TrendingUpIcon,
-} from '@mui/icons-material'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CalculateIcon from '@mui/icons-material/Calculate'
+import CasinoIcon from '@mui/icons-material/Casino'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import FunctionsIcon from '@mui/icons-material/Functions'
+import ScienceIcon from '@mui/icons-material/Science'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {
   Accordion,
   AccordionDetails,
@@ -658,6 +656,20 @@ const MathematicsPage: React.FC = () => {
             </Card>
           </Grid>
         </Grid>
+      </Box>
+
+      {/* Cross-links */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+        <Button variant="outlined" onClick={() => navigate('/guide')} sx={{ borderRadius: 3 }}>
+          Read the User Guide
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/land-glossary')}
+          sx={{ borderRadius: 3 }}
+        >
+          Land Type Glossary
+        </Button>
       </Box>
 
       {/* Final CTA */}

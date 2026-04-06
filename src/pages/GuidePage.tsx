@@ -1,13 +1,11 @@
-import {
-  Analytics as AnalyticsIcon,
-  ArrowForward as ArrowForwardIcon,
-  Casino as CasinoIcon,
-  CheckCircle as CheckIcon,
-  ExpandMore as ExpandMoreIcon,
-  Psychology as PsychologyIcon,
-  ShowChart as ShowChartIcon,
-  Timeline as TimelineIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CasinoIcon from '@mui/icons-material/Casino'
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import PsychologyIcon from '@mui/icons-material/Psychology'
+import ShowChartIcon from '@mui/icons-material/ShowChart'
+import TimelineIcon from '@mui/icons-material/Timeline'
 import {
   Accordion,
   AccordionDetails,
@@ -141,6 +139,44 @@ export const GuidePage: React.FC = () => {
         title="How to Build a Perfect MTG Mana Base - Guide | ManaTuner"
         description="Step-by-step guide to building optimal mana bases in Magic: The Gathering. Learn to read your Health Score, castability charts, Monte Carlo mulligan, and more."
         path="/guide"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'What makes ManaTuner different?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (10,000 hands), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes.",
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'What do P1 and P2 mean in Castability?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'P1 (Play First): Optimistic probability assuming perfect land drops. P2 (Draw First): Realistic probability accounting for mana screw. Focus on P2.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'Can I export or share my analysis?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes! The Blueprint tab lets you export your complete analysis as PNG, PDF, or JSON. Perfect for sharing on Discord, Reddit, or archiving your deck tuning progress.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'Is my deck data saved anywhere?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: "No. ManaTuner is 100% local. Your decks are saved in your browser's localStorage only. We never see your decklists.",
+              },
+            },
+          ],
+        }}
       />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />

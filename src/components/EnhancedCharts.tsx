@@ -1,40 +1,40 @@
-import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import {
-    Box,
-    Chip,
-    Grid,
-    IconButton,
-    Tooltip as MuiTooltip,
-    Paper,
-    Typography
-} from '@mui/material';
-import React from 'react';
+  Box,
+  Chip,
+  Grid,
+  IconButton,
+  Tooltip as MuiTooltip,
+  Paper,
+  Typography,
+} from '@mui/material'
+import React from 'react'
 import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Pie,
-    PieChart,
-    PolarAngleAxis,
-    PolarGrid,
-    PolarRadiusAxis,
-    Radar,
-    RadarChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
-} from 'recharts';
-import type { DeckCard } from '../services/deckAnalyzer';
-import { DeckAnalysis } from '../types';
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import type { DeckCard } from '../services/deckAnalyzer'
+import { DeckAnalysis } from '../types'
 
 interface EnhancedChartsProps {
-  analysis: DeckAnalysis;
-  cards?: DeckCard[];
+  analysis: DeckAnalysis
+  cards?: DeckCard[]
 }
 
 const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
@@ -47,8 +47,8 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
     B: '#2C2C2C',
     R: '#E74C3C',
     G: '#27AE60',
-    Generic: '#95A5A6'
-  };
+    Generic: '#95A5A6',
+  }
 
   // Prepare data for different charts
   const prepareTurnData = () => {
@@ -59,30 +59,30 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
       { turn: 4, probability: 68, lands: 4, spells: 3 },
       { turn: 5, probability: 65, lands: 5, spells: 4 },
       { turn: 6, probability: 62, lands: 6, spells: 5 },
-      { turn: 7, probability: 60, lands: 7, spells: 6 }
-    ];
-  };
+      { turn: 7, probability: 60, lands: 7, spells: 6 },
+    ]
+  }
 
   const prepareColorDistribution = () => {
-    const colors = analysis.colorDistribution || {};
-    const totalCount = Object.values(colors).reduce((a: number, b: number) => a + b, 0);
+    const colors = analysis.colorDistribution || {}
+    const totalCount = Object.values(colors).reduce((a: number, b: number) => a + b, 0)
     return Object.entries(colors).map(([color, count]) => ({
       color,
       count: count as number,
       percentage: Math.round(((count as number) / totalCount) * 100),
-      fill: MTG_COLORS[color as keyof typeof MTG_COLORS] || MTG_COLORS.Generic
-    }));
-  };
+      fill: MTG_COLORS[color as keyof typeof MTG_COLORS] || MTG_COLORS.Generic,
+    }))
+  }
 
   const prepareCurveData = () => {
-    const curve = analysis.manaCurve || {};
-    const totalCount = Object.values(curve).reduce((a: number, b: number) => a + b, 0);
+    const curve = analysis.manaCurve || {}
+    const totalCount = Object.values(curve).reduce((a: number, b: number) => a + b, 0)
     return Object.entries(curve).map(([cmc, count]) => ({
       cmc: parseInt(cmc),
       count: count as number,
-      percentage: Math.round(((count as number) / totalCount) * 100)
-    }));
-  };
+      percentage: Math.round(((count as number) / totalCount) * 100),
+    }))
+  }
 
   const prepareConsistencyData = () => {
     return [
@@ -90,22 +90,22 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
       { metric: 'Curve Smoothness', value: 72, max: 100 },
       { metric: 'Land Ratio', value: 68, max: 100 },
       { metric: 'Mana Efficiency', value: 78, max: 100 },
-      { metric: 'Consistency', value: 75, max: 100 }
-    ];
-  };
+      { metric: 'Consistency', value: 75, max: 100 },
+    ]
+  }
 
   // Recharts tooltip types
   interface TooltipPayloadEntry {
-    color: string;
-    name: string;
-    value: number;
-    payload?: Record<string, unknown>;
+    color: string
+    name: string
+    value: number
+    payload?: Record<string, unknown>
   }
 
   interface CustomTooltipProps {
-    active?: boolean;
-    payload?: TooltipPayloadEntry[];
-    label?: string | number;
+    active?: boolean
+    payload?: TooltipPayloadEntry[]
+    label?: string | number
   }
 
   // Custom tooltip components
@@ -123,7 +123,7 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                   width: 12,
                   height: 12,
                   backgroundColor: entry.color,
-                  borderRadius: '50%'
+                  borderRadius: '50%',
                 }}
               />
               <Typography variant="body2">
@@ -133,43 +133,39 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
             </Box>
           ))}
         </Paper>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   interface PiePayloadEntry {
     payload: {
-      color: string;
-      count: number;
-      percentage: number;
-    };
+      color: string
+      count: number
+      percentage: number
+    }
   }
 
   interface CustomPieTooltipProps {
-    active?: boolean;
-    payload?: PiePayloadEntry[];
+    active?: boolean
+    payload?: PiePayloadEntry[]
   }
 
   const CustomPieTooltip = ({ active, payload }: CustomPieTooltipProps) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const data = payload[0].payload
       return (
         <Paper className="mtg-card" sx={{ p: 2 }}>
           <Typography variant="subtitle2" fontWeight="600">
             {data.color} Mana
           </Typography>
-          <Typography variant="body2">
-            Count: {data.count}
-          </Typography>
-          <Typography variant="body2">
-            Percentage: {data.percentage}%
-          </Typography>
+          <Typography variant="body2">Count: {data.count}</Typography>
+          <Typography variant="body2">Percentage: {data.percentage}%</Typography>
         </Paper>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   return (
     <Box className="animate-fadeIn">
@@ -184,8 +180,8 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
               <AreaChart data={prepareTurnData()}>
                 <defs>
                   <linearGradient id="probabilityGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--mtg-blue)" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="var(--mtg-blue)" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="var(--mtg-blue)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--mtg-blue)" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -195,11 +191,7 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                   fontSize={12}
                   tickFormatter={(value) => `T${value}`}
                 />
-                <YAxis
-                  stroke="#64748b"
-                  fontSize={12}
-                  tickFormatter={(value) => `${value}%`}
-                />
+                <YAxis stroke="#64748b" fontSize={12} tickFormatter={(value) => `${value}%`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
@@ -263,8 +255,8 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
               <BarChart data={prepareCurveData()}>
                 <defs>
                   <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--mtg-green)" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="var(--mtg-green)" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="var(--mtg-green)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--mtg-green)" stopOpacity={0.3} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -272,7 +264,7 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                   dataKey="cmc"
                   stroke="#64748b"
                   fontSize={12}
-                  tickFormatter={(value) => value === 0 ? '0' : `${value}+`}
+                  tickFormatter={(value) => (value === 0 ? '0' : `${value}+`)}
                 />
                 <YAxis stroke="#64748b" fontSize={12} />
                 <Tooltip content={<CustomTooltip />} />
@@ -297,10 +289,7 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
             <ResponsiveContainer width="100%" height="85%">
               <RadarChart data={prepareConsistencyData()}>
                 <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis
-                  dataKey="metric"
-                  tick={{ fontSize: 10, fill: '#64748b' }}
-                />
+                <PolarAngleAxis dataKey="metric" tick={{ fontSize: 10, fill: '#64748b' }} />
                 <PolarRadiusAxis
                   angle={90}
                   domain={[0, 100]}
@@ -332,12 +321,7 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                 <Typography variant="body2" color="text.secondary">
                   Overall Score
                 </Typography>
-                <Chip
-                  label="Good"
-                  size="small"
-                  className="mtg-chip good"
-                  sx={{ mt: 1 }}
-                />
+                <Chip label="Good" size="small" className="mtg-chip good" sx={{ mt: 1 }} />
               </Paper>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -345,20 +329,22 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-blue)">
                   {analysis.consistency || 68}%
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
                   Consistency
-                  <MuiTooltip title="Consistency measures the probability of having the right mana colors to cast your spells on curve. Higher is better - aim for 80%+ for competitive play." arrow>
+                  <MuiTooltip
+                    title="Consistency measures the probability of having the right mana colors to cast your spells on curve. Higher is better - aim for 80%+ for competitive play."
+                    arrow
+                  >
                     <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
                       <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                     </IconButton>
                   </MuiTooltip>
                 </Typography>
-                <Chip
-                  label="Average"
-                  size="small"
-                  className="mtg-chip average"
-                  sx={{ mt: 1 }}
-                />
+                <Chip label="Average" size="small" className="mtg-chip average" sx={{ mt: 1 }} />
               </Paper>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -366,20 +352,22 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
                   {analysis.colorScrew || 15}%
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
                   Color Screw Risk
-                  <MuiTooltip title="Color screw happens when you have lands but not the right colors to cast your spells. For example, having only Mountains when you need Blue mana. Lower is better." arrow>
+                  <MuiTooltip
+                    title="Color screw happens when you have lands but not the right colors to cast your spells. For example, having only Mountains when you need Blue mana. Lower is better."
+                    arrow
+                  >
                     <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
                       <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                     </IconButton>
                   </MuiTooltip>
                 </Typography>
-                <Chip
-                  label="Low"
-                  size="small"
-                  className="mtg-chip excellent"
-                  sx={{ mt: 1 }}
-                />
+                <Chip label="Low" size="small" className="mtg-chip excellent" sx={{ mt: 1 }} />
               </Paper>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -387,27 +375,29 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-gold)">
                   {(analysis.avgCMC || 2.8).toFixed(2)}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
                   Average CMC
-                  <MuiTooltip title="CMC (Converted Mana Cost), now called Mana Value, is the total mana needed to cast a spell. A lower average means you can play spells earlier. Aggro decks aim for ~2.0, midrange ~3.0, control can go higher." arrow>
+                  <MuiTooltip
+                    title="CMC (Converted Mana Cost), now called Mana Value, is the total mana needed to cast a spell. A lower average means you can play spells earlier. Aggro decks aim for ~2.0, midrange ~3.0, control can go higher."
+                    arrow
+                  >
                     <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
                       <HelpOutlineIcon fontSize="small" sx={{ fontSize: 14, opacity: 0.7 }} />
                     </IconButton>
                   </MuiTooltip>
                 </Typography>
-                <Chip
-                  label="Optimal"
-                  size="small"
-                  className="mtg-chip good"
-                  sx={{ mt: 1 }}
-                />
+                <Chip label="Optimal" size="small" className="mtg-chip good" sx={{ mt: 1 }} />
               </Paper>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default EnhancedCharts;
+export default EnhancedCharts

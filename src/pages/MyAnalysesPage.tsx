@@ -1,18 +1,16 @@
-import {
-  Analytics as AnalyticsIcon,
-  CheckCircle as CheckIcon,
-  Close as CloseIcon,
-  CompareArrows as CompareIcon,
-  Delete as DeleteIcon,
-  DeleteForever as DeleteAllIcon,
-  Download as DownloadIcon,
-  History as HistoryIcon,
-  OpenInNew as LoadIcon,
-  RadioButtonUnchecked as UncheckedIcon,
-  Search as SearchIcon,
-  Sort as SortIcon,
-  Storage as StorageIcon,
-} from '@mui/icons-material'
+import AnalyticsIcon from '@mui/icons-material/Analytics'
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import CloseIcon from '@mui/icons-material/Close'
+import CompareIcon from '@mui/icons-material/CompareArrows'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteAllIcon from '@mui/icons-material/DeleteForever'
+import DownloadIcon from '@mui/icons-material/Download'
+import HistoryIcon from '@mui/icons-material/History'
+import LoadIcon from '@mui/icons-material/OpenInNew'
+import UncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+import SearchIcon from '@mui/icons-material/Search'
+import SortIcon from '@mui/icons-material/Sort'
+import StorageIcon from '@mui/icons-material/Storage'
 import { SEO } from '../components/common/SEO'
 import {
   Box,

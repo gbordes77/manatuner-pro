@@ -1,9 +1,7 @@
-import {
-  Download as DownloadIcon,
-  Image as ImageIcon,
-  PictureAsPdf as PdfIcon,
-  Share as ShareIcon,
-} from '@mui/icons-material'
+import DownloadIcon from '@mui/icons-material/Download'
+import ImageIcon from '@mui/icons-material/Image'
+import PdfIcon from '@mui/icons-material/PictureAsPdf'
+import ShareIcon from '@mui/icons-material/Share'
 import {
   Box,
   Button,
