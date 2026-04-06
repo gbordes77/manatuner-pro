@@ -185,15 +185,33 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
               </Grid>
               <Grid item md={6}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
+                  <Typography
+                    variant="subtitle2"
+                    component="a"
+                    href="/mathematics#probabilities"
+                    sx={{
+                      color: 'text.secondary',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                        color: 'primary.main',
+                      },
+                    }}
+                  >
                     Probabilities
                   </Typography>
                   <Tooltip
-                    title="These are single-draw probabilities: your chance of casting each spell if you keep your current hand. Karsten's recommendations target 90% including mulligans, which is why your probabilities here may appear lower. See the Mulligan tab for mulligan-adjusted analysis."
+                    title="Realistic = chance of casting on curve (accounts for land count). Best case = chance if you have perfect mana. Click 'Probabilities' for the full explanation."
                     arrow
                     placement="top"
                   >
-                    <IconButton size="small" sx={{ p: 0 }}>
+                    <IconButton
+                      size="small"
+                      sx={{ p: 0 }}
+                      component="a"
+                      href="/mathematics#probabilities"
+                    >
                       <HelpOutlineIcon sx={{ fontSize: 16, opacity: 0.5 }} />
                     </IconButton>
                   </Tooltip>

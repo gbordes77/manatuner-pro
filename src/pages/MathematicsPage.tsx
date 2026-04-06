@@ -300,6 +300,96 @@ const MathematicsPage: React.FC = () => {
         </Paper>
       </Box>
 
+      {/* How Probabilities Are Calculated */}
+      <Box id="probabilities" sx={{ mb: 6, scrollMarginTop: '80px' }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography
+            variant="overline"
+            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
+          >
+            Castability Tab
+          </Typography>
+          <Typography variant="h4" component="h2" fontWeight={700}>
+            How Probabilities Are Calculated
+          </Typography>
+        </Box>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 3, height: '100%', border: '2px solid #4caf50' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: '#4caf50' }}>
+                Realistic (primary)
+              </Typography>
+              <Typography variant="body2" paragraph>
+                <strong>What it answers:</strong> &ldquo;If I keep this hand and play normally, what
+                are my chances of casting this spell on curve?&rdquo;
+              </Typography>
+              <Typography variant="body2" paragraph>
+                <strong>How it works:</strong> Uses the hypergeometric distribution to calculate two
+                things simultaneously:
+              </Typography>
+              <Typography variant="body2" component="div">
+                <ol style={{ paddingLeft: 20, margin: 0 }}>
+                  <li>
+                    <strong>Enough lands</strong> &mdash; P(drawing at least N lands by turn N)
+                  </li>
+                  <li>
+                    <strong>Right colors</strong> &mdash; P(those lands include the required color
+                    sources)
+                  </li>
+                </ol>
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ mt: 1.5, fontStyle: 'italic', color: 'text.secondary' }}
+              >
+                This is the number you should optimize for. It accounts for mana screw (not drawing
+                enough lands) and color screw (drawing lands of the wrong color).
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 3, height: '100%', border: '2px solid #2196f3' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: '#2196f3' }}>
+                Best case (secondary)
+              </Typography>
+              <Typography variant="body2" paragraph>
+                <strong>What it answers:</strong> &ldquo;If I have perfect mana drops every turn,
+                what are my chances of having the right colors?&rdquo;
+              </Typography>
+              <Typography variant="body2" paragraph>
+                <strong>How it works:</strong> Assumes you draw exactly one land per turn (perfect
+                curve), then calculates the probability that those lands include the color sources
+                you need.
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ mt: 1.5, fontStyle: 'italic', color: 'text.secondary' }}
+              >
+                This is always higher than Realistic because it ignores mana screw. Use it to
+                evaluate your color balance independently of your land count.
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#e8f5e9' }}>
+              <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                +Ramp bonus (when dorks/rocks detected)
+              </Typography>
+              <Typography variant="body2">
+                When your deck contains mana accelerators (Llanowar Elves, Sol Ring, Badgermole
+                Cub...), ManaTuner calculates the probability of having them online and adds their
+                mana contribution. The engine evaluates up to 3 accelerators simultaneously (K=3
+                scenarios), including synergies from enhancers that boost other dorks. The ramp
+                bonus shown is the improvement over the lands-only probability.
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+
       {/* Core Mathematical Concepts */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
