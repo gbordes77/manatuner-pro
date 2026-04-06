@@ -39,7 +39,7 @@ export const BetaBanner: React.FC = () => {
               component="span"
               sx={{ fontWeight: 'medium', fontSize: '0.8rem' }}
             >
-              🚧 <strong>Beta Version</strong> - Help us improve ManaTuner!
+              Help us improve ManaTuner!
             </Typography>
             <Chip
               icon={<FeedbackIcon />}
