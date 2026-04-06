@@ -33,22 +33,23 @@
 
 ### Key Characteristics
 
-| Attribute | Value |
-|-----------|-------|
-| **Architecture Style** | Single Page Application (SPA) |
-| **Deployment Model** | 100% Client-Side (Privacy-First) |
-| **Primary Framework** | React 18 + TypeScript |
-| **State Management** | Redux Toolkit + React Query |
-| **Build System** | Vite 7.3 |
-| **Hosting** | Vercel Edge Network |
+| Attribute              | Value                            |
+| ---------------------- | -------------------------------- |
+| **Architecture Style** | Single Page Application (SPA)    |
+| **Deployment Model**   | 100% Client-Side (Privacy-First) |
+| **Primary Framework**  | React 18 + TypeScript            |
+| **State Management**   | Redux Toolkit + React Query      |
+| **Build System**       | Vite 7.3                         |
+| **Hosting**            | Vercel Edge Network              |
 
 ### Core Value Proposition
 
 > "Can I cast my spells on curve?"
 
 The application answers this fundamental deckbuilding question with mathematical precision, providing:
+
 - Exact hypergeometric probability calculations
-- Monte Carlo mulligan simulations (3,000+ hands)
+- Monte Carlo mulligan simulations (10,000 hands default, configurable up to 50k)
 - Turn-by-turn castability analysis
 - Optimal land count recommendations
 
@@ -124,14 +125,11 @@ All calculations happen client-side. User data never leaves the browser.
 ```typescript
 // Pattern: All sensitive operations are local
 class PrivacyStorage {
-  private static ENCRYPTION_KEY = generateUserKey(); // Per-device key
+  private static ENCRYPTION_KEY = generateUserKey() // Per-device key
 
   static saveAnalysis(data: Analysis): void {
-    const encrypted = CryptoJS.AES.encrypt(
-      JSON.stringify(data),
-      this.ENCRYPTION_KEY
-    );
-    localStorage.setItem('analysis', encrypted.toString());
+    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), this.ENCRYPTION_KEY)
+    localStorage.setItem('analysis', encrypted.toString())
   }
 }
 ```
@@ -146,7 +144,7 @@ const KARSTEN_TABLES = {
   1: { 1: 14, 2: 13, 3: 12, 4: 11 }, // 1 colored symbol
   2: { 2: 20, 3: 18, 4: 16, 5: 15 }, // 2 colored symbols
   3: { 3: 23, 4: 20, 5: 19, 6: 18 }, // 3 colored symbols
-};
+}
 ```
 
 ### 3. Performance by Default
@@ -155,10 +153,8 @@ Heavy calculations are offloaded to Web Workers; UI remains responsive.
 
 ```typescript
 // Monte Carlo runs in dedicated worker
-const worker = new Worker(
-  new URL('../workers/monteCarlo.worker.ts', import.meta.url)
-);
-worker.postMessage({ iterations: 3000, deck: deckData });
+const worker = new Worker(new URL('../workers/monteCarlo.worker.ts', import.meta.url))
+worker.postMessage({ iterations: 3000, deck: deckData })
 ```
 
 ### 4. Progressive Enhancement
@@ -285,13 +281,13 @@ class ManaCalculator {
    * - n = Sample size (cards seen by turn T)
    * - k = Successes needed (colored symbols required)
    */
-  cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number;
+  cumulativeHypergeometric(N: number, K: number, n: number, minK: number): number
 
   /**
    * Calculate probability considering on-the-play vs on-the-draw
    * Cards seen = 7 + turn - 1 (play) or 7 + turn (draw)
    */
-  calculateManaProbability(params: ProbabilityParams): ProbabilityResult;
+  calculateManaProbability(params: ProbabilityParams): ProbabilityResult
 }
 ```
 
@@ -307,7 +303,7 @@ class DeckAnalyzer {
    * - MTGA: "4 Lightning Bolt (M21) 199"
    * - Moxfield: "4x Lightning Bolt"
    */
-  static async parseDeckList(text: string): Promise<DeckCard[]>;
+  static async parseDeckList(text: string): Promise<DeckCard[]>
 
   /**
    * Full deck analysis pipeline:
@@ -317,7 +313,7 @@ class DeckAnalyzer {
    * 4. Calculate probabilities per turn
    * 5. Generate recommendations
    */
-  static async analyzeDeck(deckList: string): Promise<AnalysisResult>;
+  static async analyzeDeck(deckList: string): Promise<AnalysisResult>
 }
 ```
 
@@ -335,13 +331,13 @@ class LandService {
    * - Fastlands (untapped if ≤2 other lands)
    * - Triomes (3-color tap lands)
    */
-  async detectLand(cardName: string): Promise<LandMetadata | null>;
+  async detectLand(cardName: string): Promise<LandMetadata | null>
 
   /**
    * Calculate probability of land entering untapped
    * considering deck composition and turn number
    */
-  getUntappedProbability(land: LandMetadata, turn: number, context: DeckContext): number;
+  getUntappedProbability(land: LandMetadata, turn: number, context: DeckContext): number
 }
 ```
 
@@ -353,19 +349,19 @@ Monte Carlo simulation engine.
 class AdvancedMathEngine {
   /**
    * Run Monte Carlo simulation
-   * Default: 3,000 iterations for statistical significance
+   * Default: 10,000 iterations for statistical significance
    */
   async runMonteCarloSimulation(params: {
-    deck: DeckCard[];
-    iterations: number;
-    mulliganStrategy: 'aggressive' | 'conservative' | 'balanced';
-  }): Promise<MonteCarloResult>;
+    deck: DeckCard[]
+    iterations: number
+    mulliganStrategy: 'aggressive' | 'conservative' | 'balanced'
+  }): Promise<MonteCarloResult>
 
   /**
    * Multivariate analysis for multi-color requirements
    * e.g., "WW on turn 2 AND UU on turn 4"
    */
-  analyzeMultivariateRequirements(colorRequirements: ColorRequirement[]): MultivariateAnalysis;
+  analyzeMultivariateRequirements(colorRequirements: ColorRequirement[]): MultivariateAnalysis
 }
 ```
 
@@ -440,22 +436,22 @@ User Input (Deck Text)
 // store/index.ts
 const store = configureStore({
   reducer: {
-    analyzer: analyzerReducer,  // Main deck analysis state
+    analyzer: analyzerReducer, // Main deck analysis state
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false, // Allow non-serializable values
     }),
-});
+})
 
 // store/slices/analyzerSlice.ts
 interface AnalyzerState {
-  deckList: string;              // Raw deck text
-  analysisResult: AnalysisResult | null;
-  isAnalyzing: boolean;          // Loading state
-  isDeckMinimized: boolean;      // UI state
-  activeTab: number;             // Current tab index
-  snackbar: SnackbarState;       // Notifications
+  deckList: string // Raw deck text
+  analysisResult: AnalysisResult | null
+  isAnalyzing: boolean // Loading state
+  isDeckMinimized: boolean // UI state
+  activeTab: number // Current tab index
+  snackbar: SnackbarState // Notifications
 }
 ```
 
@@ -480,7 +476,7 @@ const { data: cardData } = useQuery({
   queryFn: () => scryfallService.getCard(cardName),
   staleTime: 1000 * 60 * 60, // 1 hour
   cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-});
+})
 ```
 
 ---
@@ -560,23 +556,21 @@ AnalyzerPage
 // Rate-limited: 10 requests/second
 // Cache: Map<cardName, ScryfallCard> (in-memory)
 
-const SCRYFALL_BASE = 'https://api.scryfall.com';
+const SCRYFALL_BASE = 'https://api.scryfall.com'
 
 async function fetchCard(name: string): Promise<ScryfallCard | null> {
   // Check cache first
   if (scryfallCache.has(name)) {
-    return scryfallCache.get(name);
+    return scryfallCache.get(name)
   }
 
-  const response = await fetch(
-    `${SCRYFALL_BASE}/cards/named?exact=${encodeURIComponent(name)}`
-  );
+  const response = await fetch(`${SCRYFALL_BASE}/cards/named?exact=${encodeURIComponent(name)}`)
 
-  if (!response.ok) return null;
+  if (!response.ok) return null
 
-  const data = await response.json();
-  scryfallCache.set(name, data);
-  return data;
+  const data = await response.json()
+  scryfallCache.set(name, data)
+  return data
 }
 ```
 
@@ -635,24 +629,22 @@ build: {
 ```typescript
 // Monte Carlo simulations run in dedicated worker
 const useMonteCarloWorker = () => {
-  const workerRef = useRef<Worker | null>(null);
+  const workerRef = useRef<Worker | null>(null)
 
   useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('../workers/monteCarlo.worker.ts', import.meta.url)
-    );
-    return () => workerRef.current?.terminate();
-  }, []);
+    workerRef.current = new Worker(new URL('../workers/monteCarlo.worker.ts', import.meta.url))
+    return () => workerRef.current?.terminate()
+  }, [])
 
   const runSimulation = useCallback((params) => {
     return new Promise((resolve) => {
-      workerRef.current?.postMessage(params);
-      workerRef.current!.onmessage = (e) => resolve(e.data);
-    });
-  }, []);
+      workerRef.current?.postMessage(params)
+      workerRef.current!.onmessage = (e) => resolve(e.data)
+    })
+  }, [])
 
-  return { runSimulation };
-};
+  return { runSimulation }
+}
 ```
 
 ### Memoization
@@ -691,7 +683,10 @@ const ManaCalculator = {
         { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: https://cards.scryfall.io https://c1.scryfall.com; connect-src 'self' https://api.scryfall.com; frame-ancestors 'none'" }
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: https://cards.scryfall.io https://c1.scryfall.com; connect-src 'self' https://api.scryfall.com; frame-ancestors 'none'"
+        }
       ]
     }
   ]
@@ -700,13 +695,13 @@ const ManaCalculator = {
 
 ### Client-Side Security
 
-| Measure | Implementation |
-|---------|----------------|
-| XSS Prevention | Input sanitization via Zod + DOMPurify |
-| Data Encryption | AES-256 for localStorage |
-| No eval() | ESLint rule enforced |
-| No dangerouslySetInnerHTML | ESLint rule enforced |
-| HTTPS Only | Vercel enforces HTTPS |
+| Measure                    | Implementation                         |
+| -------------------------- | -------------------------------------- |
+| XSS Prevention             | Input sanitization via Zod + DOMPurify |
+| Data Encryption            | AES-256 for localStorage               |
+| No eval()                  | ESLint rule enforced                   |
+| No dangerouslySetInnerHTML | ESLint rule enforced                   |
+| HTTPS Only                 | Vercel enforces HTTPS                  |
 
 ---
 
@@ -714,13 +709,13 @@ const ManaCalculator = {
 
 ### Test Categories
 
-| Type | Tool | Location | Coverage |
-|------|------|----------|----------|
-| Unit | Vitest | `src/**/*.test.ts` | ~60% services |
-| Component | Vitest + RTL | `tests/component/` | ~20% |
-| E2E | Playwright | `tests/e2e/` | Core flows |
-| Accessibility | axe-core | `tests/e2e/accessibility/` | WCAG AA |
-| Math Validation | Vitest | `src/services/__tests__/` | 100% Karsten tables |
+| Type            | Tool         | Location                   | Coverage            |
+| --------------- | ------------ | -------------------------- | ------------------- |
+| Unit            | Vitest       | `src/**/*.test.ts`         | ~60% services       |
+| Component       | Vitest + RTL | `tests/component/`         | ~20%                |
+| E2E             | Playwright   | `tests/e2e/`               | Core flows          |
+| Accessibility   | axe-core     | `tests/e2e/accessibility/` | WCAG AA             |
+| Math Validation | Vitest       | `src/services/__tests__/`  | 100% Karsten tables |
 
 ### Running Tests
 
@@ -737,10 +732,10 @@ npm run test:mtg-logic  # MTG-specific math tests
 // Validate against Frank Karsten's published tables
 describe('Karsten Methodology', () => {
   it('14 sources = 90%+ for 1 symbol turn 1', () => {
-    const result = manaCalculator.calculateManaProbability(60, 14, 1, 1, true, 7);
-    expect(result.probability).toBeGreaterThanOrEqual(0.90);
-  });
-});
+    const result = manaCalculator.calculateManaProbability(60, 14, 1, 1, true, 7)
+    expect(result.probability).toBeGreaterThanOrEqual(0.9)
+  })
+})
 ```
 
 ---
@@ -858,4 +853,4 @@ jobs:
 
 ---
 
-*Document generated by Winston (BMAD Architect Agent) on 2026-01-06*
+_Document generated by Winston (BMAD Architect Agent) on 2026-01-06_

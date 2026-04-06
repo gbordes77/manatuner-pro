@@ -47,6 +47,7 @@ type(scope): description
 ```
 
 Types:
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation
@@ -56,6 +57,7 @@ Types:
 - `chore` - Maintenance
 
 Examples:
+
 ```
 feat(mulligan): add archetype-specific thresholds
 fix(parser): handle split cards correctly
@@ -139,12 +141,14 @@ src/
 ### Frank Karsten Mathematics
 
 ManaTuner Pro uses Frank Karsten's research for mana calculations:
+
 - Hypergeometric distribution for probability
 - 90% threshold for reliable casting
 
 ### Monte Carlo Simulation
 
-The mulligan simulator runs 3,000 hand simulations using:
+The mulligan simulator runs 10,000 hand simulations by default (configurable: 3k/10k/50k) using:
+
 - Fisher-Yates shuffle
 - Bellman equation for optimal decisions
 

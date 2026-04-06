@@ -35,7 +35,7 @@ export const AboutPage: React.FC = () => {
     {
       icon: <CasinoIcon sx={{ fontSize: 32 }} />,
       title: 'Monte Carlo Simulation',
-      description: '3,000 hand simulations for accurate mulligan decisions.',
+      description: '10,000 hand simulations for accurate mulligan decisions.',
       color: '#9c27b0',
     },
     {

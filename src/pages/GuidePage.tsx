@@ -661,7 +661,7 @@ export const GuidePage: React.FC = () => {
         {[
           {
             q: 'What makes ManaTuner different?',
-            a: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (3000 hands), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes.",
+            a: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (10,000 hands, configurable up to 50k), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes.",
           },
           {
             q: 'What do P1 and P2 mean in Castability?',

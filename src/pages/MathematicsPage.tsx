@@ -48,7 +48,7 @@ const MathematicsPage: React.FC = () => {
     {
       icon: <CasinoIcon sx={{ fontSize: 40 }} />,
       title: 'Monte Carlo Simulation',
-      desc: '3,000 random hands to validate probability calculations',
+      desc: '10,000 random hands to validate probability calculations',
       color: '#9c27b0',
       bgColor: '#f3e5f5',
     },
@@ -348,7 +348,7 @@ const MathematicsPage: React.FC = () => {
 
             <Grid container spacing={2} sx={{ my: 2 }}>
               {[
-                { icon: <TimelineIcon />, text: 'Simulate 3,000+ hands with your exact decklist' },
+                { icon: <TimelineIcon />, text: 'Simulate 10,000+ hands with your exact decklist' },
                 { icon: <TrendingUpIcon />, text: 'Track mana availability each turn' },
                 { icon: <CalculateIcon />, text: 'Calculate empirical probabilities' },
               ].map((item, i) => (

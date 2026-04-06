@@ -19,7 +19,7 @@ ManaTuner Pro answers the fundamental question every Magic player asks: **"Can I
 Built on Frank Karsten's mathematical research, it provides:
 
 - Exact hypergeometric probabilities for every spell
-- Monte Carlo mulligan simulations (3,000+ hands)
+- Monte Carlo mulligan simulations (10,000 hands, configurable up to 50k)
 - Turn-by-turn castability analysis
 - Optimal land count recommendations
 

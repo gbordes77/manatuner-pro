@@ -13,7 +13,7 @@ The Mulligan Strategy System is an advanced Monte Carlo simulation engine that h
 ### Key Features
 
 - **Archetype-Aware Analysis**: Aggro, Midrange, Control, Combo - each with different priorities
-- **Monte Carlo Simulation**: 3,000+ iterations for statistical significance
+- **Monte Carlo Simulation**: 10,000 iterations default (configurable: 3k/10k/50k)
 - **Bellman Equation Optimization**: Dynamic programming for optimal thresholds
 - **London Mulligan Support**: Properly models "draw 7, keep N" mechanics
 - **Score Breakdown**: 5 detailed metrics per hand
@@ -40,7 +40,8 @@ E[V₇] = (1/N) × Σ max(score₇ᵢ, E[V₆])
         For each 7-card hand, keep if better than expected 6-card
 ```
 
-**Result**: 
+**Result**:
+
 - `threshold_keep7 = E[V₆]` → Keep 7 if score ≥ this value
 - `threshold_keep6 = E[V₅]` → Keep 6 if score ≥ this value
 - `threshold_keep5 = E[V₄]` → Keep 5 if score ≥ this value
@@ -50,18 +51,22 @@ E[V₇] = (1/N) × Σ max(score₇ᵢ, E[V₆])
 The London Mulligan rule allows players to draw 7 cards, then choose the best N to keep:
 
 ```typescript
-function selectBestSubset(hand: SimulatedHand, targetSize: number, archetype: Archetype): SimulatedHand {
+function selectBestSubset(
+  hand: SimulatedHand,
+  targetSize: number,
+  archetype: Archetype
+): SimulatedHand {
   // Score each card based on archetype priorities
-  const scoredCards = cards.map(card => ({
+  const scoredCards = cards.map((card) => ({
     card,
-    priority: calculateCardPriority(card, archetype)
-  }));
-  
+    priority: calculateCardPriority(card, archetype),
+  }))
+
   // Sort by priority and select top N
-  scoredCards.sort((a, b) => b.priority - a.priority);
-  
+  scoredCards.sort((a, b) => b.priority - a.priority)
+
   // Ensure good land/spell balance for archetype
-  return selectWithBalance(scoredCards, targetSize, archetype);
+  return selectWithBalance(scoredCards, targetSize, archetype)
 }
 ```
 
@@ -175,12 +180,13 @@ function calculateManaEfficiency(hand, deck): number {
     // Cast spells greedily by CMC
     // Track mana spent vs available
   }
-  
+
   return (totalManaSpent / totalManaAvailable) * 100;
 }
 ```
 
 **Interpretation**:
+
 - 100% = Perfect curve, used all mana
 - 70%+ = Good efficiency
 - <50% = Wasted mana, curve problems
@@ -191,16 +197,16 @@ Checks if hand has appropriate spells for each turn:
 
 ```typescript
 // Aggro scoring
-if (has1Drop) score += 40;   // Critical
-if (has2Drop) score += 30;
-if (multiple1Drops) score += 15;
-if (has3Drop) score += 15;
+if (has1Drop) score += 40 // Critical
+if (has2Drop) score += 30
+if (multiple1Drops) score += 15
+if (has3Drop) score += 15
 
 // Control scoring
-if (has2Drop) score += 30;   // Early interaction
-if (has3Drop) score += 25;
-if (has4Drop) score += 25;
-if (multipleSpells) score += 20;
+if (has2Drop) score += 30 // Early interaction
+if (has3Drop) score += 25
+if (has4Drop) score += 25
+if (multipleSpells) score += 20
 ```
 
 ### 3. Color Access
@@ -209,19 +215,19 @@ Validates that lands can produce colors needed for spells:
 
 ```typescript
 function calculateColorAccess(hand): number {
-  const colorsProduced = extractColorsFromLands(hand.lands);
-  
-  let totalRequired = 0;
-  let totalMet = 0;
-  
+  const colorsProduced = extractColorsFromLands(hand.lands)
+
+  let totalRequired = 0
+  let totalMet = 0
+
   for (spell of hand.spells) {
     for ([color, count] of spell.manaCost.symbols) {
-      totalRequired += count;
-      if (colorsProduced.has(color)) totalMet += count;
+      totalRequired += count
+      if (colorsProduced.has(color)) totalMet += count
     }
   }
-  
-  return (totalMet / totalRequired) * 100;
+
+  return (totalMet / totalRequired) * 100
 }
 ```
 
@@ -240,12 +246,12 @@ Checks if land count matches archetype needs:
 
 ```typescript
 function calculateLandBalance(hand, config): number {
-  const { min, optimal, max } = config.idealLands;
-  
-  if (count === optimal) return 100;
-  if (count >= min && count <= max) return 70-100; // Linear interpolation
-  if (count > max) return 50 - (count - max) * 15; // Flood penalty
-  if (count < min) return 50 - (min - count) * 20; // Screw penalty
+  const { min, optimal, max } = config.idealLands
+
+  if (count === optimal) return 100
+  if (count >= min && count <= max) return 70 - 100 // Linear interpolation
+  if (count > max) return 50 - (count - max) * 15 // Flood penalty
+  if (count < min) return 50 - (min - count) * 20 // Screw penalty
 }
 ```
 
@@ -255,15 +261,16 @@ function calculateLandBalance(hand, config): number {
 
 ```typescript
 const SCORE_LEGEND = {
-  snapKeep: { min: 90, label: 'SNAP KEEP' },     // Perfect hand
-  keep:     { min: 75, label: 'KEEP' },          // Good hand
-  marginal: { min: 60, label: 'MARGINAL' },      // Risky
-  mulligan: { min: 40, label: 'MULLIGAN' },      // Weak
-  snapMull: { min: 0,  label: 'SNAP MULL' }      // Unplayable
-};
+  snapKeep: { min: 90, label: 'SNAP KEEP' }, // Perfect hand
+  keep: { min: 75, label: 'KEEP' }, // Good hand
+  marginal: { min: 60, label: 'MARGINAL' }, // Risky
+  mulligan: { min: 40, label: 'MULLIGAN' }, // Weak
+  snapMull: { min: 0, label: 'SNAP MULL' }, // Unplayable
+}
 ```
 
 **Decision Logic**:
+
 ```
 if (handScore >= threshold_keep7) → KEEP 7
 else if (mulligan6Score >= threshold_keep6) → KEEP 6
@@ -288,6 +295,7 @@ src/
 ### mulliganSimulatorAdvanced.ts (600+ lines)
 
 **Exports**:
+
 - `analyzeWithArchetype(cards, archetype, iterations)` - Main analysis function
 - `quickArchetypeAnalysis(cards, archetype)` - Fast analysis (2000 iterations)
 - `ARCHETYPE_CONFIGS` - Configuration for each archetype
@@ -295,35 +303,37 @@ src/
 - `getScoreCategory(score)` - Get category from numeric score
 
 **Types**:
+
 ```typescript
-type Archetype = 'aggro' | 'midrange' | 'control' | 'combo';
+type Archetype = 'aggro' | 'midrange' | 'control' | 'combo'
 
 interface AdvancedMulliganResult {
-  archetype: Archetype;
-  archetypeConfig: ArchetypeConfig;
-  expectedScores: { hand7, hand6, hand5, hand4 };
-  thresholds: { keep7, keep6, keep5 };
-  distributions: { hand7, hand6, hand5 };
-  sampleHands: { excellent, good, marginal, poor };
-  deckQuality: 'excellent' | 'good' | 'average' | 'poor';
-  qualityScore: number;
-  recommendations: string[];
-  iterations: number;
+  archetype: Archetype
+  archetypeConfig: ArchetypeConfig
+  expectedScores: { hand7; hand6; hand5; hand4 }
+  thresholds: { keep7; keep6; keep5 }
+  distributions: { hand7; hand6; hand5 }
+  sampleHands: { excellent; good; marginal; poor }
+  deckQuality: 'excellent' | 'good' | 'average' | 'poor'
+  qualityScore: number
+  recommendations: string[]
+  iterations: number
 }
 
 interface SampleHand {
-  cards: SimulatedCard[];
-  score: number;
-  breakdown: ScoreBreakdown;
-  recommendation: 'SNAP_KEEP' | 'KEEP' | 'MARGINAL' | 'MULLIGAN' | 'SNAP_MULL';
-  reasoning: string[];
-  turnByTurn: TurnPlan[];
+  cards: SimulatedCard[]
+  score: number
+  breakdown: ScoreBreakdown
+  recommendation: 'SNAP_KEEP' | 'KEEP' | 'MARGINAL' | 'MULLIGAN' | 'SNAP_MULL'
+  reasoning: string[]
+  turnByTurn: TurnPlan[]
 }
 ```
 
 ### MulliganTab.tsx (860+ lines)
 
 **Components**:
+
 - `ArchetypeSelector` - 4 archetype buttons with descriptions
 - `ExpectedValues` - Display E[Score] for 7/6 cards + thresholds
 - `OptimalStrategy` - Visual threshold bars
@@ -334,6 +344,7 @@ interface SampleHand {
 - `SampleHandsSection` - Categorized sample hands
 
 **Features**:
+
 - Auto-runs analysis on mount and archetype change
 - Calculates `totalCards` from quantities (fixes "Need 40 cards" bug)
 - Comprehensive tooltips on all technical terms
@@ -345,15 +356,15 @@ interface SampleHand {
 
 All technical terms have explanatory tooltips. Key explanations:
 
-| Term | Explanation |
-|------|-------------|
-| E[Score] at 7 | Average quality of all 7-card hands |
-| Threshold Keep 7 | If hand score < this, mulligan to 6 |
-| Mana Efficiency | % of mana actually spent T1-T4 |
-| Curve Playability | Ability to play spells on curve |
-| Color Access | Can your lands cast your spells? |
-| Land Balance | Right number of lands for archetype |
-| Distribution | Probability of each quality level |
+| Term              | Explanation                         |
+| ----------------- | ----------------------------------- |
+| E[Score] at 7     | Average quality of all 7-card hands |
+| Threshold Keep 7  | If hand score < this, mulligan to 6 |
+| Mana Efficiency   | % of mana actually spent T1-T4      |
+| Curve Playability | Ability to play spells on curve     |
+| Color Access      | Can your lands cast your spells?    |
+| Land Balance      | Right number of lands for archetype |
+| Distribution      | Probability of each quality level   |
 
 ---
 
@@ -362,14 +373,11 @@ All technical terms have explanatory tooltips. Key explanations:
 ### From AnalyzerPage.tsx
 
 ```tsx
-import { MulliganTab } from "../components/analyzer";
+import { MulliganTab } from '../components/analyzer'
 
 // In tab content
-<TabPanel value={activeTab} index={2}>
-  <MulliganTab 
-    cards={analysisResult.cards || []} 
-    isMobile={isMobile} 
-  />
+;<TabPanel value={activeTab} index={2}>
+  <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
 </TabPanel>
 ```
 
@@ -379,12 +387,12 @@ The component expects `DeckCard[]` from the deck analyzer:
 
 ```typescript
 interface DeckCard {
-  name: string;
-  quantity: number;
-  manaCost: string;      // e.g., "{1}{W}{W}"
-  cmc: number;
-  types: string[];
-  colors: string[];
+  name: string
+  quantity: number
+  manaCost: string // e.g., "{1}{W}{W}"
+  cmc: number
+  types: string[]
+  colors: string[]
   // ... other fields
 }
 ```
@@ -395,9 +403,9 @@ interface DeckCard {
 
 ### Simulation Count
 
-- **Default**: 3,000 iterations
-- **Quick mode**: 2,000 iterations
-- **Accuracy**: ±2% margin at 3000 iterations
+- **Quick (3k)**: ~1.8% margin of error
+- **Standard (10k)**: ~0.9% margin of error (default)
+- **Precise (50k)**: ~0.4% margin of error
 
 ### Execution Time
 
