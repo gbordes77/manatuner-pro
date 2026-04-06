@@ -7,7 +7,7 @@
 | Attribute        | Value                      |
 | ---------------- | -------------------------- |
 | **Project**      | ManaTuner                  |
-| **Version**      | 2.0.0                      |
+| **Version**      | 2.2.0                      |
 | **Type**         | Web Application (Monolith) |
 | **Language**     | TypeScript                 |
 | **Framework**    | React 18 + Vite 7.3        |
@@ -76,21 +76,15 @@
 - [README.md](../README.md) - Main project readme
 - [CHANGELOG.md](../CHANGELOG.md) - Version history
 - [HANDOFF.md](../HANDOFF.md) - Session handoff notes
-- [SESSION_NOTES.md](../SESSION_NOTES.md) - Detailed session logs
 
 ### Development
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 - [CLAUDE.md](../CLAUDE.md) - AI assistant configuration
-- [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md) - Project context
-- [TECHNICAL_IMPLEMENTATION_GUIDE.md](../TECHNICAL_IMPLEMENTATION_GUIDE.md) - Implementation details
 
 ### Deployment & Security
 
-- [DEPLOYMENT_PRODUCTION_GUIDE.md](../DEPLOYMENT_PRODUCTION_GUIDE.md) - Deployment instructions
-- [SECURITY.md](../SECURITY.md) - Security policy
-- [SECURITY_AUDIT_REPORT.md](../SECURITY_AUDIT_REPORT.md) - Security audit
-- [PRE_PRODUCTION_AUDIT.md](../PRE_PRODUCTION_AUDIT.md) - Pre-production checklist
+- [SECURITY.md](../SECURITY.md) - Security policy (client-side focused)
 
 ### Legal & Community
 
@@ -100,9 +94,7 @@
 
 ### Team
 
-- [TEAM_HANDOFF.md](../TEAM_HANDOFF.md) - Team transition document
-- [ONBOARDING_NOUVELLE_EQUIPE.md](../ONBOARDING_NOUVELLE_EQUIPE.md) - New team onboarding
-- [P3_TEAM_ONBOARDING_PROMPT.md](./P3_TEAM_ONBOARDING_PROMPT.md) - Onboarding prompts
+- [TEAM_HANDOFF.md](../TEAM_HANDOFF.md) - Team onboarding & transition document
 
 ---
 

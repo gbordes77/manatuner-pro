@@ -5,6 +5,30 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-04-06
+
+### Rebrand
+
+- **Name**: "ManaTuner Pro" renamed to "ManaTuner" across entire codebase (152+ occurrences)
+- **Domain**: Custom domain `manatuner.app` (was manatuner-pro.vercel.app)
+- **GitHub**: Repository renamed from `manatuner-pro` to `manatuner`
+- **Badge**: Removed "PRO" badge from header
+- **Copyright**: Updated to 2025-2026
+
+### Documentation
+
+- **Monte Carlo**: Fixed all references from 3,000 to 10,000 simulations (matching actual code)
+- **SECURITY.md**: Rewritten for client-side architecture (removed backend/SQL/auth references)
+- **TEAM_HANDOFF.md**: Consolidated and updated (merged ONBOARDING_NOUVELLE_EQUIPE)
+- **technology-stack.md**: Removed phantom dependencies (axios, lodash, react-hook-form, vite-plugin-pwa)
+- **Cleanup**: Deleted 9 redundant/obsolete files (3 orphan HTML pages, 3 archive files, 3 duplicate docs)
+
+### SEO
+
+- **OG tags**: All meta tags updated with new domain and name
+- **Canonical URL**: Points to manatuner.app
+- **GitHub description**: Updated with rocks & dorks killer feature
+
 ## [2.1.0] - 2026-04-05
 
 ### Performance
@@ -196,16 +220,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 📋 Version History Summary
 
-| Version   | Date       | Description                                                         |
-| --------- | ---------- | ------------------------------------------------------------------- |
-| **2.1.0** | 2026-04-05 | ⚡ **Performance & Quality** - 4 audit sprints, ~8s to ~1s analysis |
-| **2.0.0** | 2025-06-22 | 🚀 **Production Ready** - Major rewrite with Vercel deployment      |
-| 1.5.0     | 2025-06-15 | Multi-format support and enhanced visualizations                    |
-| 1.4.0     | 2025-06-10 | Special lands support and export functionality                      |
-| 1.3.0     | 2025-06-05 | Real-time updates and archetype detection                           |
-| 1.2.0     | 2025-05-28 | Interactive charts and detailed analysis                            |
-| 1.1.0     | 2025-05-20 | Turn-by-turn analysis and visualizations                            |
-| 1.0.0     | 2025-05-15 | 🎉 **Initial Release** - Core functionality                         |
+| Version   | Date       | Description                                                             |
+| --------- | ---------- | ----------------------------------------------------------------------- |
+| **2.2.0** | 2026-04-06 | 🔄 **Rebrand** - ManaTuner Pro → ManaTuner, custom domain manatuner.app |
+| **2.1.0** | 2026-04-05 | ⚡ **Performance & Quality** - 4 audit sprints, ~8s to ~1s analysis     |
+| **2.0.0** | 2025-06-22 | 🚀 **Production Ready** - Major rewrite with Vercel deployment          |
+| 1.5.0     | 2025-06-15 | Multi-format support and enhanced visualizations                        |
+| 1.4.0     | 2025-06-10 | Special lands support and export functionality                          |
+| 1.3.0     | 2025-06-05 | Real-time updates and archetype detection                               |
+| 1.2.0     | 2025-05-28 | Interactive charts and detailed analysis                                |
+| 1.1.0     | 2025-05-20 | Turn-by-turn analysis and visualizations                                |
+| 1.0.0     | 2025-05-15 | 🎉 **Initial Release** - Core functionality                             |
 
 ---
 

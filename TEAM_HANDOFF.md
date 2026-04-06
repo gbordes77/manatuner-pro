@@ -1,51 +1,43 @@
 # ManaTuner - Document de Passation
 
-## Bienvenue dans l'équipe !
-
-Ce document vous permettra de prendre en main le projet rapidement.
-
----
-
 ## 1. Vue d'ensemble
 
 **ManaTuner** est un analyseur de manabase pour Magic: The Gathering.
 
-| Info               | Valeur                             |
-| ------------------ | ---------------------------------- |
-| **URL Production** | https://manatuner.app              |
-| **Stack**          | React 18 + TypeScript + Vite + MUI |
-| **Hébergement**    | Vercel                             |
-| **Tests**          | Vitest (unit) + Playwright (E2E)   |
-| **Score Prod**     | 85/100 - Prêt production           |
+| Info               | Valeur                                 |
+| ------------------ | -------------------------------------- |
+| **URL Production** | https://manatuner.app                  |
+| **Repository**     | https://github.com/gbordes77/manatuner |
+| **Stack**          | React 18 + TypeScript + Vite 7.3 + MUI |
+| **Hebergement**    | Vercel (auto-deploy on push to main)   |
+| **Tests**          | Vitest (unit) + Playwright (E2E)       |
+| **Version**        | 2.2.0                                  |
 
 ### Ce que fait l'app
 
-- Calcule les probabilités exactes de cast de chaque sort (hypergeométrique)
-- Simule 3000+ mains pour les décisions de mulligan (Monte Carlo)
-- Analyse tour par tour la castabilité
-- 100% client-side, privacy-first
+- Calcule les probabilites exactes de cast (hypergeometrique, Frank Karsten 2022)
+- Simule 10,000 mains pour les decisions de mulligan (Monte Carlo, configurable 3k/10k/50k)
+- Prend en compte les **mana rocks et dorks** (pas juste les terrains)
+- Analyse tour par tour la castabilite (Best Case / Realistic)
+- Export Blueprint (PNG/PDF/JSON) pour partage Discord
+- 100% client-side, privacy-first, open source MIT
 
 ---
 
-## 2. Démarrage rapide
+## 2. Demarrage rapide
 
 ```bash
-# Cloner et installer
 git clone https://github.com/gbordes77/manatuner.git
-cd manatuner-pro
+cd manatuner
 npm install
+npm run dev        # http://localhost:3000
 
-# Lancer le serveur dev
-npm run dev
-# → http://localhost:3000
-
-# Tests
-npm run test:unit    # 86/88 passing
-npm run lint         # 0 errors, 40 warnings
-
-# Build production
-npm run build
+npm run test:unit  # Vitest
+npm run test:e2e   # Playwright
+npm run build      # Production build
 ```
+
+Aucune variable d'environnement requise. L'app est 100% client-side.
 
 ---
 
@@ -54,209 +46,72 @@ npm run build
 ```
 src/
 ├── components/
-│   ├── analyzer/        # Interface saisie deck
-│   │   ├── DeckInputSection.tsx   # Zone de texte + boutons
-│   │   ├── DashboardTab.tsx       # Onglet principal résultats
-│   │   └── ...
-│   ├── analysis/        # Visualisation résultats
-│   │   ├── EnhancedCharts.tsx     # Graphiques
-│   │   └── ...
-│   ├── common/          # Composants partagés
-│   │   ├── FloatingManaSymbols.tsx # Mana flottants en fond
-│   │   └── ...
-│   └── export/          # Export PDF/PNG
-│       └── ManaBlueprint.tsx      # Blueprint visuel
-├── pages/               # Pages de l'app
-│   ├── HomePage.tsx
-│   ├── AnalyzerPage.tsx
-│   ├── GuidePage.tsx
-│   ├── MathematicsPage.tsx
-│   ├── LandGlossaryPage.tsx
-│   └── ...
-├── services/            # Logique métier
-│   ├── manaCalculator.ts   # Calculs hypergeométriques
-│   ├── advancedMaths.ts    # Monte Carlo
-│   ├── deckAnalyzer.ts     # Parsing deck
-│   └── landService.ts      # Détection terrains
-├── hooks/               # Hooks React custom
-├── store/               # Redux slices
+│   ├── analyzer/        # Onglets d'analyse (Dashboard, Castability, Mulligan, Analysis, Manabase, Blueprint)
+│   ├── common/          # Composants partages (FloatingManaSymbols, AnimatedContainer, BetaBanner)
+│   ├── export/          # ManaBlueprint (export PNG/PDF/JSON)
+│   └── layout/          # Header, Footer, StaticPages
+├── pages/               # HomePage, AnalyzerPage, GuidePage, MathematicsPage, LandGlossaryPage
+├── services/            # Logique metier
+│   ├── manaCalculator.ts      # Calculs hypergeometriques
+│   ├── advancedMaths.ts       # Monte Carlo engine
+│   ├── deckAnalyzer.ts        # Parsing deck + orchestration
+│   ├── mulliganSimulator.ts   # Simulation mulligan + Bellman
+│   ├── landService.ts         # Detection terrains (fetch, shock, check, etc.)
+│   └── scryfall.ts            # API Scryfall (batch /cards/collection)
+├── hooks/               # useMonteCarloWorker, useAnalyzer, etc.
+├── store/               # Redux (analyzerSlice uniquement)
 ├── types/               # Types TypeScript
-└── utils/               # Utilitaires
+└── lib/                 # Privacy, validations (Zod)
 ```
 
 ---
 
-## 4. Routes de l'application
+## 4. Routes
 
 | Route            | Page             | Description                      |
 | ---------------- | ---------------- | -------------------------------- |
 | `/`              | HomePage         | Landing page avec mana flottants |
-| `/analyzer`      | AnalyzerPage     | Analyseur principal              |
+| `/analyzer`      | AnalyzerPage     | Analyseur principal (6 onglets)  |
 | `/guide`         | GuidePage        | Guide utilisateur                |
-| `/mathematics`   | MathematicsPage  | Explications mathématiques       |
+| `/mathematics`   | MathematicsPage  | Fondements mathematiques         |
 | `/land-glossary` | LandGlossaryPage | Glossaire des terrains           |
 | `/my-analyses`   | MyAnalysesPage   | Historique local                 |
-| `/privacy-first` | PrivacyFirstPage | Politique privacy                |
-| `/about`         | AboutPage        | À propos                         |
+| `/about`         | AboutPage        | A propos                         |
 
 ---
 
-## 5. Fonctionnalités clés
+## 5. Documentation technique
 
-### Mana Font (icônes MTG)
-
-```html
-<!-- CDN dans index.html -->
-<link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css" rel="stylesheet" />
-
-<!-- Usage -->
-<i className="ms ms-w ms-cost" />
-<!-- Mana blanc -->
-<i className="ms ms-u ms-cost" />
-<!-- Mana bleu -->
-<i className="ms ms-b ms-cost" />
-<!-- Mana noir -->
-<i className="ms ms-r ms-cost" />
-<!-- Mana rouge -->
-<i className="ms ms-g ms-cost" />
-<!-- Mana vert -->
-```
-
-### FloatingManaSymbols
-
-Composant partagé pour les mana flottants en arrière-plan (toutes les pages).
-
-```tsx
-import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
-
-// Dans le JSX de la page
-;<FloatingManaSymbols />
-```
-
-### Theme WUBRG
-
-```tsx
-// Couleurs dans le theme MUI
-theme.palette.mana.white // #F8E7B9
-theme.palette.mana.blue // #0E68AB
-theme.palette.mana.black // #150B00
-theme.palette.mana.red // #D3202A
-theme.palette.mana.green // #00733E
-theme.palette.mana.multicolor // #C9A32E (gold)
-```
+| Document                           | Contenu                         |
+| ---------------------------------- | ------------------------------- |
+| `docs/ARCHITECTURE.md`             | Architecture technique complete |
+| `docs/MATHEMATICAL_REFERENCE.md`   | Formules et algorithmes         |
+| `docs/MULLIGAN_SYSTEM.md`          | Systeme Monte Carlo + Bellman   |
+| `docs/CASTABILITY_TECHNICAL.md`    | Methode de calcul castabilite   |
+| `docs/MANA_ACCELERATION_SYSTEM.md` | Rocks & dorks (killer feature)  |
+| `docs/LAND_SYSTEM_REDESIGN.md`     | Detection terrains              |
 
 ---
 
-## 6. Tests
-
-### Unit Tests (Vitest)
+## 6. Commandes utiles
 
 ```bash
-npm run test:unit
-# 86/88 passing, 2 skipped
-```
-
-Tests critiques :
-
-- `manaCalculator.test.ts` - Formules hypergeométriques
-- `deckAnalyzer.test.ts` - Parsing de decklists
-- `AnalyzerPage.test.jsx` - Interface principale
-
-### E2E Tests (Playwright)
-
-```bash
-npm run test:e2e
+npm run dev              # Serveur dev (port 3000)
+npm run build            # Build production
+npm run test:unit        # Tests unitaires (Vitest)
+npm run test:e2e         # Tests E2E (Playwright)
+npm run test:coverage    # Rapport de couverture
+npm run lint             # Check ESLint
 ```
 
 ---
 
-## 7. Déploiement
+## 7. References
 
-### Vercel (automatique)
-
-Push sur `main` → déploiement automatique sur Vercel.
-
-```bash
-# Commit et push
-git add .
-git commit -m "feat: description"
-git push origin main
-```
-
-### Variables d'environnement
-
-Aucune requise - l'app est 100% client-side.
-
-Supabase est **désactivé** (mocké). Toutes les données restent en localStorage.
-
----
-
-## 8. État actuel
-
-### Session 2025-12-27 - Dernières modifications
-
-**Visual Identity MTG**
-
-- ✅ Mana font CDN corrigé (keyrune → mana-font)
-- ✅ Color Distribution avec icônes mana
-- ✅ ManaBlueprint fond éclairci + icônes mana
-- ✅ FloatingManaSymbols sur TOUTES les pages
-- ✅ HomePage title gradient gold
-- ✅ Footer avec coeur emoji
-- ✅ Boutons Clear/Example inversés (Clear gros à gauche)
-
-**Qualité**
-
-- ✅ 0 erreurs ESLint
-- ✅ 40 warnings ESLint (non-bloquants)
-- ✅ 86/88 tests passing
-
-### P1 - À faire (semaine 1 post-launch)
-
-1. Ajouter headers CSP dans `vercel.json`
-2. Ajouter aria-labels aux onglets emoji
-3. Installer Sentry error tracking
-4. Ajouter navigation clavier aux cartes
-5. Fixer les dépendances vides useCallback
-
----
-
-## 9. Contacts & Ressources
-
-### Documentation
-
-- `README.md` - Vue d'ensemble projet
-- `docs/ARCHITECTURE.md` - Architecture technique
-- `HANDOFF.md` - Notes de session
-- `PRE_PRODUCTION_AUDIT.md` - Rapport d'audit
-
-### Références externes
-
-- [Frank Karsten - Manabase Theory](https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/)
+- [Frank Karsten - Manabase Theory](https://www.channelfireball.com/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/)
 - [Mana Font Documentation](https://mana.andrewgioia.com/)
 - [Scryfall API](https://scryfall.com/docs/api)
 
 ---
 
-## 10. Commandes utiles
-
-```bash
-# Développement
-npm run dev              # Serveur dev (port 3000)
-npm run build            # Build production
-npm run preview          # Preview du build
-
-# Qualité
-npm run lint             # Check ESLint
-npm run lint:fix         # Auto-fix ESLint
-npm run type-check       # Validation TypeScript
-
-# Tests
-npm run test:unit        # Tests unitaires
-npm run test:e2e         # Tests E2E
-npm run test:coverage    # Rapport de couverture
-```
-
----
-
-**Bonne prise en main !** 🎴
+**Last Updated**: April 2026

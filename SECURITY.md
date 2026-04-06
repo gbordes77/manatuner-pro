@@ -1,195 +1,75 @@
 # Security Policy
 
-## 🔒 Supported Versions
+## Architecture Security Model
 
-We actively support the following versions of ManaTuner with security updates:
+ManaTuner is a **100% client-side application**. There is no backend, no database, no server-side processing, and no user authentication. All calculations happen in your browser.
 
-| Version | Supported |
-| ------- | --------- |
-| 2.0.x   | ✅ Yes    |
-| 1.5.x   | ✅ Yes    |
-| 1.4.x   | ❌ No     |
-| < 1.4   | ❌ No     |
+| Aspect                | Status                                    |
+| --------------------- | ----------------------------------------- |
+| **Backend**           | None - 100% client-side                   |
+| **Database**          | None - localStorage only                  |
+| **Authentication**    | None - no accounts                        |
+| **Data transmission** | None - decklists never leave your browser |
+| **External API**      | Scryfall (read-only, public card data)    |
 
-## 🚨 Reporting a Vulnerability
+## Reporting a Vulnerability
 
-We take security vulnerabilities seriously. If you discover a security vulnerability in ManaTuner, please follow these steps:
+If you discover a security vulnerability:
 
-### 1. **DO NOT** Create Public Issues
+1. **DO NOT** create a public GitHub issue
+2. Use [GitHub Security Advisories](https://github.com/gbordes77/manatuner/security/advisories) (preferred)
+3. Or email the maintainer directly via GitHub profile
 
-- **Never** report security vulnerabilities through public GitHub issues
-- **Never** discuss vulnerabilities in public forums or social media
-
-### 2. **Contact Us Privately**
-
-- **Email**: Send details to `security@manatuner-pro.com` (if available)
-- **GitHub**: Use [GitHub Security Advisories](https://github.com/gbordes77/manatuner/security/advisories) (preferred)
-- **Subject**: Include "SECURITY VULNERABILITY" in the subject line
-
-### 3. **Include These Details**
-
-- **Description**: Clear description of the vulnerability
-- **Impact**: Potential impact and severity assessment
-- **Reproduction**: Step-by-step instructions to reproduce
-- **Environment**: Browser, OS, version information
-- **Proof of Concept**: If applicable (no exploitation)
-
-### 4. **Response Timeline**
+### Response Timeline
 
 - **Acknowledgment**: Within 48 hours
-- **Initial Assessment**: Within 7 days
-- **Fix Timeline**: Depends on severity (see below)
-- **Public Disclosure**: After fix is deployed
+- **Assessment**: Within 7 days
+- **Fix**: Depends on severity
 
-## ⚡ Severity Levels
+## Security Measures
 
-### Critical (24-48 hours)
+### Content Security Policy (CSP)
 
-- Remote code execution
-- Authentication bypass
-- Data breach potential
-- Privilege escalation
+Strict CSP headers configured in `vercel.json`:
 
-### High (1 week)
+```
+default-src 'self';
+script-src 'self';
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+img-src 'self' data: https://cards.scryfall.io https://c1.scryfall.com;
+connect-src 'self' https://api.scryfall.com;
+frame-ancestors 'none';
+```
 
-- Cross-site scripting (XSS)
-- SQL injection
-- Unauthorized data access
-- Denial of service
+### Additional Headers
 
-### Medium (2-4 weeks)
+- `X-Frame-Options: DENY` - Prevents clickjacking
+- `X-Content-Type-Options: nosniff` - Prevents MIME sniffing
+- `Strict-Transport-Security` - HTTPS enforced with preload
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 
-- Information disclosure
-- Cross-site request forgery (CSRF)
-- Insecure direct object references
-- Security misconfigurations
+### Data Privacy
 
-### Low (1-3 months)
+- All deck data stored in browser `localStorage` with AES-256 encryption
+- No cookies, no tracking, no analytics
+- Export/import feature for data portability
+- One-click data deletion
 
-- Security headers missing
-- Weak cryptography
-- Information leakage
-- Minor security improvements
+### Dependencies
 
-## 🛡️ Security Measures
+- Regular `npm audit` checks
+- Dependabot enabled for automated security updates
+- Minimal dependency footprint
 
-### Frontend Security
+## For Contributors
 
-- **Content Security Policy (CSP)**: Strict CSP headers implemented
-- **XSS Protection**: Input sanitization and output encoding
-- **HTTPS Only**: All communications encrypted
-- **Secure Cookies**: HttpOnly and Secure flags
-- **Dependency Scanning**: Regular security audits
-
-### Backend Security
-
-- **Authentication**: Secure authentication mechanisms
-- **Authorization**: Proper access controls
-- **Input Validation**: Server-side validation for all inputs
-- **Rate Limiting**: API rate limiting and abuse prevention
-- **Logging**: Security event logging and monitoring
-
-### Infrastructure Security
-
-- **Vercel Security**: Leveraging Vercel's security features
-- **Environment Variables**: Secure secret management
-- **Regular Updates**: Dependencies updated regularly
-- **Monitoring**: Security monitoring and alerting
-
-## 🔍 Security Best Practices
-
-### For Users
-
-- **Keep Updated**: Always use the latest version
-- **Secure Environment**: Use updated browsers and operating systems
-- **Report Issues**: Report suspicious behavior immediately
-- **Privacy**: Be cautious with sensitive deck information
-
-### For Contributors
-
-- **Code Review**: All code changes reviewed for security
-- **Dependencies**: Use only trusted dependencies
-- **Secrets**: Never commit secrets or API keys
-- **Testing**: Include security testing in development
-
-## 📋 Security Checklist
-
-### Development
-
-- [ ] Input validation on all user inputs
-- [ ] Output encoding to prevent XSS
-- [ ] Secure authentication implementation
-- [ ] Proper error handling (no information leakage)
-- [ ] Dependency vulnerability scanning
-- [ ] Security headers implementation
-
-### Deployment
-
-- [ ] HTTPS enforced everywhere
-- [ ] Secure environment variable management
-- [ ] CSP headers configured
-- [ ] Security monitoring enabled
-- [ ] Regular security updates scheduled
-
-## 🚀 Automated Security
-
-### GitHub Security Features
-
-- **Dependabot**: Automated dependency updates
-- **CodeQL**: Static code analysis
-- **Secret Scanning**: Automatic secret detection
-- **Security Advisories**: Vulnerability notifications
-
-### CI/CD Security
-
-- **Security Scans**: Automated security scanning in CI/CD
-- **Dependency Audits**: Regular npm audit checks
-- **SAST**: Static Application Security Testing
-- **Container Scanning**: If using containerization
-
-## 📞 Security Contact
-
-### Primary Contact
-
-- **GitHub Security**: [Security Advisories](https://github.com/gbordes77/manatuner/security/advisories)
-- **Email**: security@manatuner-pro.com (if available)
-
-### Response Team
-
-- **Guillaume Bordes** - Project Maintainer
-- **Security Team** - External security consultants (if applicable)
-
-## 🏆 Security Acknowledgments
-
-We appreciate security researchers who help improve ManaTuner's security:
-
-### Hall of Fame
-
-_Security researchers who have responsibly disclosed vulnerabilities will be listed here with their permission._
-
-### Recognition
-
-- Public acknowledgment in release notes
-- Recognition in security advisories
-- Contributor status in the project
-
-## 📚 Resources
-
-### Security Guidelines
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Web Security Guidelines](https://web.dev/security/)
-- [React Security Best Practices](https://snyk.io/blog/10-react-security-best-practices/)
-
-### Tools and References
-
-- [npm audit](https://docs.npmjs.com/cli/v8/commands/npm-audit)
-- [Snyk](https://snyk.io/) - Vulnerability scanning
-- [GitHub Security](https://github.com/features/security)
+- Never commit secrets or API keys
+- All PRs reviewed before merge
+- Use `npm audit` before submitting changes
+- Follow CSP restrictions when adding external resources
 
 ---
 
-**Last Updated**: June 22, 2025  
-**Version**: 2.0.0
-
-Thank you for helping keep ManaTuner secure! 🔒🎯
+**Last Updated**: April 2026
+**Version**: 2.2.0
