@@ -2,11 +2,69 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-06 (Math Audit) | **Tests:** 197 pass, 0 fail | **Build:** OK
+**Latest Session:** 2026-04-06 (Fetchlands + Turn Plan audit) | **Tests:** 197 pass, 0 fail | **Build:** OK | **Commit:** 2a52182
 
 ---
 
-## Session 2026-04-06 (part 2) — Mathematical Audit & Fixes
+## Session 2026-04-06 (part 3) — Pro Player Feedback: Fetchland Fix + Turn Plan Audit
+
+### What Was Completed
+
+Feedback from pro player Walaoumpa (31/12/2025) analyzed and partially resolved.
+
+**Fix 1: Fetchlands not counted as color sources (DONE, pushed)**
+
+Fetchlands had `produces: []` everywhere because Scryfall returns `produced_mana: null` for them (they search, not produce). This caused castability to collapse in Modern.
+
+- `src/data/landSeed.ts` — 14 fetchlands: `produces: []` → colors from fetchTargets
+- `src/services/landService.ts` — `analyzeFromScryfall()`: derive produces from fetchTargets; `detectFetchland()`: also matches "basic land card" (Prismatic Vista, Fabled Passage)
+- `src/services/landCacheService.ts` — Cache version 2.0 → 2.1 (invalidate stale data)
+
+**Fix 2: Land Glossary accessible from navbar (DONE, pushed)**
+
+- `src/components/layout/Header.tsx` — Added "Lands" link in main navigation bar
+
+### What Needs To Be Done Next: Turn-by-Turn Plan Refactor
+
+Pro player identified 3 bugs in `generateTurnPlan()` (`mulliganSimulatorAdvanced.ts:561`):
+
+| #   | Bug                                                        | Severity | Example                                        |
+| --- | ---------------------------------------------------------- | -------- | ---------------------------------------------- |
+| 1   | **Greedy CMC sort plays 1+2 drop instead of 3-drop on T3** | HIGH     | 2-drop played on T3, 3-drop delayed to T4      |
+| 2   | **No color checking** — only CMC verified, not pip colors  | HIGH     | Glacial Dragonhunt planned T2 with just Forest |
+| 3   | **No ETB tapped handling** — taplands give mana same turn  | MEDIUM   | Wind-Scarred Crag counted as untapped mana T1  |
+
+#### Blast Radius Analysis
+
+| Component                 | Risk if modified | Impact                                               |
+| ------------------------- | ---------------- | ---------------------------------------------------- |
+| `generateTurnPlan`        | **Very low**     | Display only, 0 tests, does NOT affect score         |
+| `calculateManaEfficiency` | **Medium**       | Same greedy bugs, but affects score → recommendation |
+| `SimulatedCard` interface | **Medium**       | Adding optional fields = backward compatible         |
+| `TurnPlan` interface      | **Very low**     | Only consumed by `MulliganTab.tsx`                   |
+
+#### Planned Approach (2 phases)
+
+**Phase 1 — Fix display only (safe, score unchanged):**
+
+1. Enrich `SimulatedCard` with optional `producedMana?: string[]` and `etbTapped?: boolean`
+2. Feed these from `DeckCard` data in `prepareDeckForSimulation()`
+3. Rewrite `generateTurnPlan()`:
+   - Track color pool (not just mana count)
+   - Handle ETB tapped (land gives mana next turn only)
+   - Prefer curve-out (play 3-drop on T3) over greedy pack (1+2 on T3)
+   - Verify color requirements before scheduling a spell
+4. Write tests BEFORE modifying: Forest+Dragonhunt, tapland T1, curve-out preference
+5. **Score/recommendation stays identical** — only the visual Turn Plan boxes change
+
+**Phase 2 — Fix scoring (separate, later):**
+
+- Apply same logic to `calculateManaEfficiency` so scores reflect reality
+- Will change SNAP_KEEP/MULLIGAN thresholds — needs careful validation
+
+---
+
+## Session 2026-04-06 (part 2) — Mathematical Audit, Bug Fixes & UX Improvements
 
 ### What Happened
 
@@ -34,18 +92,36 @@ Before: Changing "On the Play" → "On the Draw" only affected acceleration calc
 
 After: The `playDraw` setting propagates from `AccelerationContext` → `CastabilityTab` → `ManaCostRow` → `useProbabilityCalculation`. On the draw: `7 + turn` cards seen (one extra). All displayed probabilities now change correctly.
 
-### Files Modified
+### Files Modified (13 files, +776 -77)
+
+**Math bug fixes (6 files):**
 
 - `src/components/ManaCostRow.tsx` — playDraw param in useProbabilityCalculation
 - `src/services/mulliganSimulatorAdvanced.ts` — mulliganValue formula fix
 - `src/services/manaCalculator.ts` — onThePlay implementation + hypergeometric guards
 - `src/services/advancedMaths.ts` — re-shuffle on mulligan
 - `src/utils/manabase.ts` — Fisher-Yates shuffle + Karsten table alignment
-- `docs/MATH_AUDIT_REPORT.md` — full audit report
+
+**UX: explain math engines to users (4 files):**
+
+- `src/pages/MathematicsPage.tsx` — "Three Engines, Three Questions" section, fix 86%/90% error, correct Karsten table
+- `src/pages/GuidePage.tsx` — New FAQ "Why below 90%?", fix P1/P2 labels, richer Analysis tab description, reworded math foundations
+- `src/pages/HomePage.tsx` — Reorder math cards (Exact Probabilities first), merge MC+Bellman into "Mulligan Optimizer", better descriptions
+- `src/components/analyzer/CastabilityTab.tsx` — Tooltip on Probabilities header explaining single-draw vs Karsten
+
+**Navigation:**
+
+- `src/components/layout/Header.tsx` — Center nav buttons relative to full page width (logo absolute-positioned)
+
+**Documentation:**
+
+- `docs/MATH_AUDIT_REPORT.md` — Complete 12-section audit report
+- `CLAUDE.md` — Math architecture notes (4 hypergeom implementations, 3 Karsten copies, Play/Draw chain)
+- `HANDOFF.md` — This file
 
 ### Full Report
 
-See `docs/MATH_AUDIT_REPORT.md` for the complete 12-section audit with formulas, verification tables, and architecture diagram.
+See `docs/MATH_AUDIT_REPORT.md` for the complete audit with formulas, verification tables, and architecture diagram.
 
 ---
 
