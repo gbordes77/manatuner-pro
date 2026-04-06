@@ -550,10 +550,20 @@ const useAcceleratedCastability = (
         } else if (['W', 'U', 'B', 'R', 'G'].includes(clean)) {
           colorCounts[clean]++
         } else if (clean.includes('/')) {
-          // Hybrid - count as needing one of either color
+          // Hybrid mana (e.g., {R/G}) — player can pay with either color.
+          // Assign to the color with more sources in the deck for best approximation.
           const parts = clean.split('/')
-          const colorPart = parts.find((p) => ['W', 'U', 'B', 'R', 'G'].includes(p))
-          if (colorPart) colorCounts[colorPart]++
+          const colorParts = parts.filter((p): p is 'W' | 'U' | 'B' | 'R' | 'G' =>
+            ['W', 'U', 'B', 'R', 'G'].includes(p)
+          )
+          if (colorParts.length >= 2 && deckSources) {
+            const best = colorParts.reduce((a, b) =>
+              (deckSources[a] || 0) >= (deckSources[b] || 0) ? a : b
+            )
+            colorCounts[best]++
+          } else if (colorParts.length > 0) {
+            colorCounts[colorParts[0]]++
+          }
         }
       })
 

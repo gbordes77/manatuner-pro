@@ -381,6 +381,16 @@ function parseManaCost(cost: string): {
     } else if (['W', 'U', 'B', 'R', 'G', 'C'].includes(inner)) {
       const c = inner as 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
       colors[c] = (colors[c] ?? 0) + 1
+    } else if (inner.includes('/')) {
+      // Hybrid mana (e.g., R/G) — pick the first color component.
+      // For producer castability, either color works; picking one is conservative.
+      const parts = inner.split('/')
+      const colorPart = parts.find((p): p is 'W' | 'U' | 'B' | 'R' | 'G' | 'C' =>
+        ['W', 'U', 'B', 'R', 'G', 'C'].includes(p)
+      )
+      if (colorPart) {
+        colors[colorPart] = (colors[colorPart] ?? 0) + 1
+      }
     }
   }
 
