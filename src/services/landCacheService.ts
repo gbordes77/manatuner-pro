@@ -28,7 +28,7 @@ const CACHE_KEY = 'manatuner_lands_cache'
 const CACHE_TTL_DAYS = 30
 
 /** Current cache version (for migrations) */
-const CACHE_VERSION = '2.0' // Bumped: fixed MDFC multi-color detection + produced_mana
+const CACHE_VERSION = '2.1' // Bumped: fetchlands now produce colors from their fetch targets
 
 /** Maximum entries to keep during emergency cleanup */
 const MAX_ENTRIES_EMERGENCY = 100

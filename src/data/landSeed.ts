@@ -175,7 +175,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Flooded Strand': {
     category: 'fetch',
-    produces: [],
+    produces: ['W', 'U'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -186,7 +186,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Polluted Delta': {
     category: 'fetch',
-    produces: [],
+    produces: ['U', 'B'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -197,7 +197,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Bloodstained Mire': {
     category: 'fetch',
-    produces: [],
+    produces: ['B', 'R'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -208,7 +208,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Wooded Foothills': {
     category: 'fetch',
-    produces: [],
+    produces: ['R', 'G'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -219,7 +219,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Windswept Heath': {
     category: 'fetch',
-    produces: [],
+    produces: ['G', 'W'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -230,7 +230,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Marsh Flats': {
     category: 'fetch',
-    produces: [],
+    produces: ['W', 'B'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -241,7 +241,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Scalding Tarn': {
     category: 'fetch',
-    produces: [],
+    produces: ['U', 'R'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -252,7 +252,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Verdant Catacombs': {
     category: 'fetch',
-    produces: [],
+    produces: ['B', 'G'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -263,7 +263,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Arid Mesa': {
     category: 'fetch',
-    produces: [],
+    produces: ['R', 'W'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -274,7 +274,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Misty Rainforest': {
     category: 'fetch',
-    produces: [],
+    produces: ['G', 'U'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
@@ -286,8 +286,8 @@ const SEED_DATA: Record<string, SeedLandData> = {
   // Budget fetchlands
   'Fabled Passage': {
     category: 'fetch',
-    produces: [],
-    producesAny: false,
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
@@ -297,8 +297,8 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Prismatic Vista': {
     category: 'fetch',
-    produces: [],
-    producesAny: false,
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
@@ -308,8 +308,8 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Terramorphic Expanse': {
     category: 'fetch',
-    produces: [],
-    producesAny: false,
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
@@ -319,8 +319,8 @@ const SEED_DATA: Record<string, SeedLandData> = {
 
   'Evolving Wilds': {
     category: 'fetch',
-    produces: [],
-    producesAny: false,
+    produces: ['W', 'U', 'B', 'R', 'G'],
+    producesAny: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],

@@ -313,7 +313,7 @@ class LandService implements ILandService {
     const typeLine = data.type_line || ''
 
     // Detect colors produced
-    const produces = this.detectProducedColors(data)
+    let produces = this.detectProducedColors(data)
 
     // Detect ETB behavior
     const etbResult = this.parseETBBehavior(oracleText)
@@ -327,6 +327,15 @@ class LandService implements ILandService {
     const isCreatureLand = /becomes? (?:a |an )?\d+\/\d+.*creature/i.test(oracleText)
     const hasChannel = /channel/i.test(oracleText)
 
+    // Fetchlands don't have produced_mana on Scryfall (they search, not produce).
+    // Derive colors from fetch targets: each basic land type maps to its color.
+    // This is the minimum — in practice a Scalding Tarn in a deck with shocklands
+    // can find any Island or Mountain (including Hallowed Fountain, Breeding Pool, etc.)
+    // but we count the fetch's own type colors as a conservative baseline.
+    if (isFetch && produces.length === 0 && fetchTargets && fetchTargets.length > 0) {
+      produces = this.colorsFromFetchTargets(fetchTargets)
+    }
+
     // Detect basic land types
     const basicLandTypes = this.extractBasicLandTypes(typeLine)
 
@@ -336,11 +345,14 @@ class LandService implements ILandService {
       etbBehavior = { type: 'always_tapped' }
     }
 
+    const producesAny =
+      fetchTargets?.length === 5 || produces.length >= 5 || /add.*mana of any/i.test(oracleText)
+
     return {
       name: data.name,
       category,
       produces,
-      producesAny: produces.length === 0 && /add.*mana of any/i.test(oracleText),
+      producesAny,
       etbBehavior,
       isFetch,
       fetchTargets,
@@ -633,7 +645,7 @@ class LandService implements ILandService {
    * Detect if a land is a fetchland.
    */
   private detectFetchland(oracleText: string): boolean {
-    return /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest)/i.test(
+    return /search your library for (?:a |an )?(?:plains|island|swamp|mountain|forest|basic land)/i.test(
       oracleText
     )
   }
@@ -642,6 +654,11 @@ class LandService implements ILandService {
    * Extract fetch targets from oracle text.
    */
   private extractFetchTargets(oracleText: string): string[] {
+    // "basic land card" fetchers (Prismatic Vista, Fabled Passage, Evolving Wilds, etc.)
+    if (/search your library for (?:a |an )?basic land card/i.test(oracleText)) {
+      return ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']
+    }
+
     const targets: string[] = []
     const pattern =
       /search your library for (?:a |an )?((?:plains|island|swamp|mountain|forest)(?:(?: or )?(?:plains|island|swamp|mountain|forest))*)/i
@@ -657,6 +674,28 @@ class LandService implements ILandService {
     }
 
     return targets
+  }
+
+  /**
+   * Convert fetch targets (basic land type names) to mana colors.
+   * Plains→W, Island→U, Swamp→B, Mountain→R, Forest→G
+   */
+  private colorsFromFetchTargets(targets: string[]): LandManaColor[] {
+    const BASIC_TYPE_TO_COLOR: Record<string, LandManaColor> = {
+      Plains: 'W',
+      Island: 'U',
+      Swamp: 'B',
+      Mountain: 'R',
+      Forest: 'G',
+    }
+    const colors: LandManaColor[] = []
+    for (const target of targets) {
+      const color = BASIC_TYPE_TO_COLOR[target]
+      if (color && !colors.includes(color)) {
+        colors.push(color)
+      }
+    }
+    return colors
   }
 
   /**

@@ -6,6 +6,7 @@ import GuideIcon from '@mui/icons-material/MenuBook'
 import HistoryIcon from '@mui/icons-material/History'
 import HomeIcon from '@mui/icons-material/Home'
 import InfoIcon from '@mui/icons-material/Info'
+import LandscapeIcon from '@mui/icons-material/Landscape'
 import MenuIcon from '@mui/icons-material/Menu'
 import {
   AppBar,
@@ -96,6 +97,7 @@ export const Header: React.FC = () => {
     { label: 'Home', path: '/', icon: HomeIcon },
     { label: 'Analyzer', path: '/analyzer', icon: AnalyticsIcon },
     { label: 'My Analyses', path: '/my-analyses', icon: HistoryIcon },
+    { label: 'Lands', path: '/land-glossary', icon: LandscapeIcon },
     { label: 'Guide', path: '/guide', icon: GuideIcon },
     { label: 'Mathematics', path: '/mathematics', icon: FunctionsIcon },
     { label: 'About', path: '/about', icon: InfoIcon },
