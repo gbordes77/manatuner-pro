@@ -4,7 +4,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!sw\\.js$|analyzer$|guide$|mathematics$|land-glossary$|about$|privacy$).*)",
+      "source": "/((?!sw\\.js$).*)",
       "destination": "/index.html"
     }
   ],
