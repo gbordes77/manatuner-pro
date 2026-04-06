@@ -305,7 +305,7 @@ git --version
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 
 # 2. Installer les dépendances
@@ -375,7 +375,7 @@ node --version
 # Si < 18, installer depuis nodejs.org
 
 # Cloner le projet
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 
 # Installer toutes les dépendances
@@ -500,7 +500,7 @@ npm run build:analyze
 
 ### Support et Contributions
 
-- **Repository** : https://github.com/gbordes77/manatuner-pro
+- **Repository** : https://github.com/gbordes77/manatuner
 - **Issues** : GitHub Issues pour bugs et features
 - **Pull Requests** : Contributions bienvenues
 - **License** : MIT (open source)

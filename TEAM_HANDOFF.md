@@ -31,7 +31,7 @@ Ce document vous permettra de prendre en main le projet rapidement.
 
 ```bash
 # Cloner et installer
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 npm install
 

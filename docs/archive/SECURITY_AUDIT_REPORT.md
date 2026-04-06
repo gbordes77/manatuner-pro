@@ -300,7 +300,7 @@ VitePWA({
 **Evidence:**
 
 - File: `/LICENSE` - MIT License
-- Git remote: `https://github.com/gbordes77/manatuner-pro.git`
+- Git remote: `https://github.com/gbordes77/manatuner.git`
 - File: `/package.json` - Repository field points to GitHub
 
 **Verdict:** TRUE. Code is MIT licensed and available on GitHub.

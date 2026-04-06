@@ -212,6 +212,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 🔗 Links
 
 - **Live Demo**: [manatuner.app](https://manatuner.app)
-- **Repository**: [github.com/gbordes77/manatuner-pro](https://github.com/gbordes77/manatuner-pro)
-- **Issues**: [GitHub Issues](https://github.com/gbordes77/manatuner-pro/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/gbordes77/manatuner-pro/discussions)
+- **Repository**: [github.com/gbordes77/manatuner](https://github.com/gbordes77/manatuner)
+- **Issues**: [GitHub Issues](https://github.com/gbordes77/manatuner/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/gbordes77/manatuner/discussions)

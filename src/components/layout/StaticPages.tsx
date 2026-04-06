@@ -245,7 +245,7 @@ export const AboutPage: React.FC = () => {
               fullWidth
               size="large"
               startIcon={<GitHubIcon />}
-              href="https://github.com/gbordes77/manatuner-pro"
+              href="https://github.com/gbordes77/manatuner"
               target="_blank"
               rel="noopener noreferrer"
               sx={{

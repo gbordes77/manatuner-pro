@@ -12,7 +12,7 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 
 # 2. Install dependencies
@@ -356,7 +356,7 @@ ls dist/
 
 ## Support
 
-- **GitHub Issues**: [Report bugs](https://github.com/gbordes77/manatuner-pro/issues)
+- **GitHub Issues**: [Report bugs](https://github.com/gbordes77/manatuner/issues)
 - **Documentation**: See `docs/` folder
 - **Architecture**: See [ARCHITECTURE.md](./ARCHITECTURE.md)
 

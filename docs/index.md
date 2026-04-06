@@ -134,7 +134,7 @@
 ## External Links
 
 - **Live App**: https://manatuner.app
-- **GitHub**: https://github.com/gbordes77/manatuner-pro
+- **GitHub**: https://github.com/gbordes77/manatuner
 - **Scryfall API**: https://scryfall.com/docs/api
 - **Frank Karsten Article**: https://www.channelfireball.com/articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/
 

@@ -41,14 +41,14 @@ Nous passons maintenant à la phase de **prise en compte des retours utilisateur
 
 ### 1. Accès
 
-- **Repo GitHub** : https://github.com/gbordes77/manatuner-pro
+- **Repo GitHub** : https://github.com/gbordes77/manatuner
 - **Production** : https://manatuner.app
 - **Vercel** : Déploiement automatique sur push `main`
 
 ### 2. Installation locale
 
 ```bash
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 npm install
 npm run dev

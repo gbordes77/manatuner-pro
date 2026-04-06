@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
               }}
             >
               <Link
-                href="https://github.com/gbordes77/manatuner-pro"
+                href="https://github.com/gbordes77/manatuner"
                 target="_blank"
                 rel="noopener noreferrer"
                 color="inherit"

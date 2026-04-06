@@ -232,7 +232,7 @@ export const Header: React.FC = () => {
           <IconButton
             color="inherit"
             component="a"
-            href="https://github.com/gbordes77/manatuner-pro"
+            href="https://github.com/gbordes77/manatuner"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View source code on GitHub"
@@ -382,7 +382,7 @@ export const Header: React.FC = () => {
           <ListItem disablePadding>
             <ListItemButton
               component="a"
-              href="https://github.com/gbordes77/manatuner-pro"
+              href="https://github.com/gbordes77/manatuner"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ py: 1.5 }}

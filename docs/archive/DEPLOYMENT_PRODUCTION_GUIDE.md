@@ -354,7 +354,7 @@ npm run build:analyze
 
 ### Contacts
 
-- **Repository** : https://github.com/gbordes77/manatuner-pro
+- **Repository** : https://github.com/gbordes77/manatuner
 - **Issues** : GitHub Issues pour bugs
 - **Vercel Support** : Dashboard Vercel > Help
 

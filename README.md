@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-86%2F88%20Passing-green)](https://github.com/gbordes77/manatuner-pro)
+[![Tests](https://img.shields.io/badge/Tests-86%2F88%20Passing-green)](https://github.com/gbordes77/manatuner)
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 
@@ -53,7 +53,7 @@ Visit **[manatuner.app](https://manatuner.app)** - no installation required.
 node --version  # v18.0.0 or higher
 
 # Clone and install
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 npm install
 

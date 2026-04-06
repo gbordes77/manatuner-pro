@@ -98,11 +98,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gbordes77/manatuner-pro.git"
+    "url": "https://github.com/gbordes77/manatuner.git"
   },
   "homepage": "https://manatuner.app",
   "bugs": {
-    "url": "https://github.com/gbordes77/manatuner-pro/issues"
+    "url": "https://github.com/gbordes77/manatuner/issues"
   },
   "keywords": [
     "mtg",

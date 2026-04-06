@@ -23,7 +23,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ### 2. **Contact Us Privately**
 
 - **Email**: Send details to `security@manatuner-pro.com` (if available)
-- **GitHub**: Use [GitHub Security Advisories](https://github.com/gbordes77/manatuner-pro/security/advisories) (preferred)
+- **GitHub**: Use [GitHub Security Advisories](https://github.com/gbordes77/manatuner/security/advisories) (preferred)
 - **Subject**: Include "SECURITY VULNERABILITY" in the subject line
 
 ### 3. **Include These Details**
@@ -151,7 +151,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 
 ### Primary Contact
 
-- **GitHub Security**: [Security Advisories](https://github.com/gbordes77/manatuner-pro/security/advisories)
+- **GitHub Security**: [Security Advisories](https://github.com/gbordes77/manatuner/security/advisories)
 - **Email**: security@manatuner-pro.com (if available)
 
 ### Response Team

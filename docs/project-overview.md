@@ -71,7 +71,7 @@ The application follows a **Component-Based Architecture** with:
 ## Links
 
 - **Live Application**: https://manatuner.app
-- **GitHub Repository**: https://github.com/gbordes77/manatuner-pro
+- **GitHub Repository**: https://github.com/gbordes77/manatuner
 - **Documentation Index**: [./index.md](./index.md)
 - **Architecture Details**: [./ARCHITECTURE.md](./ARCHITECTURE.md)
 

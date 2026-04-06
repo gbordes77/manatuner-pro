@@ -5,7 +5,7 @@
 Vous rejoignez le projet **ManaTuner** en phase de **feedback utilisateurs et debug**.
 
 **URL Production**: https://manatuner.app  
-**Repository**: https://github.com/gbordes77/manatuner-pro
+**Repository**: https://github.com/gbordes77/manatuner
 
 ---
 
@@ -76,7 +76,7 @@ src/
 
 ```bash
 # Cloner
-git clone https://github.com/gbordes77/manatuner-pro.git
+git clone https://github.com/gbordes77/manatuner.git
 cd manatuner-pro
 
 # Installer
@@ -299,7 +299,7 @@ npm run test:coverage    # Couverture
 ### Outils
 
 - [Vercel Dashboard](https://vercel.com/) - Déploiements
-- [GitHub Repo](https://github.com/gbordes77/manatuner-pro) - Code
+- [GitHub Repo](https://github.com/gbordes77/manatuner) - Code
 - Tally.so - Feedback utilisateurs (intégré dans l'app)
 
 ---

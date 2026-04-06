@@ -472,7 +472,7 @@ When connection returns, the app seamlessly resumes with a subtle toast: "Back o
 - [Frank Karsten's Land Article](https://www.channelfireball.com/articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/)
 - [Scryfall API Documentation](https://scryfall.com/docs/api)
 - [Live Application](https://manatuner.app)
-- [GitHub Repository](https://github.com/gbordes77/manatuner-pro)
+- [GitHub Repository](https://github.com/gbordes77/manatuner)
 
 ---
 
