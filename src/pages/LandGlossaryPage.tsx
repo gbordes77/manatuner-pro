@@ -271,6 +271,16 @@ export const LandGlossaryPage: React.FC = () => {
         title="MTG Land Types Ranked - Complete Dual Land Glossary | ManaTuner"
         description="Every MTG dual land type ranked from best to worst. Fetchlands, shocklands, fastlands, checklands and more — with explanations for aggro, midrange, and control decks."
         path="/land-glossary"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: 'MTG Dual Land Types Ranked from Best to Worst',
+          description:
+            'Complete ranking of all MTG dual land types: fetchlands, shocklands, fastlands, checklands, triomes, and more with explanations.',
+          author: { '@type': 'Person', name: 'Guillaume Bordes' },
+          publisher: { '@type': 'Organization', name: 'ManaTuner' },
+          mainEntityOfPage: 'https://www.manatuner.app/land-glossary',
+        }}
       />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />

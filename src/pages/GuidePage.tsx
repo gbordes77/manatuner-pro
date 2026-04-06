@@ -692,6 +692,18 @@ export const GuidePage: React.FC = () => {
         </Grid>
       </Box>
 
+      {/* Cross-link to Land Glossary */}
+      <Box sx={{ textAlign: 'center', mb: 6 }}>
+        <Button
+          variant="outlined"
+          size="large"
+          onClick={() => navigate('/land-glossary')}
+          sx={{ borderRadius: 3, borderWidth: 2, fontWeight: 600, '&:hover': { borderWidth: 2 } }}
+        >
+          Explore the Land Type Glossary
+        </Button>
+      </Box>
+
       {/* FAQ */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>

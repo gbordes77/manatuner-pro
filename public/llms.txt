@@ -1,0 +1,61 @@
+# ManaTuner
+
+> Free, open-source MTG mana base calculator. The only tool that includes mana rocks and dorks in probability calculations — not just lands.
+
+ManaTuner helps Magic: The Gathering players optimize their deck's mana base using rigorous mathematics: hypergeometric distribution, Monte Carlo simulation (10,000 hands), and Bellman equation for optimal mulligan decisions.
+
+## Key Features
+
+- **Health Score**: Instant manabase health percentage based on hypergeometric probability
+- **Castability Analysis**: Exact per-spell cast probability including mana rocks and dorks, turn by turn
+- **Monte Carlo Mulligan**: 10,000-hand simulation with optimal keep/mulligan thresholds (Bellman equation)
+- **Mana Curve Analysis**: Turn-by-turn probability charts and mana curve visualization
+- **Land Breakdown**: Complete breakdown of your lands (basics, duals, fetches, utility)
+- **Export Blueprint**: Download analysis as PNG, PDF, or JSON
+
+## What Makes It Different
+
+Unlike other MTG calculators (manabase.app, mtgoncurve), ManaTuner:
+- Factors in **mana rocks and mana dorks** as acceleration sources, not just lands
+- Uses **Bellman equation** for mathematically optimal mulligan thresholds
+- Runs **Monte Carlo simulation** with 10,000 hands (configurable up to 50,000)
+- Is **100% local**: no account, no tracking, no data sent to servers
+- Is **free and open source** under MIT License
+
+## Mathematics
+
+Based on Frank Karsten's research ("How Many Sources Do You Need to Consistently Cast Your Spells?"), extended with:
+- Hypergeometric distribution for exact draw probabilities
+- Monte Carlo simulation for mulligan strategy validation
+- Bellman equation (optimal stopping theory) for keep/mulligan decision thresholds
+- Fisher-Yates shuffle for unbiased hand generation
+
+## Pages
+
+- [Home](https://www.manatuner.app/): Landing page with feature overview
+- [Deck Analyzer](https://www.manatuner.app/analyzer): Paste your decklist and analyze
+- [User Guide](https://www.manatuner.app/guide): How to use ManaTuner step by step
+- [Mathematics](https://www.manatuner.app/mathematics): The math behind the calculations
+- [Land Glossary](https://www.manatuner.app/land-glossary): Every MTG dual land type ranked
+- [About](https://www.manatuner.app/about): Mission, credits, and attributions
+
+## Common Questions
+
+**How many lands should I run in my MTG deck?**
+It depends on your mana curve and color requirements. Aggro decks typically need 18-22 lands, midrange 22-26, and control 26-28. ManaTuner calculates the exact number based on your specific decklist using hypergeometric probability.
+
+**What's a good mana base Health Score?**
+85%+ is excellent, 70-84% is good with minor tweaks needed, 55-69% needs improvement, below 55% requires a rebuild.
+
+**Does ManaTuner work for Commander/EDH?**
+ManaTuner analyzes any deck format. For Commander (99-card singleton), the probability calculations adapt automatically to the larger deck size.
+
+**When should I mulligan?**
+ManaTuner's Monte Carlo simulator runs 10,000 sample hands and uses the Bellman equation to calculate optimal keep/mulligan thresholds for your specific deck. It tells you the exact hand quality score below which you should mulligan.
+
+## Technical Details
+
+- **Stack**: React 18, TypeScript, Vite, Material UI
+- **Source**: https://github.com/gbordes77/manatuner
+- **License**: MIT
+- **Author**: Guillaume Bordes

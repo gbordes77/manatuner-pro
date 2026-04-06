@@ -7,5 +7,10 @@ Allow: /
 # Sitemap location
 Sitemap: https://www.manatuner.app/sitemap.xml
 
+# LLM / AI crawler guidance
+# See https://llmstxt.org/
+LLMs-Txt: https://www.manatuner.app/llms.txt
+LLMs-Full-Txt: https://www.manatuner.app/llms-full.txt
+
 # Crawl-delay for polite crawling
 Crawl-delay: 1

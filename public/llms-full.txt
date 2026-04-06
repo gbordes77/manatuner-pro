@@ -1,0 +1,143 @@
+# ManaTuner - Complete Reference for AI Systems
+
+> The only MTG mana base calculator that factors in mana rocks and mana dorks. Free, open source, 100% local.
+
+## Overview
+
+ManaTuner is a web application for Magic: The Gathering players that analyzes deck mana bases using advanced probability mathematics. It calculates the exact probability of casting each spell on curve, simulates thousands of opening hands for mulligan decisions, and provides actionable recommendations to improve mana consistency.
+
+**URL**: https://www.manatuner.app
+**Source Code**: https://github.com/gbordes77/manatuner
+**License**: MIT (free and open source)
+**Author**: Guillaume Bordes
+
+---
+
+## Feature Deep Dive
+
+### 1. Health Score (Dashboard Tab)
+A single percentage summarizing overall mana base quality. Calculated using weighted hypergeometric probabilities across all spells in the deck.
+- 85%+: Excellent — tournament-ready mana base
+- 70-84%: Good — minor color source adjustments needed
+- 55-69%: Needs work — likely to get color-screwed in 1 of 3 games
+- Below 55%: Rebuild required
+
+### 2. Castability Analysis (Castability Tab)
+For each spell in the deck, calculates:
+- **P1 (Play First)**: Probability of casting on curve when going first (optimistic)
+- **P2 (Draw First)**: Probability accounting for realistic mana screw (focus metric)
+- **Ramp boost**: Additional probability from mana rocks/dorks
+- Turn-by-turn probability progression from turn 1 through turn 7+
+
+### 3. Monte Carlo Mulligan Simulator (Mulligan Tab)
+- Simulates 10,000 opening hands (configurable up to 50,000)
+- Uses Fisher-Yates shuffle for unbiased randomization
+- Applies Bellman equation (optimal stopping theory) to calculate keep/mulligan thresholds
+- Supports 4 deck archetypes: Aggro, Midrange, Control, Combo
+- Shows hand quality distribution and optimal mulligan strategy
+
+### 4. Mana Acceleration Support
+**Unique feature** — no other calculator does this:
+- Detects mana rocks (Sol Ring, Arcane Signet, Talisman cycle, etc.)
+- Detects mana dorks (Llanowar Elves, Birds of Paradise, Noble Hierarch, etc.)
+- Factors acceleration into castability calculations
+- Shows "Lands only" vs "Realistic (with ramp)" probability comparison
+- Configurable removal rate for acceleration sources (default 20%)
+
+### 5. Mana Curve Analysis (Analysis Tab)
+- Visual mana curve chart
+- Turn-by-turn land drop probability
+- Color distribution breakdown
+- Recommendations based on curve analysis
+
+### 6. Land Breakdown (Manabase Tab)
+- Categorizes all lands: basics, duals, fetches, utility, MDFC
+- Shows color production matrix
+- Identifies potential improvements
+
+### 7. Export Blueprint
+- **PNG**: Shareable image of complete analysis
+- **PDF**: Print-ready document
+- **JSON**: Raw data for programmatic use
+
+---
+
+## Land Type Glossary (Ranked)
+
+ManaTuner includes a comprehensive ranking of every MTG dual land type:
+
+1. **Original Dual Lands** (Underground Sea, Tropical Island) — Two colors, no drawback, fetchable. Gold standard.
+2. **Fetchlands** (Scalding Tarn, Flooded Strand) — Most versatile. Thin deck, trigger landfall, find any dual.
+3. **Rainbow Lands** (Mana Confluence, City of Brass) — All 5 colors, always untapped.
+4. **Shocklands** (Steam Vents, Sacred Foundry) — Fetchable, 2 life optional.
+5. **Horizon Lands** (Fiery Islet, Sunbaked Canyon) — Draw a card when flooded.
+6. **Fastlands** (Blackcleave Cliffs, Seachrome Coast) — Untapped turns 1-3.
+7. **Checklands** (Glacial Fortress, Dragonskull Summit) — Needs setup but reliable.
+8. **Painlands** (Shivan Reef, Caves of Koilos) — Always untapped, 1 life per colored mana.
+9. **Conditional Lands** (Starting Town, Elegant Parlor) — Time-based or situational.
+10. **Triomes** (Raffine's Tower, Spara's Headquarters) — 3 colors but always tapped.
+11. **Utility Lands** (Cavern of Souls, Mutavault) — Special abilities.
+12. **Basic Lands** (Plains, Island, Swamp, Mountain, Forest) — Free, fetchable, no drawback.
+
+---
+
+## Mathematics Reference
+
+### Hypergeometric Distribution
+Answers: "What's the probability of drawing exactly k successes in n draws from a finite population?"
+
+Formula: P(X = k) = C(K,k) * C(N-K, n-k) / C(N,n)
+- N = deck size (typically 60 or 99)
+- K = number of desired cards (e.g., green mana sources)
+- n = cards drawn (opening hand = 7, plus draws per turn)
+- k = successes needed (mana requirement for a spell)
+
+### Monte Carlo Simulation
+- Generates 10,000 random hands using Fisher-Yates shuffle
+- Evaluates each hand against deck's mana requirements
+- Provides statistical validation of hypergeometric calculations
+- Accounts for real-world variance that pure math can't capture
+
+### Bellman Equation (Optimal Stopping)
+Applied to mulligan decisions:
+- E[V₇] = expected value of keeping a 7-card hand
+- If hand quality < threshold, mulligan to 6 (then 5, etc.)
+- Calculates exact threshold for each hand size
+- Adapts to deck archetype (aggro mulligans more aggressively for specific cards)
+
+### Frank Karsten's Research
+ManaTuner's foundations are based on Frank Karsten's 2022 article "How Many Sources Do You Need to Consistently Cast Your Spells?" published on ChannelFireball. Key insight: to cast a spell with 90% reliability on curve, you need approximately:
+- 1 colored mana: 14 sources
+- 2 same color: 18 sources
+- 3 same color: 22 sources
+- 1 of each of 2 colors: 12 sources each
+
+ManaTuner extends this with mana rocks/dorks, Monte Carlo validation, and Bellman optimization.
+
+---
+
+## Frequently Asked Questions
+
+**Q: How many lands should I run in a 60-card MTG deck?**
+A: Typically 22-26 for most decks. Aggro: 18-22, Midrange: 22-26, Control: 26-28. ManaTuner calculates the exact number based on your specific mana curve and color requirements.
+
+**Q: What's the best free MTG mana base calculator?**
+A: ManaTuner (manatuner.app) is free, open source, and the only calculator that factors in mana rocks and dorks. Alternatives include manabase.app and mtgoncurve.com.
+
+**Q: How do I know if my mana base is good?**
+A: Paste your decklist into ManaTuner. A Health Score of 85%+ means your mana base is tournament-ready. Check the Castability tab — any spell below 90% probability on curve is a weak spot.
+
+**Q: When should I mulligan in MTG?**
+A: It depends on your deck and hand quality. ManaTuner's Monte Carlo simulator runs 10,000 hands and uses the Bellman equation to tell you the exact keep/mulligan threshold for your deck.
+
+**Q: Does ManaTuner support Commander/EDH?**
+A: Yes. ManaTuner analyzes any deck size. For 99-card Commander decks, the hypergeometric calculations automatically adapt to the larger deck and singleton constraints.
+
+**Q: Is my deck data private?**
+A: Yes. ManaTuner is 100% client-side. Your decklists are stored only in your browser's localStorage. No data is ever sent to any server.
+
+**Q: How accurate is the Monte Carlo simulation?**
+A: With 10,000 hands, the margin of error is approximately ±1%. You can increase to 50,000 hands for ±0.5% precision.
+
+**Q: What formats does ManaTuner support?**
+A: All constructed formats: Standard, Pioneer, Modern, Legacy, Vintage, Commander/EDH, Pauper, and any custom format. The math works for any deck size.

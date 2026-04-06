@@ -73,6 +73,16 @@ const MathematicsPage: React.FC = () => {
         title="MTG Mana Math Explained - Hypergeometric & Monte Carlo | ManaTuner"
         description="The mathematics behind ManaTuner: hypergeometric distribution, Monte Carlo simulation (10,000 hands), Bellman equation for mulligan decisions, and Frank Karsten's research."
         path="/mathematics"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: 'The Mathematics Behind MTG Mana Base Optimization',
+          description:
+            'Hypergeometric distribution, Monte Carlo simulation, and Bellman equation applied to Magic: The Gathering mana base analysis.',
+          author: { '@type': 'Person', name: 'Guillaume Bordes' },
+          publisher: { '@type': 'Organization', name: 'ManaTuner' },
+          mainEntityOfPage: 'https://www.manatuner.app/mathematics',
+        }}
       />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />
