@@ -1,82 +1,82 @@
 import {
-    Close as CloseIcon,
-    DeleteForever as DeleteIcon,
-    Download as DownloadIcon,
-    Info as InfoIcon,
-    Storage as StorageIcon,
-    Upload as UploadIcon,
-} from "@mui/icons-material";
+  Close as CloseIcon,
+  DeleteForever as DeleteIcon,
+  Download as DownloadIcon,
+  Info as InfoIcon,
+  Storage as StorageIcon,
+  Upload as UploadIcon,
+} from '@mui/icons-material'
 import {
-    Alert,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Divider,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Snackbar,
-    Typography,
-    useMediaQuery,
-    useTheme
-} from "@mui/material";
-import React, { useState } from "react";
-import { PrivacyStorage } from "../lib/privacy";
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Snackbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
+import React, { useState } from 'react'
+import { PrivacyStorage } from '../lib/privacy'
 
 export const PrivacySettings: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const [showInfoDialog, setShowInfoDialog] = useState(false);
-  const [showDataDialog, setShowDataDialog] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false)
+  const [showDataDialog, setShowDataDialog] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [showSnackbar, setShowSnackbar] = useState(false)
 
   const exportData = () => {
-    const data = PrivacyStorage.exportAnalyses();
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `manatuner-backup-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    setSnackbarMessage("Data exported successfully!");
-    setShowSnackbar(true);
-  };
+    const data = PrivacyStorage.exportAnalyses()
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `manatuner-backup-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    setSnackbarMessage('Data exported successfully!')
+    setShowSnackbar(true)
+  }
 
   const importData = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
     input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
+      const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
-        const reader = new FileReader();
+        const reader = new FileReader()
         reader.onload = (e) => {
-          const data = e.target?.result as string;
+          const data = e.target?.result as string
           try {
-            PrivacyStorage.importAnalyses(data);
-            setSnackbarMessage("Data imported successfully!");
-            setShowSnackbar(true);
+            PrivacyStorage.importAnalyses(data)
+            setSnackbarMessage('Data imported successfully!')
+            setShowSnackbar(true)
           } catch {
-            setSnackbarMessage("Error during import");
-            setShowSnackbar(true);
+            setSnackbarMessage('Error during import')
+            setShowSnackbar(true)
           }
-        };
-        reader.readAsText(file);
+        }
+        reader.readAsText(file)
       }
-    };
-    input.click();
-  };
+    }
+    input.click()
+  }
 
   return (
     <>
@@ -84,16 +84,16 @@ export const PrivacySettings: React.FC = () => {
         elevation={3}
         sx={{
           mb: 3,
-          background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)",
-          color: "white",
-          "& .MuiTypography-root": { color: "white !important" },
+          background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+          color: 'white',
+          '& .MuiTypography-root': { color: 'white !important' },
         }}
       >
         <CardContent>
           {/* Header */}
           <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={1}>
             <StorageIcon />
-            <Typography variant="h6" component="h2" sx={{ color: "white" }}>
+            <Typography variant="h6" component="h2" sx={{ color: 'white' }}>
               💾 Your Data
             </Typography>
           </Box>
@@ -102,11 +102,11 @@ export const PrivacySettings: React.FC = () => {
           <Box
             sx={{
               p: 1.5,
-              backgroundColor: "rgba(255,255,255,0.1)",
+              backgroundColor: 'rgba(255,255,255,0.1)',
               borderRadius: 2,
             }}
           >
-            <Typography variant="body2" sx={{ color: "white", textAlign: "center" }}>
+            <Typography variant="body2" sx={{ color: 'white', textAlign: 'center' }}>
               📱 All your analyses are stored locally in your browser
             </Typography>
           </Box>
@@ -116,7 +116,7 @@ export const PrivacySettings: React.FC = () => {
             display="flex"
             gap={1}
             mt={2}
-            flexDirection={isMobile ? "column" : "row"}
+            flexDirection={isMobile ? 'column' : 'row'}
             justifyContent="center"
           >
             <Button
@@ -124,9 +124,9 @@ export const PrivacySettings: React.FC = () => {
               startIcon={<DownloadIcon />}
               onClick={exportData}
               sx={{
-                color: "white",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": { borderColor: "white" },
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.5)',
+                '&:hover': { borderColor: 'white' },
               }}
             >
               Export
@@ -137,9 +137,9 @@ export const PrivacySettings: React.FC = () => {
               startIcon={<UploadIcon />}
               onClick={importData}
               sx={{
-                color: "white",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": { borderColor: "white" },
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.5)',
+                '&:hover': { borderColor: 'white' },
               }}
             >
               Import
@@ -150,9 +150,9 @@ export const PrivacySettings: React.FC = () => {
               startIcon={<InfoIcon />}
               onClick={() => setShowInfoDialog(true)}
               sx={{
-                color: "white",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": { borderColor: "white" },
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.5)',
+                '&:hover': { borderColor: 'white' },
               }}
             >
               Info
@@ -163,11 +163,11 @@ export const PrivacySettings: React.FC = () => {
               startIcon={<DeleteIcon />}
               onClick={() => setShowDataDialog(true)}
               sx={{
-                color: "#ff6b6b",
-                borderColor: "#ff6b6b",
-                "&:hover": {
-                  borderColor: "#ff5252",
-                  backgroundColor: "rgba(255,107,107,0.1)",
+                color: '#ff6b6b',
+                borderColor: '#ff6b6b',
+                '&:hover': {
+                  borderColor: '#ff5252',
+                  backgroundColor: 'rgba(255,107,107,0.1)',
                 },
               }}
             >
@@ -185,14 +185,11 @@ export const PrivacySettings: React.FC = () => {
         fullWidth
         fullScreen={isMobile}
       >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <StorageIcon color="primary" />
           How Your Data is Stored
           {isMobile && (
-            <IconButton
-              onClick={() => setShowInfoDialog(false)}
-              sx={{ ml: "auto" }}
-            >
+            <IconButton onClick={() => setShowInfoDialog(false)} sx={{ ml: 'auto' }}>
               <CloseIcon />
             </IconButton>
           )}
@@ -235,7 +232,7 @@ export const PrivacySettings: React.FC = () => {
 
           <Alert severity="info" sx={{ mt: 2 }}>
             <Typography variant="body2">
-              <strong>Privacy:</strong> ManaTuner Pro does not collect any data.
+              <strong>Privacy:</strong> ManaTuner does not collect any data.
             </Typography>
           </Alert>
         </DialogContent>
@@ -247,11 +244,7 @@ export const PrivacySettings: React.FC = () => {
       </Dialog>
 
       {/* Data Management Dialog */}
-      <Dialog
-        open={showDataDialog}
-        onClose={() => setShowDataDialog(false)}
-        maxWidth="sm"
-      >
+      <Dialog open={showDataDialog} onClose={() => setShowDataDialog(false)} maxWidth="sm">
         <DialogTitle color="error">⚠️ Delete all data</DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
@@ -265,10 +258,10 @@ export const PrivacySettings: React.FC = () => {
           <Button onClick={() => setShowDataDialog(false)}>Cancel</Button>
           <Button
             onClick={() => {
-              PrivacyStorage.clearAllLocalData();
-              setShowDataDialog(false);
-              setSnackbarMessage("All data has been deleted");
-              setShowSnackbar(true);
+              PrivacyStorage.clearAllLocalData()
+              setShowDataDialog(false)
+              setSnackbarMessage('All data has been deleted')
+              setShowSnackbar(true)
             }}
             color="error"
             variant="contained"
@@ -284,10 +277,10 @@ export const PrivacySettings: React.FC = () => {
         autoHideDuration={3000}
         onClose={() => setShowSnackbar(false)}
         message={snackbarMessage}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </>
-  );
-};
+  )
+}
 
-export default PrivacySettings;
+export default PrivacySettings

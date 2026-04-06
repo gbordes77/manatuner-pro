@@ -1,5 +1,5 @@
 /**
- * Mana Producer Types for ManaTuner Pro
+ * Mana Producer Types for ManaTuner
  *
  * This module defines all types related to mana-producing non-land cards:
  * dorks (creatures), rocks (artifacts), rituals, and treasures.

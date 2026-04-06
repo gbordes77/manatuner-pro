@@ -1,5 +1,6 @@
 import type { Card } from '@/types'
 import type { ScryfallCard } from '../types/scryfall'
+import { sanitizeString } from '@/lib/validations'
 
 const SCRYFALL_API_BASE = 'https://api.scryfall.com'
 const RATE_LIMIT_DELAY = 100 // 100ms entre les requêtes
@@ -197,14 +198,14 @@ export const parseDecklistText = (text: string): { name: string; quantity: numbe
 
     if (match) {
       const quantity = parseInt(match[1], 10)
-      const name = match[2].trim()
+      const name = sanitizeString(match[2])
 
       if (quantity > 0 && name.length > 0) {
         cards.push({ name, quantity })
       }
     } else {
       // Assume quantité 1 si pas de nombre
-      const name = line.trim()
+      const name = sanitizeString(line)
       if (name.length > 0) {
         cards.push({ name, quantity: 1 })
       }

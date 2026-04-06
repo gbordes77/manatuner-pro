@@ -145,21 +145,6 @@ export const Header: React.FC = () => {
             >
               ManaTuner
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                bgcolor: isDark ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.2)',
-                color: isDark ? '#FFD700' : 'white',
-                px: 0.8,
-                py: 0.2,
-                borderRadius: 1,
-                fontWeight: 700,
-                fontSize: '0.65rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              PRO
-            </Typography>
           </Box>
         </Box>
 
@@ -302,7 +287,7 @@ export const Header: React.FC = () => {
           </Box>
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
             <Typography variant="h6" fontWeight="bold" fontFamily='"Cinzel", serif'>
-              ManaTuner Pro
+              ManaTuner
             </Typography>
             <IconButton
               color="inherit"

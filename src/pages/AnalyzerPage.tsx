@@ -216,7 +216,7 @@ const AnalyzerPage: React.FC = () => {
                   color: '#1976d2',
                 }}
               />
-              ManaTuner Pro
+              ManaTuner
             </Typography>
             <Typography
               variant={isMobile ? 'body1' : 'h6'}

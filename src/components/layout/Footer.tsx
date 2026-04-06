@@ -1,18 +1,9 @@
-import { GitHub as GitHubIcon } from '@mui/icons-material';
-import {
-    Box,
-    Container,
-    Divider,
-    Grid,
-    Link,
-    Typography,
-    useTheme
-} from '@mui/material';
-import React from 'react';
+import { GitHub as GitHubIcon } from '@mui/icons-material'
+import { Box, Container, Divider, Grid, Link, Typography, useTheme } from '@mui/material'
+import React from 'react'
 
 // WUBRG signature row
 const WUBRGSignature: React.FC = () => {
-
   return (
     <Box
       sx={{
@@ -38,12 +29,12 @@ const WUBRGSignature: React.FC = () => {
         for the MTG community
       </Typography>
     </Box>
-  );
-};
+  )
+}
 
 export const Footer: React.FC = () => {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
 
   return (
     <Box
@@ -63,7 +54,7 @@ export const Footer: React.FC = () => {
             <WUBRGSignature />
 
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              © 2025 ManaTuner Pro. Open source under MIT License.
+              © 2025 ManaTuner. Open source under MIT License.
             </Typography>
 
             {/* Fan Content Policy attribution */}
@@ -77,7 +68,7 @@ export const Footer: React.FC = () => {
                 lineHeight: 1.4,
               }}
             >
-              ManaTuner Pro is unofficial Fan Content permitted under the{' '}
+              ManaTuner is unofficial Fan Content permitted under the{' '}
               <Link
                 href="https://company.wizards.com/en/legal/fancontentpolicy"
                 target="_blank"
@@ -87,12 +78,20 @@ export const Footer: React.FC = () => {
               >
                 Fan Content Policy
               </Link>
-              . Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.
+              . Not approved/endorsed by Wizards. Portions of the materials used are property of
+              Wizards of the Coast. ©Wizards of the Coast LLC.
             </Typography>
           </Grid>
 
           <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'flex-start', md: 'flex-end' }, flexWrap: 'wrap' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2,
+                justifyContent: { xs: 'flex-start', md: 'flex-end' },
+                flexWrap: 'wrap',
+              }}
+            >
               <Link
                 href="https://github.com/gbordes77/manatuner-pro"
                 target="_blank"

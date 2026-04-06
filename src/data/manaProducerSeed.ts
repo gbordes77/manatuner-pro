@@ -1,5 +1,5 @@
 /**
- * Mana Producer Seed Data for ManaTuner Pro
+ * Mana Producer Seed Data for ManaTuner
  *
  * This file contains commonly played mana-producing cards with their
  * metadata pre-defined. This serves as an initial cache to avoid
@@ -57,7 +57,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   'Elvish Mystic': {
@@ -71,7 +71,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   // ===========================================================================
@@ -89,11 +89,11 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.70, // High-value target
+    survivalBase: 0.7, // High-value target
     // ENHANCER-specific: adds +1G when any creature taps for mana
     enhancerBonus: 1,
     enhancerBonusMask: mask('G'),
-    enhancesTypes: ['DORK']
+    enhancesTypes: ['DORK'],
   },
 
   // 2-CMC Dorks
@@ -109,7 +109,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   'Elves of Deep Shadow': {
@@ -123,7 +123,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   'Arbor Elf': {
@@ -137,7 +137,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   'Boreal Druid': {
@@ -151,7 +151,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   // ===========================================================================
@@ -169,7 +169,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.80
+    survivalBase: 0.8,
   },
 
   'Noble Hierarch': {
@@ -183,7 +183,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W', 'U', 'G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.78
+    survivalBase: 0.78,
   },
 
   'Ignoble Hierarch': {
@@ -197,7 +197,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'R', 'G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.78
+    survivalBase: 0.78,
   },
 
   'Deathrite Shaman': {
@@ -211,7 +211,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.78
+    survivalBase: 0.78,
   },
 
   'Delighted Halfling': {
@@ -225,10 +225,10 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR_C,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.80
+    survivalBase: 0.8,
   },
 
-  'Avacyn\'s Pilgrim': {
+  "Avacyn's Pilgrim": {
     type: 'DORK',
     castCostGeneric: 0,
     castCostColors: { G: 1 },
@@ -239,7 +239,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   // ===========================================================================
@@ -257,7 +257,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.70
+    survivalBase: 0.7,
   },
 
   'Priest of Titania': {
@@ -271,7 +271,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.70
+    survivalBase: 0.7,
   },
 
   'Sylvan Caryatid': {
@@ -285,7 +285,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.95 // Hexproof
+    survivalBase: 0.95, // Hexproof
   },
 
   'Paradise Druid': {
@@ -299,7 +299,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.90 // Hexproof while untapped
+    survivalBase: 0.9, // Hexproof while untapped
   },
 
   'Incubation Druid': {
@@ -313,7 +313,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.70
+    survivalBase: 0.7,
   },
 
   'Wall of Roots': {
@@ -327,7 +327,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.85 // Defender, less targeted
+    survivalBase: 0.85, // Defender, less targeted
   },
 
   // ===========================================================================
@@ -345,7 +345,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.60
+    survivalBase: 0.6,
   },
 
   'Joraga Treespeaker': {
@@ -359,7 +359,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.75
+    survivalBase: 0.75,
   },
 
   // ===========================================================================
@@ -377,7 +377,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Chrome Mox': {
@@ -391,7 +391,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Mox Opal': {
@@ -405,7 +405,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Mox Amber': {
@@ -419,7 +419,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Mana Crypt': {
@@ -433,7 +433,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.99
+    survivalBase: 0.99,
   },
 
   'Jeweled Lotus': {
@@ -447,7 +447,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   // ===========================================================================
@@ -465,7 +465,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.99
+    survivalBase: 0.99,
   },
 
   'Mana Vault': {
@@ -479,7 +479,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false, // Doesn't untap normally, but reusable
-    survivalBase: 0.99
+    survivalBase: 0.99,
   },
 
   // ===========================================================================
@@ -497,7 +497,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Fellwar Stone': {
@@ -511,7 +511,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Mind Stone': {
@@ -525,7 +525,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Thought Vessel': {
@@ -539,7 +539,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Grim Monolith': {
@@ -553,7 +553,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.99
+    survivalBase: 0.99,
   },
 
   'Liquimetal Torque': {
@@ -567,7 +567,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Prismatic Lens': {
@@ -581,7 +581,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR_C,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   // ===========================================================================
@@ -599,7 +599,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W', 'U'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Dimir Signet': {
@@ -613,7 +613,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('U', 'B'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Rakdos Signet': {
@@ -627,7 +627,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'R'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Gruul Signet': {
@@ -641,7 +641,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R', 'G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Selesnya Signet': {
@@ -655,7 +655,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G', 'W'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Orzhov Signet': {
@@ -669,7 +669,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W', 'B'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Izzet Signet': {
@@ -683,7 +683,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('U', 'R'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Golgari Signet': {
@@ -697,7 +697,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Boros Signet': {
@@ -711,7 +711,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R', 'W'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Simic Signet': {
@@ -725,7 +725,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G', 'U'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   // ===========================================================================
@@ -743,7 +743,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W', 'U', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Dominance': {
@@ -757,7 +757,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('U', 'B', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Indulgence': {
@@ -771,7 +771,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'R', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Impulse': {
@@ -785,7 +785,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R', 'G', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Unity': {
@@ -799,7 +799,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G', 'W', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Hierarchy': {
@@ -813,7 +813,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('W', 'B', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Creativity': {
@@ -827,7 +827,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('U', 'R', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Resilience': {
@@ -841,7 +841,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B', 'G', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Conviction': {
@@ -855,7 +855,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R', 'W', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Talisman of Curiosity': {
@@ -869,7 +869,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G', 'U', 'C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   // ===========================================================================
@@ -887,7 +887,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Chromatic Lantern': {
@@ -901,10 +901,10 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
-  'Commander\'s Sphere': {
+  "Commander's Sphere": {
     type: 'ROCK',
     castCostGeneric: 3,
     castCostColors: {},
@@ -915,7 +915,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Worn Powerstone': {
@@ -929,7 +929,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   'Basalt Monolith': {
@@ -943,7 +943,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('C'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.98
+    survivalBase: 0.98,
   },
 
   // ===========================================================================
@@ -961,10 +961,10 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
-  'Lion\'s Eye Diamond': {
+  "Lion's Eye Diamond": {
     type: 'ONE_SHOT',
     castCostGeneric: 0,
     castCostColors: {},
@@ -975,7 +975,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Lotus Bloom': {
@@ -989,7 +989,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   // ===========================================================================
@@ -1007,7 +1007,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Cabal Ritual': {
@@ -1021,7 +1021,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('B'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Rite of Flame': {
@@ -1035,7 +1035,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Pyretic Ritual': {
@@ -1049,7 +1049,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Desperate Ritual': {
@@ -1063,7 +1063,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Seething Song': {
@@ -1077,7 +1077,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Simian Spirit Guide': {
@@ -1091,7 +1091,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('R'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   'Elvish Spirit Guide': {
@@ -1105,7 +1105,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: mask('G'),
     producesAny: false,
     oneShot: true,
-    survivalBase: 1.0
+    survivalBase: 1.0,
   },
 
   // ===========================================================================
@@ -1123,7 +1123,7 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true, // Treasures are one-shot
-    survivalBase: 0.70
+    survivalBase: 0.7,
   },
 
   'Smothering Tithe': {
@@ -1137,8 +1137,8 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     producesMask: ANY_COLOR,
     producesAny: true,
     oneShot: true,
-    survivalBase: 0.85
-  }
+    survivalBase: 0.85,
+  },
 }
 
 // =============================================================================
@@ -1154,8 +1154,8 @@ export const MANA_PRODUCER_SEED: Record<string, ManaProducerDef> = Object.fromEn
     name,
     {
       ...data,
-      name
-    } as ManaProducerDef
+      name,
+    } as ManaProducerDef,
   ])
 )
 

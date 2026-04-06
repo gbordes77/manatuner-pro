@@ -1,5 +1,5 @@
 /**
- * Land Cache Service for ManaTuner Pro
+ * Land Cache Service for ManaTuner
  *
  * Multi-level caching system for land metadata:
  * 1. Memory cache (Map) - instant access, session only

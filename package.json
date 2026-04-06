@@ -2,7 +2,7 @@
   "name": "manatuner-pro",
   "version": "2.1.0",
   "private": true,
-  "description": "ManaTuner Pro - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
+  "description": "ManaTuner - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -100,7 +100,7 @@
     "type": "git",
     "url": "https://github.com/gbordes77/manatuner-pro.git"
   },
-  "homepage": "https://manatuner-pro.vercel.app",
+  "homepage": "https://manatuner.app",
   "bugs": {
     "url": "https://github.com/gbordes77/manatuner-pro/issues"
   },

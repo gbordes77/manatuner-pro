@@ -1,27 +1,20 @@
-import {
-    Feedback as FeedbackIcon
-} from '@mui/icons-material';
-import {
-    Alert,
-    Box,
-    Chip,
-    Container,
-    Link,
-    Typography
-} from '@mui/material';
-import React from 'react';
+import { Feedback as FeedbackIcon } from '@mui/icons-material'
+import { Alert, Box, Chip, Container, Link, Typography } from '@mui/material'
+import React from 'react'
 
 export const BetaBanner: React.FC = () => {
   return (
-    <Box sx={{
-      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
-      borderBottom: '1px solid',
-      borderColor: (theme) => theme.palette.mode === 'dark' ? 'grey.700' : 'grey.300',
-      py: 0.25,
-      position: 'sticky',
-      top: 0,
-      zIndex: 1100
-    }}>
+    <Box
+      sx={{
+        bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100'),
+        borderBottom: '1px solid',
+        borderColor: (theme) => (theme.palette.mode === 'dark' ? 'grey.700' : 'grey.300'),
+        py: 0.25,
+        position: 'sticky',
+        top: 0,
+        zIndex: 1100,
+      }}
+    >
       <Container maxWidth="lg">
         <Alert
           severity="info"
@@ -35,14 +28,18 @@ export const BetaBanner: React.FC = () => {
             '& .MuiAlert-message': {
               py: 0,
               px: 0,
-              width: '100%'
-            }
+              width: '100%',
+            },
           }}
           icon={false}
         >
           <Box display="flex" alignItems="center" justifyContent="center" gap={1} flexWrap="wrap">
-            <Typography variant="body2" component="span" sx={{ fontWeight: 'medium', fontSize: '0.8rem' }}>
-              🚧 <strong>Beta Version</strong> - Help us improve ManaTuner Pro!
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{ fontWeight: 'medium', fontSize: '0.8rem' }}
+            >
+              🚧 <strong>Beta Version</strong> - Help us improve ManaTuner!
             </Typography>
             <Chip
               icon={<FeedbackIcon />}
@@ -61,17 +58,17 @@ export const BetaBanner: React.FC = () => {
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 '& .MuiChip-icon': {
-                  fontSize: '0.85rem'
+                  fontSize: '0.85rem',
                 },
                 '&:hover': {
                   bgcolor: 'primary.main',
-                  color: 'white'
-                }
+                  color: 'white',
+                },
               }}
             />
           </Box>
         </Alert>
       </Container>
     </Box>
-  );
-};
+  )
+}

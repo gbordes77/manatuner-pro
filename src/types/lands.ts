@@ -1,5 +1,5 @@
 /**
- * Land System Types for ManaTuner Pro
+ * Land System Types for ManaTuner
  *
  * This module defines all types related to land detection, ETB behavior,
  * and tempo-aware probability calculations.

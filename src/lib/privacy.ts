@@ -187,10 +187,10 @@ export const getMyAnalysesAsync = () => PrivacyStorage.getMyAnalysesAsync()
 export const exportAnalyses = () => PrivacyStorage.exportAnalyses()
 export const exportAnalysesAsync = () => PrivacyStorage.exportAnalysesAsync()
 export const clearAllLocalData = () => PrivacyStorage.clearAllLocalData()
-export const saveAnalysisLocal = (analysis: Partial<AnalysisRecord>) =>
-  PrivacyStorage.saveAnalysis(analysis as any)
-export const saveAnalysisLocalAsync = (analysis: Partial<AnalysisRecord>) =>
-  PrivacyStorage.saveAnalysisAsync(analysis as any)
+export const saveAnalysisLocal = (analysis: Omit<AnalysisRecord, 'id' | 'timestamp'>) =>
+  PrivacyStorage.saveAnalysis(analysis)
+export const saveAnalysisLocalAsync = (analysis: Omit<AnalysisRecord, 'id' | 'timestamp'>) =>
+  PrivacyStorage.saveAnalysisAsync(analysis)
 export const deleteLocalAnalysis = (id: string) => PrivacyStorage.deleteAnalysis(id)
 export const deleteLocalAnalysisAsync = (id: string) => PrivacyStorage.deleteAnalysisAsync(id)
 

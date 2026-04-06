@@ -1,5 +1,5 @@
 /**
- * Land Seed Data for ManaTuner Pro
+ * Land Seed Data for ManaTuner
  *
  * This file contains ~200 of the most commonly played lands with their
  * metadata pre-defined. This serves as an initial cache to avoid
@@ -48,7 +48,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
   // BASIC LANDS (6)
   // ===========================================================================
 
-  'Plains': {
+  Plains: {
     category: 'basic',
     produces: ['W'],
     producesAny: false,
@@ -56,10 +56,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains']
+    basicLandTypes: ['Plains'],
   },
 
-  'Island': {
+  Island: {
     category: 'basic',
     produces: ['U'],
     producesAny: false,
@@ -67,10 +67,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island']
+    basicLandTypes: ['Island'],
   },
 
-  'Swamp': {
+  Swamp: {
     category: 'basic',
     produces: ['B'],
     producesAny: false,
@@ -78,10 +78,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp']
+    basicLandTypes: ['Swamp'],
   },
 
-  'Mountain': {
+  Mountain: {
     category: 'basic',
     produces: ['R'],
     producesAny: false,
@@ -89,10 +89,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain']
+    basicLandTypes: ['Mountain'],
   },
 
-  'Forest': {
+  Forest: {
     category: 'basic',
     produces: ['G'],
     producesAny: false,
@@ -100,17 +100,17 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest']
+    basicLandTypes: ['Forest'],
   },
 
-  'Wastes': {
+  Wastes: {
     category: 'basic',
     produces: ['C'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Snow basics
@@ -122,7 +122,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains']
+    basicLandTypes: ['Plains'],
   },
 
   'Snow-Covered Island': {
@@ -133,7 +133,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island']
+    basicLandTypes: ['Island'],
   },
 
   'Snow-Covered Swamp': {
@@ -144,7 +144,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp']
+    basicLandTypes: ['Swamp'],
   },
 
   'Snow-Covered Mountain': {
@@ -155,7 +155,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain']
+    basicLandTypes: ['Mountain'],
   },
 
   'Snow-Covered Forest': {
@@ -166,7 +166,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest']
+    basicLandTypes: ['Forest'],
   },
 
   // ===========================================================================
@@ -181,7 +181,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Island'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Polluted Delta': {
@@ -192,7 +192,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Island', 'Swamp'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Bloodstained Mire': {
@@ -203,7 +203,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Swamp', 'Mountain'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Wooded Foothills': {
@@ -214,7 +214,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Mountain', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Windswept Heath': {
@@ -225,7 +225,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Forest', 'Plains'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Marsh Flats': {
@@ -236,7 +236,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Swamp'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Scalding Tarn': {
@@ -247,7 +247,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Island', 'Mountain'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Verdant Catacombs': {
@@ -258,7 +258,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Swamp', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Arid Mesa': {
@@ -269,7 +269,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Mountain', 'Plains'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Misty Rainforest': {
@@ -280,7 +280,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Forest', 'Island'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Budget fetchlands
@@ -292,7 +292,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Prismatic Vista': {
@@ -303,7 +303,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Terramorphic Expanse': {
@@ -314,7 +314,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Evolving Wilds': {
@@ -325,7 +325,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: true,
     fetchTargets: ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'],
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -338,12 +338,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Island']
+    basicLandTypes: ['Plains', 'Island'],
   },
 
   'Watery Grave': {
@@ -352,12 +352,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Swamp']
+    basicLandTypes: ['Island', 'Swamp'],
   },
 
   'Blood Crypt': {
@@ -366,12 +366,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Mountain']
+    basicLandTypes: ['Swamp', 'Mountain'],
   },
 
   'Stomping Ground': {
@@ -380,12 +380,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Forest']
+    basicLandTypes: ['Mountain', 'Forest'],
   },
 
   'Temple Garden': {
@@ -394,12 +394,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Plains']
+    basicLandTypes: ['Forest', 'Plains'],
   },
 
   'Godless Shrine': {
@@ -408,12 +408,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Swamp']
+    basicLandTypes: ['Plains', 'Swamp'],
   },
 
   'Steam Vents': {
@@ -422,12 +422,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Mountain']
+    basicLandTypes: ['Island', 'Mountain'],
   },
 
   'Overgrown Tomb': {
@@ -436,12 +436,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Forest']
+    basicLandTypes: ['Swamp', 'Forest'],
   },
 
   'Sacred Foundry': {
@@ -450,12 +450,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Plains']
+    basicLandTypes: ['Mountain', 'Plains'],
   },
 
   'Breeding Pool': {
@@ -464,12 +464,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'pay_life', amount: 2 }
+      condition: { type: 'pay_life', amount: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Island']
+    basicLandTypes: ['Forest', 'Island'],
   },
 
   // ===========================================================================
@@ -482,11 +482,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Darkslick Shores': {
@@ -495,11 +495,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Blackcleave Cliffs': {
@@ -508,11 +508,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Copperline Gorge': {
@@ -521,11 +521,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Razorverge Thicket': {
@@ -534,11 +534,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Concealed Courtyard': {
@@ -547,11 +547,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Spirebluff Canal': {
@@ -560,11 +560,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Blooming Marsh': {
@@ -573,11 +573,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Inspiring Vantage': {
@@ -586,11 +586,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Botanical Sanctum': {
@@ -599,11 +599,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_max', threshold: 2 }
+      condition: { type: 'control_lands_max', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -616,11 +616,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Plains', 'Island'] }
+      condition: { type: 'control_basic', basicTypes: ['Plains', 'Island'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Drowned Catacomb': {
@@ -629,11 +629,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] }
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Dragonskull Summit': {
@@ -642,11 +642,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] }
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Rootbound Crag': {
@@ -655,11 +655,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] }
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sunpetal Grove': {
@@ -668,11 +668,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] }
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Isolated Chapel': {
@@ -681,11 +681,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Plains', 'Swamp'] }
+      condition: { type: 'control_basic', basicTypes: ['Plains', 'Swamp'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sulfur Falls': {
@@ -694,11 +694,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Island', 'Mountain'] }
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Mountain'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Woodland Cemetery': {
@@ -707,11 +707,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Forest'] }
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Forest'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Clifftop Retreat': {
@@ -720,11 +720,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Plains'] }
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Plains'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Hinterland Harbor': {
@@ -733,11 +733,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Forest', 'Island'] }
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Island'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -751,7 +751,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Underground River': {
@@ -761,7 +761,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sulfurous Springs': {
@@ -771,7 +771,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Karplusan Forest': {
@@ -781,17 +781,17 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
-  'Brushland': {
+  Brushland: {
     category: 'pain',
     produces: ['G', 'W'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Caves of Koilos': {
@@ -801,7 +801,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Shivan Reef': {
@@ -811,7 +811,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Llanowar Wastes': {
@@ -821,7 +821,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Battlefield Forge': {
@@ -831,7 +831,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Yavimaya Coast': {
@@ -841,7 +841,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -854,11 +854,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Shipwreck Marsh': {
@@ -867,11 +867,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Haunted Ridge': {
@@ -880,11 +880,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Rockfall Vale': {
@@ -893,11 +893,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Overgrown Farmland': {
@@ -906,11 +906,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Shattered Sanctum': {
@@ -919,11 +919,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Stormcarved Coast': {
@@ -932,11 +932,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Deathcap Glade': {
@@ -945,11 +945,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sundown Pass': {
@@ -958,11 +958,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Dreamroot Cascade': {
@@ -971,11 +971,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 2 }
+      condition: { type: 'control_lands_min', threshold: 2 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -991,7 +991,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Island', 'Swamp']
+    basicLandTypes: ['Plains', 'Island', 'Swamp'],
   },
 
   "Spara's Headquarters": {
@@ -1002,7 +1002,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Plains', 'Island']
+    basicLandTypes: ['Forest', 'Plains', 'Island'],
   },
 
   "Xander's Lounge": {
@@ -1013,7 +1013,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Swamp', 'Mountain']
+    basicLandTypes: ['Island', 'Swamp', 'Mountain'],
   },
 
   "Ziatora's Proving Ground": {
@@ -1024,7 +1024,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Mountain', 'Forest']
+    basicLandTypes: ['Swamp', 'Mountain', 'Forest'],
   },
 
   "Jetmir's Garden": {
@@ -1035,7 +1035,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Forest', 'Plains']
+    basicLandTypes: ['Mountain', 'Forest', 'Plains'],
   },
 
   // Ikoria Triomes
@@ -1047,7 +1047,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Swamp', 'Forest']
+    basicLandTypes: ['Plains', 'Swamp', 'Forest'],
   },
 
   'Ketria Triome': {
@@ -1058,7 +1058,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Island', 'Mountain']
+    basicLandTypes: ['Forest', 'Island', 'Mountain'],
   },
 
   'Raugrin Triome': {
@@ -1069,7 +1069,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Mountain', 'Plains']
+    basicLandTypes: ['Island', 'Mountain', 'Plains'],
   },
 
   'Savai Triome': {
@@ -1080,7 +1080,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Plains', 'Swamp']
+    basicLandTypes: ['Mountain', 'Plains', 'Swamp'],
   },
 
   'Zagoth Triome': {
@@ -1091,7 +1091,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Forest', 'Island']
+    basicLandTypes: ['Swamp', 'Forest', 'Island'],
   },
 
   // ===========================================================================
@@ -1107,7 +1107,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Grimclimb Pathway'
+    otherFace: 'Grimclimb Pathway',
   },
 
   'Grimclimb Pathway': {
@@ -1119,7 +1119,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Brightclimb Pathway'
+    otherFace: 'Brightclimb Pathway',
   },
 
   'Clearwater Pathway': {
@@ -1131,7 +1131,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Murkwater Pathway'
+    otherFace: 'Murkwater Pathway',
   },
 
   'Murkwater Pathway': {
@@ -1143,7 +1143,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Clearwater Pathway'
+    otherFace: 'Clearwater Pathway',
   },
 
   'Cragcrown Pathway': {
@@ -1155,7 +1155,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Timbercrown Pathway'
+    otherFace: 'Timbercrown Pathway',
   },
 
   'Timbercrown Pathway': {
@@ -1167,7 +1167,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Cragcrown Pathway'
+    otherFace: 'Cragcrown Pathway',
   },
 
   'Branchloft Pathway': {
@@ -1179,7 +1179,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Boulderloft Pathway'
+    otherFace: 'Boulderloft Pathway',
   },
 
   'Boulderloft Pathway': {
@@ -1191,7 +1191,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Branchloft Pathway'
+    otherFace: 'Branchloft Pathway',
   },
 
   'Riverglide Pathway': {
@@ -1203,7 +1203,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Lavaglide Pathway'
+    otherFace: 'Lavaglide Pathway',
   },
 
   'Lavaglide Pathway': {
@@ -1215,7 +1215,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Riverglide Pathway'
+    otherFace: 'Riverglide Pathway',
   },
 
   'Needleverge Pathway': {
@@ -1227,7 +1227,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Pillarverge Pathway'
+    otherFace: 'Pillarverge Pathway',
   },
 
   'Pillarverge Pathway': {
@@ -1239,7 +1239,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Needleverge Pathway'
+    otherFace: 'Needleverge Pathway',
   },
 
   'Darkbore Pathway': {
@@ -1251,7 +1251,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Slitherbore Pathway'
+    otherFace: 'Slitherbore Pathway',
   },
 
   'Slitherbore Pathway': {
@@ -1263,7 +1263,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Darkbore Pathway'
+    otherFace: 'Darkbore Pathway',
   },
 
   'Blightstep Pathway': {
@@ -1275,7 +1275,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Searstep Pathway'
+    otherFace: 'Searstep Pathway',
   },
 
   'Searstep Pathway': {
@@ -1287,7 +1287,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Blightstep Pathway'
+    otherFace: 'Blightstep Pathway',
   },
 
   'Barkchannel Pathway': {
@@ -1299,7 +1299,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Tidechannel Pathway'
+    otherFace: 'Tidechannel Pathway',
   },
 
   'Tidechannel Pathway': {
@@ -1311,7 +1311,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Barkchannel Pathway'
+    otherFace: 'Barkchannel Pathway',
   },
 
   'Hengegate Pathway': {
@@ -1323,7 +1323,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Mistgate Pathway'
+    otherFace: 'Mistgate Pathway',
   },
 
   'Mistgate Pathway': {
@@ -1335,7 +1335,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isCreatureLand: false,
     hasChannel: false,
     isMDFC: true,
-    otherFace: 'Hengegate Pathway'
+    otherFace: 'Hengegate Pathway',
   },
 
   // ===========================================================================
@@ -1349,7 +1349,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Creeping Tar Pit': {
@@ -1359,7 +1359,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Lavaclaw Reaches': {
@@ -1369,7 +1369,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Raging Ravine': {
@@ -1379,7 +1379,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Stirring Wildwood': {
@@ -1389,7 +1389,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Shambling Vent': {
@@ -1399,7 +1399,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Wandering Fumarole': {
@@ -1409,7 +1409,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Hissing Quagmire': {
@@ -1419,7 +1419,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Needle Spires': {
@@ -1429,7 +1429,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Lumbering Falls': {
@@ -1439,18 +1439,18 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Mono-color creature lands
-  'Mutavault': {
+  Mutavault: {
     category: 'creature',
     produces: ['C'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Faceless Haven': {
@@ -1460,7 +1460,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: true,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -1474,7 +1474,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Silent Clearing': {
@@ -1484,7 +1484,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Fiery Islet': {
@@ -1494,7 +1494,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Nurturing Peatland': {
@@ -1504,7 +1504,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sunbaked Canyon': {
@@ -1514,7 +1514,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Waterlogged Grove': {
@@ -1524,7 +1524,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -1538,7 +1538,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: true
+    hasChannel: true,
   },
 
   'Otawara, Soaring City': {
@@ -1548,7 +1548,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: true
+    hasChannel: true,
   },
 
   'Takenuma, Abandoned Mire': {
@@ -1558,7 +1558,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: true
+    hasChannel: true,
   },
 
   'Sokenzan, Crucible of Defiance': {
@@ -1568,7 +1568,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: true
+    hasChannel: true,
   },
 
   'Boseiju, Who Endures': {
@@ -1578,7 +1578,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: true
+    hasChannel: true,
   },
 
   // ===========================================================================
@@ -1593,7 +1593,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'City of Brass': {
@@ -1603,7 +1603,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Mana Confluence': {
@@ -1613,7 +1613,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Reflecting Pool': {
@@ -1623,7 +1623,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Gemstone Caverns': {
@@ -1633,7 +1633,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Exotic Orchard': {
@@ -1643,7 +1643,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Colorless utility
@@ -1655,7 +1655,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Cavern of Souls': {
@@ -1665,7 +1665,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Field of the Dead': {
@@ -1675,17 +1675,17 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
-  'Urza\'s Saga': {
+  "Urza's Saga": {
     category: 'utility',
     produces: ['C'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'The One Ring': {
@@ -1695,7 +1695,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Blast Zone': {
@@ -1705,7 +1705,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Detection Tower': {
@@ -1715,7 +1715,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Ghost Quarter': {
@@ -1725,7 +1725,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Field of Ruin': {
@@ -1735,17 +1735,17 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
-  'Inventors\' Fair': {
+  "Inventors' Fair": {
     category: 'utility',
     produces: ['C'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Maze of Ith': {
@@ -1755,7 +1755,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Phyrexian Tower': {
@@ -1765,7 +1765,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Reliquary Tower': {
@@ -1775,7 +1775,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Strip Mine': {
@@ -1785,17 +1785,17 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
-  'Wasteland': {
+  Wasteland: {
     category: 'utility',
     produces: ['C'],
     producesAny: false,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Tectonic Edge': {
@@ -1805,7 +1805,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Castle Ardenvale': {
@@ -1814,11 +1814,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Plains'] }
+      condition: { type: 'control_basic', basicTypes: ['Plains'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Castle Vantress': {
@@ -1827,11 +1827,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Island'] }
+      condition: { type: 'control_basic', basicTypes: ['Island'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Castle Locthwain': {
@@ -1840,11 +1840,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Swamp'] }
+      condition: { type: 'control_basic', basicTypes: ['Swamp'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Castle Embereth': {
@@ -1853,11 +1853,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Mountain'] }
+      condition: { type: 'control_basic', basicTypes: ['Mountain'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Castle Garenbrig': {
@@ -1866,11 +1866,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Forest'] }
+      condition: { type: 'control_basic', basicTypes: ['Forest'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Lair lands (Planescape)
@@ -1881,7 +1881,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Secluded Courtyard': {
@@ -1891,7 +1891,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Unclaimed Territory': {
@@ -1901,7 +1901,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Starting Town (special - conditional based on turn)
@@ -1911,11 +1911,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: true,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'turn_threshold', threshold: 3 }
+      condition: { type: 'turn_threshold', threshold: 3 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Thran Portal
@@ -1926,7 +1926,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -1941,11 +1941,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAmount: 2,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_lands_min', threshold: 5 }
+      condition: { type: 'control_lands_min', threshold: 5 },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Nykthos - produces X based on devotion (estimated at 3 average)
@@ -1957,7 +1957,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Gaea's Cradle - produces X green based on creatures (estimated at 3)
@@ -1969,7 +1969,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Serra's Sanctum - produces X white based on enchantments
@@ -1981,7 +1981,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Tolarian Academy - produces X blue based on artifacts
@@ -1993,7 +1993,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Cabal Coffers - produces X black based on swamps (needs Urborg usually)
@@ -2005,7 +2005,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Itlimoc, Cradle of the Sun (flipped Growing Rites)
@@ -2017,7 +2017,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Lotus Field - 3 mana but sacrifices 2 lands on ETB
@@ -2029,7 +2029,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // Castle Garenbrig can produce 6 green for creatures
@@ -2044,7 +2044,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -2059,7 +2059,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Dimir Aqueduct': {
@@ -2070,7 +2070,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Rakdos Carnarium': {
@@ -2081,7 +2081,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Gruul Turf': {
@@ -2092,7 +2092,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Selesnya Sanctuary': {
@@ -2103,7 +2103,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Orzhov Basilica': {
@@ -2114,7 +2114,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Izzet Boilerworks': {
@@ -2125,7 +2125,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Golgari Rot Farm': {
@@ -2136,7 +2136,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Boros Garrison': {
@@ -2147,7 +2147,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Simic Growth Chamber': {
@@ -2158,7 +2158,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -2172,7 +2172,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Sunken Ruins': {
@@ -2182,7 +2182,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Graven Cairns': {
@@ -2192,7 +2192,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Fire-Lit Thicket': {
@@ -2202,7 +2202,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Wooded Bastion': {
@@ -2212,7 +2212,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Fetid Heath': {
@@ -2222,7 +2222,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Cascade Bluffs': {
@@ -2232,7 +2232,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Twilight Mire': {
@@ -2242,7 +2242,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Rugged Prairie': {
@@ -2252,7 +2252,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Flooded Grove': {
@@ -2262,7 +2262,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
@@ -2275,11 +2275,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] }
+      condition: { type: 'control_basic', basicTypes: ['Island', 'Swamp'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Blazemire Verge': {
@@ -2288,11 +2288,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] }
+      condition: { type: 'control_basic', basicTypes: ['Swamp', 'Mountain'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Thornspire Verge': {
@@ -2301,11 +2301,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] }
+      condition: { type: 'control_basic', basicTypes: ['Mountain', 'Forest'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Riftstone Verge': {
@@ -2314,11 +2314,11 @@ const SEED_DATA: Record<string, SeedLandData> = {
     producesAny: false,
     etbBehavior: {
       type: 'conditional',
-      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] }
+      condition: { type: 'control_basic', basicTypes: ['Forest', 'Plains'] },
     },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Shadowy Backstreet': {
@@ -2328,7 +2328,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Undercity Sewers': {
@@ -2338,7 +2338,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Raucous Theater': {
@@ -2348,7 +2348,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Commercial District': {
@@ -2358,7 +2358,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Lush Portico': {
@@ -2368,7 +2368,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   'Meticulous Archive': {
@@ -2378,14 +2378,14 @@ const SEED_DATA: Record<string, SeedLandData> = {
     etbBehavior: { type: 'always_tapped' },
     isFetch: false,
     isCreatureLand: false,
-    hasChannel: false
+    hasChannel: false,
   },
 
   // ===========================================================================
   // ORIGINAL DUAL LANDS (10) - Reserved List
   // ===========================================================================
 
-  'Tundra': {
+  Tundra: {
     category: 'dual',
     produces: ['W', 'U'],
     producesAny: false,
@@ -2393,7 +2393,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Island']
+    basicLandTypes: ['Plains', 'Island'],
   },
 
   'Underground Sea': {
@@ -2404,10 +2404,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Swamp']
+    basicLandTypes: ['Island', 'Swamp'],
   },
 
-  'Badlands': {
+  Badlands: {
     category: 'dual',
     produces: ['B', 'R'],
     producesAny: false,
@@ -2415,10 +2415,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Mountain']
+    basicLandTypes: ['Swamp', 'Mountain'],
   },
 
-  'Taiga': {
+  Taiga: {
     category: 'dual',
     produces: ['R', 'G'],
     producesAny: false,
@@ -2426,10 +2426,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Forest']
+    basicLandTypes: ['Mountain', 'Forest'],
   },
 
-  'Savannah': {
+  Savannah: {
     category: 'dual',
     produces: ['G', 'W'],
     producesAny: false,
@@ -2437,10 +2437,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Plains']
+    basicLandTypes: ['Forest', 'Plains'],
   },
 
-  'Scrubland': {
+  Scrubland: {
     category: 'dual',
     produces: ['W', 'B'],
     producesAny: false,
@@ -2448,7 +2448,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Plains', 'Swamp']
+    basicLandTypes: ['Plains', 'Swamp'],
   },
 
   'Volcanic Island': {
@@ -2459,10 +2459,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Island', 'Mountain']
+    basicLandTypes: ['Island', 'Mountain'],
   },
 
-  'Bayou': {
+  Bayou: {
     category: 'dual',
     produces: ['B', 'G'],
     producesAny: false,
@@ -2470,10 +2470,10 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Swamp', 'Forest']
+    basicLandTypes: ['Swamp', 'Forest'],
   },
 
-  'Plateau': {
+  Plateau: {
     category: 'dual',
     produces: ['R', 'W'],
     producesAny: false,
@@ -2481,7 +2481,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Mountain', 'Plains']
+    basicLandTypes: ['Mountain', 'Plains'],
   },
 
   'Tropical Island': {
@@ -2492,8 +2492,8 @@ const SEED_DATA: Record<string, SeedLandData> = {
     isFetch: false,
     isCreatureLand: false,
     hasChannel: false,
-    basicLandTypes: ['Forest', 'Island']
-  }
+    basicLandTypes: ['Forest', 'Island'],
+  },
 }
 
 // =============================================================================
@@ -2510,8 +2510,8 @@ export const LAND_SEED: Record<string, LandMetadata> = Object.fromEntries(
     {
       ...data,
       name,
-      confidence: 100
-    } as LandMetadata
+      confidence: 100,
+    } as LandMetadata,
   ])
 )
 

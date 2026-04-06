@@ -102,7 +102,7 @@ const ErrorFallback = ({ error: _error }: { error: Error }) => (
       alignItems: 'center',
     }}
   >
-    <h1>🎯 ManaTuner Pro</h1>
+    <h1>🎯 ManaTuner</h1>
     <p>Something went wrong loading the application.</p>
     <button
       onClick={() => window.location.reload()}

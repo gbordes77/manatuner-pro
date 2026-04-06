@@ -346,7 +346,7 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
                   fontSize: '1rem',
                 }}
               >
-                ManaTuner Pro
+                ManaTuner
               </Typography>
             </Box>
           </Box>
@@ -1025,7 +1025,7 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
               fontSize: '0.7rem',
             }}
           >
-            Generated {new Date().toLocaleDateString()} • manatuner-pro.vercel.app
+            Generated {new Date().toLocaleDateString()} • manatuner.app
           </Typography>
 
           <Typography

@@ -1,4 +1,4 @@
-// Advanced Mathematical Engine for ManaTuner Pro
+// Advanced Mathematical Engine for ManaTuner
 // Based on Frank Karsten's research and hypergeometric distribution theory
 
 import {

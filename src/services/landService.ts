@@ -1,5 +1,5 @@
 /**
- * Land Service for ManaTuner Pro
+ * Land Service for ManaTuner
  *
  * Unified service for land detection, ETB analysis, and tempo-aware calculations.
  * Orchestrates cache, Scryfall API, and pattern detection.
