@@ -184,9 +184,20 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
                 </Typography>
               </Grid>
               <Grid item md={6}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Probabilities
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Probabilities
+                  </Typography>
+                  <Tooltip
+                    title="These are single-draw probabilities: your chance of casting each spell if you keep your current hand. Karsten's recommendations target 90% including mulligans, which is why your probabilities here may appear lower. See the Mulligan tab for mulligan-adjusted analysis."
+                    arrow
+                    placement="top"
+                  >
+                    <IconButton size="small" sx={{ p: 0 }}>
+                      <HelpOutlineIcon sx={{ fontSize: 16, opacity: 0.5 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
               </Grid>
             </Grid>
 
@@ -238,7 +249,7 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
               <strong>Realistic</strong>
               <Tooltip
-                title="Realistic probability that accounts for mana screw (not drawing enough lands). This is the number you should trust for deckbuilding decisions."
+                title="Realistic probability accounting for mana screw (not drawing enough lands). This is a single-draw probability — your chance with one hand. Karsten's 90% target includes the option to mulligan, so values here will be lower than 90% even with the recommended number of sources."
                 arrow
               >
                 <IconButton size="small" sx={{ p: 0, mx: 0.5 }}>

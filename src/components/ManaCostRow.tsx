@@ -301,7 +301,8 @@ const useProbabilityCalculation = (
   cardName: string,
   deckSources?: Record<string, number>,
   totalLands?: number,
-  totalCards?: number
+  totalCards?: number,
+  playDraw: 'PLAY' | 'DRAW' = 'PLAY'
 ) => {
   return useMemo(() => {
     if (!cardData?.mana_cost && !cardData?.card_faces && !cardName) {
@@ -384,7 +385,9 @@ const useProbabilityCalculation = (
       }
 
       const turn = Math.max(1, Math.min(effectiveCmc, 10))
-      const cardsSeen = 7 + (turn - 1)
+      // On the play: no draw on T1, so seen = 7 + (turn - 1)
+      // On the draw: draw on T1, so seen = 7 + turn
+      const cardsSeen = playDraw === 'PLAY' ? 7 + (turn - 1) : 7 + turn
 
       // P1: "Perfect scenario" = assuming we have exactly `turn` lands in hand
       // What's the probability those lands have the right colors?
@@ -437,7 +440,7 @@ const useProbabilityCalculation = (
       console.error('Error calculating probabilities:', error)
       return { p1: 85, p2: 75, hasX: false, xInfo: null }
     }
-  }, [cardData, cardName, deckSources, totalLands, totalCards])
+  }, [cardData, cardName, deckSources, totalLands, totalCards, playDraw])
 }
 
 // Helper function for simulated mana costs
@@ -637,7 +640,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
       cardName,
       deckSources,
       totalLands,
-      totalCards
+      totalCards,
+      accelContext?.playDraw ?? 'PLAY'
     )
 
     // Calculate accelerated castability if enabled

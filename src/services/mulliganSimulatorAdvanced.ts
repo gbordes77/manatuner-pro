@@ -986,8 +986,10 @@ export function analyzeWithArchetype(
   // Archetype-specific advice
   recommendations.push(...config.priorities.slice(0, 2))
 
-  const mulliganValue = ev6 - ev7 + (ev7 - ev6)
-  if (mulliganValue > 5) {
+  // Bellman gain: how much the option to mulligan improves EV over raw 7-card average
+  const rawEv7 = results[7].scores.reduce((a, b) => a + b, 0) / iterations
+  const mulliganValue = ev7 - rawEv7
+  if (mulliganValue > 2) {
     recommendations.push(
       `📊 Mulliganing bad 7s to 6 gains ~${Math.round(mulliganValue)} points on average`
     )

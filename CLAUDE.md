@@ -90,3 +90,32 @@ self.addEventListener('activate', async () => {
 - Headers `no-cache, no-store` sur `/sw.js`
 
 **Résultat**: Les navigateurs téléchargent le nouveau SW killer qui nettoie tout et se désinstalle, garantissant que les utilisateurs voient toujours la dernière version.
+
+### Mathematical Code Architecture (Audit 2026-04-06)
+
+**Audit report**: `docs/MATH_AUDIT_REPORT.md`
+
+**4 hypergeometric implementations** — Know they exist before modifying math code:
+
+1. `src/services/castability/hypergeom.ts` — Log-space, main engine (Castability tab)
+2. `src/services/advancedMaths.ts` — Iterative with cache (Karsten/MC engine)
+3. `src/services/manaCalculator.ts` — Iterative with memoization (legacy calculator)
+4. `src/components/ManaCostRow.tsx` — Inline in `useProbabilityCalculation` (per-spell display)
+
+**3 copies of Karsten tables** — Keep in sync if modifying:
+
+1. `src/types/maths.ts:131` — Canonical (symbols x turn → sources needed)
+2. `src/services/manaCalculator.ts:17` — Subset (T1-T6 only)
+3. `src/utils/manabase.ts:14` — Alternate format (turn → single/double/triple)
+
+**Play/Draw propagation chain** — Must flow end-to-end:
+
+```
+AccelerationSettings → AccelerationContext → CastabilityTab → ManaCostRow
+  → useProbabilityCalculation(playDraw)   // base probabilities
+  → useAcceleratedCastability(accelCtx)    // ramp probabilities
+```
+
+**Bellman equation** is in `mulliganSimulatorAdvanced.ts:922-941`. The thresholds (keep7/6/5) are derived from backward induction EVs. Do not modify without understanding the recursive structure.
+
+**Fisher-Yates shuffle** — Every shuffle in the codebase MUST use the backward Fisher-Yates pattern. Never use `.sort(() => Math.random() - 0.5)` — it produces biased distributions.

@@ -357,7 +357,11 @@ export class ManaCalculator {
 
   // Distribution hypergeométrique
   hypergeometric(N: number, K: number, n: number, k: number): number {
-    return (this.binomial(K, k) * this.binomial(N - K, n - k)) / this.binomial(N, n)
+    if (N <= 0 || K < 0 || n < 0 || k < 0) return 0
+    if (K > N || n > N) return 0
+    const denom = this.binomial(N, n)
+    if (denom === 0) return 0
+    return (this.binomial(K, k) * this.binomial(N - K, n - k)) / denom
   }
 
   // Probabilité cumulative (au moins k succès)
@@ -378,13 +382,13 @@ export class ManaCalculator {
     sourcesInDeck: number,
     turn: number,
     symbolsNeeded: number,
-    _onThePlay: boolean = true,
+    onThePlay: boolean = true,
     handSize: number = 7 // Support pour mulligans
   ): ProbabilityResult {
-    // CORRECTION CRITIQUE: Frank Karsten utilise toujours handSize + turn - 1
-    // Cartes vues = main de départ + pioche (handSize + tours - 1)
-    // Le -1 car on ne pioche pas au tour 1 (standard pour tous les calculs)
-    const cardsSeen = handSize + turn - 1
+    // Cards seen by turn T:
+    // On the play: no draw on T1, so seen = handSize + (turn - 1)
+    // On the draw: draw on T1, so seen = handSize + turn
+    const cardsSeen = onThePlay ? handSize + turn - 1 : handSize + turn
 
     // Calcul de la probabilité
     const probability = this.cumulativeHypergeometric(

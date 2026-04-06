@@ -130,32 +130,24 @@ export const HomePage: React.FC = () => {
   // Les fondations mathématiques avec mana colors
   const mathFoundations = [
     {
-      title: 'Karsten Tables',
-      desc: 'Pro-level mana source rules',
-      formula: '90%',
-      manaColor: 'g' as const,
-      color: isDark ? 'rgba(0, 115, 62, 0.15)' : '#e8f5e9',
-      borderColor: theme.palette.mana.green,
-    },
-    {
-      title: 'Exact Math',
-      desc: 'Hypergeometric distribution',
+      title: 'Exact Probabilities',
+      desc: 'Real cast odds for every spell, every turn',
       formula: 'P(X≥k)',
       manaColor: 'u' as const,
       color: isDark ? 'rgba(14, 104, 171, 0.15)' : '#e3f2fd',
       borderColor: theme.palette.mana.blue,
     },
     {
-      title: 'Monte Carlo',
-      desc: '10,000 hands simulated',
-      formula: 'n=10k',
-      manaColor: 'b' as const,
-      color: isDark ? 'rgba(90, 60, 90, 0.2)' : '#f3e5f5',
-      borderColor: '#9c27b0',
+      title: 'Karsten Standards',
+      desc: 'How many color sources do you need to cast your spells on curve?',
+      formula: '90%',
+      manaColor: 'g' as const,
+      color: isDark ? 'rgba(0, 115, 62, 0.15)' : '#e8f5e9',
+      borderColor: theme.palette.mana.green,
     },
     {
-      title: 'Smart Mulligan',
-      desc: 'Optimal keep/mull math',
+      title: 'Mulligan Optimizer',
+      desc: '10,000 hands simulated to find your optimal keep/mull thresholds',
       formula: 'E[V₇]',
       manaColor: 'r' as const,
       color: isDark ? 'rgba(211, 32, 42, 0.15)' : '#fff3e0',
@@ -430,10 +422,10 @@ export const HomePage: React.FC = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} justifyContent="center" alignItems="stretch">
           {mathFoundations.map((foundation, index) => (
-            <Grid item xs={6} md={3} key={index}>
-              <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
+            <Grid item xs={6} md={4} key={index} sx={{ display: 'flex' }}>
+              <AnimatedContainer animation="fadeInUp" delay={index * 0.1} sx={{ width: '100%' }}>
                 <Paper
                   elevation={0}
                   sx={{

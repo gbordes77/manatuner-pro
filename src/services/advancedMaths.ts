@@ -278,7 +278,7 @@ export class AdvancedMathEngine {
     const deck = this.createSimulationDeck(deckSize, landCount)
     let drawIndex = 0
 
-    // Simulate mulligans (re-shuffle between mulligans for realism)
+    // Simulate mulligans (London: re-shuffle for each attempt)
     let handSize = 7
     let mulligans = 0
     let hand = deck.slice(0, handSize)
@@ -290,7 +290,11 @@ export class AdvancedMathEngine {
 
       mulligans++
       handSize = 7 - mulligans
-      hand = deck.slice(0, handSize)
+      // Re-shuffle deck for fair mulligan (London Mulligan rules)
+      const reshuffled = this.shuffleDeck([...deck])
+      hand = reshuffled.slice(0, handSize)
+      // Update deck reference for subsequent draws
+      for (let i = 0; i < reshuffled.length; i++) deck[i] = reshuffled[i]
       drawIndex = handSize
     }
 

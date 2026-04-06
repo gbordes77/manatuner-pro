@@ -63,7 +63,8 @@ export const GuidePage: React.FC = () => {
     {
       icon: <AnalyticsIcon sx={{ fontSize: 32 }} />,
       title: 'Analysis',
-      description: 'Mana curve visualization and turn-by-turn probability charts.',
+      description:
+        'Three sub-tabs: Spells & Tempo (per-spell castability with tempo impact from tapped lands), Probabilities (mana curve chart, color distribution, land drop odds by turn), and Recommendations (prioritized fixes for your manabase).',
       color: '#ff9800',
     },
     {
@@ -84,44 +85,45 @@ export const GuidePage: React.FC = () => {
 
   const mathFoundations = [
     {
-      title: 'Hypergeometric',
+      title: 'Exact Math',
       formula: 'P(X≥k)',
-      desc: 'Exact probability of drawing k sources in n cards',
+      desc: 'Your real chance of casting each spell on curve',
       color: '#e3f2fd',
       borderColor: '#1976d2',
-      details: 'P(X = k) = C(K,k) × C(N-K,n-k) / C(N,n)',
+      details:
+        'Hypergeometric distribution — the exact odds of drawing the right mana from your deck',
     },
     {
-      title: 'Karsten Tables',
+      title: 'Karsten Standards',
       formula: '90%',
-      desc: 'Sources needed to cast on curve',
+      desc: 'How many sources you actually need per color',
       color: '#e8f5e9',
       borderColor: '#4caf50',
-      details: '1C T1: 14 sources | CC T2: 20 sources | CCC T3: 23 sources',
+      details: 'Pro-level targets: 14 sources for 1 pip T1, 20 for 2 pips T2, 23 for 3 pips T3',
     },
     {
       title: 'Monte Carlo',
       formula: 'n=10k',
-      desc: 'Hands simulated with Fisher-Yates shuffle',
+      desc: '10,000 opening hands shuffled and evaluated',
       color: '#f3e5f5',
       borderColor: '#9c27b0',
-      details: '5 metrics per hand: mana, curve, colors, early game, balance',
+      details: 'Each hand scored on mana efficiency, curve, colors, early game, and land balance',
     },
     {
-      title: 'Bellman Equation',
+      title: 'Smart Mulligan',
       formula: 'E[V₇]',
-      desc: 'Optimal stopping theory for mulligan decisions',
+      desc: 'Mathematically optimal keep or mulligan thresholds',
       color: '#fff3e0',
       borderColor: '#ff9800',
-      details: 'Keep 7 if score ≥ E[V₆], Keep 6 if score ≥ E[V₅]',
+      details: 'Bellman equation: keep 7 if hand quality ≥ expected value of mulling to 6',
     },
     {
-      title: 'Consistency Score',
-      formula: '38-45%',
-      desc: 'Optimal land ratio for health calculation',
+      title: 'Health Score',
+      formula: '0-100',
+      desc: 'One number that tells you if your manabase is tournament-ready',
       color: '#e0f7fa',
       borderColor: '#00bcd4',
-      details: '23-27 lands in 60 cards + color coverage bonus',
+      details: '85%+ excellent | 70-84% good | 55-69% needs work | below 55% rebuild',
     },
     {
       title: 'Archetype Weights',
@@ -153,10 +155,18 @@ export const GuidePage: React.FC = () => {
             },
             {
               '@type': 'Question',
-              name: 'What do P1 and P2 mean in Castability?',
+              name: 'What do Best Case and Realistic mean in Castability?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'P1 (Play First): Optimistic probability assuming perfect land drops. P2 (Draw First): Realistic probability accounting for mana screw. Focus on P2.',
+                text: 'Best Case: probability of having the right colors assuming perfect land drops. Realistic: probability accounting for mana screw. Focus on Realistic.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: "Why is my castability below 90% even when I follow Karsten's recommendations?",
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: "The Castability tab shows single-draw probability (one hand, no mulligan). Karsten's tables target 90% including mulligans. With 14 red sources, your single-draw chance at Turn 1 is 86%, but with mulligans factored in, your effective chance exceeds 90%.",
               },
             },
             {
@@ -718,8 +728,12 @@ export const GuidePage: React.FC = () => {
             a: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (10,000 hands, configurable up to 50k), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes.",
           },
           {
-            q: 'What do P1 and P2 mean in Castability?',
-            a: 'P1 (Play First): Optimistic probability assuming perfect land drops. P2 (Draw First): Realistic probability accounting for mana screw. Focus on P2.',
+            q: 'What do Best Case and Realistic mean in Castability?',
+            a: "Best Case: probability of having the right colors assuming you hit all your land drops on curve. Realistic: probability accounting for mana screw (not drawing enough lands). Focus on Realistic \u2014 it's the number that matters for deckbuilding.",
+          },
+          {
+            q: "Why is my castability below 90% even when I follow Karsten's recommendations?",
+            a: "Because the Castability tab shows your single-draw probability: the chance of casting a spell with one specific hand. Karsten's tables target 90% including the option to mulligan bad hands. With 14 red sources, your single-draw chance at Turn 1 is 86% \u2014 but across a real game where you'd mulligan a no-red hand, your effective chance climbs above 90%. Both numbers are correct; they answer different questions. See the Mathematics page for details.",
           },
           {
             q: 'Can I export or share my analysis?',

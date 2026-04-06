@@ -2,7 +2,50 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-06 | **Tests:** 197 pass, 0 fail | **Build:** OK
+**Latest Session:** 2026-04-06 (Math Audit) | **Tests:** 197 pass, 0 fail | **Build:** OK
+
+---
+
+## Session 2026-04-06 (part 2) — Mathematical Audit & Fixes
+
+### What Happened
+
+Comprehensive mathematical audit of ALL calculation code (56 files, 4 engines, 7 hypergeometric implementations). Verified every formula against hand calculations and Frank Karsten's published research. Found and fixed 7 bugs.
+
+### Verdict: PASS (after fixes)
+
+All core math (hypergeometric, Bellman equation, Fisher-Yates, Karsten tables) is correct.
+
+### 7 Bugs Found & Fixed
+
+| #   | Severity | What                                                               | File                               |
+| --- | -------- | ------------------------------------------------------------------ | ---------------------------------- |
+| 1   | MEDIUM   | Biased shuffle (`.sort(random)` instead of Fisher-Yates)           | `manabase.ts:226`                  |
+| 2   | MEDIUM   | Mulligan recommendation never displayed (`mulliganValue` always 0) | `mulliganSimulatorAdvanced.ts:989` |
+| 3   | HIGH     | `onThePlay` parameter ignored in ManaCalculator                    | `manaCalculator.ts:384`            |
+| 4   | HIGH     | Play/Draw toggle didn't affect base spell probabilities            | `ManaCostRow.tsx:299`              |
+| 5   | LOW      | No re-shuffle between mulligan attempts in basic MC                | `advancedMaths.ts:281`             |
+| 6   | LOW      | KARSTEN_TABLE had extrapolated impossible values                   | `manabase.ts:13`                   |
+| 7   | LOW      | Potential division by zero if N=0 in hypergeometric                | `manaCalculator.ts:359`            |
+
+### Key Fix: Play/Draw Toggle Now Works End-to-End
+
+Before: Changing "On the Play" → "On the Draw" only affected acceleration calculations. Base p1/p2 probabilities for each spell were always computed as "on the play" (7 + turn - 1 cards seen).
+
+After: The `playDraw` setting propagates from `AccelerationContext` → `CastabilityTab` → `ManaCostRow` → `useProbabilityCalculation`. On the draw: `7 + turn` cards seen (one extra). All displayed probabilities now change correctly.
+
+### Files Modified
+
+- `src/components/ManaCostRow.tsx` — playDraw param in useProbabilityCalculation
+- `src/services/mulliganSimulatorAdvanced.ts` — mulliganValue formula fix
+- `src/services/manaCalculator.ts` — onThePlay implementation + hypergeometric guards
+- `src/services/advancedMaths.ts` — re-shuffle on mulligan
+- `src/utils/manabase.ts` — Fisher-Yates shuffle + Karsten table alignment
+- `docs/MATH_AUDIT_REPORT.md` — full audit report
+
+### Full Report
+
+See `docs/MATH_AUDIT_REPORT.md` for the complete 12-section audit with formulas, verification tables, and architecture diagram.
 
 ---
 

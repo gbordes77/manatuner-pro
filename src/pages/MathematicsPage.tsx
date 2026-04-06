@@ -1,6 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import CalculateIcon from '@mui/icons-material/Calculate'
 import CasinoIcon from '@mui/icons-material/Casino'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import ScienceIcon from '@mui/icons-material/Science'
@@ -61,10 +62,9 @@ const MathematicsPage: React.FC = () => {
   ]
 
   const karstenTable = [
-    { cost: '1 Colored (C)', t1: '14', t2: '12', t3: '11', t4: '10' },
-    { cost: '1C + Colorless', t1: '-', t2: '13', t3: '12', t4: '11' },
-    { cost: '2 Same (CC)', t1: '-', t2: '21', t3: '19', t4: '18' },
-    { cost: '3 Same (CCC)', t1: '-', t2: '-', t3: '25', t4: '23' },
+    { cost: '1 Colored (e.g. {R}, {1}{U})', t1: '14', t2: '13', t3: '12', t4: '11' },
+    { cost: '2 Same (e.g. {U}{U})', t1: '-', t2: '20', t3: '18', t4: '16' },
+    { cost: '3 Same (e.g. {B}{B}{B})', t1: '-', t2: '-', t3: '23', t4: '20' },
   ]
 
   return (
@@ -154,6 +154,151 @@ const MathematicsPage: React.FC = () => {
           </Link>
         </Typography>
       </Paper>
+
+      {/* How It All Fits Together */}
+      <Box sx={{ mb: 6 }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography
+            variant="overline"
+            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
+          >
+            The Big Picture
+          </Typography>
+          <Typography variant="h4" component="h2" fontWeight={700}>
+            <CompareArrowsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            Three Engines, Three Questions
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ maxWidth: 700, mx: 'auto', mt: 1 }}
+          >
+            ManaTuner uses three different mathematical models. Each answers a different question
+            about your deck.
+          </Typography>
+        </Box>
+
+        <Grid container spacing={3}>
+          {[
+            {
+              tab: 'Castability Tab',
+              engine: 'Hypergeometric Distribution',
+              icon: <FunctionsIcon sx={{ fontSize: 32 }} />,
+              question: 'What is my exact chance of casting this spell on curve?',
+              detail:
+                'Single-draw probability. Given your current hand of 7 cards (or 8 on the draw), what are the odds you have the right mana? This is pure math with no assumptions about mulligans.',
+              color: '#1976d2',
+              bgColor: '#e3f2fd',
+              example: 'Your Counterspell shows 82% at Turn 2 with 20 blue sources',
+            },
+            {
+              tab: 'Recommendations',
+              engine: "Frank Karsten's Tables",
+              icon: <TrendingUpIcon sx={{ fontSize: 32 }} />,
+              question: 'How many sources do I need for each color?',
+              detail:
+                'Karsten\'s tables target 90% probability including the option to mulligan bad hands. That\'s why recommendations say "20 sources" even though the raw probability with 20 sources is ~82% on a single draw.',
+              color: '#4caf50',
+              bgColor: '#e8f5e9',
+              example: '"Add 3 more blue sources to reach Karsten\'s 90% threshold"',
+            },
+            {
+              tab: 'Mulligan Tab',
+              engine: 'Bellman Equation + Monte Carlo',
+              icon: <CasinoIcon sx={{ fontSize: 32 }} />,
+              question: 'Should I keep this hand or mulligan?',
+              detail:
+                '10,000 simulated hands with Fisher-Yates shuffle. The Bellman equation (optimal stopping theory) calculates the exact hand quality score below which you should mulligan, for each archetype.',
+              color: '#9c27b0',
+              bgColor: '#f3e5f5',
+              example: 'Keep 7 if score > 62, otherwise mulligan to 6',
+            },
+          ].map((item, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    borderRadius: 3,
+                    border: '2px solid',
+                    borderColor: item.color,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          bgcolor: item.bgColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: item.color,
+                        }}
+                      >
+                        {item.icon}
+                      </Box>
+                      <Box>
+                        <Chip
+                          label={item.tab}
+                          size="small"
+                          sx={{ fontWeight: 700, bgcolor: item.bgColor, color: item.color }}
+                        />
+                        <Typography variant="caption" display="block" color="text.secondary">
+                          {item.engine}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+                      "{item.question}"
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      paragraph
+                      sx={{ flexGrow: 1 }}
+                    >
+                      {item.detail}
+                    </Typography>
+                    <Paper sx={{ p: 1.5, bgcolor: item.bgColor, borderRadius: 2 }}>
+                      <Typography variant="caption" fontWeight={600} color={item.color}>
+                        {item.example}
+                      </Typography>
+                    </Paper>
+                  </CardContent>
+                </Card>
+              </AnimatedContainer>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* Key insight callout */}
+        <Paper
+          sx={{
+            mt: 3,
+            p: 3,
+            borderRadius: 3,
+            bgcolor: '#fff8e1',
+            border: '2px solid #ffc107',
+          }}
+        >
+          <Typography variant="subtitle1" fontWeight={700} color="#f57f17" gutterBottom>
+            Why are my probabilities below 90% even when I follow Karsten's recommendations?
+          </Typography>
+          <Typography variant="body2">
+            Because the Castability tab shows your <strong>single-draw probability</strong> (one
+            hand, no mulligan). Karsten's tables target 90%{' '}
+            <strong>including the option to mulligan</strong> bad hands. With 14 red sources, your
+            chance of having red mana on Turn 1 is 86% on any single draw &mdash; but across a real
+            game where you'd mulligan a no-red hand, your effective chance climbs above 90%. Both
+            numbers are correct; they answer different questions.
+          </Typography>
+        </Paper>
+      </Box>
 
       {/* Core Mathematical Concepts */}
       <Box sx={{ mb: 6 }}>
@@ -316,8 +461,9 @@ const MathematicsPage: React.FC = () => {
             <Paper sx={{ p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
               <Typography variant="body2" fontWeight={600} color="#2e7d32">
                 <strong>Real Example:</strong> With 14 red sources in a 60-card deck, what's the
-                probability of having at least 1 red source on Turn 1 (7 cards drawn)? Answer: ~90%
-                (Karsten standard)
+                probability of having at least 1 red source on Turn 1 (7 cards drawn)? Answer:{' '}
+                <strong>86.1%</strong> on a single draw. Karsten recommends 14 sources because with
+                mulligans factored in, your effective probability reaches ~90%.
               </Typography>
             </Paper>
           </AccordionDetails>

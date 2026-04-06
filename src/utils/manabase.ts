@@ -8,14 +8,16 @@ import type {
   TurnAnalysis,
 } from '@/types'
 
-// Constants basés sur les recherches de Frank Karsten
+// Constants based on Frank Karsten's 2022 research (TCGPlayer)
+// Key = turn number, values = sources needed for 90% probability at that turn
+// single = 1 colored pip, double = 2 pips (CC), triple = 3 pips (CCC)
 const KARSTEN_TABLE = {
-  1: { single: 13, double: 20, triple: 27 },
-  2: { single: 8, double: 13, triple: 18 },
-  3: { single: 6, double: 9, triple: 12 },
-  4: { single: 4, double: 7, triple: 9 },
-  5: { single: 4, double: 6, triple: 8 },
-  6: { single: 3, double: 5, triple: 7 },
+  1: { single: 14, double: 20, triple: 23 },
+  2: { single: 13, double: 18, triple: 20 },
+  3: { single: 12, double: 16, triple: 19 },
+  4: { single: 11, double: 15, triple: 18 },
+  5: { single: 10, double: 14, triple: 17 },
+  6: { single: 9, double: 13, triple: 16 },
 }
 
 // Couleurs MTG (display names)
@@ -223,7 +225,12 @@ export const simulateHand = (
   strategy: 'none' | 'aggressive' | 'conservative' = 'conservative'
 ): { hand: Card[]; lands: number; spells: number; keepable: boolean } => {
   const cards = deck.flatMap((dc) => Array(dc.quantity).fill(dc.card))
-  const shuffled = [...cards].sort(() => Math.random() - 0.5)
+  const shuffled = [...cards]
+  // Fisher-Yates shuffle for unbiased randomization
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
   const hand = shuffled.slice(0, 7)
 
   const lands = hand.filter((card) => card.type_line?.toLowerCase().includes('land')).length

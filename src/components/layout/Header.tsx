@@ -113,8 +113,8 @@ export const Header: React.FC = () => {
         borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
       }}
     >
-      <Toolbar>
-        {/* Logo with WUBRG */}
+      <Toolbar sx={{ position: 'relative' }}>
+        {/* Logo with WUBRG — positioned absolute so nav stays truly centered */}
         <Box
           component={RouterLink}
           to="/"
@@ -125,6 +125,8 @@ export const Header: React.FC = () => {
             gap: 1,
             textDecoration: 'none',
             color: 'inherit',
+            position: { xs: 'static', md: 'absolute' },
+            left: { md: 24 },
           }}
         >
           {/* Mana symbols as logo accent */}
@@ -144,7 +146,7 @@ export const Header: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Navigation - Centré */}
+        {/* Navigation - truly centered in full toolbar width */}
         {!isMobile && (
           <Box
             sx={{
