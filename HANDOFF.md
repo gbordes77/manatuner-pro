@@ -2,7 +2,65 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-06 (ENHANCER + K=3 + Hybrid Mana) | **Tests:** 213 pass, 0 fail | **Build:** OK | **Commit:** 75e607d
+**Latest Session:** 2026-04-06 (Persona-Driven UX + Math Unification) | **Tests:** 213 pass, 0 fail | **Build:** OK | **Commit:** 13b0f82
+
+---
+
+## Session 2026-04-06 (part 5) — Persona-Driven Improvements
+
+### What Was Completed
+
+5 persona UX analyses (Leo, Sarah, Karim, Natsuki, David) drove 4 features + 2 fixes:
+
+| Commit    | Description                                                                         |
+| --------- | ----------------------------------------------------------------------------------- |
+| `3343bd9` | Simplify beta banner: remove beta label, keep feedback CTA                          |
+| `13b0f82` | Glossary tooltips, unified math, URL sharing, sideboard analysis, Blueprint tab fix |
+
+### Key Changes
+
+**1. Glossary Tooltips (`<Term>` component)**
+
+- `src/data/glossary.ts` — 14 plain-English term definitions
+- `src/components/common/Term.tsx` — MUI Tooltip wrapper with dotted underline
+- Applied to HomePage feature descriptions + CastabilityTab Best Case/Realistic
+
+**2. Unified Math (4 hypergeom -> 1, 3 Karsten -> 1)**
+
+- `advancedMaths.ts`, `manaCalculator.ts`, `manabase.ts` now delegate to `hypergeom.ts` singleton
+- All local `binomial()`, `hypergeometric()`, `cumulativeHypergeometric()` removed
+- 3 Karsten table copies replaced by single import from `types/maths.ts`
+- Bug fix: `manabase.ts` T3/triple was 19, should be 23
+
+**3. URL-Shareable Analyses**
+
+- `src/utils/urlCodec.ts` — encode/decode deck as base64 URL-safe param
+- Share button in AnalyzerPage copies link to clipboard
+- URL hydration on mount: `?d=` param auto-loads deck
+
+**4. Post-Board Sideboard Analysis**
+
+- `src/components/analyzer/SideboardSwapEditor.tsx` — IN/OUT swap editor with +/- buttons
+- Integrated in CastabilityTab: swaps modify `effectiveCards`, ManaCostRow recalculates
+- Balance indicator (balanced/unbalanced), collapse by default
+
+**5. UX Polish**
+
+- Beta banner: removed "Beta Version" label, kept feedback CTA only
+- Blueprint tab: removed cyan color + NEW badge, normalized style
+
+### Persona Scores (before -> after)
+
+| Persona           |  Before  |  After   |   Delta   |
+| ----------------- | :------: | :------: | :-------: |
+| Leo (Beginner)    |   3.69   |   4.11   |   +0.42   |
+| Sarah (Regular)   |   4.13   |   4.31   |   +0.18   |
+| Karim (Tactician) |   4.13   |   4.44   |   +0.31   |
+| Natsuki (Grinder) |   3.75   |   4.03   |   +0.28   |
+| David (Architect) |   3.40   |   3.80   |   +0.40   |
+| **Average**       | **3.82** | **4.14** | **+0.32** |
+
+### Next Priority: Communication / Launch Preparation
 
 ---
 

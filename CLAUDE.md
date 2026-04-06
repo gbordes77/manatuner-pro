@@ -52,7 +52,7 @@ echo "Rafraîchis http://localhost:3000/[page-modifiée]"
 
 Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabulaire, parcours de navigation, grille d'evaluation (8 axes), et format de sortie structure.
 
-**Derniers scores (v2.1.0)** : Leo 4.2 | Sarah 4.2 | Karim 4.1 | Natsuki 3.8 | David 4.1 | **Moy: 4.08/5**
+**Derniers scores (v2.4 — 2026-04-06)** : Leo 4.11 | Sarah 4.31 | Karim 4.44 | Natsuki 4.03 | David 3.80 | **Moy: 4.14/5** (scoring plus rigoureux que v2.1)
 
 ---
 
@@ -95,18 +95,18 @@ self.addEventListener('activate', async () => {
 
 **Audit report**: `docs/MATH_AUDIT_REPORT.md`
 
-**4 hypergeometric implementations** — Know they exist before modifying math code:
+**Hypergeometric implementation** — UNIFIED (2026-04-06):
 
-1. `src/services/castability/hypergeom.ts` — Log-space, main engine (Castability tab)
-2. `src/services/advancedMaths.ts` — Iterative with cache (Karsten/MC engine)
-3. `src/services/manaCalculator.ts` — Iterative with memoization (legacy calculator)
-4. `src/components/ManaCostRow.tsx` — Inline in `useProbabilityCalculation` (per-spell display)
+- `src/services/castability/hypergeom.ts` — **Single source of truth**, log-space, singleton `hypergeom`
+- `src/services/advancedMaths.ts` — Delegates to `hypergeom.pmf()` / `hypergeom.atLeast()`
+- `src/services/manaCalculator.ts` — Delegates to `hypergeom.pmf()` / `hypergeom.atLeast()`
+- `src/components/ManaCostRow.tsx` — Still has inline `useProbabilityCalculation` (TODO: align with engine)
 
-**3 copies of Karsten tables** — Keep in sync if modifying:
+**Karsten tables** — UNIFIED (2026-04-06):
 
-1. `src/types/maths.ts:131` — Canonical (symbols x turn → sources needed)
-2. `src/services/manaCalculator.ts:17` — Subset (T1-T6 only)
-3. `src/utils/manabase.ts:14` — Alternate format (turn → single/double/triple)
+- `src/types/maths.ts:131` — **Single source of truth** (symbols x turn → sources needed, T1-T10)
+- `src/services/manaCalculator.ts` — Imports from `types/maths.ts`
+- `src/utils/manabase.ts` — Imports from `types/maths.ts` via `getKarstenSources()` helper
 
 **Play/Draw propagation chain** — Must flow end-to-end:
 
