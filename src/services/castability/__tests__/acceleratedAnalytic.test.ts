@@ -372,7 +372,7 @@ describe('producerOnlineProbByTurn', () => {
     const ctx = makeGoldfishCtx()
     const enhancer: ProducerInDeck = {
       def: {
-        name: 'Badgermole Cub',
+        name: 'Generic Enhancer',
         type: 'ENHANCER',
         castCostGeneric: 1,
         castCostColors: { G: 1 },
@@ -392,6 +392,31 @@ describe('producerOnlineProbByTurn', () => {
 
     const p = producerOnlineProbByTurn(hg, deck, enhancer, 5, ctx)
     expect(p).toBe(0)
+  })
+
+  it('should model Badgermole Cub as immediate ramp (delay 0)', () => {
+    const deck = makeGruulDeck()
+    const ctx = makeGoldfishCtx()
+    const cub: ProducerInDeck = {
+      def: {
+        name: 'Badgermole Cub',
+        type: 'DORK',
+        castCostGeneric: 1,
+        castCostColors: { G: 1 },
+        delay: 0, // ETB ramp is immediate
+        isCreature: true,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: COLOR_MASK.G,
+        producesAny: false,
+        oneShot: false,
+      },
+      copies: 4,
+    }
+
+    // With delay:0, Cub can accelerate by T3 (cast T2, ramp immediate)
+    const p = producerOnlineProbByTurn(hg, deck, cub, 3, ctx)
+    expect(p).toBeGreaterThan(0)
   })
 
   it('should return 0 for producer with 0 copies', () => {
@@ -608,7 +633,7 @@ describe('computeAcceleratedCastability', () => {
 
     const enhancer: ProducerInDeck = {
       def: {
-        name: 'Badgermole Cub',
+        name: 'Generic Enhancer',
         type: 'ENHANCER',
         castCostGeneric: 1,
         castCostColors: { G: 1 },
@@ -629,7 +654,7 @@ describe('computeAcceleratedCastability', () => {
     const producers = [makeLlanowarElves(), enhancer]
     const result = computeAcceleratedCastability(deck, spell, producers, ctx)
 
-    expect(result.keyAccelerators).not.toContain('Badgermole Cub')
+    expect(result.keyAccelerators).not.toContain('Generic Enhancer')
   })
 })
 

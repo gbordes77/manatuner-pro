@@ -79,21 +79,21 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
   // ===========================================================================
 
   'Badgermole Cub': {
-    type: 'ENHANCER',
+    // Earthbend 1: turns a land into a creature with haste (still a land).
+    // "Whenever you tap a creature for mana, add an additional {G}."
+    // The earthbent land-creature taps for its normal mana + {G} from Cub.
+    // If Cub dies, the +{G} bonus disappears (it's Cub's static ability).
+    // Modeled as DORK: +1 mana while alive, vulnerable to creature removal.
+    type: 'DORK',
     castCostGeneric: 1,
     castCostColors: { G: 1 },
-    delay: 1, // Summoning sickness (creature)
+    delay: 0, // Earthbend on ETB + haste = land-creature taps immediately
     isCreature: true,
-    producesAmount: 0, // Doesn't produce mana itself
+    producesAmount: 1, // +1G per turn while Cub is alive
     activationTax: 0,
     producesMask: mask('G'),
     producesAny: false,
     oneShot: false,
-    survivalBase: 0.7, // High-value target
-    // ENHANCER-specific: adds +1G when any creature taps for mana
-    enhancerBonus: 1,
-    enhancerBonusMask: mask('G'),
-    enhancesTypes: ['DORK'],
   },
 
   // 2-CMC Dorks
