@@ -2,7 +2,97 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-06 (Persona-Driven UX + Math Unification) | **Tests:** 213 pass, 0 fail | **Build:** OK | **Commit:** 13b0f82
+**Latest Session:** 2026-04-10 (Ramp Taxonomy + Math Page Refonte + Homepage Reorder) | **Tests:** 221 pass, 0 fail | **Build:** OK | **Commit:** 78ff8ff
+
+---
+
+## Session 2026-04-10 — Ramp Taxonomy, Mathematics Refonte, Homepage Reorder
+
+### What Was Completed
+
+Three major changes: comprehensive ramp detection expansion, Mathematics page rewrite for progressive disclosure, and homepage feature reordering.
+
+| Commit    | Description                                                                               |
+| --------- | ----------------------------------------------------------------------------------------- |
+| `4502dc5` | Add 5 new ramp types: LAND_AURA, LAND_FROM_HAND, SPAWN_SCION, LANDFALL_MANA, MANA_DOUBLER |
+| `38e4c7c` | Replace Health Score with Analysis Dashboard in homepage features                         |
+| `1ffb6d5` | Rewrite Mathematics page with progressive disclosure                                      |
+| `78ff8ff` | Remove mana screw/color screw terminology from Mathematics page                           |
+
+### 1. Ramp Taxonomy Expansion (5 new ManaProducerTypes)
+
+Comprehensive Scryfall analysis identified 22 distinct ramp mechanisms in MTG. ManaTuner detected 8/22. Added the 5 highest-impact missing types:
+
+| New Type         | Oracle Pattern                                             | Examples                                   | Seed Cards |
+| ---------------- | ---------------------------------------------------------- | ------------------------------------------ | ---------- |
+| `LAND_AURA`      | `enchant land` + `tapped for mana...add`                   | Wild Growth, Utopia Sprawl, Fertile Ground | 7          |
+| `LAND_FROM_HAND` | `put a land card from your hand onto the battlefield`      | Growth Spiral, Arboreal Grazer, Uro        | 5          |
+| `SPAWN_SCION`    | `Eldrazi Spawn/Scion` + `sacrifice`                        | Awakening Zone, Glaring Fleshraker         | 4          |
+| `LANDFALL_MANA`  | `whenever a land enters...add`                             | Lotus Cobra, Nissa Resurgent Animist       | 2          |
+| `MANA_DOUBLER`   | `tap a land for mana...add` / `produces twice/three times` | Mirari's Wake, Nyxbloom Ancient            | 10         |
+
+Files modified:
+
+- `src/types/manaProducers.ts` — 5 new types + `doublerMultiplier` field
+- `src/services/manaProducerService.ts` — 5 new oracle detection patterns + Scryfall handler blocks
+- `src/data/manaProducerSeed.ts` — 28 new seed cards
+- `src/services/castability/acceleratedAnalyticEngine.ts` — LAND_FROM_HAND survival = 1.0
+
+### 2. Homepage Feature Reorder
+
+Removed Health Score from "What You Get" (abstract metric that doesn't sell). New order:
+
+1. **Castability** — core promise
+2. **Analysis Dashboard** — visual wow factor (bar charts, pie chart, insights)
+3. **Mulligan Simulator** — 10K simulations
+4. **Export Blueprint** — utility
+
+### 3. Mathematics Page Refonte
+
+Complete rewrite with progressive disclosure approach:
+
+**Old structure (problems):**
+
+- 3 redundant sections repeating Hypergeometric/Monte Carlo/Karsten
+- "Mana Screw / Color Screw" negative framing
+- "Implementation Details" accordion (IEEE 754 — nobody reads this)
+- All accordions expanded by default
+
+**New structure:**
+
+1. Hero: "The Mathematics Behind ManaTuner" (positive framing)
+2. Two Questions: "How Many Lands?" / "How Many Sources per Color?" (constructive)
+3. Three Engines, Three Questions (single clear explanation per model)
+4. FAQ promoted: "Why 82% when Karsten says 90%?" (was buried callout)
+5. Realistic vs Best Case (kept, it's great)
+6. Deep Dive accordions (all collapsed, opt-in for curious)
+7. Rules of Thumb cheat sheet
+8. CTA: "Ready to Fix Your Mana?"
+
+### Persona Scores (2026-04-10 audit)
+
+| Persona           | v2.4 (04-06) | v2.5 (04-10) |   Delta   |
+| ----------------- | :----------: | :----------: | :-------: |
+| Leo (Beginner)    |     4.11     |     3.75     |   -0.36   |
+| Sarah (Regular)   |     4.31     |     4.42     |   +0.11   |
+| Karim (Tactician) |     4.44     |     4.50     |   +0.06   |
+| Natsuki (Grinder) |     4.03     |     4.08     |   +0.05   |
+| David (Architect) |     3.80     |     4.42     |   +0.62   |
+| **Average**       |   **4.14**   |   **4.23**   | **+0.09** |
+
+Leo dropped because homepage chips still show "Hypergeometric"/"Monte Carlo" jargon. Quick fix: replace with accessible labels.
+
+### Current State
+
+- **Working**: All features, 221 tests pass, build clean
+- **No blockers**
+- **Terminology**: "mana screw" removed from Mathematics page. Still present in CastabilityTab legend, GuidePage FAQ, ManaCostRow comments — consider cleaning in next session.
+
+### Next Priority
+
+1. Fix Leo's regression: replace technical chips on homepage with accessible labels
+2. Clean remaining "mana screw" references across the site
+3. Launch preparation (LAUNCH.md priorities)
 
 ---
 

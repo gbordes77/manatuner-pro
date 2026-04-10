@@ -152,3 +152,32 @@ K=3 (Cub + 2 dorks): extraMana = 5G (1 base + 2 dorks + 2 bonuses)
 **Combat-damage treasure exclusion** — `analyzeOracleForMana()` in `manaProducerService.ts` filters out `"deals combat damage...create Treasure"` pattern. Sticky Fingers = NOT ramp.
 
 **Sample deck** — Nature's Rhythm / Badgermole Cub (Standard). 4 producer types in seed: Llanowar Elves, Gene Pollinator, Spider Manifestation, Badgermole Cub.
+
+### Ramp Taxonomy Expansion (2026-04-10)
+
+**5 new ManaProducerTypes** added after comprehensive Scryfall audit of all 22 MTG ramp mechanisms:
+
+| Type             | Oracle Pattern                                             | Modeling                                                      | Key Cards                                  |
+| ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
+| `LAND_AURA`      | `enchant land` + `tapped for mana...add`                   | delay=0, permanent, non-creature                              | Wild Growth, Utopia Sprawl, Fertile Ground |
+| `LAND_FROM_HAND` | `put a land card from your hand onto the battlefield`      | delay=0, oneShot if instant/sorcery, survival=1.0             | Growth Spiral, Arboreal Grazer, Uro        |
+| `SPAWN_SCION`    | `Eldrazi Spawn`/`Scion` + `sacrifice`                      | colorless only ({C}), oneShot per token                       | Awakening Zone, Glaring Fleshraker         |
+| `LANDFALL_MANA`  | `whenever a land enters...add` / `landfall...add`          | delay=1 if creature, passive trigger                          | Lotus Cobra, Nissa Resurgent Animist       |
+| `MANA_DOUBLER`   | `tap a land for mana...add` / `produces twice/three times` | `doublerMultiplier` field (2 or 3), producesAmount = net gain | Mirari's Wake, Nyxbloom Ancient            |
+
+**Detection priority** in `analyzeOracleForMana()`: LAND_RAMP → extra land drop → LAND_FROM_HAND → LAND_AURA → LANDFALL_MANA → MANA_DOUBLER → SPAWN_SCION → standard patterns (tap, sacrifice, treasure, ritual).
+
+**Not implemented (deferred)**: COST_REDUCER (~286 cards, virtual ramp), UNTAP_RAMP (~54 cards, complex modeling), CAST_TRIGGER_MANA (storm enablers), ATTACK_TRIGGER_MANA (combat-conditional), FREE_CAST/CASCADE, CONVOKE/DELVE/AFFINITY, PHYREXIAN_MANA, PLAY_FROM_GRAVEYARD.
+
+### Persona Scores History
+
+| Persona           | v2.1 (initial) | v2.4 (04-06) | v2.5 (04-10) |
+| ----------------- | -------------- | ------------ | ------------ |
+| Leo (Beginner)    | 3.69           | 4.11         | 3.75         |
+| Sarah (Regular)   | 4.13           | 4.31         | 4.42         |
+| Karim (Tactician) | 4.13           | 4.44         | 4.50         |
+| Natsuki (Grinder) | 3.75           | 4.03         | 4.08         |
+| David (Architect) | 3.40           | 3.80         | 4.42         |
+| **Average**       | **3.82**       | **4.14**     | **4.23**     |
+
+Leo's v2.5 regression: homepage chips still show "Hypergeometric"/"Monte Carlo" jargon. Fix: replace with accessible labels.

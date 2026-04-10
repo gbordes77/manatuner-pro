@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-86%2F88%20Passing-green)](https://github.com/gbordes77/manatuner)
+[![Tests](https://img.shields.io/badge/Tests-221%20Passing-green)](https://github.com/gbordes77/manatuner)
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 
@@ -29,14 +29,15 @@ Built on Frank Karsten's mathematical research, it provides:
 
 ## Features
 
-| Feature                  | Description                                                            |
-| ------------------------ | ---------------------------------------------------------------------- |
-| **Health Score**         | Instant manabase health percentage based on hypergeometric probability |
-| **Castability Analysis** | Exact probability of casting each spell on curve, turn by turn         |
-| **Mulligan Simulator**   | Monte Carlo simulation with optimal keep/mulligan thresholds           |
-| **Export Blueprint**     | Download analysis as PNG, PDF, or JSON for sharing                     |
-| **Multi-Format Support** | Limited (40), Constructed (60), Commander (99+)                        |
-| **Privacy-First**        | All data stored locally with AES-256 encryption                        |
+| Feature                  | Description                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Castability Analysis** | Exact probability of casting each spell on curve, turn by turn                                    |
+| **Analysis Dashboard**   | Visual breakdown of spells by category, curve insights, performance diagnostics                   |
+| **Mana Acceleration**    | Detects 13 ramp types: dorks, rocks, rituals, land auras, land ramp, doublers, landfall, and more |
+| **Mulligan Simulator**   | Monte Carlo simulation with optimal keep/mulligan thresholds                                      |
+| **Export Blueprint**     | Download analysis as PNG, PDF, or JSON for sharing                                                |
+| **Multi-Format Support** | Limited (40), Constructed (60), Commander (99+)                                                   |
+| **Privacy-First**        | All data stored locally with AES-256 encryption                                                   |
 
 ---
 

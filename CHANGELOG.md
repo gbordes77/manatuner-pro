@@ -5,6 +5,37 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-04-10
+
+### Ramp Taxonomy Expansion — 5 New Producer Types
+
+Comprehensive Scryfall audit of all 22 MTG ramp mechanisms. Implemented the 5 highest-impact missing types with oracle text detection and 28 seed cards.
+
+### Added
+
+- **LAND_AURA producer type**: Enchantments on lands that produce extra mana (Wild Growth, Utopia Sprawl, Fertile Ground, Overgrowth, Dawn's Reflection, Gift of Paradise, Wolfwillow Haven)
+- **LAND_FROM_HAND producer type**: Effects that put lands from hand onto battlefield (Growth Spiral, Arboreal Grazer, Sakura-Tribe Scout, Skyshroud Ranger, Uro)
+- **SPAWN_SCION producer type**: Eldrazi Spawn/Scion tokens that sacrifice for {C} (Awakening Zone, From Beyond, Pawn of Ulamog, Glaring Fleshraker)
+- **LANDFALL_MANA producer type**: Mana generation on land ETB triggers (Lotus Cobra, Nissa Resurgent Animist)
+- **MANA_DOUBLER producer type**: Effects that double/triple land mana output (Mirari's Wake, Zendikar Resurgent, Mana Reflection, Nyxbloom Ancient, Caged Sun, Dictate of Karametra, Nissa Who Shakes the World, Crypt Ghast)
+- **`doublerMultiplier` field** on `ManaProducerDef` for MANA_DOUBLER type (2x or 3x)
+- **Oracle detection patterns** for all 5 new types in `analyzeOracleForMana()`
+- **Scryfall handler blocks** for all 5 new types in `detectProducerFromScryfall()`
+- **LAND_FROM_HAND survival = 1.0** in accelerated engine (extra land is irremovable)
+
+### Changed
+
+- **Homepage "What You Get"**: Replaced Health Score (abstract) with Analysis Dashboard (visual). New order: Castability → Analysis Dashboard → Mulligan Simulator → Export Blueprint
+- **Mathematics page**: Complete rewrite with progressive disclosure. Removed 3 redundant sections, added "Two Questions" positive framing, promoted 82%-vs-90% FAQ, collapsed all deep-dive accordions by default
+- **Mathematics terminology**: Removed "Mana Screw / Color Screw" negative framing, replaced with constructive "How Many Lands? / How Many Sources per Color?"
+
+### Removed
+
+- Health Score from homepage feature cards (still exists in analyzer)
+- "Implementation Details" accordion from Mathematics page (IEEE 754, memoized binomial — too technical)
+- "Academic Foundation" top banner from Mathematics page (Karsten link moved into his own accordion)
+- Duplicate "Mathematical Foundations" 3-icon-card section from Mathematics page
+
 ## [2.3.0] - 2026-04-06
 
 ### Mana Acceleration Engine v2.0 — ENHANCER Type & K=3 Triples
