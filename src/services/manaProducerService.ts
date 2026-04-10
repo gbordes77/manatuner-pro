@@ -200,6 +200,7 @@ function analyzeOracleForMana(oracleText: string): {
   colorLetters: string[]
   amount: number
   oneShot: boolean
+  delay?: number // override default delay (undefined = use default logic)
 } {
   const result = {
     type: null as 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | 'LAND_RAMP' | null,
@@ -207,21 +208,37 @@ function analyzeOracleForMana(oracleText: string): {
     colorLetters: [] as string[],
     amount: 1,
     oneShot: false,
+    delay: undefined as number | undefined,
   }
 
   if (!oracleText) return result
 
   const colors = new Set<string>()
 
-  // 0. Detect land ramp FIRST — "search...basic land...put...onto the battlefield"
-  // Covers: Cultivate, Kodama's Reach, Earthbender Ascension, Lumbering Worldwagon, etc.
-  // Must be checked before "Add" patterns since land ramp cards don't have "Add {G}"
-  if (/search\b[^.]*\bbasic\s+land[^.]*\bonto\s+the\s+battlefield\b/i.test(oracleText)) {
+  // 0a. Detect land ramp — "search...basic land...onto the battlefield" (same sentence)
+  // Covers: Cultivate, Kodama's Reach, Earthbender Ascension, Lumbering Worldwagon
+  // 0b. Also detect cross-sentence land ramp — "search...land card...onto the battlefield"
+  // Covers: Archdruid's Charm ("Search...creature or land card...Put it onto the battlefield")
+  if (
+    /search\b[^.]*\bbasic\s+land[^.]*\bonto\s+the\s+battlefield\b/i.test(oracleText) ||
+    /search\b[\s\S]{0,150}\bland\s+card[\s\S]{0,100}\bonto\s+the\s+battlefield\b/i.test(oracleText)
+  ) {
     result.type = 'LAND_RAMP'
     result.amount = 1
-    result.oneShot = false // the land stays in play and produces mana every turn
-    // "basic land" = any color the deck needs (the player picks the basic)
+    result.oneShot = false
     result.producesAny = true
+    return result
+  }
+
+  // 0c. Detect "play an additional land" — Icetill Explorer, Exploration, Azusa, Oracle of Mul Daya
+  // Static ability: no summoning sickness, immediate extra land drop = +1 mana/turn
+  // Modeled as ROCK (delay=0) → converted to DORK in detectProducerFromScryfall if creature
+  if (/play\s+(?:an|one|two)\s+additional\s+land/i.test(oracleText)) {
+    result.type = 'ROCK'
+    result.amount = /two\s+additional/i.test(oracleText) ? 2 : 1
+    result.producesAny = true
+    result.oneShot = false
+    result.delay = 0 // no summoning sickness for land drops
     return result
   }
 
@@ -379,7 +396,7 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
       type: isCreature && analysis.type === 'ROCK' ? 'DORK' : analysis.type,
       castCostGeneric: generic,
       castCostColors: colors,
-      delay: isCreature ? 1 : 0,
+      delay: analysis.delay ?? (isCreature ? 1 : 0),
       isCreature,
       producesAmount: analysis.amount,
       activationTax: 0,

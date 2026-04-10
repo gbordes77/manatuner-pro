@@ -1026,3 +1026,114 @@ describe('LAND_RAMP producer type', () => {
     expect(result.keyAccelerators).toContain('Earthbender Ascension')
   })
 })
+
+// =============================================================================
+// ADDITIONAL LAND DROP TESTS (Icetill Explorer)
+// =============================================================================
+
+describe('Additional land drop producers', () => {
+  const hg = new Hypergeom(200)
+
+  /**
+   * Icetill Explorer: {3}{G} creature, "play an additional land each turn"
+   * Modeled as DORK with delay=0 (no summoning sickness for land drops)
+   */
+  function makeIcetillExplorer(copies: number = 4): ProducerInDeck {
+    const def: ManaProducerDef = {
+      name: 'Icetill Explorer',
+      type: 'DORK',
+      castCostGeneric: 3,
+      castCostColors: { G: 1 },
+      delay: 0, // extra land drop is immediate (static ability)
+      isCreature: true,
+      producesAmount: 1,
+      activationTax: 0,
+      producesMask: 0b111111, // player picks which land to play
+      producesAny: true,
+      oneShot: false,
+    }
+    return { def, copies }
+  }
+
+  it('Icetill Explorer has delay=0 (immediate extra land drop)', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const ctx = makeGoldfishCtx()
+    const explorer = makeIcetillExplorer()
+
+    // Should be online at turn 5 (cast T4 with delay=0 → online T5)
+    // With delay=1 it would need to be cast T3, which is impossible at CMC 4
+    const pOnline = producerOnlineProbByTurn(hg, deck, explorer, 5, ctx)
+    expect(pOnline).toBeGreaterThan(0)
+  })
+
+  it('Icetill Explorer is vulnerable to removal (unlike LAND_RAMP)', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const modernCtx = makeModernCtx()
+    const explorer = makeIcetillExplorer()
+
+    const pOnlineRemoval = producerOnlineProbByTurn(hg, deck, explorer, 6, modernCtx)
+    const goldfishCtx = makeGoldfishCtx()
+    const pOnlineNoRemoval = producerOnlineProbByTurn(hg, deck, explorer, 6, goldfishCtx)
+
+    // With removal, pOnline should be lower
+    expect(pOnlineNoRemoval).toBeGreaterThan(pOnlineRemoval)
+  })
+
+  it('Icetill Explorer improves castability for big spells', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const ctx = makeGoldfishCtx()
+    const spell = { mv: 6, generic: 5, pips: { G: 1 } }
+
+    const base = computeBaseCastabilityAtTurn(deck, spell, 6, ctx)
+    const accel = computeAcceleratedCastabilityAtTurn(
+      hg,
+      deck,
+      spell,
+      6,
+      [makeIcetillExplorer()],
+      ctx
+    )
+
+    expect(accel.p2).toBeGreaterThan(base.p2)
+  })
+})
+
+// =============================================================================
+// ARCHDRUID'S CHARM (modal land ramp)
+// =============================================================================
+
+describe("Modal land ramp (Archdruid's Charm)", () => {
+  const hg = new Hypergeom(200)
+
+  function makeArchdruidsCharm(copies: number = 1): ProducerInDeck {
+    const def: ManaProducerDef = {
+      name: "Archdruid's Charm",
+      type: 'LAND_RAMP',
+      castCostGeneric: 0,
+      castCostColors: { G: 3 },
+      delay: 1,
+      isCreature: false,
+      producesAmount: 1,
+      activationTax: 0,
+      producesMask: 0b111111,
+      producesAny: true,
+      oneShot: false,
+    }
+    return { def, copies }
+  }
+
+  it("Archdruid's Charm has 100% survival as LAND_RAMP", () => {
+    const deck = makeGruulDeck({ totalLands: 24, landColorSources: { G: 20 } })
+    const modernCtx = makeModernCtx()
+    const charm = makeArchdruidsCharm()
+
+    const pOnline = producerOnlineProbByTurn(hg, deck, charm, 5, modernCtx)
+    expect(pOnline).toBeGreaterThan(0)
+
+    // LAND_RAMP survival = 1.0, so no removal penalty
+    const goldfishCtx = makeGoldfishCtx()
+    const pOnlineNoRemoval = producerOnlineProbByTurn(hg, deck, charm, 5, goldfishCtx)
+    // Should be equal (removal doesn't affect LAND_RAMP survival)
+    expect(pOnline).toBeCloseTo(pOnlineNoRemoval, 5)
+  })
+})
