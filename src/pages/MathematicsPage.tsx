@@ -7,7 +7,6 @@ import FunctionsIcon from '@mui/icons-material/Functions'
 import ScienceIcon from '@mui/icons-material/Science'
 import TimelineIcon from '@mui/icons-material/Timeline'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import {
   Accordion,
   AccordionDetails,
@@ -81,11 +80,11 @@ const MathematicsPage: React.FC = () => {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Why Does My Mana Never Work?
+            The Mathematics Behind ManaTuner
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', mb: 3 }}>
-            You've been there: stuck with the wrong lands, can't cast your key spell on time. It's
-            not bad luck — it's math. And math has solutions.
+            Casting your spells on curve isn't luck — it's probability. ManaTuner uses rigorous math
+            to tell you exactly what your mana base can deliver.
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -109,7 +108,7 @@ const MathematicsPage: React.FC = () => {
       </AnimatedContainer>
 
       {/* ================================================================
-          SECTION 2 — The Two Problems (relatable to everyone)
+          SECTION 2 — The Two Questions every deckbuilder faces
           ================================================================ */}
       <Box sx={{ mb: 6 }}>
         <Grid container spacing={3}>
@@ -120,21 +119,23 @@ const MathematicsPage: React.FC = () => {
                   p: 3,
                   borderRadius: 3,
                   height: '100%',
-                  border: '2px solid #ef5350',
-                  bgcolor: 'rgba(239, 83, 80, 0.04)',
+                  border: '2px solid #1976d2',
+                  bgcolor: 'rgba(25, 118, 210, 0.04)',
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                  <WarningAmberIcon sx={{ color: '#ef5350', fontSize: 32 }} />
-                  <Typography variant="h6" fontWeight={700} color="#ef5350">
-                    Mana Screw
+                  <FunctionsIcon sx={{ color: '#1976d2', fontSize: 32 }} />
+                  <Typography variant="h6" fontWeight={700} color="#1976d2">
+                    How Many Lands?
                   </Typography>
                 </Box>
                 <Typography variant="body1" paragraph>
-                  You drew spells but not enough lands. Your 4-drop is stuck in hand on turn 6.
+                  The right land count ensures you hit your drops on curve and cast your spells on
+                  time — every game, not just sometimes.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <strong>The question:</strong> How many lands should I run so this rarely happens?
+                  <strong>ManaTuner calculates</strong> the exact probability of having enough mana
+                  each turn, based on your curve.
                 </Typography>
               </Paper>
             </AnimatedContainer>
@@ -146,43 +147,28 @@ const MathematicsPage: React.FC = () => {
                   p: 3,
                   borderRadius: 3,
                   height: '100%',
-                  border: '2px solid #ff9800',
-                  bgcolor: 'rgba(255, 152, 0, 0.04)',
+                  border: '2px solid #4caf50',
+                  bgcolor: 'rgba(76, 175, 80, 0.04)',
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                  <WarningAmberIcon sx={{ color: '#ff9800', fontSize: 32 }} />
-                  <Typography variant="h6" fontWeight={700} color="#ff9800">
-                    Color Screw
+                  <TrendingUpIcon sx={{ color: '#4caf50', fontSize: 32 }} />
+                  <Typography variant="h6" fontWeight={700} color="#4caf50">
+                    How Many Sources per Color?
                   </Typography>
                 </Box>
                 <Typography variant="body1" paragraph>
-                  You have lands, but they're all the wrong color. Your Counterspell sits dead next
-                  to three Mountains.
+                  Having enough lands is only half the puzzle. You need the <em>right colors</em> at
+                  the right time — 20 blue sources to cast Counterspell on turn 2.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <strong>The question:</strong> How many blue sources do I need to reliably cast{' '}
-                  {'{U}{U}'} on turn 2?
+                  <strong>ManaTuner tells you</strong> exactly how many sources of each color your
+                  deck needs for 90% consistency.
                 </Typography>
               </Paper>
             </AnimatedContainer>
           </Grid>
         </Grid>
-
-        <Paper
-          sx={{
-            mt: 3,
-            p: 3,
-            borderRadius: 3,
-            bgcolor: '#e8f5e9',
-            border: '2px solid #4caf50',
-            textAlign: 'center',
-          }}
-        >
-          <Typography variant="h6" fontWeight={700} color="#2e7d32">
-            ManaTuner answers both questions with exact math — no guessing, no "feels right."
-          </Typography>
-        </Paper>
       </Box>
 
       {/* ================================================================
@@ -400,7 +386,8 @@ const MathematicsPage: React.FC = () => {
                 </ol>
               </Typography>
               <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                This is the number to optimize. It catches both mana screw and color screw.
+                This is the number to optimize. It accounts for both land count and color
+                availability.
               </Typography>
             </Paper>
           </Grid>
@@ -416,7 +403,7 @@ const MathematicsPage: React.FC = () => {
               </Typography>
               <Typography variant="body2" paragraph>
                 Assumes perfect land drops, then checks color availability. Always higher than
-                Realistic because it ignores mana screw.
+                Realistic because it assumes perfect land drops.
               </Typography>
               <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
                 Use it to evaluate your color balance independently of your land count.
