@@ -141,9 +141,8 @@ export interface TurnProbabilities {
 
 export interface OverallProbabilities {
   consistency: number
-  colorScrew: number
-  manaFlood: number
-  manaScrew: number
+  /** Fraction of spells below 80% castability on curve (0-1) */
+  atRiskSpells: number
 }
 
 // Search and Filter Types
@@ -337,7 +336,8 @@ export interface DeckAnalysis {
   }
   overallScore?: number
   consistency?: number
-  colorScrew?: number
+  /** Fraction of spells below 80% castability on curve (0-1) */
+  atRiskSpells?: number
   avgCMC?: number
   recommendations: LandRecommendation[]
   probabilities: ManabaseProbabilities

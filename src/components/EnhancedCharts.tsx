@@ -350,16 +350,16 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
             <Grid item xs={12} sm={6} md={3}>
               <Paper className="mtg-card" sx={{ p: 2, textAlign: 'center' }}>
                 <Typography variant="h4" fontWeight="700" color="var(--mtg-red)">
-                  {analysis.colorScrew || 15}%
+                  {analysis.atRiskSpells || 0}%
                 </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  Color Screw Risk
+                  At-Risk Spells
                   <MuiTooltip
-                    title="Color screw happens when you have lands but not the right colors to cast your spells. For example, having only Mountains when you need Blue mana. Lower is better."
+                    title="Percentage of spells in your deck with less than 80% probability of being cast on curve. These are the spells most likely to strand in your hand. Lower is better."
                     arrow
                   >
                     <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
@@ -367,7 +367,18 @@ const EnhancedCharts: React.FC<EnhancedChartsProps> = ({ analysis, cards }) => {
                     </IconButton>
                   </MuiTooltip>
                 </Typography>
-                <Chip label="Low" size="small" className="mtg-chip excellent" sx={{ mt: 1 }} />
+                <Chip
+                  label={
+                    (analysis.atRiskSpells || 0) <= 10
+                      ? 'Low'
+                      : (analysis.atRiskSpells || 0) <= 25
+                        ? 'Moderate'
+                        : 'High'
+                  }
+                  size="small"
+                  className={`mtg-chip ${(analysis.atRiskSpells || 0) <= 10 ? 'excellent' : (analysis.atRiskSpells || 0) <= 25 ? 'average' : 'poor'}`}
+                  sx={{ mt: 1 }}
+                />
               </Paper>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>

@@ -26,7 +26,8 @@ interface EnhancedRecommendationsProps {
   recommendations: string[]
   analysis: {
     consistency: number
-    colorScrew: number
+    /** Fraction of spells below 80% castability on curve (0-1) */
+    atRiskSpells: number
     landRatio: number
     avgCMC: number
   }
@@ -111,9 +112,9 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
     else if (analysis.consistency < 0.75) score -= 15
     else if (analysis.consistency < 0.85) score -= 5
 
-    // Color screw penalty
-    if (analysis.colorScrew > 0.3) score -= 20
-    else if (analysis.colorScrew > 0.2) score -= 10
+    // At-risk spells penalty (fraction of spells below 80% castability)
+    if (analysis.atRiskSpells > 0.3) score -= 20
+    else if (analysis.atRiskSpells > 0.15) score -= 10
 
     // Land ratio penalty
     if (analysis.landRatio < 0.35 || analysis.landRatio > 0.45) score -= 10
@@ -176,10 +177,10 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
                 <Box textAlign="center">
                   <WarningIcon sx={{ fontSize: 32, color: 'var(--mtg-red)', mb: 1 }} />
                   <Typography variant="h6" fontWeight="600">
-                    {Math.round(analysis.colorScrew * 100)}%
+                    {Math.round(analysis.atRiskSpells * 100)}%
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Color Screw Risk
+                    At-Risk Spells
                   </Typography>
                 </Box>
               </Grid>

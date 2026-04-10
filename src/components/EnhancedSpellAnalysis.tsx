@@ -225,40 +225,94 @@ const EnhancedSpellAnalysis: React.FC<EnhancedSpellAnalysisProps> = ({
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Box textAlign="center" p={2}>
-              <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--mtg-green)', mb: 1 }} />
-              <Typography variant="h6" fontWeight="600">
-                Strong Spells
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {spellData.filter((s) => s.percentage >= 80).length} spells with 80%+ castability
-              </Typography>
-            </Box>
+            <Tooltip
+              arrow
+              title={
+                <Box sx={{ p: 0.5 }}>
+                  {spellData
+                    .filter((s) => s.percentage >= 80)
+                    .map((s) => (
+                      <Typography key={s.fullName} variant="caption" display="block">
+                        {s.fullName} — {s.percentage}%
+                      </Typography>
+                    ))}
+                  {spellData.filter((s) => s.percentage >= 80).length === 0 && (
+                    <Typography variant="caption">No spells in this category</Typography>
+                  )}
+                </Box>
+              }
+            >
+              <Box textAlign="center" p={2} sx={{ cursor: 'default' }}>
+                <CheckCircleIcon sx={{ fontSize: 48, color: 'var(--mtg-green)', mb: 1 }} />
+                <Typography variant="h6" fontWeight="600">
+                  Strong Spells
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {spellData.filter((s) => s.percentage >= 80).length} spells with 80%+ castability
+                </Typography>
+              </Box>
+            </Tooltip>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Box textAlign="center" p={2}>
-              <WarningIcon sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
-              <Typography variant="h6" fontWeight="600">
-                Risky Spells
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {spellData.filter((s) => s.percentage < 70 && s.percentage >= 60).length} spells
-                need mana fixing
-              </Typography>
-            </Box>
+            <Tooltip
+              arrow
+              title={
+                <Box sx={{ p: 0.5 }}>
+                  {spellData
+                    .filter((s) => s.percentage < 70 && s.percentage >= 60)
+                    .map((s) => (
+                      <Typography key={s.fullName} variant="caption" display="block">
+                        {s.fullName} — {s.percentage}%
+                      </Typography>
+                    ))}
+                  {spellData.filter((s) => s.percentage < 70 && s.percentage >= 60).length ===
+                    0 && <Typography variant="caption">No spells in this category</Typography>}
+                </Box>
+              }
+            >
+              <Box textAlign="center" p={2} sx={{ cursor: 'default' }}>
+                <WarningIcon sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
+                <Typography variant="h6" fontWeight="600">
+                  Risky Spells
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {spellData.filter((s) => s.percentage < 70 && s.percentage >= 60).length} spells
+                  need mana fixing
+                </Typography>
+              </Box>
+            </Tooltip>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Box textAlign="center" p={2}>
-              <ErrorIcon sx={{ fontSize: 48, color: 'var(--mtg-red)', mb: 1 }} />
-              <Typography variant="h6" fontWeight="600">
-                Critical Issues
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {spellData.filter((s) => s.percentage < 60).length} spells with severe mana problems
-              </Typography>
-            </Box>
+            <Tooltip
+              arrow
+              title={
+                <Box sx={{ p: 0.5 }}>
+                  {spellData
+                    .filter((s) => s.percentage < 60)
+                    .map((s) => (
+                      <Typography key={s.fullName} variant="caption" display="block">
+                        {s.fullName} — {s.percentage}%
+                      </Typography>
+                    ))}
+                  {spellData.filter((s) => s.percentage < 60).length === 0 && (
+                    <Typography variant="caption">No spells in this category</Typography>
+                  )}
+                </Box>
+              }
+            >
+              <Box textAlign="center" p={2} sx={{ cursor: 'default' }}>
+                <ErrorIcon sx={{ fontSize: 48, color: 'var(--mtg-red)', mb: 1 }} />
+                <Typography variant="h6" fontWeight="600">
+                  Critical Issues
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {spellData.filter((s) => s.percentage < 60).length} spells with severe mana
+                  problems
+                </Typography>
+              </Box>
+            </Tooltip>
           </Grid>
         </Grid>
       </Paper>

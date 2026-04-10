@@ -2,9 +2,33 @@ import BarChartIcon from '@mui/icons-material/BarChart'
 import BoltIcon from '@mui/icons-material/Bolt'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import { Box, CircularProgress, Tab, Tabs } from '@mui/material'
-import React, { Suspense, memo, useState } from 'react'
+import React, { Suspense, memo, useMemo, useState } from 'react'
 import { AnalysisResult, DeckCard } from '../../services/deckAnalyzer'
 import EnhancedRecommendations from '../EnhancedRecommendations'
+
+/**
+ * Derive the fraction of spells below 80% castability on curve.
+ * Uses tempo-adjusted percentage when available, falls back to basic spellAnalysis.
+ */
+function computeAtRiskSpells(analysisResult: AnalysisResult): number {
+  const tempoSpells = analysisResult.tempoSpellAnalysis
+  const basicSpells = analysisResult.spellAnalysis
+
+  if (tempoSpells && Object.keys(tempoSpells).length > 0) {
+    const entries = Object.values(tempoSpells)
+    const atRisk = entries.filter((s) => s.tempoAdjustedPercentage < 80).length
+    return entries.length > 0 ? atRisk / entries.length : 0
+  }
+
+  if (basicSpells && Object.keys(basicSpells).length > 0) {
+    const entries = Object.values(basicSpells)
+    const atRisk = entries.filter((s) => s.percentage < 80).length
+    return entries.length > 0 ? atRisk / entries.length : 0
+  }
+
+  // Fallback: derive from consistency (worst case)
+  return Math.max(0, 1 - analysisResult.consistency)
+}
 
 // Lazy-load heavy Recharts components to reduce initial bundle size
 const EnhancedCharts = React.lazy(() => import('../EnhancedCharts'))
@@ -26,6 +50,7 @@ interface AnalysisTabProps {
 export const AnalysisTab: React.FC<AnalysisTabProps> = memo(
   ({ analysisResult, isMobile, cards }) => {
     const [subTab, setSubTab] = useState(0)
+    const atRiskSpells = useMemo(() => computeAtRiskSpells(analysisResult), [analysisResult])
 
     return (
       <Box>
@@ -77,7 +102,7 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = memo(
                 mulliganAnalysis: analysisResult.mulliganAnalysis,
                 overallScore: Math.round(analysisResult.consistency * 100),
                 consistency: Math.round(analysisResult.consistency * 100),
-                colorScrew: Math.round((1 - analysisResult.consistency) * 20),
+                atRiskSpells: Math.round(atRiskSpells * 100),
                 avgCMC: analysisResult.averageCMC,
                 recommendations: [],
                 probabilities: {
@@ -103,9 +128,7 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = memo(
                   },
                   overall: {
                     consistency: analysisResult.consistency,
-                    colorScrew: (1 - analysisResult.consistency) * 0.2,
-                    manaFlood: 0.1,
-                    manaScrew: 0.15,
+                    atRiskSpells,
                   },
                 },
                 createdAt: new Date().toISOString(),
@@ -121,7 +144,7 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = memo(
             recommendations={analysisResult.recommendations}
             analysis={{
               consistency: analysisResult.consistency,
-              colorScrew: (1 - analysisResult.consistency) * 0.2,
+              atRiskSpells,
               landRatio: analysisResult.landRatio,
               avgCMC: analysisResult.averageCMC,
             }}
