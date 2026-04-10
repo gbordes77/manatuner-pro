@@ -900,3 +900,129 @@ describe('integration: realistic deck scenarios', () => {
     }
   })
 })
+
+// =============================================================================
+// LAND_RAMP TESTS
+// =============================================================================
+
+describe('LAND_RAMP producer type', () => {
+  const hg = new Hypergeom(200)
+
+  /**
+   * Earthbender Ascension: {2}{G} enchantment, searches basic land onto battlefield tapped
+   */
+  function makeEarthbenderAscension(copies: number = 4): ProducerInDeck {
+    const def: ManaProducerDef = {
+      name: 'Earthbender Ascension',
+      type: 'LAND_RAMP',
+      castCostGeneric: 2,
+      castCostColors: { G: 1 },
+      delay: 1, // land enters tapped
+      isCreature: false,
+      producesAmount: 1,
+      activationTax: 0,
+      producesMask: 0b111111, // player picks any basic
+      producesAny: true,
+      oneShot: false,
+    }
+    return { def, copies }
+  }
+
+  /**
+   * Lumbering Worldwagon: {2}{G} vehicle, searches basic land onto battlefield tapped on ETB/attack
+   */
+  function makeLumberingWorldwagon(copies: number = 2): ProducerInDeck {
+    const def: ManaProducerDef = {
+      name: 'Lumbering Worldwagon',
+      type: 'LAND_RAMP',
+      castCostGeneric: 2,
+      castCostColors: { G: 1 },
+      delay: 1,
+      isCreature: false,
+      producesAmount: 1,
+      activationTax: 0,
+      producesMask: 0b111111,
+      producesAny: true,
+      oneShot: false,
+    }
+    return { def, copies }
+  }
+
+  it('LAND_RAMP has 100% survival even with high removal', () => {
+    const deck = makeGruulDeck()
+    const modernCtx = makeModernCtx() // 35% removal rate
+    const earthbender = makeEarthbenderAscension()
+
+    // At turn 5, the producer should have non-zero pOnline
+    const pOnline = producerOnlineProbByTurn(hg, deck, earthbender, 5, modernCtx)
+    expect(pOnline).toBeGreaterThan(0)
+
+    // Compare with a DORK at same stats — LAND_RAMP should have higher pOnline
+    // because it doesn't suffer removal after resolution
+    const dorkDef: ManaProducerDef = {
+      ...earthbender.def,
+      type: 'DORK',
+      isCreature: true,
+    }
+    const dorkPOnline = producerOnlineProbByTurn(
+      hg,
+      deck,
+      { def: dorkDef, copies: 4 },
+      5,
+      modernCtx
+    )
+    expect(pOnline).toBeGreaterThan(dorkPOnline)
+  })
+
+  it('LAND_RAMP improves castability for expensive spells', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const ctx = makeGoldfishCtx()
+
+    // 5-mana green spell
+    const spell = { mv: 5, generic: 4, pips: { G: 1 } }
+    const earthbender = makeEarthbenderAscension()
+
+    const base = computeBaseCastabilityAtTurn(deck, spell, 5, ctx)
+    const accel = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 5, [earthbender], ctx)
+
+    // With ramp, casting a 5-drop on T5 should be easier
+    expect(accel.p2).toBeGreaterThan(base.p2)
+  })
+
+  it('LAND_RAMP + DORK stack for acceleration', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const ctx = makeGoldfishCtx()
+
+    const spell = { mv: 6, generic: 4, pips: { G: 2 } }
+    const earthbender = makeEarthbenderAscension()
+    const elves = makeLlanowarElves()
+
+    const rampOnly = computeAcceleratedCastabilityAtTurn(hg, deck, spell, 5, [earthbender], ctx)
+    const rampPlusDork = computeAcceleratedCastabilityAtTurn(
+      hg,
+      deck,
+      spell,
+      5,
+      [earthbender, elves],
+      ctx
+    )
+
+    // Stacking land ramp + dork should be better than ramp alone
+    expect(rampPlusDork.p2).toBeGreaterThanOrEqual(rampOnly.p2 - 1e-9)
+  })
+
+  it('LAND_RAMP appears in keyAccelerators', () => {
+    const deck = makeGruulDeck({ totalLands: 26, landColorSources: { G: 22 } })
+    const ctx = makeGoldfishCtx()
+    const spell: ManaCost = { mv: 5, generic: 4, pips: { G: 1 } }
+
+    const result = computeAcceleratedCastability(
+      deck,
+      spell,
+      [makeEarthbenderAscension(), makeLumberingWorldwagon()],
+      ctx
+    )
+
+    expect(result.keyAccelerators).toContain('Earthbender Ascension')
+  })
+})

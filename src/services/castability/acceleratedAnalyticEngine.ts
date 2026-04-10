@@ -350,8 +350,11 @@ export function producerOnlineProbByTurn(
   if (pCastable <= 0) return 0
 
   // P(survives from T_latest until turnTarget) - unified model
-  const exposureTurns = turnTarget - tLatest
-  const pSurvive = calculateSurvivalProbability(def.isCreature, exposureTurns, ctx)
+  // LAND_RAMP: the extra land is irremovable once in play → survival = 1.0
+  const pSurvive =
+    def.type === 'LAND_RAMP'
+      ? 1.0
+      : calculateSurvivalProbability(def.isCreature, turnTarget - tLatest, ctx)
 
   return clamp01(pDraw * pCastable * pSurvive)
 }

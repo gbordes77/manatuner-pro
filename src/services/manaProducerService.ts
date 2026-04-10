@@ -195,14 +195,14 @@ export const producerCacheService = new ProducerCacheService()
  * - Sacrifice: Add ...              (one-shot mana like Lotus Petal)
  */
 function analyzeOracleForMana(oracleText: string): {
-  type: 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | null
+  type: 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | 'LAND_RAMP' | null
   producesAny: boolean
   colorLetters: string[]
   amount: number
   oneShot: boolean
 } {
   const result = {
-    type: null as 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | null,
+    type: null as 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | 'LAND_RAMP' | null,
     producesAny: false,
     colorLetters: [] as string[],
     amount: 1,
@@ -212,6 +212,18 @@ function analyzeOracleForMana(oracleText: string): {
   if (!oracleText) return result
 
   const colors = new Set<string>()
+
+  // 0. Detect land ramp FIRST — "search...basic land...put...onto the battlefield"
+  // Covers: Cultivate, Kodama's Reach, Earthbender Ascension, Lumbering Worldwagon, etc.
+  // Must be checked before "Add" patterns since land ramp cards don't have "Add {G}"
+  if (/search\b[^.]*\bbasic\s+land[^.]*\bonto\s+the\s+battlefield\b/i.test(oracleText)) {
+    result.type = 'LAND_RAMP'
+    result.amount = 1
+    result.oneShot = false // the land stays in play and produces mana every turn
+    // "basic land" = any color the deck needs (the player picks the basic)
+    result.producesAny = true
+    return result
+  }
 
   // 1. Detect "any color" production (highest priority)
   if (/add\s+one\s+mana\s+of\s+any\s+(?:color|type)/i.test(oracleText)) {
@@ -342,6 +354,24 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
         : validColors.length > 0
           ? colorMaskFromLetters(validColors as any)
           : 0b100000
+    }
+
+    // LAND_RAMP: the extra land enters tapped (delay=1), is irremovable,
+    // and produces any color the player chooses (basic land search)
+    if (analysis.type === 'LAND_RAMP') {
+      return {
+        name: data.name,
+        type: 'LAND_RAMP',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: 1, // land enters tapped
+        isCreature,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: 0b111111, // player picks any basic
+        producesAny: true,
+        oneShot: false, // the land stays in play
+      }
     }
 
     return {

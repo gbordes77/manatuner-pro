@@ -43,6 +43,7 @@ export type ManaProducerType =
   | 'TREASURE' // Token-based mana (Dockside Extortionist creates treasures)
   | 'CONDITIONAL' // Conditional producers (Nykthos, Urborg+Coffers)
   | 'ENHANCER' // Multiplies/enhances other dorks (Badgermole Cub)
+  | 'LAND_RAMP' // Puts extra lands onto battlefield (Cultivate, Earthbender Ascension)
 
 /**
  * Human-readable names for producer types
@@ -55,6 +56,7 @@ export const PRODUCER_TYPE_NAMES: Record<ManaProducerType, string> = {
   TREASURE: 'Treasure Producer',
   CONDITIONAL: 'Conditional',
   ENHANCER: 'Mana Enhancer',
+  LAND_RAMP: 'Land Ramp',
 }
 
 // =============================================================================
