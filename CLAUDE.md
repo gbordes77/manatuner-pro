@@ -1,5 +1,11 @@
 # ManaTuner - Instructions Claude
 
+## LANCEMENT — LIRE EN PREMIER
+
+**Lis `LAUNCH.md` a la racine du projet au debut de chaque session.** Avant de proposer un refactoring, une nouvelle feature, ou un audit : est-ce que ca aide a avoir des utilisateurs ? Si non, redirige vers le plan de lancement.
+
+---
+
 ## RÈGLE CRITIQUE: Rechargement Automatique
 
 **À chaque modification de fichier frontend (.tsx, .ts, .css, .scss):**
