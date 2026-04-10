@@ -5,7 +5,6 @@ import CasinoIcon from '@mui/icons-material/Casino'
 import MenuBookIcon from '@mui/icons-material/MenuBook'
 import PsychologyIcon from '@mui/icons-material/Psychology'
 import ShowChartIcon from '@mui/icons-material/ShowChart'
-import TimelineIcon from '@mui/icons-material/Timeline'
 import {
   Box,
   Button,
@@ -98,17 +97,6 @@ export const HomePage: React.FC = () => {
   // Features displayed on the home page
   const features = [
     {
-      icon: <TimelineIcon sx={{ fontSize: 40 }} />,
-      title: 'Health Score',
-      description: (
-        <>
-          Instant manabase health percentage based on <Term id="hypergeometric">exact math</Term>.
-        </>
-      ),
-      color: theme.palette.mana.green,
-      manaColor: 'g' as const,
-    },
-    {
       icon: <ShowChartIcon sx={{ fontSize: 40 }} />,
       title: 'Castability',
       description: (
@@ -119,6 +107,14 @@ export const HomePage: React.FC = () => {
       ),
       color: theme.palette.mana.blue,
       manaColor: 'u' as const,
+    },
+    {
+      icon: <AnalyticsIcon sx={{ fontSize: 40 }} />,
+      title: 'Analysis Dashboard',
+      description:
+        'Visual breakdown of your spells by category, curve insights, and performance diagnostics at a glance.',
+      color: theme.palette.mana.green,
+      manaColor: 'g' as const,
     },
     {
       icon: <CasinoIcon sx={{ fontSize: 40 }} />,
