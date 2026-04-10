@@ -44,6 +44,11 @@ export type ManaProducerType =
   | 'CONDITIONAL' // Conditional producers (Nykthos, Urborg+Coffers)
   | 'ENHANCER' // Multiplies/enhances other dorks (Badgermole Cub)
   | 'LAND_RAMP' // Puts extra lands onto battlefield (Cultivate, Earthbender Ascension)
+  | 'LAND_AURA' // Enchantment on land for extra mana (Wild Growth, Utopia Sprawl)
+  | 'LAND_FROM_HAND' // Puts land from hand onto battlefield (Growth Spiral, Arboreal Grazer)
+  | 'SPAWN_SCION' // Creates Eldrazi Spawn/Scion tokens that sac for {C}
+  | 'LANDFALL_MANA' // Generates mana on land ETB (Lotus Cobra)
+  | 'MANA_DOUBLER' // Doubles/triples mana from lands (Mirari's Wake, Nyxbloom Ancient)
 
 /**
  * Human-readable names for producer types
@@ -57,6 +62,11 @@ export const PRODUCER_TYPE_NAMES: Record<ManaProducerType, string> = {
   CONDITIONAL: 'Conditional',
   ENHANCER: 'Mana Enhancer',
   LAND_RAMP: 'Land Ramp',
+  LAND_AURA: 'Land Aura',
+  LAND_FROM_HAND: 'Land from Hand',
+  SPAWN_SCION: 'Eldrazi Spawn/Scion',
+  LANDFALL_MANA: 'Landfall Mana',
+  MANA_DOUBLER: 'Mana Doubler',
 }
 
 // =============================================================================
@@ -159,6 +169,14 @@ export interface ManaProducerDef {
    * Default: ['DORK'] for cards like Badgermole Cub
    */
   enhancesTypes?: ManaProducerType[]
+
+  // ============ MANA_DOUBLER-specific fields ============
+
+  /**
+   * For MANA_DOUBLER type: multiplication factor
+   * 2 = doubles (Mirari's Wake), 3 = triples (Nyxbloom Ancient)
+   */
+  doublerMultiplier?: number
 }
 
 /**

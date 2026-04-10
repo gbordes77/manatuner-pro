@@ -1189,6 +1189,382 @@ const SEED_DATA: Record<string, Omit<ManaProducerDef, 'name'>> = {
     oneShot: true,
     survivalBase: 0.85,
   },
+
+  // ===========================================================================
+  // LAND AURAS - Enchantments that make lands produce extra mana
+  // ===========================================================================
+
+  'Wild Growth': {
+    type: 'LAND_AURA',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 0, // enchanted land already untapped
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('G'),
+    producesAny: false,
+    oneShot: false,
+  },
+
+  'Utopia Sprawl': {
+    type: 'LAND_AURA',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+  },
+
+  'Fertile Ground': {
+    type: 'LAND_AURA',
+    castCostGeneric: 1,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+  },
+
+  'Wolfwillow Haven': {
+    type: 'LAND_AURA',
+    castCostGeneric: 1,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('G'),
+    producesAny: false,
+    oneShot: false,
+  },
+
+  Overgrowth: {
+    type: 'LAND_AURA',
+    castCostGeneric: 2,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 2, // adds {G}{G}
+    activationTax: 0,
+    producesMask: mask('G'),
+    producesAny: false,
+    oneShot: false,
+  },
+
+  "Dawn's Reflection": {
+    type: 'LAND_AURA',
+    castCostGeneric: 3,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 2, // adds 2 mana of any one color
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+  },
+
+  'Gift of Paradise': {
+    type: 'LAND_AURA',
+    castCostGeneric: 2,
+    castCostColors: { G: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+  },
+
+  // ===========================================================================
+  // LAND FROM HAND - Put land from hand onto battlefield
+  // ===========================================================================
+
+  'Growth Spiral': {
+    type: 'LAND_FROM_HAND',
+    castCostGeneric: 0,
+    castCostColors: { G: 1, U: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: true, // instant spell
+  },
+
+  'Arboreal Grazer': {
+    type: 'LAND_FROM_HAND',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 0, // ETB trigger, immediate
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: true, // ETB only once
+  },
+
+  'Sakura-Tribe Scout': {
+    // {T}: Put a land card from your hand onto the battlefield.
+    // Repeatable creature — but has summoning sickness
+    type: 'LAND_FROM_HAND',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 1, // summoning sickness
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false, // repeatable tap ability
+    survivalBase: 0.75,
+  },
+
+  'Skyshroud Ranger': {
+    type: 'LAND_FROM_HAND',
+    castCostGeneric: 0,
+    castCostColors: { G: 1 },
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    survivalBase: 0.75,
+  },
+
+  "Uro, Titan of Nature's Wrath": {
+    type: 'LAND_FROM_HAND',
+    castCostGeneric: 1,
+    castCostColors: { G: 1, U: 1 },
+    delay: 0,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: true, // sacrificed on first cast
+  },
+
+  // ===========================================================================
+  // ELDRAZI SPAWN / SCION - Tokens that sacrifice for {C}
+  // ===========================================================================
+
+  'Awakening Zone': {
+    type: 'SPAWN_SCION',
+    castCostGeneric: 2,
+    castCostColors: { G: 1 },
+    delay: 1, // creates token on upkeep
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('C'),
+    producesAny: false,
+    oneShot: true, // each token is one-shot
+  },
+
+  'From Beyond': {
+    type: 'SPAWN_SCION',
+    castCostGeneric: 3,
+    castCostColors: { G: 1 },
+    delay: 1,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('C'),
+    producesAny: false,
+    oneShot: true,
+  },
+
+  'Pawn of Ulamog': {
+    type: 'SPAWN_SCION',
+    castCostGeneric: 1,
+    castCostColors: { B: 2 },
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('C'),
+    producesAny: false,
+    oneShot: true,
+    survivalBase: 0.7,
+  },
+
+  'Glaring Fleshraker': {
+    type: 'SPAWN_SCION',
+    castCostGeneric: 1,
+    castCostColors: { C: 2 },
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: mask('C'),
+    producesAny: false,
+    oneShot: true,
+    survivalBase: 0.7,
+  },
+
+  // ===========================================================================
+  // LANDFALL MANA - Generates mana on land ETB
+  // ===========================================================================
+
+  'Lotus Cobra': {
+    type: 'LANDFALL_MANA',
+    castCostGeneric: 1,
+    castCostColors: { G: 1 },
+    delay: 1, // creature with summoning sickness (but trigger is passive, fires on next land)
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false, // triggers every land drop
+    survivalBase: 0.65, // high-priority removal target
+  },
+
+  'Nissa, Resurgent Animist': {
+    type: 'LANDFALL_MANA',
+    castCostGeneric: 2,
+    castCostColors: { G: 1 },
+    delay: 1,
+    isCreature: true,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: true,
+    oneShot: false,
+    survivalBase: 0.6,
+  },
+
+  // ===========================================================================
+  // MANA DOUBLERS - Double/triple land mana production
+  // ===========================================================================
+
+  "Mirari's Wake": {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 3,
+    castCostColors: { G: 1, W: 1 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1, // net +1 per land tap
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Zendikar Resurgent': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 5,
+    castCostColors: { G: 2 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Mana Reflection': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 4,
+    castCostColors: { G: 2 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Nyxbloom Ancient': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 4,
+    castCostColors: { G: 3 },
+    delay: 0,
+    isCreature: true,
+    producesAmount: 2, // net +2 per land tap (tripler)
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    doublerMultiplier: 3,
+    survivalBase: 0.5, // 7-drop creature, big removal target
+  },
+
+  'Caged Sun': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 6,
+    castCostColors: {},
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1, // +1 per land of chosen color
+    activationTax: 0,
+    producesMask: ANY_COLOR,
+    producesAny: false, // only chosen color
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Dictate of Karametra': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 3,
+    castCostColors: { G: 2 },
+    delay: 0,
+    isCreature: false,
+    producesAmount: 1,
+    activationTax: 0,
+    producesMask: ANY_COLOR_C,
+    producesAny: true,
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Nissa, Who Shakes the World': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 3,
+    castCostColors: { G: 2 },
+    delay: 0,
+    isCreature: false, // planeswalker, not creature
+    producesAmount: 1, // +1G per Forest tap
+    activationTax: 0,
+    producesMask: mask('G'),
+    producesAny: false, // only Forests
+    oneShot: false,
+    doublerMultiplier: 2,
+  },
+
+  'Crypt Ghast': {
+    type: 'MANA_DOUBLER',
+    castCostGeneric: 3,
+    castCostColors: { B: 1 },
+    delay: 1, // creature
+    isCreature: true,
+    producesAmount: 1, // +{B} per Swamp tap
+    activationTax: 0,
+    producesMask: mask('B'),
+    producesAny: false,
+    oneShot: false,
+    doublerMultiplier: 2,
+    survivalBase: 0.65,
+  },
 }
 
 // =============================================================================

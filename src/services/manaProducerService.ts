@@ -194,21 +194,36 @@ export const producerCacheService = new ProducerCacheService()
  * - Create ... Treasure             (treasure makers)
  * - Sacrifice: Add ...              (one-shot mana like Lotus Petal)
  */
+type DetectedProducerType =
+  | 'DORK'
+  | 'ROCK'
+  | 'RITUAL'
+  | 'TREASURE'
+  | 'LAND_RAMP'
+  | 'LAND_AURA'
+  | 'LAND_FROM_HAND'
+  | 'SPAWN_SCION'
+  | 'LANDFALL_MANA'
+  | 'MANA_DOUBLER'
+  | null
+
 function analyzeOracleForMana(oracleText: string): {
-  type: 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | 'LAND_RAMP' | null
+  type: DetectedProducerType
   producesAny: boolean
   colorLetters: string[]
   amount: number
   oneShot: boolean
   delay?: number // override default delay (undefined = use default logic)
+  doublerMultiplier?: number // for MANA_DOUBLER: 2x or 3x
 } {
   const result = {
-    type: null as 'DORK' | 'ROCK' | 'RITUAL' | 'TREASURE' | 'LAND_RAMP' | null,
+    type: null as DetectedProducerType,
     producesAny: false,
     colorLetters: [] as string[],
     amount: 1,
     oneShot: false,
     delay: undefined as number | undefined,
+    doublerMultiplier: undefined as number | undefined,
   }
 
   if (!oracleText) return result
@@ -239,6 +254,92 @@ function analyzeOracleForMana(oracleText: string): {
     result.producesAny = true
     result.oneShot = false
     result.delay = 0 // no summoning sickness for land drops
+    return result
+  }
+
+  // 0d. Detect "put a land card from your hand onto the battlefield"
+  // Covers: Growth Spiral, Arboreal Grazer, Explore, Uro, Sakura-Tribe Scout
+  // Instant/sorcery variants are one-shot; creatures with activated abilities are repeatable
+  if (/put\s+a\s+land\s+card\s+from\s+your\s+hand\s+onto\s+the\s+battlefield/i.test(oracleText)) {
+    result.type = 'LAND_FROM_HAND'
+    result.amount = 1
+    result.producesAny = true
+    result.oneShot = false // will be set based on card type in detectProducerFromScryfall
+    result.delay = 0 // land enters immediately
+    return result
+  }
+
+  // 0e. Detect land auras — "enchant land" + "tapped for mana, adds an additional"
+  // Covers: Wild Growth, Utopia Sprawl, Fertile Ground, Overgrowth, Dawn's Reflection
+  // Also: "Enchanted land has '{T}: Add...'" (Wolfwillow Haven, Gift of Paradise)
+  if (
+    /enchant\s+land/i.test(oracleText) &&
+    (/tapped\s+for\s+mana[^.]*add/i.test(oracleText) ||
+      /enchanted\s+land\s+has\s+[^.]*add/i.test(oracleText))
+  ) {
+    result.type = 'LAND_AURA'
+    result.delay = 0 // enchanted land is already untapped
+
+    // Detect amount: Overgrowth adds 2, Dawn's Reflection adds 2, most add 1
+    const twoManaMatch =
+      /add\s+\{[WUBRGC]\}\{[WUBRGC]\}/i.test(oracleText) || /add\s+two\s+mana/i.test(oracleText)
+    result.amount = twoManaMatch ? 2 : 1
+
+    // Detect color production
+    if (/any\s+(?:color|type)/i.test(oracleText) || /any\s+one\s+color/i.test(oracleText)) {
+      result.producesAny = true
+    }
+    return result
+  }
+
+  // 0f. Detect landfall mana — "whenever a land enters the battlefield under your control, add"
+  // Covers: Lotus Cobra, Nissa Resurgent Animist
+  if (
+    /whenever\s+a\s+land\s+(?:enters|you\s+control\s+enters)[^.]*add/i.test(oracleText) ||
+    /landfall[^.]*add\s+(?:one\s+mana|\{[WUBRGC]\})/i.test(oracleText)
+  ) {
+    result.type = 'LANDFALL_MANA'
+    result.amount = 1
+    result.oneShot = false
+    result.delay = 0 // triggers on the next land drop
+    if (/any\s+(?:color|type)/i.test(oracleText) || /one\s+mana\s+of\s+any/i.test(oracleText)) {
+      result.producesAny = true
+    }
+    return result
+  }
+
+  // 0g. Detect mana doublers — "whenever you tap a land for mana, add"
+  // (not "enchant land" — those are LAND_AURA, already caught above)
+  // Covers: Mirari's Wake, Zendikar Resurgent, Dictate of Karametra, Caged Sun, Nissa Who Shakes
+  // Also: "produces twice/three times as much mana" (Mana Reflection, Nyxbloom Ancient)
+  if (
+    /whenever\s+you\s+tap\s+a\s+(?:land|[A-Z][a-z]+)\s+for\s+mana[^.]*add/i.test(oracleText) ||
+    /produces?\s+(?:twice|three\s+times)\s+(?:as\s+much|that\s+much)/i.test(oracleText)
+  ) {
+    result.type = 'MANA_DOUBLER'
+    result.delay = 0 // affects lands immediately
+    result.oneShot = false
+    result.producesAny = true
+
+    if (/three\s+times/i.test(oracleText)) {
+      result.amount = 2 // net +2 per land tap (3x - 1 base)
+      result.doublerMultiplier = 3
+    } else {
+      result.amount = 1 // net +1 per land tap (2x - 1 base)
+      result.doublerMultiplier = 2
+    }
+    return result
+  }
+
+  // 0h. Detect Eldrazi Spawn/Scion — creates tokens that sacrifice for {C}
+  // Covers: Awakening Zone, Pawn of Ulamog, Glaring Fleshraker, Basking Broodscale
+  // Distinct from Treasure (colorless only, tied to Eldrazi theme)
+  if (/(?:eldrazi\s+spawn|eldrazi\s+scion)/i.test(oracleText) && /sacrifice/i.test(oracleText)) {
+    result.type = 'SPAWN_SCION'
+    result.amount = 1
+    result.producesAny = false
+    result.colorLetters = ['C']
+    result.oneShot = true // each token is one-shot
     return result
   }
 
@@ -388,6 +489,95 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
         producesMask: 0b111111, // player picks any basic
         producesAny: true,
         oneShot: false, // the land stays in play
+      }
+    }
+
+    // LAND_FROM_HAND: like LAND_RAMP but from hand instead of library
+    // Instant/sorcery = one-shot; creature with tap ability = repeatable
+    if (analysis.type === 'LAND_FROM_HAND') {
+      const isInstantSorcery = /instant|sorcery/i.test(typeLine)
+      return {
+        name: data.name,
+        type: 'LAND_FROM_HAND',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: 0, // land enters immediately
+        isCreature,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: 0b111111, // depends on what land you have in hand
+        producesAny: true,
+        oneShot: isInstantSorcery, // spells are one-shot, creatures repeat
+      }
+    }
+
+    // LAND_AURA: enchantment on land, makes it produce extra mana
+    // delay=0 because the enchanted land is already in play and untapped
+    if (analysis.type === 'LAND_AURA') {
+      return {
+        name: data.name,
+        type: 'LAND_AURA',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: 0, // enchanted land taps immediately
+        isCreature: false,
+        producesAmount: analysis.amount,
+        activationTax: 0,
+        producesMask: analysis.producesAny ? 0b111111 : producesMask,
+        producesAny: analysis.producesAny,
+        oneShot: false, // permanent enchantment
+      }
+    }
+
+    // SPAWN_SCION: Eldrazi Spawn/Scion tokens — colorless-only sacrifice mana
+    if (analysis.type === 'SPAWN_SCION') {
+      return {
+        name: data.name,
+        type: 'SPAWN_SCION',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: isCreature ? 1 : 0,
+        isCreature,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: 0b100000, // colorless only ({C})
+        producesAny: false,
+        oneShot: true, // each token sacrifices once
+      }
+    }
+
+    // LANDFALL_MANA: triggers on land ETB — Lotus Cobra, Nissa Resurgent Animist
+    if (analysis.type === 'LANDFALL_MANA') {
+      return {
+        name: data.name,
+        type: 'LANDFALL_MANA',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: isCreature ? 1 : 0, // creatures have summoning sickness (but trigger is passive)
+        isCreature,
+        producesAmount: 1,
+        activationTax: 0,
+        producesMask: analysis.producesAny ? 0b111111 : producesMask,
+        producesAny: analysis.producesAny,
+        oneShot: false, // triggers every land drop
+      }
+    }
+
+    // MANA_DOUBLER: doubles/triples all land mana production
+    if (analysis.type === 'MANA_DOUBLER') {
+      return {
+        name: data.name,
+        type: 'MANA_DOUBLER',
+        castCostGeneric: generic,
+        castCostColors: colors,
+        delay: 0, // affects lands immediately
+        isCreature,
+        producesAmount: analysis.amount, // net +1 (doubler) or +2 (tripler) per land
+        activationTax: 0,
+        producesMask: 0b111111, // mirrors whatever the land produces
+        producesAny: true,
+        oneShot: false,
+        doublerMultiplier: analysis.doublerMultiplier,
       }
     }
 
