@@ -46,7 +46,7 @@ Aucune variable d'environnement requise. L'app est 100% client-side.
 ```
 src/
 ├── components/
-│   ├── analyzer/        # Onglets d'analyse (Dashboard, Castability, Mulligan, Analysis, Manabase, Blueprint)
+│   ├── analyzer/        # Onglets d'analyse (Castability, Mulligan, Analysis, Manabase, Blueprint)
 │   ├── common/          # Composants partages (FloatingManaSymbols, AnimatedContainer, BetaBanner)
 │   ├── export/          # ManaBlueprint (export PNG/PDF/JSON)
 │   └── layout/          # Header, Footer, StaticPages

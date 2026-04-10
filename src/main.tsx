@@ -28,11 +28,7 @@ if ('serviceWorker' in navigator) {
   // Unregister all Service Workers
   navigator.serviceWorker.getRegistrations().then((registrations) => {
     registrations.forEach((registration) => {
-      registration.unregister().then((success) => {
-        if (success) {
-          console.log('[SW] Unregistered old Service Worker')
-        }
-      })
+      registration.unregister()
     })
   })
 
@@ -40,9 +36,7 @@ if ('serviceWorker' in navigator) {
   if ('caches' in window) {
     caches.keys().then((cacheNames) => {
       cacheNames.forEach((cacheName) => {
-        caches.delete(cacheName).then(() => {
-          console.log(`[Cache] Deleted cache: ${cacheName}`)
-        })
+        caches.delete(cacheName)
       })
     })
   }

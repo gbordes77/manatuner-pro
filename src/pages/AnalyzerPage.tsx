@@ -1,7 +1,6 @@
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import AssessmentIcon from '@mui/icons-material/Assessment'
 import CasinoIcon from '@mui/icons-material/Casino'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import DownloadIcon from '@mui/icons-material/Download'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import ShowChartIcon from '@mui/icons-material/ShowChart'
@@ -31,9 +30,6 @@ import { SEO } from '../components/common/SEO'
 import PrivacySettings from '../components/PrivacySettings'
 
 // Lazy-loaded tabs (only loaded when selected)
-const DashboardTab = React.lazy(() =>
-  import('../components/analyzer/DashboardTab').then((m) => ({ default: m.DashboardTab }))
-)
 const CastabilityTab = React.lazy(() =>
   import('../components/analyzer/CastabilityTab').then((m) => ({ default: m.CastabilityTab }))
 )
@@ -564,12 +560,6 @@ const AnalyzerPage: React.FC = () => {
                     }}
                   >
                     <Tab
-                      icon={<DashboardIcon sx={{ fontSize: 18 }} />}
-                      iconPosition="start"
-                      label="Dashboard"
-                      aria-label="Dashboard - Overview and health score"
-                    />
-                    <Tab
                       icon={<ShowChartIcon sx={{ fontSize: 18 }} />}
                       iconPosition="start"
                       label="Castability"
@@ -603,18 +593,14 @@ const AnalyzerPage: React.FC = () => {
 
                   <Suspense fallback={<AnalyzerSkeleton />}>
                     <TabPanel value={activeTab} index={0}>
-                      <DashboardTab analysisResult={analysisResult} isMobile={isMobile} />
-                    </TabPanel>
-
-                    <TabPanel value={activeTab} index={1}>
                       <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
                     </TabPanel>
 
-                    <TabPanel value={activeTab} index={2}>
+                    <TabPanel value={activeTab} index={1}>
                       <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
                     </TabPanel>
 
-                    <TabPanel value={activeTab} index={3}>
+                    <TabPanel value={activeTab} index={2}>
                       <AnalysisTab
                         analysisResult={analysisResult}
                         isMobile={isMobile}
@@ -622,7 +608,7 @@ const AnalyzerPage: React.FC = () => {
                       />
                     </TabPanel>
 
-                    <TabPanel value={activeTab} index={4}>
+                    <TabPanel value={activeTab} index={3}>
                       <ManabaseFullTab
                         deckList={deckList}
                         analysisResult={analysisResult}
@@ -631,7 +617,7 @@ const AnalyzerPage: React.FC = () => {
                       />
                     </TabPanel>
 
-                    <TabPanel value={activeTab} index={5}>
+                    <TabPanel value={activeTab} index={4}>
                       <ManaBlueprint
                         analysisResult={analysisResult}
                         deckName={`Deck ${new Date().toLocaleDateString()}`}

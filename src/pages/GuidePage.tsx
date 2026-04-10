@@ -5,7 +5,6 @@ import CheckIcon from '@mui/icons-material/CheckCircle'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PsychologyIcon from '@mui/icons-material/Psychology'
 import ShowChartIcon from '@mui/icons-material/ShowChart'
-import TimelineIcon from '@mui/icons-material/Timeline'
 import {
   Accordion,
   AccordionDetails,
@@ -35,21 +34,10 @@ export const GuidePage: React.FC = () => {
 
   const tabs = [
     {
-      icon: <TimelineIcon sx={{ fontSize: 32 }} />,
-      title: 'Dashboard',
-      description: 'Your Health Score tells you instantly if your manabase is competitive.',
-      color: '#4caf50',
-      details: [
-        { label: '85%+', text: 'Excellent manabase', color: 'success' },
-        { label: '70-84%', text: 'Good, minor tweaks', color: 'primary' },
-        { label: '55-69%', text: 'Needs improvement', color: 'warning' },
-        { label: '<55%', text: 'Rebuild required', color: 'error' },
-      ],
-    },
-    {
       icon: <ShowChartIcon sx={{ fontSize: 32 }} />,
       title: 'Castability',
-      description: 'Exact probability of casting each spell on curve, turn by turn.',
+      description:
+        'Exact probability of casting each spell on curve, turn by turn. This is the first tab you see after analysis.',
       color: '#2196f3',
       badge: 'Core Feature',
     },
@@ -505,12 +493,8 @@ export const GuidePage: React.FC = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              <strong>Start with Dashboard</strong> - your Health Score tells you instantly if your
-              manabase is competitive.
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Check <strong>Castability</strong> - look for any spell below 90% probability. These
-              are your weak spots.
+              <strong>Start with Castability</strong> - look for any spell below 90% probability.
+              These are your weak spots.
             </Typography>
             <Typography variant="body1" paragraph>
               Explore <strong>Mulligan Strategy</strong> - select your archetype and learn your

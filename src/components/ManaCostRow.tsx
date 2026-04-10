@@ -13,6 +13,7 @@ import {
 import type { Theme } from '@mui/material/styles'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { computeAcceleratedCastability } from '../services/castability'
+import { hypergeom, cardsSeenByTurn } from '../services/castability/hypergeom'
 import { searchCardByName } from '../services/scryfall'
 import type { Card as MTGCard } from '../types'
 import type {
@@ -129,16 +130,18 @@ const KeyruneManaSymbol: React.FC<{ symbol: string; size?: number }> = ({ symbol
 
   // Hybrid mana (e.g., "R/G", "W/U", "2/W")
   // mana-font supports hybrid symbols: ms-rg, ms-wu, ms-2w, etc.
+  // Hybrid rendering uses ::before/::after pseudo-elements with position: absolute,
+  // so the element needs proper sizing and overflow: visible.
   if (cleanSymbol.includes('/')) {
     const parts = cleanSymbol.split('/')
     // Build hybrid class: lowercase both parts joined (e.g., "R/G" → "rg", "2/W" → "2w")
     const hybridClass = parts.map((p) => p.toLowerCase()).join('')
     return (
       <i
-        className={`ms ms-${hybridClass} ms-cost`}
+        className={`ms ms-${hybridClass} ms-cost ms-shadow`}
         style={{
           fontSize: size,
-          filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+          overflow: 'visible',
         }}
       />
     )
@@ -361,29 +364,8 @@ const useProbabilityCalculation = (
       const baseCmc = getCmcFromCard(cardData) || 2
       const effectiveCmc = hasX && xInfo ? xInfo.targetTurn : baseCmc
 
-      // Hypergeometric: P(X >= k) where X ~ Hypergeom(N, K, n)
-      // N = population, K = successes in population, n = draws, k = min successes needed
-      const hypergeometric = (N: number, K: number, n: number, k: number): number => {
-        const combination = (a: number, b: number): number => {
-          if (b > a || b < 0) return 0
-          if (b === 0 || b === a) return 1
-          let result = 1
-          for (let i = 0; i < b; i++) {
-            result = (result * (a - i)) / (i + 1)
-          }
-          return result
-        }
-        let probability = 0
-        for (let i = k; i <= Math.min(n, K); i++) {
-          probability += (combination(K, i) * combination(N - K, n - i)) / combination(N, n)
-        }
-        return probability
-      }
-
       const turn = Math.max(1, Math.min(effectiveCmc, 10))
-      // On the play: no draw on T1, so seen = 7 + (turn - 1)
-      // On the draw: draw on T1, so seen = 7 + turn
-      const cardsSeen = playDraw === 'PLAY' ? 7 + (turn - 1) : 7 + turn
+      const cardsSeen = cardsSeenByTurn(turn, playDraw)
 
       // P1: "Perfect scenario" = assuming we have exactly `turn` lands in hand
       // What's the probability those lands have the right colors?
@@ -399,8 +381,7 @@ const useProbabilityCalculation = (
         }
 
         // P(at least pipsNeeded of this color among turn lands)
-        // Hypergeom(landsInDeck, colorSources, turn, pipsNeeded)
-        const p1Color = hypergeometric(landsInDeck, colorSources, turn, pipsNeeded)
+        const p1Color = hypergeom.atLeast(landsInDeck, colorSources, turn, pipsNeeded)
         p1Probability = Math.min(p1Probability, p1Color)
       }
 
@@ -410,8 +391,8 @@ const useProbabilityCalculation = (
         const sources2 = deckSources?.[hybrid.color2] || 0
 
         // For hybrid, we need at least 1 of either color
-        const p1Color1 = sources1 > 0 ? hypergeometric(landsInDeck, sources1, turn, 1) : 0
-        const p1Color2 = sources2 > 0 ? hypergeometric(landsInDeck, sources2, turn, 1) : 0
+        const p1Color1 = sources1 > 0 ? hypergeom.atLeast(landsInDeck, sources1, turn, 1) : 0
+        const p1Color2 = sources2 > 0 ? hypergeom.atLeast(landsInDeck, sources2, turn, 1) : 0
 
         // Player can choose either color, so take MAX
         const p1Hybrid = Math.max(p1Color1, p1Color2)
@@ -420,7 +401,7 @@ const useProbabilityCalculation = (
 
       // P2: Realistic = P1 × P(having at least `turn` lands among cardsSeen cards)
       // This accounts for mana screw (not drawing enough lands)
-      const probHavingEnoughLands = hypergeometric(deckSize, landsInDeck, cardsSeen, turn)
+      const probHavingEnoughLands = hypergeom.atLeast(deckSize, landsInDeck, cardsSeen, turn)
       const p2Probability = p1Probability * probHavingEnoughLands
 
       const finalP1 = Math.round(Math.max(Math.min(p1Probability * 100, 99), 0))

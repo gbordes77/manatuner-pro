@@ -118,9 +118,9 @@ describe("AnalyzerPage", () => {
     const tabNames = allTabs.map(
       (tab) => tab.getAttribute("aria-label") || tab.textContent,
     );
-    expect(tabNames.some((name) => /dashboard/i.test(name))).toBe(true);
     expect(tabNames.some((name) => /castability/i.test(name))).toBe(true);
     expect(tabNames.some((name) => /analysis/i.test(name))).toBe(true);
+    expect(tabNames.some((name) => /manabase/i.test(name))).toBe(true);
   });
 
   it.skip("gère les erreurs d'analyse", async () => {

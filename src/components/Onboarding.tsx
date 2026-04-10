@@ -19,7 +19,7 @@ const steps: Step[] = [
   {
     target: '[data-testid="analysis-results"]',
     content:
-      'Your analysis results will appear here with 4 tabs: Dashboard, Castability, Analysis, and Manabase.',
+      'Your analysis results will appear here with tabs: Castability, Mulligan, Analysis, Manabase, and Blueprint.',
     placement: 'left',
     isFixed: true,
   },
@@ -77,7 +77,6 @@ const Onboarding: React.FC<OnboardingProps> = ({ hasAnalysisResult = false }) =>
     ;(window as any).resetOnboarding = () => {
       localStorage.removeItem(ONBOARDING_KEY)
       setRun(true)
-      console.log('🔄 Onboarding reset! Refresh the page to see it again.')
     }
   }, [])
 

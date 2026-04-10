@@ -85,8 +85,6 @@ export function useWebWorker(workerPath: string) {
           }
 
           if (type === 'progress') {
-            // Handle progress updates
-            console.log('Worker progress:', data)
             return
           }
 
@@ -107,7 +105,7 @@ export function useWebWorker(workerPath: string) {
           setIsReady(false)
 
           // Reject all pending requests
-          pendingRequests.current.forEach(request => {
+          pendingRequests.current.forEach((request) => {
             request.reject(new Error('Worker error: ' + error.message))
           })
           pendingRequests.current.clear()
@@ -126,38 +124,41 @@ export function useWebWorker(workerPath: string) {
     }
   }, [workerPath])
 
-  const postMessage = useCallback(async <T, R>(type: string, data: T): Promise<R> => {
-    return new Promise((resolve, reject) => {
-      if (!isSupported) {
-        reject(new Error('Web Workers not supported'))
-        return
-      }
-
-      if (!workerRef.current || !isReady) {
-        reject(new Error('Worker not ready'))
-        return
-      }
-
-      const id = Math.random().toString(36).substr(2, 9)
-
-      pendingRequests.current.set(id, {
-        type,
-        data,
-        resolve: resolve as (value: unknown) => void,
-        reject
-      })
-
-      // Set timeout for long-running operations
-      setTimeout(() => {
-        if (pendingRequests.current.has(id)) {
-          pendingRequests.current.delete(id)
-          reject(new Error('Worker timeout'))
+  const postMessage = useCallback(
+    async <T, R>(type: string, data: T): Promise<R> => {
+      return new Promise((resolve, reject) => {
+        if (!isSupported) {
+          reject(new Error('Web Workers not supported'))
+          return
         }
-      }, 30000) // 30 second timeout
 
-      workerRef.current.postMessage({ type, data, id })
-    })
-  }, [isSupported, isReady])
+        if (!workerRef.current || !isReady) {
+          reject(new Error('Worker not ready'))
+          return
+        }
+
+        const id = Math.random().toString(36).substr(2, 9)
+
+        pendingRequests.current.set(id, {
+          type,
+          data,
+          resolve: resolve as (value: unknown) => void,
+          reject,
+        })
+
+        // Set timeout for long-running operations
+        setTimeout(() => {
+          if (pendingRequests.current.has(id)) {
+            pendingRequests.current.delete(id)
+            reject(new Error('Worker timeout'))
+          }
+        }, 30000) // 30 second timeout
+
+        workerRef.current.postMessage({ type, data, id })
+      })
+    },
+    [isSupported, isReady]
+  )
 
   const terminate = useCallback(() => {
     if (workerRef.current) {
@@ -166,7 +167,7 @@ export function useWebWorker(workerPath: string) {
       setIsReady(false)
 
       // Reject all pending requests
-      pendingRequests.current.forEach(request => {
+      pendingRequests.current.forEach((request) => {
         request.reject(new Error('Worker terminated'))
       })
       pendingRequests.current.clear()
@@ -178,7 +179,7 @@ export function useWebWorker(workerPath: string) {
     terminate,
     isReady,
     isSupported,
-    pendingCount: pendingRequests.current.size
+    pendingCount: pendingRequests.current.size,
   }
 }
 
@@ -186,44 +187,53 @@ export function useWebWorker(workerPath: string) {
 export function useManaCalculatorWorker() {
   const worker = useWebWorker('/workers/manaCalculator.worker.js')
 
-  const calculateSingle = useCallback(async (
-    deckSize: number,
-    sourcesInDeck: number,
-    turn: number,
-    symbolsNeeded: number,
-    onThePlay: boolean = true
-  ) => {
-    if (!worker.isSupported) {
-      // Fallback to main thread calculation
-      return fallbackCalculation(deckSize, sourcesInDeck, turn, symbolsNeeded, onThePlay)
-    }
+  const calculateSingle = useCallback(
+    async (
+      deckSize: number,
+      sourcesInDeck: number,
+      turn: number,
+      symbolsNeeded: number,
+      onThePlay: boolean = true
+    ) => {
+      if (!worker.isSupported) {
+        // Fallback to main thread calculation
+        return fallbackCalculation(deckSize, sourcesInDeck, turn, symbolsNeeded, onThePlay)
+      }
 
-    return worker.postMessage('calculate_single', {
-      deckSize,
-      sourcesInDeck,
-      turn,
-      symbolsNeeded,
-      onThePlay
-    })
-  }, [worker])
+      return worker.postMessage('calculate_single', {
+        deckSize,
+        sourcesInDeck,
+        turn,
+        symbolsNeeded,
+        onThePlay,
+      })
+    },
+    [worker]
+  )
 
-  const analyzeCard = useCallback(async (card: CardForAnalysis, deck: DeckForAnalysis): Promise<CardAnalysisResult> => {
-    if (!worker.isSupported) {
-      // Fallback to main thread calculation
-      return fallbackCardAnalysis()
-    }
+  const analyzeCard = useCallback(
+    async (card: CardForAnalysis, deck: DeckForAnalysis): Promise<CardAnalysisResult> => {
+      if (!worker.isSupported) {
+        // Fallback to main thread calculation
+        return fallbackCardAnalysis()
+      }
 
-    return worker.postMessage('analyze_card', { card, deck })
-  }, [worker])
+      return worker.postMessage('analyze_card', { card, deck })
+    },
+    [worker]
+  )
 
-  const analyzeDeckBatch = useCallback(async (cards: CardForAnalysis[], deck: DeckForAnalysis): Promise<BatchAnalysisResult> => {
-    if (!worker.isSupported) {
-      // Fallback to main thread calculation
-      return fallbackBatchAnalysis(cards)
-    }
+  const analyzeDeckBatch = useCallback(
+    async (cards: CardForAnalysis[], deck: DeckForAnalysis): Promise<BatchAnalysisResult> => {
+      if (!worker.isSupported) {
+        // Fallback to main thread calculation
+        return fallbackBatchAnalysis(cards)
+      }
 
-    return worker.postMessage('analyze_deck_batch', { cards, deck })
-  }, [worker])
+      return worker.postMessage('analyze_deck_batch', { cards, deck })
+    },
+    [worker]
+  )
 
   const clearCache = useCallback(async () => {
     if (worker.isSupported) {
@@ -236,25 +246,31 @@ export function useManaCalculatorWorker() {
     calculateSingle,
     analyzeCard,
     analyzeDeckBatch,
-    clearCache
+    clearCache,
   }
 }
 
 // Fallback calculations for when Web Workers aren't supported
-function fallbackCalculation(deckSize: number, sourcesInDeck: number, turn: number, symbolsNeeded: number, onThePlay: boolean): CalculationResult {
+function fallbackCalculation(
+  deckSize: number,
+  sourcesInDeck: number,
+  turn: number,
+  symbolsNeeded: number,
+  onThePlay: boolean
+): CalculationResult {
   // Simple fallback calculation
   const cardsSeen = 7 + turn - (onThePlay ? 1 : 0)
   const probability = Math.min(1, (sourcesInDeck * cardsSeen) / (deckSize * symbolsNeeded))
 
   return {
     probability,
-    meetsThreshold: probability >= 0.90,
+    meetsThreshold: probability >= 0.9,
     sourcesNeeded: symbolsNeeded,
     sourcesAvailable: sourcesInDeck,
     cardsSeen,
     turn,
     symbolsNeeded,
-    fallback: true
+    fallback: true,
   }
 }
 
@@ -263,14 +279,14 @@ function fallbackCardAnalysis(): CardAnalysisResult {
     overall: {
       probability: 0.75,
       meetsThreshold: false,
-      fallback: true
-    }
+      fallback: true,
+    },
   }
 }
 
 function fallbackBatchAnalysis(cards: CardForAnalysis[]): BatchAnalysisResult {
   const results: Record<string, CardAnalysisResult> = {}
-  cards.forEach(card => {
+  cards.forEach((card) => {
     results[card.name] = fallbackCardAnalysis()
   })
 
@@ -279,7 +295,7 @@ function fallbackBatchAnalysis(cards: CardForAnalysis[]): BatchAnalysisResult {
     metadata: {
       processingTime: 0,
       cardsAnalyzed: cards.length,
-      fallback: true
-    }
+      fallback: true,
+    },
   }
 }

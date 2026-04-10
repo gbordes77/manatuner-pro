@@ -95,7 +95,7 @@ export const HomePage: React.FC = () => {
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
 
-  // Réorganisé: dans l'ordre du Dashboard
+  // Features displayed on the home page
   const features = [
     {
       icon: <TimelineIcon sx={{ fontSize: 40 }} />,

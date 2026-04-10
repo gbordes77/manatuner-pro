@@ -107,17 +107,14 @@ export const searchCardByName = async (name: string): Promise<Card | null> => {
 
   for (const variant of nameVariants) {
     try {
-      console.log(`🔍 Tentative Scryfall: "${variant}"`)
       const encodedName = encodeURIComponent(variant)
       const response = await scryfallRequest<ScryfallCard>(`/cards/named?fuzzy=${encodedName}`)
 
       const card = convertScryfallCard(response)
       cardCache.set(cacheKey, card)
 
-      console.log(`✅ Trouvé: "${variant}" → ${card.name}`)
       return card
     } catch {
-      console.log(`❌ Échec: "${variant}"`)
       continue
     }
   }
@@ -227,10 +224,6 @@ export const analyzeDecklistText = async (
 }> => {
   const parsedCards = parseDecklistText(text)
   const uniqueNames = [...new Set(parsedCards.map((c) => c.name))]
-
-  console.log(
-    `Analyzing decklist with ${parsedCards.length} entries, ${uniqueNames.length} unique cards`
-  )
 
   const foundCards = await searchCardsByCollection(uniqueNames)
   const foundNames = new Set(foundCards.map((c) => c.name.toLowerCase()))
