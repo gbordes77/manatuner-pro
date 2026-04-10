@@ -566,16 +566,16 @@ const AnalyzerPage: React.FC = () => {
                       aria-label="Castability - Spell casting probabilities"
                     />
                     <Tab
-                      icon={<CasinoIcon sx={{ fontSize: 18 }} />}
-                      iconPosition="start"
-                      label="Mulligan"
-                      aria-label="Mulligan - Hand simulation and strategy"
-                    />
-                    <Tab
                       icon={<AnalyticsIcon sx={{ fontSize: 18 }} />}
                       iconPosition="start"
                       label="Analysis"
                       aria-label="Analysis - Detailed spell analysis"
+                    />
+                    <Tab
+                      icon={<CasinoIcon sx={{ fontSize: 18 }} />}
+                      iconPosition="start"
+                      label="Mulligan"
+                      aria-label="Mulligan - Hand simulation and strategy"
                     />
                     <Tab
                       icon={<TerrainIcon sx={{ fontSize: 18 }} />}
@@ -597,15 +597,15 @@ const AnalyzerPage: React.FC = () => {
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={1}>
-                      <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
-                    </TabPanel>
-
-                    <TabPanel value={activeTab} index={2}>
                       <AnalysisTab
                         analysisResult={analysisResult}
                         isMobile={isMobile}
                         cards={analysisResult.cards}
                       />
+                    </TabPanel>
+
+                    <TabPanel value={activeTab} index={2}>
+                      <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={3}>
