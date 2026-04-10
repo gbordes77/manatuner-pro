@@ -7,6 +7,7 @@ import FunctionsIcon from '@mui/icons-material/Functions'
 import ScienceIcon from '@mui/icons-material/Science'
 import TimelineIcon from '@mui/icons-material/Timeline'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import {
   Accordion,
   AccordionDetails,
@@ -37,30 +38,6 @@ import { SEO } from '../components/common/SEO'
 const MathematicsPage: React.FC = () => {
   const navigate = useNavigate()
 
-  const mathFoundations = [
-    {
-      icon: <FunctionsIcon sx={{ fontSize: 40 }} />,
-      title: 'Hypergeometric Distribution',
-      desc: 'Exact probability of drawing specific cards from a finite deck',
-      color: '#1976d2',
-      bgColor: '#e3f2fd',
-    },
-    {
-      icon: <CasinoIcon sx={{ fontSize: 40 }} />,
-      title: 'Monte Carlo Simulation',
-      desc: '10,000 random hands to validate probability calculations',
-      color: '#9c27b0',
-      bgColor: '#f3e5f5',
-    },
-    {
-      icon: <CalculateIcon sx={{ fontSize: 40 }} />,
-      title: 'Bellman Equation',
-      desc: 'Optimal stopping theory for mulligan decisions',
-      color: '#ff9800',
-      bgColor: '#fff3e0',
-    },
-  ]
-
   const karstenTable = [
     { cost: '1 Colored (e.g. {R}, {1}{U})', t1: '14', t2: '13', t3: '12', t4: '11' },
     { cost: '2 Same (e.g. {U}{U})', t1: '-', t2: '20', t3: '18', t4: '16' },
@@ -84,10 +61,11 @@ const MathematicsPage: React.FC = () => {
           mainEntityOfPage: 'https://www.manatuner.app/mathematics',
         }}
       />
-      {/* Floating mana symbols background */}
       <FloatingManaSymbols />
 
-      {/* Hero Section */}
+      {/* ================================================================
+          SECTION 1 — Hero: Start with the PROBLEM, not the math
+          ================================================================ */}
       <AnimatedContainer animation="fadeInUp">
         <Box sx={{ textAlign: 'center', mb: 5 }}>
           <Typography
@@ -103,66 +81,121 @@ const MathematicsPage: React.FC = () => {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            The Mathematics Behind ManaTuner
+            Why Does My Mana Never Work?
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', mb: 3 }}>
-            Rigorous probability theory powering your manabase optimization
+            You've been there: stuck with the wrong lands, can't cast your key spell on time. It's
+            not bad luck — it's math. And math has solutions.
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Chip
               icon={<FunctionsIcon />}
-              label="Hypergeometric"
+              label="Exact Probabilities"
               sx={{ bgcolor: '#e3f2fd', color: '#1565c0', fontWeight: 600 }}
             />
             <Chip
               icon={<CasinoIcon />}
-              label="Monte Carlo"
+              label="10,000 Simulations"
               sx={{ bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }}
             />
             <Chip
               icon={<TrendingUpIcon />}
-              label="Bellman Equation"
+              label="Pro-Level Research"
               sx={{ bgcolor: '#fff3e0', color: '#e65100', fontWeight: 600 }}
             />
           </Box>
         </Box>
       </AnimatedContainer>
 
-      {/* Academic Foundation Banner */}
-      <Paper
-        sx={{
-          p: 3,
-          mb: 5,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-          border: '2px solid #1976d2',
-        }}
-      >
-        <Typography variant="h6" fontWeight={700} sx={{ color: '#1565c0', mb: 1 }}>
-          Academic Foundation
-        </Typography>
-        <Typography variant="body1">
-          Our calculations starts with Frank Karsten's 2022 research:{' '}
-          <Link
-            href="https://www.channelfireball.com/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{ fontWeight: 600 }}
-          >
-            "How Many Sources Do You Need to Consistently Cast Your Spells?"
-          </Link>
-        </Typography>
-      </Paper>
+      {/* ================================================================
+          SECTION 2 — The Two Problems (relatable to everyone)
+          ================================================================ */}
+      <Box sx={{ mb: 6 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <AnimatedContainer animation="fadeInUp" delay={0}>
+              <Paper
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  height: '100%',
+                  border: '2px solid #ef5350',
+                  bgcolor: 'rgba(239, 83, 80, 0.04)',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <WarningAmberIcon sx={{ color: '#ef5350', fontSize: 32 }} />
+                  <Typography variant="h6" fontWeight={700} color="#ef5350">
+                    Mana Screw
+                  </Typography>
+                </Box>
+                <Typography variant="body1" paragraph>
+                  You drew spells but not enough lands. Your 4-drop is stuck in hand on turn 6.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>The question:</strong> How many lands should I run so this rarely happens?
+                </Typography>
+              </Paper>
+            </AnimatedContainer>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <AnimatedContainer animation="fadeInUp" delay={0.1}>
+              <Paper
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  height: '100%',
+                  border: '2px solid #ff9800',
+                  bgcolor: 'rgba(255, 152, 0, 0.04)',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <WarningAmberIcon sx={{ color: '#ff9800', fontSize: 32 }} />
+                  <Typography variant="h6" fontWeight={700} color="#ff9800">
+                    Color Screw
+                  </Typography>
+                </Box>
+                <Typography variant="body1" paragraph>
+                  You have lands, but they're all the wrong color. Your Counterspell sits dead next
+                  to three Mountains.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>The question:</strong> How many blue sources do I need to reliably cast{' '}
+                  {'{U}{U}'} on turn 2?
+                </Typography>
+              </Paper>
+            </AnimatedContainer>
+          </Grid>
+        </Grid>
 
-      {/* How It All Fits Together */}
+        <Paper
+          sx={{
+            mt: 3,
+            p: 3,
+            borderRadius: 3,
+            bgcolor: '#e8f5e9',
+            border: '2px solid #4caf50',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h6" fontWeight={700} color="#2e7d32">
+            ManaTuner answers both questions with exact math — no guessing, no "feels right."
+          </Typography>
+        </Paper>
+      </Box>
+
+      {/* ================================================================
+          SECTION 3 — Three Engines, Three Questions
+          The best section from the old page, kept and promoted
+          ================================================================ */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography
             variant="overline"
             sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
           >
-            The Big Picture
+            How It Works
           </Typography>
           <Typography variant="h4" component="h2" fontWeight={700}>
             <CompareArrowsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -173,8 +206,8 @@ const MathematicsPage: React.FC = () => {
             color="text.secondary"
             sx={{ maxWidth: 700, mx: 'auto', mt: 1 }}
           >
-            ManaTuner uses three different mathematical models. Each answers a different question
-            about your deck.
+            ManaTuner uses three mathematical models. Each answers a different question about your
+            deck.
           </Typography>
         </Box>
 
@@ -184,34 +217,35 @@ const MathematicsPage: React.FC = () => {
               tab: 'Castability Tab',
               engine: 'Hypergeometric Distribution',
               icon: <FunctionsIcon sx={{ fontSize: 32 }} />,
-              question: 'What is my exact chance of casting this spell on curve?',
+              question: 'Can I cast this spell on curve?',
               detail:
-                'Single-draw probability. Given your current hand of 7 cards (or 8 on the draw), what are the odds you have the right mana? This is pure math with no assumptions about mulligans.',
+                'For each spell in your deck, ManaTuner calculates the exact probability of having the right mana at the right time. Not an estimate — precise math based on your deck composition.',
               color: '#1976d2',
               bgColor: '#e3f2fd',
-              example: 'Your Counterspell shows 82% at Turn 2 with 20 blue sources',
+              example:
+                'Your Counterspell has 82% chance of being castable on Turn 2 with 20 blue sources',
             },
             {
               tab: 'Recommendations',
-              engine: "Frank Karsten's Tables",
+              engine: "Frank Karsten's Research",
               icon: <TrendingUpIcon sx={{ fontSize: 32 }} />,
-              question: 'How many sources do I need for each color?',
+              question: 'How many sources do I need?',
               detail:
-                'Karsten\'s tables target 90% probability including the option to mulligan bad hands. That\'s why recommendations say "20 sources" even though the raw probability with 20 sources is ~82% on a single draw.',
+                "Based on Hall-of-Famer Frank Karsten's peer-reviewed research, ManaTuner tells you exactly how many sources of each color you need to hit the 90% reliability threshold.",
               color: '#4caf50',
               bgColor: '#e8f5e9',
-              example: '"Add 3 more blue sources to reach Karsten\'s 90% threshold"',
+              example: '"Add 3 more blue sources to reach the 90% consistency threshold"',
             },
             {
               tab: 'Mulligan Tab',
-              engine: 'Bellman Equation + Monte Carlo',
+              engine: 'Monte Carlo + Bellman Equation',
               icon: <CasinoIcon sx={{ fontSize: 32 }} />,
-              question: 'Should I keep this hand or mulligan?',
+              question: 'Should I keep or mulligan?',
               detail:
-                '10,000 simulated hands with Fisher-Yates shuffle. The Bellman equation (optimal stopping theory) calculates the exact hand quality score below which you should mulligan, for each archetype.',
+                '10,000 simulated games with your exact decklist. Optimal stopping theory calculates the hand quality threshold below which you should mulligan — customized for your archetype.',
               color: '#9c27b0',
               bgColor: '#f3e5f5',
-              example: 'Keep 7 if score > 62, otherwise mulligan to 6',
+              example: 'Keep 7 if hand score > 62, otherwise mulligan to 6',
             },
           ].map((item, index) => (
             <Grid item xs={12} md={4} key={index}>
@@ -275,32 +309,62 @@ const MathematicsPage: React.FC = () => {
             </Grid>
           ))}
         </Grid>
-
-        {/* Key insight callout */}
-        <Paper
-          sx={{
-            mt: 3,
-            p: 3,
-            borderRadius: 3,
-            bgcolor: '#fff8e1',
-            border: '2px solid #ffc107',
-          }}
-        >
-          <Typography variant="subtitle1" fontWeight={700} color="#f57f17" gutterBottom>
-            Why are my probabilities below 90% even when I follow Karsten's recommendations?
-          </Typography>
-          <Typography variant="body2">
-            Because the Castability tab shows your <strong>single-draw probability</strong> (one
-            hand, no mulligan). Karsten's tables target 90%{' '}
-            <strong>including the option to mulligan</strong> bad hands. With 14 red sources, your
-            chance of having red mana on Turn 1 is 86% on any single draw &mdash; but across a real
-            game where you'd mulligan a no-red hand, your effective chance climbs above 90%. Both
-            numbers are correct; they answer different questions.
-          </Typography>
-        </Paper>
       </Box>
 
-      {/* How Probabilities Are Calculated */}
+      {/* ================================================================
+          SECTION 4 — The FAQ everyone has (promoted from yellow callout)
+          ================================================================ */}
+      <Paper
+        sx={{
+          p: 4,
+          mb: 6,
+          borderRadius: 3,
+          bgcolor: '#fff8e1',
+          border: '2px solid #ffc107',
+        }}
+      >
+        <Typography variant="h5" fontWeight={700} color="#f57f17" gutterBottom>
+          "Why does ManaTuner show 82% when Karsten says I need 90%?"
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Great question — this is the #1 source of confusion, and it has a simple answer:
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.7)' }}>
+              <Typography variant="subtitle2" fontWeight={700} color="#1976d2" gutterBottom>
+                ManaTuner's Castability Tab: 82%
+              </Typography>
+              <Typography variant="body2">
+                This is your <strong>single-draw probability</strong>. You drew one hand of 7 cards
+                — what are the odds you have the right mana? No mulligans, no do-overs.
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.7)' }}>
+              <Typography variant="subtitle2" fontWeight={700} color="#4caf50" gutterBottom>
+                Karsten's Recommendation: 90%
+              </Typography>
+              <Typography variant="body2">
+                This includes <strong>the option to mulligan</strong> bad hands. If your first hand
+                has no red mana, you mulligan and try again. Across all attempts, your effective
+                chance rises to ~90%.
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+        <Typography
+          variant="body2"
+          sx={{ mt: 2, fontWeight: 600, color: '#f57f17', textAlign: 'center' }}
+        >
+          Both numbers are correct — they answer different questions. ManaTuner shows you both.
+        </Typography>
+      </Paper>
+
+      {/* ================================================================
+          SECTION 5 — Realistic vs Best Case (the two probability modes)
+          ================================================================ */}
       <Box id="probabilities" sx={{ mb: 6, scrollMarginTop: '80px' }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography
@@ -310,7 +374,7 @@ const MathematicsPage: React.FC = () => {
             Castability Tab
           </Typography>
           <Typography variant="h4" component="h2" fontWeight={700}>
-            How Probabilities Are Calculated
+            Two Ways to Read Your Odds
           </Typography>
         </Box>
 
@@ -321,30 +385,22 @@ const MathematicsPage: React.FC = () => {
                 Realistic (primary)
               </Typography>
               <Typography variant="body2" paragraph>
-                <strong>What it answers:</strong> &ldquo;If I keep this hand and play normally, what
-                are my chances of casting this spell on curve?&rdquo;
-              </Typography>
-              <Typography variant="body2" paragraph>
-                <strong>How it works:</strong> Uses the hypergeometric distribution to calculate two
-                things simultaneously:
+                <strong>What it answers:</strong> "If I keep this hand, can I cast this spell on
+                curve?"
               </Typography>
               <Typography variant="body2" component="div">
-                <ol style={{ paddingLeft: 20, margin: 0 }}>
+                Checks two things at once:
+                <ol style={{ paddingLeft: 20, margin: '8px 0' }}>
                   <li>
-                    <strong>Enough lands</strong> &mdash; P(drawing at least N lands by turn N)
+                    <strong>Enough lands</strong> — P(drawing at least N lands by turn N)
                   </li>
                   <li>
-                    <strong>Right colors</strong> &mdash; P(those lands include the required color
-                    sources)
+                    <strong>Right colors</strong> — P(those lands include the colors you need)
                   </li>
                 </ol>
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ mt: 1.5, fontStyle: 'italic', color: 'text.secondary' }}
-              >
-                This is the number you should optimize for. It accounts for mana screw (not drawing
-                enough lands) and color screw (drawing lands of the wrong color).
+              <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                This is the number to optimize. It catches both mana screw and color screw.
               </Typography>
             </Paper>
           </Grid>
@@ -355,20 +411,15 @@ const MathematicsPage: React.FC = () => {
                 Best case (secondary)
               </Typography>
               <Typography variant="body2" paragraph>
-                <strong>What it answers:</strong> &ldquo;If I have perfect mana drops every turn,
-                what are my chances of having the right colors?&rdquo;
+                <strong>What it answers:</strong> "If I hit a land every turn, do I have the right
+                colors?"
               </Typography>
               <Typography variant="body2" paragraph>
-                <strong>How it works:</strong> Assumes you draw exactly one land per turn (perfect
-                curve), then calculates the probability that those lands include the color sources
-                you need.
+                Assumes perfect land drops, then checks color availability. Always higher than
+                Realistic because it ignores mana screw.
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ mt: 1.5, fontStyle: 'italic', color: 'text.secondary' }}
-              >
-                This is always higher than Realistic because it ignores mana screw. Use it to
-                evaluate your color balance independently of your land count.
+              <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                Use it to evaluate your color balance independently of your land count.
               </Typography>
             </Paper>
           </Grid>
@@ -379,97 +430,44 @@ const MathematicsPage: React.FC = () => {
                 +Ramp bonus (when dorks/rocks detected)
               </Typography>
               <Typography variant="body2">
-                When your deck contains mana accelerators (Llanowar Elves, Sol Ring, Badgermole
-                Cub...), ManaTuner calculates the probability of having them online and adds their
-                mana contribution. The engine evaluates up to 3 accelerators simultaneously (K=3
-                scenarios), including synergies from enhancers that boost other dorks. The ramp
-                bonus shown is the improvement over the lands-only probability.
+                When your deck contains mana accelerators (Llanowar Elves, Sol Ring, Wild Growth,
+                Lotus Cobra...), ManaTuner calculates the probability of having them online and adds
+                their mana contribution. The engine evaluates up to 3 accelerators simultaneously,
+                including synergies like enhancers that boost other dorks.
               </Typography>
             </Paper>
           </Grid>
         </Grid>
       </Box>
 
-      {/* Core Mathematical Concepts */}
+      {/* ================================================================
+          SECTION 6 — Deep Dive (for David and advanced players)
+          All accordions collapsed by default — opt-in depth
+          ================================================================ */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography
             variant="overline"
             sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
           >
-            Core Concepts
-          </Typography>
-          <Typography variant="h4" component="h2" fontWeight={700}>
-            Mathematical Foundations
-          </Typography>
-        </Box>
-
-        <Grid container spacing={3}>
-          {mathFoundations.map((math, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <AnimatedContainer animation="fadeInUp" delay={index * 0.1}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    borderRadius: 3,
-                    border: '2px solid',
-                    borderColor: math.color,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: `0 16px 40px ${math.color}30`,
-                    },
-                  }}
-                >
-                  <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                    <Box
-                      sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        bgcolor: math.bgColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mx: 'auto',
-                        mb: 2,
-                        color: math.color,
-                      }}
-                    >
-                      {math.icon}
-                    </Box>
-                    <Typography variant="h6" fontWeight={700} gutterBottom>
-                      {math.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {math.desc}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </AnimatedContainer>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-
-      {/* Detailed Explanations */}
-      <Box sx={{ mb: 6 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography
-            variant="overline"
-            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
-          >
-            Deep Dive
+            For the Curious
           </Typography>
           <Typography variant="h4" component="h2" fontWeight={700}>
             <ScienceIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Mathematical Models Explained
+            The Math Under the Hood
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ maxWidth: 600, mx: 'auto', mt: 1 }}
+          >
+            You don't need to understand any of this to use ManaTuner — but if you're curious,
+            here's exactly how it works.
           </Typography>
         </Box>
 
         {/* Hypergeometric */}
         <Accordion
-          defaultExpanded
           sx={{
             borderRadius: '12px !important',
             mb: 2,
@@ -494,15 +492,22 @@ const MathematicsPage: React.FC = () => {
               >
                 <FunctionsIcon />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
-                Hypergeometric Distribution
-              </Typography>
+              <Box>
+                <Typography variant="h6" fontWeight={700}>
+                  Hypergeometric Distribution
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  The core formula behind castability
+                </Typography>
+              </Box>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              The hypergeometric distribution answers: "What's the probability of drawing exactly k
-              successes in n draws, without replacement, from a finite population?"
+              Imagine a bag with 60 marbles: 14 red and 46 other colors. You grab 7 at random. What
+              are the odds you got at least one red? That's what the hypergeometric distribution
+              calculates — except the "marbles" are your cards and the "red" ones are your mana
+              sources.
             </Typography>
 
             <Paper
@@ -515,7 +520,7 @@ const MathematicsPage: React.FC = () => {
               }}
             >
               <Typography variant="overline" color="#1565c0" fontWeight={700}>
-                Formula
+                The Formula
               </Typography>
               <Typography
                 variant="h5"
@@ -527,10 +532,10 @@ const MathematicsPage: React.FC = () => {
 
             <Grid container spacing={2} sx={{ mb: 2 }}>
               {[
-                { var: 'N', desc: 'Total deck size (usually 60 cards)' },
-                { var: 'K', desc: 'Total mana sources in deck' },
-                { var: 'n', desc: 'Cards drawn (hand + draws)' },
-                { var: 'k', desc: 'Mana sources needed' },
+                { var: 'N', desc: 'Cards in deck (60)', example: '60' },
+                { var: 'K', desc: 'Mana sources you have', example: '14 red sources' },
+                { var: 'n', desc: "Cards you've seen", example: '7 (opening hand)' },
+                { var: 'k', desc: 'Sources you need', example: '1 red source' },
               ].map((item, i) => (
                 <Grid item xs={6} md={3} key={i}>
                   <Paper sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
@@ -542,7 +547,12 @@ const MathematicsPage: React.FC = () => {
                     >
                       {item.var}
                     </Typography>
-                    <Typography variant="caption">{item.desc}</Typography>
+                    <Typography variant="caption" display="block">
+                      {item.desc}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" fontStyle="italic">
+                      {item.example}
+                    </Typography>
                   </Paper>
                 </Grid>
               ))}
@@ -550,10 +560,10 @@ const MathematicsPage: React.FC = () => {
 
             <Paper sx={{ p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
               <Typography variant="body2" fontWeight={600} color="#2e7d32">
-                <strong>Real Example:</strong> With 14 red sources in a 60-card deck, what's the
-                probability of having at least 1 red source on Turn 1 (7 cards drawn)? Answer:{' '}
-                <strong>86.1%</strong> on a single draw. Karsten recommends 14 sources because with
-                mulligans factored in, your effective probability reaches ~90%.
+                <strong>Concrete example:</strong> 14 red sources in a 60-card deck, opening hand of
+                7 cards. Probability of at least 1 red source = <strong>86.1%</strong>. That means
+                roughly 1 in 7 games you'll start with zero red mana — which is why Karsten
+                recommends 14 sources (mulligans bring it up to ~90%).
               </Typography>
             </Paper>
           </AccordionDetails>
@@ -585,22 +595,40 @@ const MathematicsPage: React.FC = () => {
               >
                 <CasinoIcon />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
-                Monte Carlo Simulation
-              </Typography>
+              <Box>
+                <Typography variant="h6" fontWeight={700}>
+                  Monte Carlo Simulation
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  10,000 games with your exact decklist
+                </Typography>
+              </Box>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              Monte Carlo methods use random sampling to solve complex probability problems that
-              might be difficult to calculate analytically.
+              Instead of doing math, we let the computer play 10,000 games for you. It shuffles your
+              deck, draws hands, makes mulligan decisions, and tracks how often things work out.
+              Think of it as playtesting on fast-forward.
             </Typography>
 
             <Grid container spacing={2} sx={{ my: 2 }}>
               {[
-                { icon: <TimelineIcon />, text: 'Simulate 10,000+ hands with your exact decklist' },
-                { icon: <TrendingUpIcon />, text: 'Track mana availability each turn' },
-                { icon: <CalculateIcon />, text: 'Calculate empirical probabilities' },
+                {
+                  step: '1',
+                  title: 'Shuffle',
+                  text: 'Your exact 60 cards are randomly shuffled using an unbiased algorithm (Fisher-Yates)',
+                },
+                {
+                  step: '2',
+                  title: 'Draw & Decide',
+                  text: 'Draw 7 cards. The engine decides keep or mulligan using optimal theory (Bellman equation)',
+                },
+                {
+                  step: '3',
+                  title: 'Play Out',
+                  text: 'Track mana availability each turn. Repeat 10,000 times. Count the results.',
+                },
               ].map((item, i) => (
                 <Grid item xs={12} md={4} key={i}>
                   <Paper
@@ -608,13 +636,23 @@ const MathematicsPage: React.FC = () => {
                       p: 2,
                       borderRadius: 2,
                       border: '2px solid #f3e5f5',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
+                      height: '100%',
                     }}
                   >
-                    <Box sx={{ color: '#9c27b0' }}>{item.icon}</Box>
-                    <Typography variant="body2">{item.text}</Typography>
+                    <Typography
+                      variant="h4"
+                      fontWeight={800}
+                      color="#9c27b0"
+                      sx={{ fontFamily: 'monospace', mb: 0.5 }}
+                    >
+                      {item.step}
+                    </Typography>
+                    <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                      {item.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.text}
+                    </Typography>
                   </Paper>
                 </Grid>
               ))}
@@ -622,8 +660,9 @@ const MathematicsPage: React.FC = () => {
 
             <Paper sx={{ p: 2, bgcolor: '#f3e5f5', borderRadius: 2 }}>
               <Typography variant="body2" fontWeight={600} color="#7b1fa2">
-                <strong>Validation:</strong> Our Monte Carlo results consistently match
-                hypergeometric calculations within 0.1%, confirming our model accuracy.
+                <strong>Why both?</strong> The hypergeometric formula gives instant exact answers.
+                Monte Carlo validates them and handles complex scenarios (mulligans, multiple
+                spells) that formulas alone can't solve. Our results match within 0.1%.
               </Typography>
             </Paper>
           </AccordionDetails>
@@ -655,15 +694,30 @@ const MathematicsPage: React.FC = () => {
               >
                 <TrendingUpIcon />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
-                Frank Karsten 2022 Standards
-              </Typography>
+              <Box>
+                <Typography variant="h6" fontWeight={700}>
+                  Frank Karsten's Research
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  The gold standard for mana base construction
+                </Typography>
+              </Box>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              Frank Karsten's 2022 update incorporates modern Magic design and play patterns. These
-              are the sources needed for <strong>90% probability</strong> to cast on curve:
+              Frank Karsten is a <strong>Magic Pro Tour Hall of Famer</strong> and PhD
+              mathematician. His{' '}
+              <Link
+                href="https://www.channelfireball.com/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ fontWeight: 600 }}
+              >
+                2022 research
+              </Link>{' '}
+              is the definitive guide on how many mana sources you need. Here's his table (targeting
+              90% consistency including mulligans):
             </Typography>
 
             <TableContainer component={Paper} sx={{ my: 3, borderRadius: 2 }}>
@@ -709,29 +763,15 @@ const MathematicsPage: React.FC = () => {
               </Table>
             </TableContainer>
 
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
-              Key Updates for 2022:
+            <Typography variant="body2" color="text.secondary">
+              <strong>How to read this:</strong> If your deck has a spell that costs {'{U}{U}'} and
+              you want to cast it on turn 2 reliably, you need 20 blue sources. If you're OK casting
+              it on turn 3 instead, 18 sources are enough.
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {[
-                'Fetchlands count as 1 source per fetchable color (not double)',
-                'Mulliganing considerations (6-card and 5-card hands)',
-                'Modern card velocity and selection effects',
-              ].map((text, i) => (
-                <Typography
-                  key={i}
-                  variant="body2"
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                >
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#4caf50' }} />
-                  {text}
-                </Typography>
-              ))}
-            </Box>
           </AccordionDetails>
         </Accordion>
 
-        {/* Implementation */}
+        {/* Bellman Equation */}
         <Accordion
           sx={{
             borderRadius: '12px !important',
@@ -757,86 +797,68 @@ const MathematicsPage: React.FC = () => {
               >
                 <CalculateIcon />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
-                Implementation Details
-              </Typography>
+              <Box>
+                <Typography variant="h6" fontWeight={700}>
+                  Bellman Equation (Mulligan Math)
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Optimal stopping theory for keep/mulligan decisions
+                </Typography>
+              </Box>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body1" paragraph>
-              ManaTuner implements these mathematical concepts with several optimizations:
+              The hardest question in a game of Magic: "Is this hand good enough, or should I
+              mulligan and risk getting a worse 6-card hand?" The Bellman equation solves this
+              mathematically.
+            </Typography>
+            <Typography variant="body1" paragraph>
+              It works backwards: first it calculates how good an average 5-card hand is, then uses
+              that to determine the minimum quality a 6-card hand must have to be worth keeping, and
+              finally uses <em>that</em> to set the threshold for 7-card hands.
             </Typography>
 
-            <Grid container spacing={3} sx={{ my: 2 }}>
-              <Grid item xs={12} md={6}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: '#e3f2fd',
-                    height: '100%',
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700} color="#1565c0" gutterBottom>
-                    Performance Optimizations
-                  </Typography>
-                  {[
-                    'Memoized binomial coefficients',
-                    'Web Workers for heavy calculations',
-                    'Lazy evaluation of probability trees',
-                  ].map((text, i) => (
-                    <Typography key={i} variant="body2" sx={{ mb: 0.5 }}>
-                      • {text}
-                    </Typography>
-                  ))}
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: '#f3e5f5',
-                    height: '100%',
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700} color="#7b1fa2" gutterBottom>
-                    Accuracy Measures
-                  </Typography>
-                  {[
-                    'IEEE 754 double precision',
-                    'Edge case handling (empty decks, etc.)',
-                    'Cross-validation with Monte Carlo',
-                  ].map((text, i) => (
-                    <Typography key={i} variant="body2" sx={{ mb: 0.5 }}>
-                      • {text}
-                    </Typography>
-                  ))}
-                </Paper>
-              </Grid>
-            </Grid>
+            <Paper sx={{ p: 3, my: 3, borderRadius: 2, bgcolor: '#fff3e0', textAlign: 'center' }}>
+              <Typography variant="overline" color="#e65100" fontWeight={700}>
+                The Logic
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ fontFamily: 'monospace', color: '#e65100', fontWeight: 700 }}
+              >
+                Keep 7 if EV(hand) {'>'} EV(mulligan to 6)
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Where EV(mulligan to 6) already accounts for the option to go down to 5
+              </Typography>
+            </Paper>
 
             <Paper sx={{ p: 2, bgcolor: '#fff3e0', borderRadius: 2 }}>
               <Typography variant="body2" fontWeight={600} color="#e65100">
-                <strong>Note:</strong> All calculations assume optimal play and do not account for
-                human error, opponent disruption, or complex interaction timing.
+                <strong>In practice:</strong> ManaTuner runs 10,000 simulations with these
+                thresholds pre-computed for your archetype (aggro keeps more aggressively, control
+                mulligans more freely). The result is a concrete "keep" or "mulligan" recommendation
+                for each simulated hand.
               </Typography>
             </Paper>
           </AccordionDetails>
         </Accordion>
       </Box>
 
-      {/* Practical Applications */}
+      {/* ================================================================
+          SECTION 7 — Practical cheat sheet
+          ================================================================ */}
       <Box sx={{ mb: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography
             variant="overline"
             sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 2 }}
           >
-            Practical Use
+            Quick Reference
           </Typography>
           <Typography variant="h4" component="h2" fontWeight={700}>
-            How This Applies to Your Deck
+            Rules of Thumb
           </Typography>
         </Box>
 
@@ -845,11 +867,11 @@ const MathematicsPage: React.FC = () => {
             <Card sx={{ height: '100%', borderRadius: 3, border: '2px solid #1976d2' }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={700} color="#1976d2" gutterBottom>
-                  Land Count Optimization
+                  <TimelineIcon sx={{ mr: 1, verticalAlign: 'middle', fontSize: 20 }} />
+                  Land Count by Archetype
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  Based on your deck's mana curve, we calculate the exact number of lands needed to
-                  hit your mana requirements with 90%+ consistency.
+                  How many lands you need depends on your average mana cost and game plan:
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
@@ -875,25 +897,25 @@ const MathematicsPage: React.FC = () => {
             <Card sx={{ height: '100%', borderRadius: 3, border: '2px solid #9c27b0' }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={700} color="#9c27b0" gutterBottom>
-                  Color Requirements
+                  <FunctionsIcon sx={{ mr: 1, verticalAlign: 'middle', fontSize: 20 }} />
+                  Color Sources Needed
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  For each color in your deck, we determine how many sources you need to cast your
-                  spells on curve with mathematical precision.
+                  From Karsten's research — the minimum sources for 90% consistency:
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
-                    label="T1 1C: 14 sources"
+                    label="1 pip on T1: 14"
                     size="small"
                     sx={{ bgcolor: '#f3e5f5', fontWeight: 600 }}
                   />
                   <Chip
-                    label="T2 CC: 21 sources"
+                    label="2 pips on T2: 20"
                     size="small"
                     sx={{ bgcolor: '#f3e5f5', fontWeight: 600 }}
                   />
                   <Chip
-                    label="T3 CCC: 25 sources"
+                    label="3 pips on T3: 23"
                     size="small"
                     sx={{ bgcolor: '#f3e5f5', fontWeight: 600 }}
                   />
@@ -904,7 +926,9 @@ const MathematicsPage: React.FC = () => {
         </Grid>
       </Box>
 
-      {/* Cross-links */}
+      {/* ================================================================
+          Cross-links + CTA
+          ================================================================ */}
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4, flexWrap: 'wrap' }}>
         <Button variant="outlined" onClick={() => navigate('/guide')} sx={{ borderRadius: 3 }}>
           Read the User Guide
@@ -918,7 +942,6 @@ const MathematicsPage: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Final CTA */}
       <Paper
         sx={{
           p: 4,
@@ -935,10 +958,10 @@ const MathematicsPage: React.FC = () => {
       >
         <Box>
           <Typography variant="h4" component="h2" fontWeight={700}>
-            Ready to Apply the Math?
+            Ready to Fix Your Mana?
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mt: 0.5 }}>
-            Analyze your manabase and export your results as a shareable Blueprint (PNG/PDF/JSON)
+            Paste your decklist and get instant analysis backed by real math.
           </Typography>
         </Box>
         <Button
