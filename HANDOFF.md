@@ -2,7 +2,75 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-10 (Ramp Taxonomy + Math Page Refonte + Homepage Reorder) | **Tests:** 221 pass, 0 fail | **Build:** OK | **Commit:** 78ff8ff
+**Latest Session:** 2026-04-11 (Smart Sideboard Detection + Creature-Only Mana) | **Tests:** 235 pass, 0 fail | **Build:** OK
+
+---
+
+## Session 2026-04-11 — Smart Sideboard Detection + Creature-Only Mana Flag
+
+### What Was Completed
+
+Two features that improve analysis accuracy and user friction:
+
+### 1. Smart Sideboard Auto-Detection
+
+**Problem:** Users paste decklists from various sources. Some have "Sideboard" written, some just have a blank line, some use MTGA format with set codes. The parser only detected explicit markers.
+
+**Solution:** New `detectSideboardStartLine()` function (exported, testable) with 3-tier detection:
+
+1. Explicit markers: `Sideboard`, `SB:`, `// Sideboard`, `# Sideboard` (existing)
+2. Inline `SB:` prefix: `SB: 2 Rest in Peace` (new)
+3. Blank-line heuristic: last blank line splitting 40-100 cards from 1-15 cards (new)
+
+Works with Standard (60+15), Limited (40+), Commander (100+side), MTGA format with set codes.
+
+**Files:**
+
+- `src/services/deckAnalyzer.ts` — `detectSideboardStartLine()` + updated `parseDeckList()`
+- `src/services/__tests__/sideboardDetection.test.ts` — 14 tests (all formats, edge cases)
+
+### 2. Creature-Only Mana Flag (`producesAnyForCreaturesOnly`)
+
+**Problem:** Cavern of Souls was counted as a colored source for ALL spells. In reality it only produces colored mana for creature spells. This overestimated castability of non-creature spells like Bitter Triumph in decks running Cavern.
+
+**Solution:** New `producesAnyForCreaturesOnly` flag on `LandMetadata`. When a spell is not a creature, these lands don't count as colored sources.
+
+**Affected lands:** Cavern of Souls, Unclaimed Territory, Secluded Courtyard, Plaza of Heroes, Ancient Ziggurat (new in seed, 210 total).
+
+**Data flow:**
+
+```
+Scryfall type_line → DeckCard.isCreature
+→ CastabilityTab calculates creatureOnlyExtraSources
+→ ManaCostRow adjusts deckSources for creatures
+→ manaCalculator.landProducesColorForSpell() filters in tempo chain
+```
+
+**Concrete impact (Dimir deck with 2 Cavern of Souls):**
+
+- Doomsday Excruciator (creature): Cavern counts as B source → higher castability
+- Bitter Triumph (instant): Cavern = colorless only → lower, more realistic castability
+
+**Files:**
+
+- `src/types/lands.ts` — `producesAnyForCreaturesOnly` field, `isCreatureSpell` param
+- `src/services/deckAnalyzer.ts` — `isCreature` on `DeckCard`, populated from Scryfall
+- `src/data/landSeed.ts` — 5 lands flagged + Ancient Ziggurat added
+- `src/services/manaCalculator.ts` — `landProducesColorForSpell()` helper
+- `src/components/ManaCostRow.tsx` — `isCreature` + `creatureOnlyExtraSources` props
+- `src/components/analyzer/CastabilityTab.tsx` — `creatureOnlyExtraSources` calculation
+
+### Current State
+
+- **Working**: All features, 235 tests pass (14 new), build clean
+- **No blockers**
+
+### Next Priority
+
+1. Fix Leo's regression: replace technical chips on homepage with accessible labels
+2. Manabase Grade (A-F) — highest-impact viral feature from brainstorming session
+3. Shareable Report Card (PNG export) — distribution amplifier
+4. Launch preparation (LAUNCH.md priorities)
 
 ---
 

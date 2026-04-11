@@ -169,6 +169,49 @@ K=3 (Cub + 2 dorks): extraMana = 5G (1 base + 2 dorks + 2 bonuses)
 
 **Not implemented (deferred)**: COST_REDUCER (~286 cards, virtual ramp), UNTAP_RAMP (~54 cards, complex modeling), CAST_TRIGGER_MANA (storm enablers), ATTACK_TRIGGER_MANA (combat-conditional), FREE_CAST/CASCADE, CONVOKE/DELVE/AFFINITY, PHYREXIAN_MANA, PLAY_FROM_GRAVEYARD.
 
+### Smart Sideboard Detection & Creature-Only Mana (2026-04-11)
+
+**Sideboard auto-detection** — `detectSideboardStartLine()` exported from `deckAnalyzer.ts`:
+
+Parser now handles ALL sideboard formats without user friction:
+
+| Format            | Example                                                             | Detection Method                         |
+| ----------------- | ------------------------------------------------------------------- | ---------------------------------------- |
+| Explicit marker   | `Sideboard` / `Sideboard:` / `SB:` / `// Sideboard` / `# Sideboard` | Regex match (existing)                   |
+| Inline prefix     | `SB: 2 Rest in Peace`                                               | Regex strip + flag (new)                 |
+| Blank line        | `...60 cards...\n\n...15 cards...`                                  | Heuristic: 40-100 main + 1-15 side (new) |
+| MTGA + blank line | `4 Card (SET) 123\n\n1 Card (SET) 456`                              | Same heuristic (new)                     |
+
+Heuristic: last blank line that splits a block of 40-100 cards from a block of 1-15 cards = sideboard boundary. Handles Standard (60+15), Limited (40+), Commander (100+side).
+
+**`producesAnyForCreaturesOnly` flag** — Lands that only produce colored mana for creature spells:
+
+| Land                | Behavior                                               |
+| ------------------- | ------------------------------------------------------ |
+| Cavern of Souls     | `producesAny: true, producesAnyForCreaturesOnly: true` |
+| Unclaimed Territory | Same                                                   |
+| Secluded Courtyard  | Same                                                   |
+| Plaza of Heroes     | Same                                                   |
+| Ancient Ziggurat    | Same (new in seed)                                     |
+
+**How it works:**
+
+- `DeckCard.isCreature` populated from Scryfall `type_line`
+- `landProducesColorForSpell(land, color, isCreatureSpell)` helper in `manaCalculator.ts`
+- `ManaCostRow` receives `isCreature` + `creatureOnlyExtraSources` props
+- For creatures: Cavern counts as B/U source. For non-creatures (Bitter Triumph): Cavern = colorless only.
+- `TempoCalculationParams.isCreatureSpell` passed through tempo chain
+
+**Files modified:**
+
+- `src/types/lands.ts` — `producesAnyForCreaturesOnly` on `LandMetadata`, `isCreatureSpell` on `TempoCalculationParams`
+- `src/services/deckAnalyzer.ts` — `detectSideboardStartLine()` (exported), `isCreature` on `DeckCard`, blank-line + inline SB: detection
+- `src/data/landSeed.ts` — 5 lands flagged + Ancient Ziggurat added (210 total)
+- `src/services/manaCalculator.ts` — `landProducesColorForSpell()` helper, used in 3 calculation paths
+- `src/components/ManaCostRow.tsx` — `isCreature`, `creatureOnlyExtraSources` props, `effectiveDeckSources` memo
+- `src/components/analyzer/CastabilityTab.tsx` — `creatureOnlyExtraSources` calculation, props passed to ManaCostRow
+- `src/services/__tests__/sideboardDetection.test.ts` — 14 tests covering all formats
+
 ### Persona Scores History
 
 | Persona           | v2.1 (initial) | v2.4 (04-06) | v2.5 (04-10) |

@@ -52,6 +52,16 @@ interface ManaCostRowProps {
   unconditionalMultiMana?: UnconditionalMultiManaGroup
   /** Pre-fetched card data to avoid N+1 Scryfall calls */
   initialCardData?: MTGCard | null
+  /**
+   * Whether this card is a creature spell.
+   * When true, lands like Cavern of Souls count as colored sources (via creatureOnlyExtraSources).
+   */
+  isCreature?: boolean
+  /**
+   * Extra colored sources available only for creature spells (from lands like Cavern of Souls).
+   * Added to deckSources when isCreature is true.
+   */
+  creatureOnlyExtraSources?: Record<string, number>
 }
 
 // Keyrune mana symbol component
@@ -615,6 +625,8 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
     showAcceleration = false,
     unconditionalMultiMana,
     initialCardData,
+    isCreature,
+    creatureOnlyExtraSources,
   }) => {
     const theme = useTheme()
     const isDark = theme.palette.mode === 'dark'
@@ -622,10 +634,20 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
     const [loading, setLoading] = useState(!initialCardData)
     const [error, setError] = useState<string | null>(null)
 
+    // Adjust sources for creature spells: add Cavern of Souls-type lands
+    const effectiveDeckSources = useMemo(() => {
+      if (!isCreature || !creatureOnlyExtraSources || !deckSources) return deckSources
+      const adjusted = { ...deckSources }
+      for (const [color, count] of Object.entries(creatureOnlyExtraSources)) {
+        adjusted[color] = (adjusted[color] || 0) + count
+      }
+      return adjusted
+    }, [deckSources, isCreature, creatureOnlyExtraSources])
+
     const probabilities = useProbabilityCalculation(
       cardData,
       cardName,
-      deckSources,
+      effectiveDeckSources,
       totalLands,
       totalCards,
       accelContext?.playDraw ?? 'PLAY'

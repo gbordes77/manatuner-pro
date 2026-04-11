@@ -138,6 +138,38 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
       }
     }, [analysisResult?.cards])
 
+    // Calculate extra colored sources available only for creature spells
+    // (from lands like Cavern of Souls, Unclaimed Territory, etc.)
+    const creatureOnlyExtraSources = useMemo<Record<string, number>>(() => {
+      const extra: Record<string, number> = {}
+      if (!analysisResult?.cards) return extra
+
+      const deckColors = new Set<string>()
+      // Detect which colors the deck needs
+      for (const card of analysisResult.cards) {
+        if (!card.isLand) {
+          for (const c of card.colors) deckColors.add(c)
+        }
+      }
+
+      // Count creature-only-any lands
+      for (const card of analysisResult.cards) {
+        if (!card.isLand || !card.landMetadata) continue
+        if (card.landMetadata.producesAny && card.landMetadata.producesAnyForCreaturesOnly) {
+          const qty = card.quantity || 1
+          // These lands can produce any color, so add for each deck color
+          for (const color of deckColors) {
+            // Only add if the land doesn't already produce this color in its base produces
+            if (!card.landMetadata.produces.includes(color as any)) {
+              extra[color] = (extra[color] || 0) + qty
+            }
+          }
+        }
+      }
+
+      return extra
+    }, [analysisResult?.cards])
+
     // Build Card objects from DeckCard to pass as initialCardData (avoids N+1 Scryfall calls)
     const cardDataMap = useMemo(() => {
       const map = new Map<string, Card>()
@@ -266,6 +298,8 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
                 showAcceleration={settings.showAcceleration && producersInDeck.length > 0}
                 unconditionalMultiMana={unconditionalMultiMana}
                 initialCardData={cardDataMap.get(card.name) ?? null}
+                isCreature={card.isCreature}
+                creatureOnlyExtraSources={creatureOnlyExtraSources}
               />
             ))}
 

@@ -51,6 +51,8 @@ export interface DeckCard {
   isLand: boolean
   producedMana?: ManaColor[]
   cmc: number
+  // Card type detection (from Scryfall type_line)
+  isCreature?: boolean
   // Sideboard detection
   isSideboard?: boolean
   // Enhanced land properties from reference project
@@ -126,6 +128,87 @@ export interface AnalysisResult {
   landMetadata?: LandMetadata[]
   // Cards for advanced analysis (mulligan simulator)
   cards: DeckCard[]
+}
+
+/**
+ * Detect which line index marks the start of the sideboard section,
+ * using a pre-scan heuristic when no explicit marker is present.
+ *
+ * Handles:
+ * - Explicit markers: "Sideboard", "Sideboard:", "// Sideboard", "SB:", "# Sideboard"
+ * - Inline SB: prefix: "SB: 2 Rest in Peace"
+ * - Blank-line separation: a blank line between a main block (40-100 cards) and a tail block (1-15 cards)
+ *
+ * Returns the 0-based line index where sideboard starts, or -1 if no sideboard detected.
+ */
+export function detectSideboardStartLine(lines: string[]): number {
+  const cardPatterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/i, /^(.+)\s+x(\d+)$/i]
+  const sideboardMarkers = [/^sideboard:?$/i, /^\/\/\s*sideboard/i, /^sb:?$/i, /^#\s*sideboard/i]
+  const sectionMarkers = [
+    ...sideboardMarkers,
+    /^(deck|maybeboard|commander|companion):?$/i,
+    /^\/\/\s*(deck|maybeboard)/i,
+  ]
+
+  // Check for explicit sideboard marker first
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+    if (sideboardMarkers.some((m) => m.test(trimmed))) {
+      return i
+    }
+  }
+
+  // Check for inline SB: prefix (e.g., "SB: 2 Rest in Peace")
+  for (let i = 0; i < lines.length; i++) {
+    if (/^sb:\s*\d+/i.test(lines[i].trim())) {
+      return i
+    }
+  }
+
+  // No explicit marker — look for blank-line separation
+  const parseQty = (line: string): number => {
+    const trimmed = line.trim()
+    if (!trimmed) return 0
+    if (sectionMarkers.some((m) => m.test(trimmed))) return 0
+    for (const pattern of cardPatterns) {
+      const m = trimmed.match(pattern)
+      if (m) {
+        return pattern === cardPatterns[2] ? parseInt(m[2]) : parseInt(m[1])
+      }
+    }
+    return 0
+  }
+
+  // Collect blank-line positions
+  const blankLineIndices: number[] = []
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].trim()) {
+      blankLineIndices.push(i)
+    }
+  }
+
+  // Try each blank line as a potential main/side split (prefer the last valid one)
+  for (let b = blankLineIndices.length - 1; b >= 0; b--) {
+    const splitIdx = blankLineIndices[b]
+
+    let cardsBefore = 0
+    let cardsAfter = 0
+
+    for (let i = 0; i < splitIdx; i++) {
+      cardsBefore += parseQty(lines[i])
+    }
+    for (let i = splitIdx + 1; i < lines.length; i++) {
+      cardsAfter += parseQty(lines[i])
+    }
+
+    // Heuristic: main deck is 40-100 cards, sideboard is 1-15 cards
+    if (cardsBefore >= 40 && cardsBefore <= 100 && cardsAfter >= 1 && cardsAfter <= 15) {
+      return splitIdx
+    }
+  }
+
+  return -1 // No sideboard detected
 }
 
 export class DeckAnalyzer {
@@ -419,14 +502,19 @@ export class DeckAnalyzer {
     const cards: DeckCard[] = []
     let isSideboardSection = false
 
+    // Pre-scan: detect sideboard start line for blank-line-separated lists
+    const sideboardStartLine = detectSideboardStartLine(lines)
+
     // Pre-fetch all card names in batch to populate cache
     const cardNames: string[] = []
     for (const line of lines) {
       const trimmed = line.trim()
       if (!trimmed) continue
-      const patterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/, /^(.+)\s+x(\d+)$/]
+      // Strip inline SB: prefix for batch fetch
+      const stripped = trimmed.replace(/^sb:\s*/i, '')
+      const patterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/i, /^(.+)\s+x(\d+)$/i]
       for (const pattern of patterns) {
-        const m = trimmed.match(pattern)
+        const m = stripped.match(pattern)
         if (m) {
           const name = pattern === patterns[2] ? m[1].trim() : m[2].trim()
           cardNames.push(this.cleanCardName(name))
@@ -436,14 +524,18 @@ export class DeckAnalyzer {
     }
     await batchFetchFromScryfall(cardNames)
 
-    for (const line of lines) {
-      const trimmedLine = line.trim()
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+      let trimmedLine = lines[lineIdx].trim()
 
-      // Skip empty lines but don't change sideboard state
-      if (!trimmedLine) continue
+      // Empty line: check if this is the sideboard split point
+      if (!trimmedLine) {
+        if (sideboardStartLine >= 0 && lineIdx >= sideboardStartLine) {
+          isSideboardSection = true
+        }
+        continue
+      }
 
-      // Detect sideboard section markers
-      // Common formats: "Sideboard", "Sideboard:", "// Sideboard", "SB:", etc.
+      // Detect explicit sideboard section markers
       const sideboardMarkers = [
         /^sideboard:?$/i,
         /^\/\/\s*sideboard/i,
@@ -453,7 +545,20 @@ export class DeckAnalyzer {
 
       if (sideboardMarkers.some((marker) => marker.test(trimmedLine))) {
         isSideboardSection = true
-        continue // Skip the marker line itself
+        continue
+      }
+
+      // Handle inline SB: prefix (e.g., "SB: 2 Rest in Peace")
+      const inlineSbMatch = trimmedLine.match(/^sb:\s*(.+)$/i)
+      let forceIsSideboard = false
+      if (inlineSbMatch) {
+        trimmedLine = inlineSbMatch[1].trim()
+        forceIsSideboard = true
+      }
+
+      // Blank-line heuristic: if we've passed the detected split line, mark as sideboard
+      if (sideboardStartLine >= 0 && lineIdx > sideboardStartLine) {
+        isSideboardSection = true
       }
 
       // Skip other section markers (Deck, Maybeboard, etc.)
@@ -464,7 +569,7 @@ export class DeckAnalyzer {
         continue
       }
 
-      const patterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/, /^(.+)\s+x(\d+)$/]
+      const patterns = [/^(\d+)\s+(.+)$/, /^(\d+)x\s+(.+)$/i, /^(.+)\s+x(\d+)$/i]
 
       let match: RegExpMatchArray | null = null
       let quantity = 0
@@ -496,6 +601,8 @@ export class DeckAnalyzer {
         let colors: ManaColor[] = []
         let cmc = 0
 
+        let isCreature = false
+
         if (isLand) {
           // Lands don't have mana costs
           manaCost = ''
@@ -509,6 +616,8 @@ export class DeckAnalyzer {
             const parsed = this.parseManaCost(manaCost)
             colors = parsed.colors
             cmc = scryfallData.cmc || parsed.cmc
+            // Detect creature type from Scryfall type_line
+            isCreature = scryfallData.type_line?.toLowerCase().includes('creature') ?? false
           } else {
             // Fallback to simulated mana cost for unknown cards
             manaCost = this.getSimulatedManaCost(name)
@@ -531,9 +640,10 @@ export class DeckAnalyzer {
           manaCost,
           colors,
           isLand,
+          isCreature: isCreature || undefined,
           producedMana,
           cmc,
-          isSideboard: isSideboardSection,
+          isSideboard: forceIsSideboard || isSideboardSection,
           ...landProperties,
           // NEW: Include full LandMetadata for tempo analysis
           landMetadata: landMetadata || undefined,

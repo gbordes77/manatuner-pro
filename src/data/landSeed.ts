@@ -1662,6 +1662,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'utility',
     produces: ['C'],
     producesAny: true,
+    producesAnyForCreaturesOnly: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1873,11 +1874,12 @@ const SEED_DATA: Record<string, SeedLandData> = {
     hasChannel: false,
   },
 
-  // Lair lands (Planescape)
+  // Tribal/creature-only colored mana lands
   'Plaza of Heroes': {
     category: 'utility',
     produces: ['C'],
     producesAny: true,
+    producesAnyForCreaturesOnly: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1888,6 +1890,7 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'utility',
     produces: [],
     producesAny: true,
+    producesAnyForCreaturesOnly: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,
@@ -1898,6 +1901,18 @@ const SEED_DATA: Record<string, SeedLandData> = {
     category: 'utility',
     produces: ['C'],
     producesAny: true,
+    producesAnyForCreaturesOnly: true,
+    etbBehavior: { type: 'always_untapped' },
+    isFetch: false,
+    isCreatureLand: false,
+    hasChannel: false,
+  },
+
+  'Ancient Ziggurat': {
+    category: 'utility',
+    produces: [],
+    producesAny: true,
+    producesAnyForCreaturesOnly: true,
     etbBehavior: { type: 'always_untapped' },
     isFetch: false,
     isCreatureLand: false,

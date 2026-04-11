@@ -523,10 +523,33 @@ import { createDeckContext, landService } from './landService'
  * @param params - Calculation parameters
  * @returns Tempo-aware probability result
  */
+/**
+ * Check if a land can produce a given color for a specific spell.
+ * Lands with producesAnyForCreaturesOnly only count as colored sources for creature spells.
+ */
+function landProducesColorForSpell(
+  land: LandMetadata,
+  colorNeeded: LandManaColor,
+  isCreatureSpell?: boolean
+): boolean {
+  // Direct color production always counts
+  if (land.produces.includes(colorNeeded)) return true
+
+  // producesAny lands: check creature-only restriction
+  if (land.producesAny) {
+    if (land.producesAnyForCreaturesOnly && isCreatureSpell === false) {
+      return false // Cavern of Souls can't help cast Bitter Triumph
+    }
+    return true
+  }
+
+  return false
+}
+
 export function calculateTempoAwareProbability(
   params: TempoCalculationParams
 ): TempoAwareProbability {
-  const { deck, targetTurn, colorNeeded, symbolsNeeded, strategy } = params
+  const { deck, targetTurn, colorNeeded, symbolsNeeded, strategy, isCreatureSpell } = params
   const calculator = new ManaCalculator()
 
   // Create deck context for condition evaluation
@@ -540,8 +563,8 @@ export function calculateTempoAwareProbability(
     let sourcesThisTurn = 0
 
     for (const land of deck.lands) {
-      // Check if this land produces the needed color
-      if (!land.produces.includes(colorNeeded) && !land.producesAny) {
+      // Check if this land produces the needed color for this spell type
+      if (!landProducesColorForSpell(land, colorNeeded, isCreatureSpell)) {
         continue
       }
 
@@ -573,8 +596,8 @@ export function calculateTempoAwareProbability(
   )
 
   // Calculate raw probability (ignoring tempo)
-  const rawSources = deck.lands.filter(
-    (l) => l.produces.includes(colorNeeded) || l.producesAny
+  const rawSources = deck.lands.filter((l) =>
+    landProducesColorForSpell(l, colorNeeded, isCreatureSpell)
   ).length
 
   const raw = calculator.cumulativeHypergeometric(
@@ -611,13 +634,13 @@ function calculateWithStrategy(
   strategy: PlayStrategy,
   calculator: ManaCalculator
 ): number {
-  const { deck, targetTurn, colorNeeded, symbolsNeeded } = params
+  const { deck, targetTurn, colorNeeded, symbolsNeeded, isCreatureSpell } = params
   const context = createDeckContext(deck.lands, strategy === 'aggressive')
 
   let effectiveSources = 0
 
   for (const land of deck.lands) {
-    if (!land.produces.includes(colorNeeded) && !land.producesAny) {
+    if (!landProducesColorForSpell(land, colorNeeded, isCreatureSpell)) {
       continue
     }
 

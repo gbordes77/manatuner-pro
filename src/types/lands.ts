@@ -150,6 +150,13 @@ export interface LandMetadata {
   producesAny: boolean
 
   /**
+   * If true, this land can only produce colored mana for creature spells.
+   * Examples: Cavern of Souls, Unclaimed Territory, Ancient Ziggurat, Secluded Courtyard.
+   * When counting sources for a non-creature spell, this land should NOT count as a colored source.
+   */
+  producesAnyForCreaturesOnly?: boolean
+
+  /**
    * Amount of mana produced per tap (default: 1)
    * - Ancient Tomb: 2
    * - Temple of the False God: 2 (conditional)
@@ -292,6 +299,13 @@ export interface TempoCalculationParams {
 
   /** Number of symbols of that color needed */
   symbolsNeeded: number
+
+  /**
+   * Whether the spell being cast is a creature spell.
+   * When false, lands with producesAnyForCreaturesOnly will NOT count as colored sources.
+   * (e.g., Cavern of Souls won't count for Bitter Triumph but will count for Doomsday Excruciator)
+   */
+  isCreatureSpell?: boolean
 
   /** Play strategy */
   strategy: PlayStrategy
