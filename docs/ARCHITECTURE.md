@@ -296,18 +296,30 @@ class ManaCalculator {
 Deck parsing and analysis orchestration (42KB, largest service).
 
 ```typescript
+/**
+ * Pre-scan to detect sideboard boundary.
+ * Handles: explicit markers (Sideboard, SB:, // Sideboard),
+ * inline prefix (SB: 2 Card), blank-line heuristic (40-100 main + 1-15 side).
+ */
+function detectSideboardStartLine(lines: string[]): number
+
 class DeckAnalyzer {
   /**
    * Parse multiple deck formats:
    * - MTGO: "4 Lightning Bolt"
    * - MTGA: "4 Lightning Bolt (M21) 199"
    * - Moxfield: "4x Lightning Bolt"
+   * - Sideboard: auto-detected via markers or blank line
+   *
+   * Each DeckCard includes:
+   * - isSideboard: true if in sideboard section
+   * - isCreature: true if Scryfall type_line contains "Creature"
    */
   static async parseDeckList(text: string): Promise<DeckCard[]>
 
   /**
    * Full deck analysis pipeline:
-   * 1. Parse deck text → DeckCard[]
+   * 1. Parse deck text → DeckCard[] (with sideboard + creature detection)
    * 2. Enrich with Scryfall data
    * 3. Detect land properties (ETB, fetchlands, etc.)
    * 4. Calculate probabilities per turn

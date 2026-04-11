@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-221%20Passing-green)](https://github.com/gbordes77/manatuner)
+[![Tests](https://img.shields.io/badge/Tests-235%20Passing-green)](https://github.com/gbordes77/manatuner)
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 
@@ -29,15 +29,17 @@ Built on Frank Karsten's mathematical research, it provides:
 
 ## Features
 
-| Feature                  | Description                                                                                       |
-| ------------------------ | ------------------------------------------------------------------------------------------------- |
-| **Castability Analysis** | Exact probability of casting each spell on curve, turn by turn                                    |
-| **Analysis Dashboard**   | Visual breakdown of spells by category, curve insights, performance diagnostics                   |
-| **Mana Acceleration**    | Detects 13 ramp types: dorks, rocks, rituals, land auras, land ramp, doublers, landfall, and more |
-| **Mulligan Simulator**   | Monte Carlo simulation with optimal keep/mulligan thresholds                                      |
-| **Export Blueprint**     | Download analysis as PNG, PDF, or JSON for sharing                                                |
-| **Multi-Format Support** | Limited (40), Constructed (60), Commander (99+)                                                   |
-| **Privacy-First**        | All data stored locally with AES-256 encryption                                                   |
+| Feature                    | Description                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Castability Analysis**   | Exact probability of casting each spell on curve, turn by turn                                    |
+| **Post-Board Analysis**    | Sideboard auto-detected from any format; swap cards in/out to see post-board castability          |
+| **Creature-Aware Sources** | Lands like Cavern of Souls correctly count as colored sources only for creature spells            |
+| **Analysis Dashboard**     | Visual breakdown of spells by category, curve insights, performance diagnostics                   |
+| **Mana Acceleration**      | Detects 13 ramp types: dorks, rocks, rituals, land auras, land ramp, doublers, landfall, and more |
+| **Mulligan Simulator**     | Monte Carlo simulation with optimal keep/mulligan thresholds                                      |
+| **Export Blueprint**       | Download analysis as PNG, PDF, or JSON for sharing                                                |
+| **Multi-Format Support**   | Limited (40), Constructed (60), Commander (99+)                                                   |
+| **Privacy-First**          | All data stored locally with AES-256 encryption                                                   |
 
 ---
 
@@ -79,9 +81,10 @@ npm run test:e2e     # E2E tests (Playwright)
 
 ### Supported Formats
 
-- **MTGO/MTGA**: `4 Lightning Bolt`
+- **MTGO/MTGA**: `4 Lightning Bolt` or `4 Lightning Bolt (M21) 199`
 - **Moxfield**: `4x Lightning Bolt`
-- **With Set Codes**: `4 Lightning Bolt (M21) 199`
+- **Sideboard**: Auto-detected via `Sideboard` marker, `SB:` prefix, or blank line separator
+- **Full 75**: Paste main + sideboard in one block — ManaTuner splits them automatically
 
 ---
 

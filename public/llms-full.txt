@@ -44,7 +44,22 @@ For each spell in the deck, calculates:
 - Shows "Lands only" vs "Realistic (with ramp)" probability comparison
 - Configurable removal rate for acceleration sources (default 20%)
 
-### 5. Mana Curve Analysis (Analysis Tab)
+### 5. Smart Sideboard Detection & Post-Board Analysis
+ManaTuner auto-detects the sideboard from any paste format:
+- Explicit markers: "Sideboard", "Sideboard:", "SB:", "// Sideboard", "# Sideboard"
+- Inline prefix: "SB: 2 Rest in Peace"
+- Blank line separation: a blank line between 40-100 cards (main) and 1-15 cards (side)
+- Works with MTGA format (set codes like "(LCI) 91")
+
+Once detected, the Sideboard Swap Editor lets users define IN/OUT swaps and recalculate castability for post-board games 2 and 3.
+
+### 6. Creature-Aware Mana Sources
+Lands like Cavern of Souls, Unclaimed Territory, Ancient Ziggurat, Secluded Courtyard, and Plaza of Heroes only produce colored mana for creature spells. ManaTuner models this correctly:
+- **Creature spell** (e.g., Doomsday Excruciator): Cavern of Souls counts as a colored source
+- **Non-creature spell** (e.g., Bitter Triumph, Duress): Cavern = colorless only
+This uses the `producesAnyForCreaturesOnly` flag on `LandMetadata` and `DeckCard.isCreature` from Scryfall type_line data.
+
+### 7. Mana Curve Analysis (Analysis Tab)
 - Visual mana curve chart
 - Turn-by-turn land drop probability
 - Color distribution breakdown
