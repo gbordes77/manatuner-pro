@@ -45,24 +45,23 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
   },
 
   {
-    id: 'karsten-how-many-lands-pdf',
-    title: 'How Many Lands Do You Need to Consistently Hit Your Land Drops?',
+    id: 'karsten-how-many-lands-2022',
+    title: 'How Many Lands Do You Need in Your Deck?',
+    subtitle: 'An Updated Analysis (2022)',
     author: 'Frank Karsten',
-    publisher: 'orkerhulen.dk (mirror)',
-    year: 2017,
+    publisher: 'TCGPlayer Infinite',
+    year: 2022,
     category: 'manabase',
     level: 'beginner',
-    medium: 'pdf',
+    medium: 'article',
     language: 'en',
-    linkStatus: 'mirror',
+    linkStatus: 'live',
     primaryUrl:
-      'https://orkerhulen.dk/onewebmedia/How%20Many%20Lands%20Do%20You%20Need%20to%20Consistently%20Hit%20Your%20Land%20Drops.pdf',
-    originalUrl:
-      'https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/',
+      'https://infinite.tcgplayer.com/article/How-Many-Lands-Do-You-Need-in-Your-Deck-An-Updated-Analysis/cd1c1a24-d439-4a8e-b369-b936edb0b38a/',
     description:
-      "Frank Karsten's definitive answer to 'how many lands should my deck have?' with hypergeometric tables for every mana curve. The mathematical foundation of ManaTuner itself.",
+      "Karsten's 2022 refresh of the definitive answer to 'how many lands should my deck have?' with updated hypergeometric tables adjusted for the London mulligan era. The mathematical foundation of ManaTuner.",
     curatorNote:
-      'This PDF is the reason ManaTuner exists. The original ChannelFireball page is gone but someone mirrored it as a PDF — which feels fitting for an article this foundational. Read it once, refer to it forever.',
+      'This is the article that makes ManaTuner possible. Karsten works out the math so every deckbuilder can stop guessing. If you read only one piece about manabase construction, make it this one — and read it with ManaTuner open in another tab.',
     curatorTrack: 'first-fnm',
   },
 

@@ -203,6 +203,23 @@ export const Header: React.FC = () => {
                       fontWeight: 'bold',
                       textTransform: 'none',
                     }),
+                    // Style pour Library — knowledge tier avec accent mana-blue
+                    // (distinct du Guide blanc, distinct du Analyzer gold)
+                    ...(item.path === '/library' && {
+                      background:
+                        'linear-gradient(135deg, rgba(14, 104, 171, 0.35) 0%, rgba(106, 27, 154, 0.3) 100%)',
+                      border: '1px solid rgba(125, 180, 255, 0.45)',
+                      boxShadow: '0 0 14px rgba(14, 104, 171, 0.35)',
+                      fontWeight: 'bold',
+                      textTransform: 'none',
+                      '&:hover': {
+                        background:
+                          'linear-gradient(135deg, rgba(14, 104, 171, 0.5) 0%, rgba(106, 27, 154, 0.45) 100%)',
+                        boxShadow: '0 0 20px rgba(125, 180, 255, 0.55)',
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }),
                   }}
                 >
                   {item.label}

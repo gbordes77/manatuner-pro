@@ -1,5 +1,6 @@
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import BookIcon from '@mui/icons-material/Book'
 import CasinoIcon from '@mui/icons-material/Casino'
 import MenuBookIcon from '@mui/icons-material/MenuBook'
@@ -274,6 +275,65 @@ export const HomePage: React.FC = () => {
             Works for every skill level — from your first Standard deck to Pro Tour prep.
           </Typography>
 
+          {/* Dual positioning — ManaTuner as both a calculator AND the
+              competitive reading library. Visually distinct from the
+              calculator pitch above so users immediately understand the
+              site is also a reference destination. */}
+          <Box
+            sx={{
+              maxWidth: 640,
+              mx: 'auto',
+              mb: 2.5,
+              px: 2.5,
+              py: 1.5,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: isDark ? 'rgba(125, 180, 255, 0.3)' : 'rgba(14, 104, 171, 0.25)',
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(14, 104, 171, 0.15) 0%, rgba(106, 27, 154, 0.12) 100%)'
+                : 'linear-gradient(135deg, rgba(14, 104, 171, 0.06) 0%, rgba(106, 27, 154, 0.05) 100%)',
+              boxShadow: isDark
+                ? '0 4px 24px rgba(14, 104, 171, 0.15)'
+                : '0 4px 16px rgba(14, 104, 171, 0.08)',
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 600,
+                lineHeight: 1.55,
+                color: isDark ? 'rgba(255,255,255,0.92)' : 'text.primary',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '1.15em',
+                  mr: 0.75,
+                  verticalAlign: 'middle',
+                }}
+              >
+                📚
+              </Box>
+              And the most complete reading library in competitive Magic.
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mt: 0.5,
+                lineHeight: 1.5,
+                fontSize: '0.88rem',
+              }}
+            >
+              <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                35 essential articles
+              </Box>{' '}
+              from Karsten, PVDDR, Saito, Chapin, Reid Duke, Fortier — all in one place, with dead
+              links restored via archive.org.
+            </Typography>
+          </Box>
+
           {/* Tags with mana symbols */}
           <Box
             sx={{
@@ -378,30 +438,65 @@ export const HomePage: React.FC = () => {
 
             <AnimatedContainer animation="slideInLeft" delay={0.4}>
               <Button
-                variant="outlined"
+                variant="contained"
                 size="large"
-                onClick={() => navigate('/guide')}
-                startIcon={<MenuBookIcon />}
+                onClick={() => navigate('/library')}
+                startIcon={<AutoStoriesIcon />}
                 sx={{
                   px: 4,
                   py: 1.8,
                   fontSize: '1rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   borderRadius: 3,
-                  borderWidth: 2,
-                  borderColor: theme.palette.mana.blue,
-                  color: isDark ? theme.palette.mana.blue : theme.palette.primary.main,
+                  textTransform: 'none',
+                  // Mana-blue → purple gradient (knowledge tier, matches Header)
+                  background: 'linear-gradient(135deg, #0E68AB 0%, #6A1B9A 100%)',
+                  color: 'white',
+                  boxShadow: '0 8px 28px rgba(14, 104, 171, 0.45)',
+                  border: '1px solid rgba(125, 180, 255, 0.4)',
                   '&:hover': {
-                    borderWidth: 2,
-                    transform: 'translateY(-2px)',
-                    bgcolor: `${theme.palette.mana.blue}15`,
+                    background: 'linear-gradient(135deg, #1976D2 0%, #7B1FA2 100%)',
+                    boxShadow: '0 12px 36px rgba(14, 104, 171, 0.6)',
+                    transform: 'translateY(-3px)',
                   },
-                  transition: 'all 0.3s ease',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               >
-                Read Guide
+                Browse the Library
               </Button>
             </AnimatedContainer>
+          </Box>
+
+          {/* Secondary discreet link to the Guide (moved down so Library
+              becomes a primary-tier CTA alongside Analyze My Deck) */}
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Box
+              component="a"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault()
+                navigate('/guide')
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.85rem',
+                color: 'text.secondary',
+                textDecoration: 'none',
+                borderBottom: '1px dotted',
+                borderColor: 'text.secondary',
+                pb: 0.125,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                  borderColor: 'primary.main',
+                },
+              }}
+            >
+              <MenuBookIcon sx={{ fontSize: 16 }} />
+              Need help? Read the Guide
+            </Box>
           </Box>
         </Box>
       </AnimatedContainer>
@@ -520,6 +615,207 @@ export const HomePage: React.FC = () => {
             </Grid>
           ))}
         </Grid>
+      </Box>
+
+      {/* The Competitive Library showcase — essential section, positioned
+          right after Rigorous Mathematics because the library is the
+          intellectual bedrock that the math section name-drops (Karsten,
+          Hypergeometric, Bellman). */}
+      <Box sx={{ my: 5, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: theme.palette.mana.blue,
+              fontWeight: 700,
+              letterSpacing: 2,
+              fontSize: '0.85rem',
+            }}
+          >
+            The Intellectual Canon
+          </Typography>
+          <Typography
+            variant="h4"
+            component="h2"
+            sx={{
+              mt: 0.5,
+              fontFamily: '"Cinzel", serif',
+              fontWeight: 700,
+              fontSize: { xs: '1.6rem', md: '2.1rem' },
+            }}
+          >
+            The Competitive Reading Library
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mt: 1.5, maxWidth: 680, mx: 'auto', lineHeight: 1.6 }}
+          >
+            Every essential article a competitive Magic player should read, in one place. From
+            Karsten's manabase math to Saito's tournament mindset —{' '}
+            <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+              35 articles across 8 categories
+            </Box>
+            , with dead links restored via archive.org.
+          </Typography>
+        </Box>
+
+        <Grid container spacing={2.5} justifyContent="center">
+          {[
+            {
+              id: 'first-fnm',
+              emoji: '🎴',
+              title: 'Your First FNM',
+              count: 5,
+              tagline: 'Starting out',
+              accent: theme.palette.mana.blue,
+              description:
+                'Reid Duke · Karsten · Chapin · Kuisma · Saito — the foundations that win your first round.',
+              href: '/library#track-first-fnm',
+            },
+            {
+              id: 'rcq',
+              emoji: '🏆',
+              title: 'Preparing for an RCQ',
+              count: 6,
+              tagline: 'Leveling up',
+              accent: theme.palette.mana.green,
+              description:
+                "PVDDR's 6 Heuristics · Manfield's prep routine · Fortier's ladder strategy — the curriculum from FNM regular to RCQ competitor.",
+              href: '/library#track-rcq',
+            },
+            {
+              id: 'pro-tour',
+              emoji: '🎯',
+              title: 'Pro Tour Preparation',
+              count: 7,
+              tagline: 'Mastering',
+              accent: theme.palette.mana.red,
+              description:
+                "Saito's 6-part mindset series · Fortier DASH · Dagen · Moudou game theory — the international canon rescued from link rot.",
+              href: '/library#track-pro-tour',
+            },
+          ].map((track, idx) => (
+            <Grid item xs={12} sm={6} md={4} key={track.id}>
+              <AnimatedContainer animation="fadeInUp" delay={idx * 0.1}>
+                <Card
+                  onClick={() => navigate(track.href)}
+                  sx={{
+                    height: '100%',
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: '1px solid',
+                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                    background: isDark
+                      ? `linear-gradient(180deg, ${track.accent}15 0%, rgba(255,255,255,0.02) 100%)`
+                      : `linear-gradient(180deg, ${track.accent}10 0%, rgba(255,255,255,1) 100%)`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-6px)',
+                      boxShadow: `0 16px 40px ${track.accent}35`,
+                      borderColor: track.accent,
+                    },
+                  }}
+                >
+                  {/* Accent stripe */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 3,
+                      background: track.accent,
+                    }}
+                  />
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 1 }}>
+                      <Typography sx={{ fontSize: '1.8rem', lineHeight: 1 }}>
+                        {track.emoji}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          ml: 'auto',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          color: track.accent,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {track.count} articles
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontFamily: '"Cinzel", serif',
+                        fontWeight: 700,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {track.title}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mt: 0.25,
+                        mb: 1.25,
+                        color: track.accent,
+                        fontWeight: 600,
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {track.tagline}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ lineHeight: 1.55, fontSize: '0.85rem' }}
+                    >
+                      {track.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </AnimatedContainer>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* CTA to browse the full library */}
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate('/library')}
+            startIcon={<AutoStoriesIcon />}
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              px: 4,
+              py: 1.25,
+              fontWeight: 700,
+              fontSize: '1rem',
+              borderRadius: 3,
+              borderWidth: 2,
+              borderColor: theme.palette.mana.blue,
+              color: isDark ? theme.palette.mana.blue : theme.palette.primary.main,
+              textTransform: 'none',
+              '&:hover': {
+                borderWidth: 2,
+                backgroundColor: `${theme.palette.mana.blue}15`,
+                transform: 'translateY(-2px)',
+                boxShadow: `0 8px 24px ${theme.palette.mana.blue}30`,
+              },
+              transition: 'all 0.3s ease',
+            }}
+          >
+            Browse the Full Library
+          </Button>
+        </Box>
       </Box>
 
       {/* Features Grid with mana-colored accents */}
