@@ -50,6 +50,13 @@ jobs:
 
   deploy:
     name: Deploy to Vercel
+    # DISABLED 2026-04-13: Vercel's native GitHub integration already deploys
+    # on every push to main. Running this job in addition causes a double-deploy
+    # race — two parallel builds produce different content-hashed asset
+    # filenames, so a user loading index.html from deploy #1 then fetching a
+    # JS chunk from deploy #2 receives a 404 on the chunk. Re-enable ONLY if
+    # the Vercel native integration is disabled in the project settings.
+    if: false
     needs: test
     runs-on: ubuntu-latest
 
