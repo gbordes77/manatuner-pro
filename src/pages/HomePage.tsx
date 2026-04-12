@@ -174,7 +174,7 @@ export const HomePage: React.FC = () => {
     <Container maxWidth="lg" sx={{ position: 'relative' }}>
       <SEO
         title="ManaTuner — Mana Calculator + Competitive MTG Reading Library"
-        description="Exact cast odds for every spell, mulligan timing, and the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke. Free."
+        description="Free mana calculator that counts your dorks & rocks, plus the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke."
         path="/"
         jsonLd={{
           '@context': 'https://schema.org',
