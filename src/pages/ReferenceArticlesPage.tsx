@@ -1,8 +1,9 @@
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
+import FeedbackIcon from '@mui/icons-material/Feedback'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import {
-  Alert,
   Box,
+  Button,
   Chip,
   Container,
   Grid,
@@ -183,27 +184,6 @@ export const ReferenceArticlesPage: React.FC = () => {
           </Stack>
         </Box>
       </AnimatedContainer>
-
-      {/* Community credit note */}
-      <Alert
-        severity="info"
-        icon={false}
-        sx={{
-          mb: 4,
-          borderRadius: 3,
-          backgroundColor: isDark ? 'rgba(14, 104, 171, 0.08)' : 'rgba(14, 104, 171, 0.04)',
-          border: '1px solid',
-          borderColor: isDark ? 'rgba(14, 104, 171, 0.25)' : 'rgba(14, 104, 171, 0.15)',
-          '& .MuiAlert-message': { width: '100%' },
-        }}
-      >
-        <Typography variant="body2" sx={{ fontStyle: 'italic', textAlign: 'center' }}>
-          This library is curated by Guillaume Bordes with help from the{' '}
-          <strong>Videre Discord community</strong>. Many articles were rescued from link rot via
-          archive.org — special thanks to <strong>KaP</strong> for the recovery work on the
-          ChannelFireball canon.
-        </Typography>
-      </Alert>
 
       {/* Your Reading Path (3 tracks) */}
       <Box sx={{ mb: 6, position: 'relative', zIndex: 1 }}>
@@ -426,11 +406,35 @@ export const ReferenceArticlesPage: React.FC = () => {
         <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Cinzel", serif' }}>
           Missing an article?
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 560, mx: 'auto' }}>
-          Know a canonical piece we should add? Have a dead link we could restore? Open an issue on
-          GitHub or reach out to the Videre Discord. This library grows with the community — not
-          against it.
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ maxWidth: 560, mx: 'auto', mb: 2 }}
+        >
+          Know a canonical piece we should add? Have a dead link we could restore? Use the feedback
+          form — this library grows with the community.
         </Typography>
+        <Button
+          component="a"
+          href="https://tally.so/r/A7KRkN"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="outlined"
+          size="small"
+          startIcon={<FeedbackIcon />}
+          sx={{
+            textTransform: 'none',
+            fontWeight: 600,
+            borderColor: 'primary.main',
+            color: 'primary.main',
+            '&:hover': {
+              backgroundColor: 'primary.main',
+              color: 'white',
+            },
+          }}
+        >
+          Give Feedback
+        </Button>
       </Box>
     </Container>
   )
