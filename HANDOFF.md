@@ -1,8 +1,82 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION
+## Project Status: PRODUCTION — LAUNCH-READY
 
-**Latest Session:** 2026-04-12 (Launch Hardening via 12-agent audit + fixes + re-audit) | **Tests:** 296 pass, 2 skipped, 0 fail | **Build:** 7.55s | **Commit:** `ceceb5f`
+**Latest Session:** 2026-04-13 (Library link audit + 10-agent final go-prod) | **Tests:** 305 pass, 2 skipped, 0 fail | **Build:** ~7.5s | **Commit:** `27ef3a8` (+ pending CI fix + session docs)
+
+---
+
+## Session 2026-04-13 — Library Link Audit + 10-Agent Final Go-Prod
+
+### Workflow
+
+1. **5-personas re-audit** post-v2.5.1 (`ceceb5f`): average **4.36/5** (Léo 4.21, Sarah 4.58, Karim 4.53, Natsuki 4.10, David 4.36). First time since v2.1 that all personas are ≥ 4.10.
+2. **Sentry/privacy decision**: chose option B (DSN stays unset in prod). 7-line guard comment added to `src/main.tsx:13-19` (commit `27ef3a8`). Resolves the contradiction flagged in the v2.5.1 session — `PrivacySettings.tsx:204` "Nothing is sent to any server" is now enforceable.
+3. **Library link audit** via sub-agent + my own curl/WebFetch verification of all 35 article URLs. Applied **17 fixes** to `src/data/articlesReferenceSeed.ts` (commit `8b2e523`):
+   - 4 archived → live: Reid Duke "Building a Mana Base" + "Sideboarding" → magic.wizards.com (the Wayback prefix was 404'ing silently to a TCGplayer landing); Chapin "Art of the Mulligan" → live SCG; Chapin "Next Level Deckbuilding" → SCG ebook page (the seed had the wrong publisher entirely)
+   - 5 marked `lost` after exhaustive Wayback CDX search: PVDDR "When to Mulligan", "Ten Commandments of Deckbuilding", "How to Sideboard"; LSV "Mulligans"; Karsten "What Are the New London Mulligan Odds?". Each kept its description + curatorNote calling for community recovery.
+   - 3 generic Wayback `/web/YYYY/` prefixes pinned to 14-digit timestamps (Karsten 2018 colored sources, Flores "Who's the Beatdown?", Karsten Commander manabase)
+   - 2 TCGplayer URLs migrated from the 301-redirecting `infinite.tcgplayer.com/article/...` to the new canonical `www.tcgplayer.com/content/article/...` (Karsten 2022 lands, Manfield tournament prep)
+   - 1 paywall → live (PVDDR "Six Heuristics" — currently free on SCG, no longer behind Premium gate)
+   - 1 slug + title fix: `karsten-commander-manabase` retitled to "What's an Optimal Mana Curve and Land/Ramp Count for Commander?" (seed's original slug pointed to a non-existent CFB URL)
+   - 2 video metadata corrections: `boa-mtgo-stops` renamed to `depraz-mtgo-stops` (actual author is Pro Tour player Jean-Emmanuel Depraz, not Boa); `boa-mtgo-getting-started` retitled to "TUTO MTGO: Est-ce mieux qu'MTGA?" (actual El_Gran_Boa YouTube title, not a generic onboarding tutorial as the seed assumed)
+4. **10-agent final go-prod audit** (QA, debugger, security, performance, frontend, UX, product, deployment, documentation, typescript). Average score **4.54/5** — highest historical (vs 4.19 on `ceceb5f`, vs 4.36 personas avg). Distribution: 8 GO + 2 GO-WITH-CAVEATS, **0 NO-GO**. One blocking item identified.
+5. **CI fix**: disabled the `deploy` job in `.github/workflows/ci.yml` (added `if: false` + 6-line explainer comment). The job was racing with Vercel's native GitHub auto-deploy, producing mismatched `index.html` / JS chunk hash pairs that 404'd for users loading the page between the two deploys. Vercel native integration is sufficient and correct.
+
+### Distribution post-fix
+
+| linkStatus | Before | After       |
+| ---------- | ------ | ----------- |
+| live       | 14     | **19** (+5) |
+| archived   | 19     | **10** (−9) |
+| paywall    | 1      | **0** (−1)  |
+| lost       | 1      | **6** (+5)  |
+| **Total**  | **35** | **35**      |
+
+### Per-persona scores after deltas
+
+| Persona     | After v2.5.1 | After link audit | Δ         |
+| ----------- | ------------ | ---------------- | --------- |
+| Léo         | 4.21         | **4.27**         | +0.06     |
+| Sarah       | 4.58         | **4.56**         | −0.02     |
+| Karim       | 4.53         | **4.56**         | +0.03     |
+| Natsuki     | 4.10         | **4.10**         | =         |
+| David       | 4.36         | **4.43**         | +0.07     |
+| **Average** | **4.36**     | **4.38**         | **+0.02** |
+
+### Verification
+
+- 27 of 29 non-lost URLs HTTP 200 + grep-confirmed expected article content in body
+- 2 Fortier mtgdecks.net URLs Cloudflare-protected from bots — confirmed present via Wayback CDX (snapshots from 2023-07 and 2025-10)
+- 305 unit tests passing, 0 failures (was 296 before the +9 seed integrity guards)
+- TypeScript clean (`npx tsc --noEmit`)
+- Build clean (~7.5s)
+- Dev server `/library` returns 200 with correct JSON-LD
+
+### Current State
+
+- **Working**: everything. Score 4.54/5 across 10 dimensions.
+- **No code blockers.**
+- **Manual follow-ups before tweet** (~15-50 min total):
+  1. Confirm `VITE_SENTRY_DSN` NOT set in Vercel env (privacy decision)
+  2. UptimeRobot 5-min HTTPS monitor (recommended, 10 min)
+  3. Plausible analytics for tweet conversion measurement (recommended, 20 min)
+  4. GitHub branch protection on `main` (recommended, 2 min)
+  5. 3 dark-mode screenshots for the @fireshoes tweet (5 min)
+
+### Post-launch v2.5.2 backlog (not blocking)
+
+- **JSON-LD CollectionPage**: emit `originalUrl` for `archived` items in `ReferenceArticlesPage.tsx:120` instead of the Wayback URL (latent SEO foot-gun, no current dead URL in first 10)
+- **RCQ track ordering**: reorder `articlesReferenceSeed.ts` so `pvddr-when-to-mulligan` (lost) is position 4 or 5, not 6. Avoids ending Sarah's curated path on a disabled card.
+- **Empty category chips**: hide chips that have zero non-tracked articles (`ReferenceArticlesPage.tsx:325-334`)
+- **Disabled "Help us restore" button accessibility**: WCAG ~2.4:1 contrast in dark mode + not focusable. Replace with `<Box role="status">` + Tally feedback CTA scoped to article id.
+- **CSP cleanup**: drop `https://*.ingest.sentry.io` from `vercel.json:41 connect-src` for coherence with the Sentry-disabled decision
+- **Persona David's `methodology.md`**: white paper still missing (acknowledged debt since v2.4)
+- Known math TODOs: Phyrexian/twobrid pessimism, `{C}` colorless requirement (Tron/Eldrazi), `useProbabilityCalculation` SSOT alignment
+
+### Next Priority
+
+**Post the @fireshoes tweet.** Everything technical is done. The product has been ready for 14 days; the only thing standing between ManaTuner and its first 100 users is a tweet the creator has been writing in his head.
 
 ---
 

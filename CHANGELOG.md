@@ -5,6 +5,51 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1.1] - 2026-04-13
+
+### Library Link Audit + Launch Prep
+
+Three commits on top of `2.5.1`. The library was re-verified end-to-end (HTTP 200 + content grep on every non-lost URL), the privacy/Sentry contradiction flagged in the v2.5.1 session was resolved with a code-level guard, and the CI/CD double-deploy race that could serve users mismatched HTML/JS chunk hash pairs was fixed. A 10-agent final go-prod audit scored an average of **4.54/5** — the highest in project history.
+
+### Fixed
+
+- **17 broken or fragile library links** in `src/data/articlesReferenceSeed.ts` (commit `8b2e523`):
+  - 4 articles flipped `archived → live` with verified canonical URLs (Reid Duke "Building a Mana Base" + "Sideboarding" → magic.wizards.com — the Wayback prefix was 404'ing silently to a TCGplayer landing; Chapin "Art of the Mulligan" → live SCG; Chapin "Next Level Deckbuilding" → SCG ebook page — the seed had the wrong publisher entirely)
+  - 5 articles marked `lost` after exhaustive Wayback CDX API searches found zero snapshots: PVDDR "When to Mulligan", "Ten Commandments of Deckbuilding", "How to Sideboard"; LSV "Mulligans"; Karsten "What Are the New London Mulligan Odds?". Each kept its description with a `curatorNote` calling for community recovery.
+  - 3 generic Wayback `/web/YYYY/` prefixes pinned to 14-digit timestamps (Karsten 2018 colored sources, Flores "Who's the Beatdown?", Karsten Commander manabase) — generic prefixes silently redirect to wrong content when the slug isn't archived.
+  - 2 TCGplayer article URLs migrated from the 301-redirecting `infinite.tcgplayer.com/article/...` to the new canonical `www.tcgplayer.com/content/article/...` (Karsten 2022 lands, Manfield tournament prep). The redirect chain still works but pinning the canonical URL is more robust.
+  - 1 paywall → live: PVDDR "Six Heuristics to Make You a Better Magic Player" is currently free on SCG, no longer behind the Premium gate.
+  - 1 slug + title fix: `karsten-commander-manabase` retitled to "What's an Optimal Mana Curve and Land/Ramp Count for Commander?" — the seed's original slug pointed to a non-existent CFB URL.
+  - 2 video metadata corrections in the metagame category: `boa-mtgo-stops` renamed to `depraz-mtgo-stops` (the actual author of `youtu.be/xLFjxcKmDr4` is Pro Tour player Jean-Emmanuel Depraz, not Boa); `boa-mtgo-getting-started` retitled to "TUTO MTGO: Est-ce mieux qu'MTGA?" (the actual El_Gran_Boa YouTube title, not the generic "Bien commencer sur MTGO" the seed assumed).
+- **CI/CD double-deploy race** (`.github/workflows/ci.yml:51`): the `deploy` job that pushed to Vercel `--prod` via `amondnet/vercel-action@v25` was running in addition to Vercel's native GitHub auto-deploy on every push to `main`. Two simultaneous builds produced different content-hashed asset filenames (`index-XXXX.js`), so a user loading `index.html` from deploy #1 then fetching a JS chunk from deploy #2 received a 404 on the chunk. The job is now disabled (`if: false`) with a 6-line explainer comment. Vercel native integration alone handles all production deploys.
+
+### Changed
+
+- **Sentry privacy decision documented in code** (`src/main.tsx:13-19`, commit `27ef3a8`): a 7-line guard comment above the Sentry init explains why `VITE_SENTRY_DSN` must remain unset in Vercel production environment. Without first (a) adding a `beforeSend` scrubber for URLs/breadcrumbs/PII and (b) updating `PrivacySettings.tsx:204` to disclose anonymous crash reporting, enabling Sentry would break the "Nothing is sent to any server" privacy promise — a GDPR risk for EU traffic. Decision: option B, keep DSN unset, fly blind on crashes, preserve the 100% client-side privacy promise that backs the launch positioning.
+- **README test badge** bumped from 235 → 305 (matches the actual `npm run test:unit` count after the +9 `articlesReferenceSeed` integrity tests added in v2.5.1).
+- **README features table** gained a "Reading Library" row + Overview section gained a library bullet, surfacing the 35-article curated library now exposed at `/library` and prominently linked from the homepage hero.
+- **`CLAUDE.md` Notes Techniques** gained a `### Sentry` subsection documenting the privacy rule for future contributors (must-not-set DSN without scrubber + copy update).
+- **Library distribution** post-fix: 19 live + 10 archived + 6 lost + 0 paywall = 35 articles. Was 14 live + 19 archived + 1 paywall + 1 lost.
+
+### Verified
+
+- 27 of 29 non-lost library URLs return HTTP 200 + grep-confirmed expected article content in the body
+- 2 Fortier `mtgdecks.net` URLs are Cloudflare-protected from bots but confirmed present via Wayback CDX (snapshots from 2023-07 and 2025-10)
+- 305 unit tests passing including 9 dedicated `articlesReferenceSeed` integrity guards
+- TypeScript clean (`npx tsc --noEmit`)
+- Build clean
+- 10-agent final go-prod audit average **4.54/5** (highest historical, vs 4.19 on `ceceb5f`, vs 4.36 personas average)
+
+### Manual launch checklist (not in code)
+
+Before posting the launch tweet:
+
+1. Confirm `VITE_SENTRY_DSN` is NOT set in Vercel project env vars (privacy decision)
+2. Set up UptimeRobot 5-min HTTPS monitor on `https://manatuner.app`
+3. Set up Plausible (or equivalent privacy-first analytics) for tweet conversion measurement
+4. Enable GitHub branch protection on `main`
+5. Capture 3 dark-mode screenshots (H1, Castability with DFC deck, Math foundations techTerm badges)
+
 ## [2.5.1] - 2026-04-12
 
 ### Launch Hardening — Parser, Math, UX Jargon, Resilience

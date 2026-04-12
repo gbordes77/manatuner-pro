@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-235%20Passing-green)](https://github.com/gbordes77/manatuner)
+[![Tests](https://img.shields.io/badge/Tests-305%20Passing-green)](https://github.com/gbordes77/manatuner)
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 
@@ -22,6 +22,7 @@ Built on Frank Karsten's mathematical research, it provides:
 - Monte Carlo mulligan simulations (10,000 hands, configurable up to 50k)
 - Turn-by-turn castability analysis
 - Optimal land count recommendations
+- A curated reading library of **35 essential competitive MTG articles** (Karsten, PVDDR, Saito, Chapin, Reid Duke, and more — many recovered via archive.org)
 
 **100% client-side** - Your decklists never leave your browser.
 
@@ -29,17 +30,18 @@ Built on Frank Karsten's mathematical research, it provides:
 
 ## Features
 
-| Feature                    | Description                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Castability Analysis**   | Exact probability of casting each spell on curve, turn by turn                                    |
-| **Post-Board Analysis**    | Sideboard auto-detected from any format; swap cards in/out to see post-board castability          |
-| **Creature-Aware Sources** | Lands like Cavern of Souls correctly count as colored sources only for creature spells            |
-| **Analysis Dashboard**     | Visual breakdown of spells by category, curve insights, performance diagnostics                   |
-| **Mana Acceleration**      | Detects 13 ramp types: dorks, rocks, rituals, land auras, land ramp, doublers, landfall, and more |
-| **Mulligan Simulator**     | Monte Carlo simulation with optimal keep/mulligan thresholds                                      |
-| **Export Blueprint**       | Download analysis as PNG, PDF, or JSON for sharing                                                |
-| **Multi-Format Support**   | Limited (40), Constructed (60), Commander (99+)                                                   |
-| **Privacy-First**          | All data stored locally in your browser — nothing sent to our servers                             |
+| Feature                    | Description                                                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Castability Analysis**   | Exact probability of casting each spell on curve, turn by turn                                                                                  |
+| **Post-Board Analysis**    | Sideboard auto-detected from any format; swap cards in/out to see post-board castability                                                        |
+| **Creature-Aware Sources** | Lands like Cavern of Souls correctly count as colored sources only for creature spells                                                          |
+| **Analysis Dashboard**     | Visual breakdown of spells by category, curve insights, performance diagnostics                                                                 |
+| **Mana Acceleration**      | Detects 13 ramp types: dorks, rocks, rituals, land auras, land ramp, doublers, landfall, and more                                               |
+| **Mulligan Simulator**     | Monte Carlo simulation with optimal keep/mulligan thresholds                                                                                    |
+| **Reading Library**        | 35 curated competitive MTG articles in 3 tracks (First FNM / RCQ / Pro Tour). 19 live + 10 archive.org recoveries from defunct ChannelFireball. |
+| **Export Blueprint**       | Download analysis as PNG, PDF, or JSON for sharing                                                                                              |
+| **Multi-Format Support**   | Limited (40), Constructed (60), Commander (99+)                                                                                                 |
+| **Privacy-First**          | All data stored locally in your browser — nothing sent to our servers                                                                           |
 
 ---
 

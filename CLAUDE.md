@@ -68,6 +68,23 @@ Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabu
 
 **Status: DISABLED** - Service entièrement mocké (`isConfigured: () => false`). Toutes les données restent en localStorage. App 100% privacy-first.
 
+### Sentry
+
+**Status: DISABLED in production** (decision 2026-04-12, commit `27ef3a8`).
+
+Le code Sentry est intégré dans `src/main.tsx:13-26` et `src/components/common/ErrorBoundary.tsx:35-49`, mais `Sentry.init()` est gated sur `import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN`. **`VITE_SENTRY_DSN` doit rester NON DÉFINI dans Vercel production env** pour préserver la promesse de `PrivacySettings.tsx:204` ("Nothing is sent to any server").
+
+**Pour réactiver Sentry plus tard, il faut OBLIGATOIREMENT (dans cet ordre) :**
+
+1. Ajouter un `beforeSend` scrubber dans `main.tsx` qui retire URL params, breadcrumbs, et tronque les error messages (pas de PII, pas de decklist, pas d'URL utilisateur)
+2. Mettre à jour `PrivacySettings.tsx:204` pour disclaimer "anonymous crash reports (no IP, no decklist, no URL params) — opt-out available"
+3. Ajouter un toggle opt-out dans `PrivacySettings` pour les utilisateurs EU/GDPR
+4. Vérifier que le CSP `connect-src` dans `vercel.json` autorise toujours `https://*.ingest.sentry.io` (déjà présent)
+
+**Sans ces 4 étapes, activer le DSN crée une fausse claim privacy = risque RGPD réel pour le trafic EU.**
+
+Le commentaire de garde de 7 lignes dans `main.tsx:13-19` rappelle ces règles à tout futur contributeur.
+
 ### PWA Cache Fix (Janvier 2025)
 
 **Problème résolu**: Après déploiement sur Vercel, les navigateurs ayant déjà visité le site restaient bloqués sur l'ancienne version (cache Service Worker).
