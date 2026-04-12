@@ -29,10 +29,25 @@ import { SEO } from '../components/common/SEO'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
 
+interface TabDetail {
+  label: string
+  color: 'success' | 'primary' | 'warning' | 'error'
+  text: string
+}
+
+interface TabInfo {
+  icon: React.ReactNode
+  title: string
+  description: string
+  color: string
+  badge?: string
+  details?: TabDetail[]
+}
+
 export const GuidePage: React.FC = () => {
   const navigate = useNavigate()
 
-  const tabs = [
+  const tabs: TabInfo[] = [
     {
       icon: <ShowChartIcon sx={{ fontSize: 32 }} />,
       title: 'Castability',
@@ -44,7 +59,7 @@ export const GuidePage: React.FC = () => {
     {
       icon: <CasinoIcon sx={{ fontSize: 32 }} />,
       title: 'Mulligan',
-      description: 'Monte Carlo simulation tells you exactly when to keep or mulligan.',
+      description: 'Smart keep/mull advice based on 10,000 simulated opening hands.',
       color: '#9c27b0',
       badge: 'Unique',
     },

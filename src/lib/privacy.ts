@@ -38,9 +38,41 @@ const importSchema = z.array(analysisRecordSchema)
  * Simple Storage Management
  *
  * Stores analyses directly in localStorage.
+ *
+ * NOTE (2026-04-12): the legacy hyphen-separated key `manatuner-analyses`
+ * (used by an old hook) is migrated into the canonical `manatuner_analyses`
+ * key on read, so users with split history don't lose data.
  */
 export class PrivacyStorage {
   private static readonly ANALYSES_KEY = 'manatuner_analyses'
+  private static readonly LEGACY_KEY = 'manatuner-analyses'
+  private static readonly MAX_RECORDS = 50
+
+  /**
+   * Persists an analyses array with a quota-exceeded fallback: if
+   * localStorage is full, drop the oldest records and retry once.
+   */
+  private static persist(records: AnalysisRecord[]): void {
+    const serialize = (items: AnalysisRecord[]) =>
+      localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(items))
+    try {
+      serialize(records)
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'QuotaExceededError') {
+        // Aggressively trim until it fits, keep at least the newest 10.
+        let attempt = records.slice(0, Math.max(10, Math.floor(records.length / 2)))
+        while (attempt.length > 0) {
+          try {
+            serialize(attempt)
+            return
+          } catch {
+            attempt = attempt.slice(0, Math.floor(attempt.length / 2))
+          }
+        }
+      }
+      throw err
+    }
+  }
 
   /**
    * Saves an analysis
@@ -55,33 +87,54 @@ export class PrivacyStorage {
     }
 
     analyses.unshift(record) // Add to beginning
-    const trimmed = analyses.slice(0, 50) // Keep only last 50
-
-    localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(trimmed))
+    const trimmed = analyses.slice(0, this.MAX_RECORDS)
+    this.persist(trimmed)
     return record.id
   }
 
   /**
-   * Retrieves all analyses
+   * Retrieves all analyses, merging legacy `manatuner-analyses` (hyphen) data
+   * on first read and then removing the legacy key. This prevents the data
+   * duplication the 2026-04-12 audit flagged.
    */
   static getMyAnalyses(): AnalysisRecord[] {
     if (typeof window === 'undefined') return []
 
-    const stored = localStorage.getItem(this.ANALYSES_KEY)
-    if (!stored) return []
+    const readKey = (key: string): AnalysisRecord[] => {
+      const raw = localStorage.getItem(key)
+      if (!raw) return []
+      try {
+        const parsed = JSON.parse(raw)
+        return Array.isArray(parsed) ? (parsed as AnalysisRecord[]) : []
+      } catch {
+        return []
+      }
+    }
+
+    const current = readKey(this.ANALYSES_KEY)
+    const legacy = readKey(this.LEGACY_KEY)
+
+    if (legacy.length === 0) return current
+
+    // One-time migration: merge legacy into canonical store (deduplicate by id)
+    const seen = new Set<string>(current.map((r) => r.id))
+    const merged = [...current]
+    for (const record of legacy) {
+      if (record?.id && !seen.has(record.id)) {
+        merged.push(record)
+        seen.add(record.id)
+      }
+    }
+    merged.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
+    const trimmed = merged.slice(0, this.MAX_RECORDS)
 
     try {
-      const parsed = JSON.parse(stored)
-      if (Array.isArray(parsed)) {
-        return parsed
-      }
-      // Handle legacy formats - just clear them
-      console.warn('Found legacy data format - clearing storage')
-      localStorage.removeItem(this.ANALYSES_KEY)
-      return []
+      this.persist(trimmed)
+      localStorage.removeItem(this.LEGACY_KEY)
     } catch {
-      return []
+      // If persist fails (quota), still return merged view in-memory
     }
+    return trimmed
   }
 
   /**
@@ -124,6 +177,7 @@ export class PrivacyStorage {
   static clearAllLocalData(): void {
     if (typeof window === 'undefined') return
     localStorage.removeItem(this.ANALYSES_KEY)
+    localStorage.removeItem(this.LEGACY_KEY)
     // Clean up legacy keys
     localStorage.removeItem('manatuner_user_code')
     localStorage.removeItem('manatuner_privacy_mode')

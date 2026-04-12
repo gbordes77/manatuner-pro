@@ -143,23 +143,26 @@ export const HomePage: React.FC = () => {
     {
       title: 'Exact Probabilities',
       desc: 'Real cast odds for every spell, every turn',
-      formula: 'P(X≥k)',
+      formula: 'Per spell',
+      techTerm: 'Hypergeometric distribution',
       manaColor: 'u' as const,
       color: isDark ? 'rgba(14, 104, 171, 0.15)' : '#e3f2fd',
       borderColor: theme.palette.mana.blue,
     },
     {
-      title: 'Karsten Standards',
-      desc: 'How many color sources do you need to cast your spells on curve?',
+      title: 'Proven Land Targets',
+      desc: 'How many color sources you need to cast your spells on curve',
       formula: '90%',
+      techTerm: 'Frank Karsten tables',
       manaColor: 'g' as const,
       color: isDark ? 'rgba(0, 115, 62, 0.15)' : '#e8f5e9',
       borderColor: theme.palette.mana.green,
     },
     {
-      title: 'Mulligan Optimizer',
+      title: 'Smart Mulligan Advice',
       desc: '10,000 hands simulated to find your optimal keep/mull thresholds',
-      formula: 'E[V₇]',
+      formula: 'Keep / Mull',
+      techTerm: 'Monte Carlo + Bellman',
       manaColor: 'r' as const,
       color: isDark ? 'rgba(211, 32, 42, 0.15)' : '#fff3e0',
       borderColor: theme.palette.mana.red,
@@ -237,7 +240,7 @@ export const HomePage: React.FC = () => {
               textShadow: isDark ? '0 0 40px rgba(255,255,255,0.1)' : 'none',
             }}
           >
-            Can You Cast Your Spells On Curve?
+            The Only Mana Calculator That Counts Your Dorks & Rocks
           </Typography>
 
           <Typography
@@ -251,23 +254,24 @@ export const HomePage: React.FC = () => {
               lineHeight: 1.6,
             }}
           >
-            Stop guessing. Get <strong>exact probabilities</strong> for every spell, plus know{' '}
+            Stop guessing. Get <strong>exact cast odds</strong> for every spell, plus know{' '}
             <strong>exactly when to mulligan</strong>.
           </Typography>
 
-          {/* Killer feature callout */}
+          {/* Beginner-friendly qualifier — answers Leo's "is this for me?" */}
           <Typography
-            variant="body1"
+            variant="body2"
+            color="text.secondary"
             sx={{
               maxWidth: 550,
               mx: 'auto',
               mb: 2,
-              fontWeight: 500,
-              color: theme.palette.success.main,
+              fontWeight: 400,
               lineHeight: 1.5,
+              fontStyle: 'italic',
             }}
           >
-            The only mana calculator that factors in your mana rocks and dorks — not just lands.
+            Works for every skill level — from your first Standard deck to Pro Tour prep.
           </Typography>
 
           {/* Tags with mana symbols */}
@@ -289,7 +293,7 @@ export const HomePage: React.FC = () => {
                   role="img"
                 />
               }
-              label="Turn-by-Turn Probabilities"
+              label="See The Real Odds"
               sx={{
                 bgcolor: isDark ? 'rgba(14, 104, 171, 0.2)' : '#e3f2fd',
                 color: isDark ? theme.palette.mana.blue : '#1565c0',
@@ -324,7 +328,7 @@ export const HomePage: React.FC = () => {
                   role="img"
                 />
               }
-              label="Monte Carlo Mulligan"
+              label="Smart Mulligan Advice"
               sx={{
                 bgcolor: isDark ? 'rgba(90, 60, 90, 0.3)' : '#f3e5f5',
                 color: isDark ? '#CE93D8' : '#7b1fa2',
@@ -429,7 +433,7 @@ export const HomePage: React.FC = () => {
             color="text.secondary"
             sx={{ mt: 1, maxWidth: 500, mx: 'auto' }}
           >
-            Not guesswork. Real probability theory used by mathematicians and competitive players.
+            Not guesswork. Real math behind every number — so you can trust the advice.
           </Typography>
         </Box>
 
@@ -486,6 +490,31 @@ export const HomePage: React.FC = () => {
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                     {foundation.desc}
                   </Typography>
+                  {/* Pro-level term — discreet badge at the bottom, for
+                      competitive players who want to know exactly what
+                      maths powers the tool. Invisible to beginners, a
+                      trust signal to experts. */}
+                  <Box
+                    sx={{
+                      mt: 1.5,
+                      pt: 1,
+                      borderTop: `1px dashed ${foundation.borderColor}40`,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        fontFamily: 'monospace',
+                        fontSize: '0.7rem',
+                        color: foundation.borderColor,
+                        opacity: 0.7,
+                        letterSpacing: '0.03em',
+                      }}
+                    >
+                      {foundation.techTerm}
+                    </Typography>
+                  </Box>
                 </Paper>
               </AnimatedContainer>
             </Grid>

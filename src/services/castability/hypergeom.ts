@@ -1,10 +1,12 @@
 /**
  * Hypergeometric Distribution Utilities
  *
- * Fast hypergeometric calculations for MTG deck analysis (N <= 100).
+ * Fast hypergeometric calculations for MTG deck analysis.
  * Uses log-factorials for numerical stability.
+ * Dynamically grows the factorial table to support arbitrary deck sizes
+ * (Cube/Commander/Highlander).
  *
- * @version 1.0
+ * @version 1.1 (2026-04-12: dynamic capacity + NaN-safe)
  * @see docs/EXPERT_ANALYSES.md
  */
 
@@ -28,6 +30,15 @@ export function cardsSeenByTurn(turn: number, playDraw: PlayDraw): number {
 }
 
 /**
+ * NaN-safe clamp to [0, 1].
+ * Any non-finite input returns 0 — prevents silent NaN propagation in UI.
+ */
+export function clampProbability(x: number): number {
+  if (!Number.isFinite(x)) return 0
+  return Math.max(0, Math.min(1, x))
+}
+
+/**
  * Build log-factorial lookup table
  */
 function buildLogFactorials(maxN: number): Float64Array {
@@ -43,7 +54,8 @@ function buildLogFactorials(maxN: number): Float64Array {
  * Hypergeometric distribution calculator
  *
  * Uses log-factorials for numerical stability with large factorials.
- * Pre-computes factorials up to maxN for performance.
+ * Pre-computes factorials up to maxN for performance and grows dynamically
+ * if a caller requests N > capacity (Cube, Commander, Highlander, etc.).
  */
 export class Hypergeom {
   private lf: Float64Array
@@ -55,10 +67,23 @@ export class Hypergeom {
   }
 
   /**
+   * Ensure the log-factorial table can address up to `n`.
+   * Grows the table with a geometric strategy (1.5×) to avoid repeated
+   * re-allocations when consecutive requests exceed capacity.
+   */
+  private ensureCapacity(n: number): void {
+    if (n <= this.maxN) return
+    const target = Math.max(n, Math.ceil(this.maxN * 1.5))
+    this.lf = buildLogFactorials(target)
+    this.maxN = target
+  }
+
+  /**
    * Log of binomial coefficient C(n, k)
    */
   private logChoose(n: number, k: number): number {
     if (k < 0 || k > n) return -Infinity
+    if (n > this.maxN) this.ensureCapacity(n)
     return this.lf[n] - this.lf[k] - this.lf[n - k]
   }
 
@@ -69,37 +94,41 @@ export class Hypergeom {
    * @param K - Success states in population (e.g., lands)
    * @param n - Number of draws (cards seen)
    * @param k - Desired successes
-   * @returns Probability of exactly k successes
+   * @returns Probability of exactly k successes, NaN-safe (0 on invalid input)
    */
   pmf(N: number, K: number, n: number, k: number): number {
-    // Validate inputs
+    if (!Number.isFinite(N) || !Number.isFinite(K) || !Number.isFinite(n) || !Number.isFinite(k)) {
+      return 0
+    }
     if (N < 0 || K < 0 || n < 0) return 0
     if (K > N || n > N) return 0
 
-    // Calculate valid range for k
+    this.ensureCapacity(N)
+
     const kMin = Math.max(0, n - (N - K))
     const kMax = Math.min(K, n)
     if (k < kMin || k > kMax) return 0
 
-    // Calculate probability using log-space for numerical stability
-    const logP =
-      this.logChoose(K, k) +
-      this.logChoose(N - K, n - k) -
-      this.logChoose(N, n)
+    const logP = this.logChoose(K, k) + this.logChoose(N - K, n - k) - this.logChoose(N, n)
 
-    return Math.exp(logP)
+    const p = Math.exp(logP)
+    return Number.isFinite(p) ? p : 0
   }
 
   /**
    * Cumulative probability: P(X >= kMin)
-   *
-   * @param N - Population size
-   * @param K - Success states in population
-   * @param n - Number of draws
-   * @param kMin - Minimum successes needed
-   * @returns Probability of at least kMin successes
    */
   atLeast(N: number, K: number, n: number, kMin: number): number {
+    if (
+      !Number.isFinite(N) ||
+      !Number.isFinite(K) ||
+      !Number.isFinite(n) ||
+      !Number.isFinite(kMin)
+    ) {
+      return 0
+    }
+    this.ensureCapacity(N)
+
     const kMax = Math.min(K, n)
     if (kMin <= 0) return 1
     if (kMin > kMax) return 0
@@ -109,54 +138,49 @@ export class Hypergeom {
       sum += this.pmf(N, K, n, k)
     }
 
-    return Math.min(1, Math.max(0, sum))
+    return clampProbability(sum)
   }
 
   /**
    * Cumulative probability: P(X <= kMax)
-   *
-   * @param N - Population size
-   * @param K - Success states in population
-   * @param n - Number of draws
-   * @param kMax - Maximum successes
-   * @returns Probability of at most kMax successes
    */
   atMost(N: number, K: number, n: number, kMax: number): number {
+    if (
+      !Number.isFinite(N) ||
+      !Number.isFinite(K) ||
+      !Number.isFinite(n) ||
+      !Number.isFinite(kMax)
+    ) {
+      return 0
+    }
+    this.ensureCapacity(N)
+
     const kMin = Math.max(0, n - (N - K))
     if (kMax < kMin) return 0
 
     let sum = 0
-    for (let k = kMin; k <= Math.min(kMax, K, n); k++) {
+    const upper = Math.min(kMax, K, n)
+    for (let k = kMin; k <= upper; k++) {
       sum += this.pmf(N, K, n, k)
     }
 
-    return Math.min(1, Math.max(0, sum))
+    return clampProbability(sum)
   }
 
   /**
    * Probability of drawing at least one copy of a card
-   *
-   * @param deckSize - Total deck size
-   * @param copies - Number of copies in deck
-   * @param cardsSeen - Cards seen so far
-   * @returns Probability of seeing at least one copy
    */
   atLeastOneCopy(deckSize: number, copies: number, cardsSeen: number): number {
     if (copies <= 0) return 0
+    if (!Number.isFinite(deckSize) || deckSize <= 0) return 0
+    if (!Number.isFinite(cardsSeen) || cardsSeen <= 0) return 0
 
-    // P(at least 1) = 1 - P(0 copies)
     const p0 = this.pmf(deckSize, copies, cardsSeen, 0)
-    return Math.min(1, Math.max(0, 1 - p0))
+    return clampProbability(1 - p0)
   }
 
   /**
    * Probability of exactly k copies
-   *
-   * @param deckSize - Total deck size
-   * @param copies - Number of copies in deck
-   * @param cardsSeen - Cards seen so far
-   * @param k - Exact number wanted
-   * @returns Probability of exactly k copies
    */
   exactCopies(deckSize: number, copies: number, cardsSeen: number, k: number): number {
     return this.pmf(deckSize, copies, cardsSeen, k)
@@ -164,6 +188,7 @@ export class Hypergeom {
 }
 
 /**
- * Singleton instance for general use
+ * Singleton instance — table grows on demand, so the initial size is just
+ * a warm-start optimization for 60-card Constructed decks.
  */
 export const hypergeom = new Hypergeom(200)

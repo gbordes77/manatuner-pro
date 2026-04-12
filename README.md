@@ -39,7 +39,7 @@ Built on Frank Karsten's mathematical research, it provides:
 | **Mulligan Simulator**     | Monte Carlo simulation with optimal keep/mulligan thresholds                                      |
 | **Export Blueprint**       | Download analysis as PNG, PDF, or JSON for sharing                                                |
 | **Multi-Format Support**   | Limited (40), Constructed (60), Commander (99+)                                                   |
-| **Privacy-First**          | All data stored locally with AES-256 encryption                                                   |
+| **Privacy-First**          | All data stored locally in your browser — nothing sent to our servers                             |
 
 ---
 
@@ -133,7 +133,7 @@ On the draw: 7 + turn
 | Build    | Vite (ES2015 target)              |
 | Testing  | Vitest, Playwright                |
 | Hosting  | Vercel Edge Network               |
-| Storage  | localStorage + AES-256 encryption |
+| Storage  | localStorage (client-only)        |
 
 ---
 
@@ -219,8 +219,8 @@ npm run type-check       # TypeScript validation
 
 - **100% Client-Side**: All calculations run in your browser
 - **No Account Required**: Use immediately without registration
-- **Local Storage**: Data encrypted with AES-256
-- **Optional Cloud Sync**: Explicit opt-in via Supabase
+- **No Tracking**: Zero analytics cookies by default, zero telemetry beacons
+- **Local Storage Only**: Your decklists and analysis history never leave your device
 
 ---
 

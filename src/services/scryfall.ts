@@ -13,9 +13,40 @@ interface ScryfallResponse<T> {
   has_more?: boolean
 }
 
-// Cache pour éviter les requêtes répétées
-const cardCache = new Map<string, Card>()
-const collectionCache = new Map<string, Card[]>()
+/**
+ * Bounded LRU Map — caps memory for long sessions (Cube grinders, power users
+ * analyzing 50 decks in one tab). When `max` is reached, the oldest entry is
+ * evicted. Re-accessing a key refreshes its recency.
+ */
+class BoundedMap<K, V> extends Map<K, V> {
+  constructor(private readonly max: number) {
+    super()
+  }
+  override get(key: K): V | undefined {
+    const value = super.get(key)
+    if (value !== undefined) {
+      // Touch: delete and re-set to move to newest slot
+      super.delete(key)
+      super.set(key, value)
+    }
+    return value
+  }
+  override set(key: K, value: V): this {
+    if (super.has(key)) {
+      super.delete(key)
+    } else if (super.size >= this.max) {
+      // Evict oldest (first insertion)
+      const oldestKey = super.keys().next().value
+      if (oldestKey !== undefined) super.delete(oldestKey)
+    }
+    super.set(key, value)
+    return this
+  }
+}
+
+// Cache pour éviter les requêtes répétées — bounded to 500 entries each
+const cardCache = new BoundedMap<string, Card>(500)
+const collectionCache = new BoundedMap<string, Card[]>(100)
 
 // Rate limiting
 let lastRequestTime = 0

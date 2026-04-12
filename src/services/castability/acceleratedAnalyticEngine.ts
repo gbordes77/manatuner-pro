@@ -45,9 +45,12 @@ const DEFAULT_ACCELERATION_THRESHOLD = 0.05
 // =============================================================================
 
 /**
- * Clamp a value between 0 and 1
+ * Clamp a value between 0 and 1, NaN-safe.
+ * Non-finite inputs collapse to 0 — prevents silent NaN propagation through
+ * the K=0/1/2/3 scenario folding.
  */
 function clamp01(x: number): number {
+  if (!Number.isFinite(x)) return 0
   return Math.max(0, Math.min(1, x))
 }
 

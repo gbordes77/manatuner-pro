@@ -14,8 +14,8 @@ Thank you for your interest in contributing to ManaTuner! This document provides
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/manatuner-pro.git
-   cd manatuner-pro
+   git clone https://github.com/YOUR_USERNAME/manatuner.git
+   cd manatuner
    ```
 3. Install dependencies:
    ```bash

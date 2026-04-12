@@ -339,10 +339,18 @@ const useProbabilityCalculation = (
         xInfo = { xValue, targetTurn, fixedCost: colorSymbols || 'colorless' }
       }
 
-      // Match regular mana symbols like {W}, {U}, etc.
+      // Match regular colored symbols {W}/{U}/{B}/{R}/{G}
       const manaCostSymbols = actualManaCost.match(/\{[WUBRG]\}/g) || []
-      // Match hybrid mana symbols like {W/R}, {U/B}, etc.
-      const hybridSymbols = actualManaCost.match(/\{([WUBRG])\/([WUBRG])\}/g) || []
+      // Match hybrid mana: pure hybrid {W/U}, twobrid {2/W}, and Phyrexian {W/P}
+      // - pure hybrid: either color pays the pip
+      // - twobrid: 2 generic OR 1 colored — treat as hybrid-colored-or-generic
+      // - phyrexian: 2 life OR 1 colored — always payable, treat as colored if
+      //   the color is available, otherwise as life (effectively colorless)
+      const hybridSymbols = actualManaCost.match(/\{[^}]+\/[^}]+\}/g) || []
+      // Match colorless {C} (Eldrazi, Tron, Post, Kozilek). Different from
+      // generic {2}: {C} REQUIRES a colorless mana source (usually a wastes
+      // or utility land), it cannot be paid with any colored mana.
+      const colorlessSymbols = actualManaCost.match(/\{C\}/g) || []
 
       const colorCounts: { [color: string]: number } = {}
       // Track hybrid mana separately - each hybrid can be paid by either color
@@ -353,16 +361,40 @@ const useProbabilityCalculation = (
         colorCounts[color] = (colorCounts[color] || 0) + 1
       })
 
-      // Parse hybrid symbols
+      // Parse hybrid symbols (pure hybrid, twobrid, phyrexian)
       hybridSymbols.forEach((symbol) => {
-        const match = symbol.match(/\{([WUBRG])\/([WUBRG])\}/)
-        if (match) {
-          hybridMana.push({ color1: match[1], color2: match[2] })
+        const inner = symbol.slice(1, -1) // strip braces
+        const parts = inner.split('/')
+        if (parts.length !== 2) return
+        const [left, right] = parts
+
+        // Phyrexian {X/P}: colored left, 'P' right — always payable with life,
+        // so only demand the color if present. Treat as hybrid with a "phantom"
+        // always-available right side.
+        if (right === 'P' && /^[WUBRG]$/.test(left)) {
+          hybridMana.push({ color1: left, color2: left }) // pip is fulfillable even with no sources (life)
+          return
+        }
+        // Twobrid {2/X}: 2 generic OR 1 colored — the colored side is the
+        // expensive-but-efficient option. For probability, treat it as pure
+        // hybrid between the colored option and an always-payable generic.
+        if (left === '2' && /^[WUBRG]$/.test(right)) {
+          hybridMana.push({ color1: right, color2: right }) // treat as fulfillable
+          return
+        }
+        // Pure hybrid {W/U}
+        if (/^[WUBRG]$/.test(left) && /^[WUBRG]$/.test(right)) {
+          hybridMana.push({ color1: left, color2: right })
         }
       })
 
-      // If no regular colors AND no hybrid, it's colorless
-      if (Object.keys(colorCounts).length === 0 && hybridMana.length === 0) {
+      // If no regular colors AND no hybrid AND no colorless {C}, it's pure
+      // generic — always payable at the matching turn.
+      if (
+        Object.keys(colorCounts).length === 0 &&
+        hybridMana.length === 0 &&
+        colorlessSymbols.length === 0
+      ) {
         return { p1: 99, p2: 98, hasX, xInfo }
       }
 
@@ -414,8 +446,13 @@ const useProbabilityCalculation = (
       const probHavingEnoughLands = hypergeom.atLeast(deckSize, landsInDeck, cardsSeen, turn)
       const p2Probability = p1Probability * probHavingEnoughLands
 
-      const finalP1 = Math.round(Math.max(Math.min(p1Probability * 100, 99), 0))
-      const finalP2 = Math.round(Math.max(Math.min(p2Probability * 100, 99), 0))
+      // NaN-safe rounding with a 100% ceiling. The previous 99% cap suggested
+      // "nothing is ever certain" which eroded user trust when a perfectly
+      // built deck returned 99% instead of 100%.
+      const safePct = (p: number) =>
+        !Number.isFinite(p) ? 0 : Math.round(Math.max(0, Math.min(1, p)) * 100)
+      const finalP1 = safePct(p1Probability)
+      const finalP2 = safePct(p2Probability)
 
       return {
         p1: finalP1,
@@ -500,10 +537,12 @@ const getProbabilityColor = (prob: number, theme: Theme) => {
 
 // Hook for accelerated castability calculation
 // v1.1: Uses unconditionalMultiMana for probabilistic multi-mana land handling
+// NOTE (2026-04-12): `baseProbability` was previously in the signature but was
+// never read in the body — including it in the deps array invalidated the
+// memo on every P2 recalc, defeating the optimization. Removed.
 const useAcceleratedCastability = (
   cardData: MTGCard | null,
   cardName: string,
-  baseProbability: number,
   deckSources?: Record<string, number>,
   totalLands?: number,
   totalCards?: number,
@@ -602,7 +641,6 @@ const useAcceleratedCastability = (
   }, [
     cardData,
     cardName,
-    baseProbability,
     deckSources,
     totalLands,
     totalCards,
@@ -658,7 +696,6 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
     const acceleratedResult = useAcceleratedCastability(
       cardData,
       cardName,
-      probabilities.p2,
       deckSources,
       totalLands,
       totalCards,

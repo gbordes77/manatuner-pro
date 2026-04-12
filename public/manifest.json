@@ -1,22 +1,17 @@
 {
   "name": "ManaTuner - MTG Manabase Analyzer",
   "short_name": "ManaTuner",
-  "description": "The only mana calculator that factors in your mana rocks and dorks — not just lands. Exact probabilities + Monte Carlo mulligan.",
+  "description": "The only mana calculator that factors in your mana rocks and dorks — not just lands. Exact probabilities + Smart mulligan advice.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a2e",
+  "background_color": "#0D0D0F",
   "theme_color": "#1976d2",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/og-image.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

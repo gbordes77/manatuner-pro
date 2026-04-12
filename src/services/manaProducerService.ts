@@ -207,7 +207,7 @@ type DetectedProducerType =
   | 'MANA_DOUBLER'
   | null
 
-function analyzeOracleForMana(oracleText: string): {
+export function analyzeOracleForMana(oracleText: string): {
   type: DetectedProducerType
   producesAny: boolean
   colorLetters: string[]
@@ -281,8 +281,9 @@ function analyzeOracleForMana(oracleText: string): {
     result.delay = 0 // enchanted land is already untapped
 
     // Detect amount: Overgrowth adds 2, Dawn's Reflection adds 2, most add 1
+    // Matches both "add" (activated/imperative) and "adds" (triggered) forms.
     const twoManaMatch =
-      /add\s+\{[WUBRGC]\}\{[WUBRGC]\}/i.test(oracleText) || /add\s+two\s+mana/i.test(oracleText)
+      /adds?\s+\{[WUBRGC]\}\{[WUBRGC]\}/i.test(oracleText) || /adds?\s+two\s+mana/i.test(oracleText)
     result.amount = twoManaMatch ? 2 : 1
 
     // Detect color production

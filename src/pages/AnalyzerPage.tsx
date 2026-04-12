@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
 import { TabPanel } from '../components/analyzer/TabPanel'
+import { ErrorBoundary } from '../components/common/ErrorBoundary'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
 import { SEO } from '../components/common/SEO'
 import PrivacySettings from '../components/PrivacySettings'
@@ -160,21 +161,32 @@ const AnalyzerPage: React.FC = () => {
           analysis: result,
           consistency: result.consistency,
         })
-      } catch {
-        // Silent fail for auto-save
+      } catch (saveErr) {
+        // Auto-save failed (most likely quota exceeded). Warn the user
+        // — silently losing history is worse than a polite message.
+        const msg =
+          saveErr instanceof Error && saveErr.name === 'QuotaExceededError'
+            ? 'Browser storage full. Analysis shown but not saved to history. Clear old analyses in Privacy Settings.'
+            : 'Could not save analysis to local history.'
+        dispatch(showSnackbar({ message: msg, severity: 'warning' }))
       }
     } catch (error) {
       dispatch(setAnalysisResult(null))
+      // Surface a more helpful error message when possible.
+      const rawMessage = error instanceof Error ? error.message : ''
+      const userMessage = rawMessage
+        ? `Failed to analyze deck: ${rawMessage}. Check the format and try again.`
+        : 'Failed to analyze deck. Please check the format and try again.'
       dispatch(
         showSnackbar({
-          message: 'Failed to analyze deck. Please check the format and try again.',
+          message: userMessage,
           severity: 'error',
         })
       )
     } finally {
       dispatch(setIsAnalyzing(false))
     }
-  }, [deckList, dispatch])
+  }, [deckList, deckName, dispatch])
 
   const handleClear = useCallback(() => {
     dispatch(clearAnalyzer())
@@ -279,7 +291,7 @@ const AnalyzerPage: React.FC = () => {
               />
               <Chip
                 icon={<CasinoIcon />}
-                label="Monte Carlo"
+                label="Mulligan Sim"
                 size="small"
                 sx={{
                   bgcolor: '#f3e5f5',
@@ -470,11 +482,6 @@ const AnalyzerPage: React.FC = () => {
                     }}
                   >
                     <Chip
-                      label="Health Score"
-                      size="small"
-                      sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}
-                    />
-                    <Chip
                       label="Castability"
                       size="small"
                       sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}
@@ -483,6 +490,11 @@ const AnalyzerPage: React.FC = () => {
                       label="Mulligan"
                       size="small"
                       sx={{ bgcolor: 'secondary.light', color: 'secondary.contrastText' }}
+                    />
+                    <Chip
+                      label="Manabase"
+                      size="small"
+                      sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}
                     />
                   </Box>
                 </Box>
@@ -593,35 +605,45 @@ const AnalyzerPage: React.FC = () => {
 
                   <Suspense fallback={<AnalyzerSkeleton />}>
                     <TabPanel value={activeTab} index={0}>
-                      <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
+                      <ErrorBoundary label="AnalyzerTab.Castability">
+                        <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
+                      </ErrorBoundary>
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={1}>
-                      <AnalysisTab
-                        analysisResult={analysisResult}
-                        isMobile={isMobile}
-                        cards={analysisResult.cards}
-                      />
+                      <ErrorBoundary label="AnalyzerTab.Analysis">
+                        <AnalysisTab
+                          analysisResult={analysisResult}
+                          isMobile={isMobile}
+                          cards={analysisResult.cards}
+                        />
+                      </ErrorBoundary>
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={2}>
-                      <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
+                      <ErrorBoundary label="AnalyzerTab.Mulligan">
+                        <MulliganTab cards={analysisResult.cards || []} isMobile={isMobile} />
+                      </ErrorBoundary>
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={3}>
-                      <ManabaseFullTab
-                        deckList={deckList}
-                        analysisResult={analysisResult}
-                        isMobile={isMobile}
-                        isSmallMobile={isSmallMobile}
-                      />
+                      <ErrorBoundary label="AnalyzerTab.Manabase">
+                        <ManabaseFullTab
+                          deckList={deckList}
+                          analysisResult={analysisResult}
+                          isMobile={isMobile}
+                          isSmallMobile={isSmallMobile}
+                        />
+                      </ErrorBoundary>
                     </TabPanel>
 
                     <TabPanel value={activeTab} index={4}>
-                      <ManaBlueprint
-                        analysisResult={analysisResult}
-                        deckName={`Deck ${new Date().toLocaleDateString()}`}
-                      />
+                      <ErrorBoundary label="AnalyzerTab.Blueprint">
+                        <ManaBlueprint
+                          analysisResult={analysisResult}
+                          deckName={`Deck ${new Date().toLocaleDateString()}`}
+                        />
+                      </ErrorBoundary>
                     </TabPanel>
                   </Suspense>
                 </div>

@@ -212,31 +212,66 @@ export function detectSideboardStartLine(lines: string[]): number {
 }
 
 export class DeckAnalyzer {
-  // Fonction pour interroger l'API Scryfall
+  /**
+   * Fetch a card from Scryfall with:
+   * - In-memory cache
+   * - 8-second timeout via AbortController (prevents hung spinners)
+   * - Fuzzy fallback when exact match fails (handles minor typos/DFCs that
+   *   escaped cleanCardName)
+   * - Single retry with exponential backoff on 429/500/503
+   *
+   * Returns `null` on genuine not-found or network failure.
+   */
   private static async fetchCardFromScryfall(cardName: string): Promise<ScryfallCard | null> {
-    // Vérifier le cache d'abord
     if (scryfallCache.has(cardName)) {
       return scryfallCache.get(cardName)!
     }
 
-    try {
-      const encodedName = encodeURIComponent(cardName)
-      const response = await fetch(`https://api.scryfall.com/cards/named?exact=${encodedName}`)
+    const encodedName = encodeURIComponent(cardName)
+    const exactUrl = `https://api.scryfall.com/cards/named?exact=${encodedName}`
+    const fuzzyUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodedName}`
 
-      if (!response.ok) {
-        console.warn(`Scryfall API error for "${cardName}": ${response.status}`)
+    const tryFetch = async (url: string, attempt = 0): Promise<ScryfallCard | null> => {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 8000)
+      try {
+        const response = await fetch(url, { signal: controller.signal })
+        clearTimeout(timeoutId)
+
+        if (response.ok) {
+          return (await response.json()) as ScryfallCard
+        }
+
+        // Retry transient failures once with short backoff
+        if ((response.status === 429 || response.status >= 500) && attempt < 1) {
+          await new Promise((r) => setTimeout(r, 400))
+          return tryFetch(url, attempt + 1)
+        }
+
+        return null
+      } catch (error) {
+        clearTimeout(timeoutId)
+        if (attempt < 1) {
+          await new Promise((r) => setTimeout(r, 400))
+          return tryFetch(url, attempt + 1)
+        }
+        console.warn(`Scryfall fetch failed for "${cardName}":`, error)
         return null
       }
-
-      const data: ScryfallCard = await response.json()
-
-      // Mettre en cache le résultat
-      scryfallCache.set(cardName, data)
-      return data
-    } catch (error) {
-      console.error(`Error fetching card "${cardName}" from Scryfall:`, error)
-      return null
     }
+
+    // Try exact first (fastest, most predictable)
+    let data = await tryFetch(exactUrl)
+
+    // Fall back to fuzzy for DFCs/typos that slipped through cleanCardName
+    if (!data) {
+      data = await tryFetch(fuzzyUrl)
+    }
+
+    if (data) {
+      scryfallCache.set(cardName, data)
+    }
+    return data
   }
 
   // Fonction améliorée pour détecter les terrains via Scryfall
@@ -654,13 +689,37 @@ export class DeckAnalyzer {
     return cards
   }
 
+  /**
+   * Normalize card names from any source (MTGA, MTGO, Moxfield, manual input)
+   * into the front-face name that Scryfall's `exact=` endpoint accepts.
+   *
+   * Handles:
+   * - MTGA set codes and collector numbers: "Card (SET) 123"
+   * - Arena markers: "*CMDR*", "*F*", "*E*", "*CMP*", "*COMPANION*"
+   * - Adventure/DFC split notation: "Front // Back" → "Front"
+   * - Arena rebalanced "A-" prefix
+   * - Unicode whitespace (nbsp, ideographic space)
+   */
   private static cleanCardName(name: string): string {
-    // Remove MTGA set codes and collector numbers
-    // Patterns: "(SET) 123", "(SET) 123a", "A-CardName", etc.
-    return name
-      .replace(/\s*\([A-Z0-9]{2,4}\)\s*\d+[a-z]?$/i, '') // Remove "(SET) 123" at end
-      .replace(/^A-/, '') // Remove "A-" prefix for Arena rebalanced cards
-      .trim()
+    return (
+      name
+        // Normalize unicode whitespace to regular space
+        .replace(/[\u00A0\u2000-\u200B\u3000]/g, ' ')
+        // Strip Arena markers (*CMDR*, *F*, *E*, *CMP*, *COMPANION*, etc.)
+        .replace(/\s*\*[A-Z]+\*\s*/gi, ' ')
+        // Remove MTGA set codes and collector numbers: "(SET) 123", "(SET) 123a"
+        .replace(/\s*\([A-Z0-9]{2,4}\)\s*\d+[a-z★]?\s*$/i, '')
+        // Remove "A-" prefix for Arena rebalanced cards
+        .replace(/^A-/, '')
+        // Take only the front face for DFC/adventure/split cards: "Front // Back"
+        // Scryfall `exact=` rejects the full "//" form for DFCs like
+        // "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki". The front
+        // face alone is always accepted.
+        .split(/\s*\/\/\s*/)[0]
+        // Collapse runs of whitespace and trim
+        .replace(/\s+/g, ' ')
+        .trim()
+    )
   }
 
   private static getSimulatedManaCost(name: string): string {
@@ -1079,7 +1138,9 @@ export class DeckAnalyzer {
       totalNonLands > 0
         ? nonLands.reduce((sum, card) => sum + card.cmc * card.quantity, 0) / totalNonLands
         : 0
-    const landRatio = totalLands / totalCards
+    // NaN guard: empty decklist (totalCards === 0) would produce 0/0 = NaN
+    // and propagate "NaN%" to ManabaseStats.
+    const landRatio = totalCards > 0 ? totalLands / totalCards : 0
 
     // Calculate mana curve distribution
     const manaCurve: Record<string, number> = {
