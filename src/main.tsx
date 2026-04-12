@@ -10,7 +10,13 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from './App'
 import { persistor, store } from './store'
 
-// Initialize Sentry error tracking (production only)
+// Sentry intentionally DISABLED in production (privacy decision 2026-04-12).
+// PrivacySettings.tsx:204 promises "Nothing is sent to any server" — that
+// claim must stay true. The `&& VITE_SENTRY_DSN` guard means: as long as the
+// env var is NOT set in Vercel, Sentry never initializes. Do NOT set the env
+// var without first (1) adding a `beforeSend` scrubber here that strips URLs,
+// breadcrumbs and PII, AND (2) updating PrivacySettings.tsx:204 to disclose
+// the anonymous crash reporting. EU/GDPR contradiction otherwise.
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
