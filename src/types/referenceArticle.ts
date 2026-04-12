@@ -18,6 +18,7 @@ export type ArticleCategory =
   | 'metagame' // PVDDR Theory of Everything, data analysis, meta-tools
   | 'mindset' // Saito, Kuisma, Manfield, Fortier — mental game
   | 'advanced' // Moudou game theory, decision theory
+  | 'podcasts' // Audio shows: Le Podcaster Mage (FR), Limited Resources, etc.
 
 export type ArticleLevel = 'beginner' | 'intermediate' | 'advanced'
 
@@ -29,6 +30,7 @@ export type ArticleMedium =
   | 'pdf' // PDF mirror (Karsten land drops)
   | 'spreadsheet' // Google Sheets (Anaël YAHI inventory)
   | 'reference' // Official reference (Wizards ban list)
+  | 'podcast' // Audio episode (Podcaster Mage, Limited Resources, etc.)
 
 export type ArticleLanguage = 'en' | 'fr' | 'jp' | 'multi'
 
@@ -126,6 +128,7 @@ export const CATEGORY_LABELS: Record<ArticleCategory, string> = {
   metagame: 'Metagame & Data',
   mindset: 'Tournament Mindset',
   advanced: 'Advanced Theory',
+  podcasts: 'Podcasts',
 }
 
 export const CATEGORY_ORDER: ArticleCategory[] = [
@@ -137,6 +140,7 @@ export const CATEGORY_ORDER: ArticleCategory[] = [
   'metagame',
   'mindset',
   'advanced',
+  'podcasts',
 ]
 
 export const TRACK_METADATA: Record<

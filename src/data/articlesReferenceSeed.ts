@@ -13,7 +13,15 @@
  * Credits: curation driven by Guillaume Bordes + the Videre Discord
  * community. Archive.org recoveries by KaP and others.
  *
- * @version 1.0 (2026-04-12)
+ * @version 1.2 (2026-04-13)
+ *
+ * 1.2 (2026-04-13): +6 articles (Reid Duke Level One Full Course; Chapin
+ *   Information Cascades; Zvi Elephant Method, Time Wisely, Beatdown II;
+ *   PV's Rule) and +5 podcasts (Le Podcaster Mage FR series). New
+ *   ArticleMedium 'podcast' + new ArticleCategory 'podcasts'.
+ * 1.1 (2026-04-13): 17 link corrections, depraz-mtgo-stops rename,
+ *   Depraz author fix.
+ * 1.0 (2026-04-12): initial 35-article seed.
  */
 
 import type { ReferenceArticle } from '../types/referenceArticle'
@@ -236,6 +244,27 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
   },
 
   {
+    id: 'zvi-using-time-wisely',
+    title: 'Using Your Time Wisely',
+    author: 'Zvi Mowshowitz',
+    publisher: 'StarCityGames',
+    year: 2010,
+    category: 'mindset',
+    secondaryCategories: ['advanced'],
+    level: 'intermediate',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://articles.starcitygames.com/articles/feature-article-using-your-time-wisely/',
+    description:
+      'Zvi on time management for tournament weekends. With Magic information so readily available across multiple formats, he explains how to maximize potential through expert testing schedule and last-minute deck choice discipline.',
+    curatorNote:
+      "If you've ever left your deck choice to the night before, this is the article. Zvi's framework for budgeting your prep hours is the bridge between FNM-grinding and RCQ-ready. Required reading the week before any competitive event.",
+    curatorTrack: 'rcq',
+  },
+
+  {
     id: 'pvddr-when-to-mulligan',
     title: 'When to Mulligan',
     author: 'Paulo Vitor Damo da Rosa',
@@ -404,6 +433,46 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     curatorTrack: 'pro-tour',
   },
 
+  {
+    id: 'chapin-information-cascades',
+    title: 'Information Cascades in Magic',
+    author: 'Patrick Chapin',
+    publisher: 'StarCityGames',
+    year: 2006,
+    category: 'advanced',
+    secondaryCategories: ['mindset', 'metagame'],
+    level: 'advanced',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://articles.starcitygames.com/articles/information-cascades-in-magic/',
+    description:
+      "Chapin on how testing groups converge on flawed conclusions when each member trusts others' tests more than their own. The information theory framework that explains why entire metagames sometimes get stuck in local optima.",
+    curatorNote:
+      "The article every competitive Magic player should read once a year. Chapin shows how 'information cascades' lead testing teams astray — and how to break the loop. The intellectual ancestor of every modern 'why is this deck still tier 1' debate.",
+    curatorTrack: 'pro-tour',
+  },
+
+  {
+    id: 'zvi-elephant-method',
+    title: 'The Elephant Method: A Case Study',
+    author: 'Zvi Mowshowitz',
+    publisher: 'StarCityGames',
+    year: 2013,
+    category: 'deckbuilding',
+    secondaryCategories: ['advanced'],
+    level: 'advanced',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://articles.starcitygames.com/articles/the-elephant-method-a-case-study/',
+    description:
+      "Hall of Famer Zvi Mowshowitz walks through how he used the Elephant method to tune Team SCG's Bant Control deck for Pro Tour Dragon's Maze. The most accessible introduction to one of the deepest deckbuilding methodologies in MTG.",
+    curatorNote:
+      "Zvi's 'Elephant method' is one of those concepts pros reference constantly without ever defining. This case study IS the definition. Read it once and you'll understand why every PT-winning deck has a single 'elephant' card driving the build.",
+    curatorTrack: 'pro-tour',
+  },
+
   // ==========================================================================
   // TOURNAMENT MINDSET — Rest of Saito's 6-part series (4 parts)
   // ==========================================================================
@@ -497,6 +566,24 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     seriesPart: 7,
   },
 
+  {
+    id: 'pvddr-pv-rule',
+    title: "PV's Rule",
+    author: 'Paulo Vitor Damo da Rosa',
+    publisher: 'TCGPlayer Infinite',
+    year: 2024,
+    category: 'mindset',
+    secondaryCategories: ['advanced'],
+    level: 'advanced',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://www.tcgplayer.com/content/article/PV-s-Rule/0d7fbcf6-570b-458a-bf02-ae46f097d515/',
+    description:
+      "PVDDR's eponymous decision-making rule, distilled from 20+ years of pro-level play. The single heuristic he reaches for first when a play decision feels close — short, memorable, and immediately applicable at any level.",
+  },
+
   // ==========================================================================
   // MANABASE & MANA MATH
   // ==========================================================================
@@ -575,6 +662,42 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     primaryUrl: 'https://starcitygames.com/next-level-deckbuilding-ebook/',
     description:
       "Chapin's deckbuilding theory book (eBook on StarCityGames). Archetype theory, innovation cycles, and the discipline of building decks that punch above their individual card quality.",
+  },
+
+  {
+    id: 'reid-duke-level-one-full-course',
+    title: 'Level One: The Full Course',
+    author: 'Reid Duke',
+    publisher: 'Wizards of the Coast',
+    year: 2015,
+    category: 'fundamentals',
+    secondaryCategories: ['deckbuilding', 'mindset'],
+    level: 'beginner',
+    medium: 'reference',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://magic.wizards.com/en/news/feature/level-one-full-course-2015-10-05',
+    description:
+      "The complete index of Reid Duke's Level One course on magic.wizards.com. Every chapter linked from one page — the most comprehensive beginner-to-intermediate competitive curriculum in MTG history. Includes the manabase + sideboarding chapters featured in our First FNM and RCQ tracks.",
+  },
+
+  {
+    id: 'zvi-whos-the-beatdown-2-multitasking',
+    title: "Who's the Beatdown II: Multitasking",
+    author: 'Zvi Mowshowitz',
+    publisher: 'TCGPlayer (legacy)',
+    year: 2003,
+    category: 'fundamentals',
+    secondaryCategories: ['advanced'],
+    level: 'advanced',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'archived',
+    primaryUrl:
+      'https://web.archive.org/web/20200804023440/https://magic.tcgplayer.com/db/article.asp?ID=2754',
+    originalUrl: 'http://magic.tcgplayer.com/db/article.asp?ID=2754',
+    description:
+      "Zvi's sequel to Mike Flores's 'Who's the Beatdown?'. Where Flores teaches the binary (you are either offense or defense), Zvi teaches the harder reality: multi-axis games where you must do both at once. The natural follow-up after the original.",
   },
 
   {
@@ -726,6 +849,103 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     primaryUrl: 'https://youtu.be/xLFjxcKmDr4',
     description:
       'Essential French video by Pro Tour player Jean-Emmanuel Depraz on MTGO stops — the priority-passing system every online player must master to avoid catastrophic misplays.',
+  },
+
+  // ==========================================================================
+  // PODCASTS — Audio episodes for competitive players
+  // ==========================================================================
+
+  {
+    id: 'pcm-15-avoir-un-plan',
+    title: 'Level-up : Avoir un plan',
+    subtitle: 'Episode #15',
+    author: 'Théau Méjean & Charles Gindre',
+    publisher: 'Le Podcaster Mage',
+    year: 2019,
+    category: 'podcasts',
+    secondaryCategories: ['mindset'],
+    level: 'intermediate',
+    medium: 'podcast',
+    language: 'fr',
+    linkStatus: 'live',
+    primaryUrl: 'https://podcastermage.podbean.com/e/15-level-up-avoir-un-plan/',
+    description:
+      "Deep dive sur l'un des concepts majeurs du Magic compétitif : avoir un plan. Théau et Charles expliquent comment formuler, ajuster, et exécuter un game plan tour par tour — le pendant audio du concept central de PVDDR et Reid Duke.",
+  },
+
+  {
+    id: 'pcm-67-coherence-depraz',
+    title: 'Level-up : La cohérence à Magic, avec J-E Depraz',
+    subtitle: 'Episode #67',
+    author: 'Théau Méjean, Charles Gindre & Jean-Emmanuel Depraz',
+    publisher: 'Le Podcaster Mage',
+    year: 2021,
+    category: 'podcasts',
+    secondaryCategories: ['mindset', 'advanced'],
+    level: 'advanced',
+    medium: 'podcast',
+    language: 'fr',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://podcastermage.podbean.com/e/67-level-up-la-coherence-a-magic-avec-j-e-depraz/',
+    description:
+      "Le Pro Tour player Jean-Emmanuel Depraz (le même que sur 'Petite leçon de stops' dans cette librairie) explique pourquoi la cohérence — interne au deck et au plan de jeu — est la skill la plus sous-estimée du joueur compétitif.",
+  },
+
+  {
+    id: 'pcm-92-tourner-cartes',
+    title: 'Level-up : Tourner autour des cartes',
+    subtitle: 'Episode #92',
+    author: 'Théau Méjean & Charles Gindre',
+    publisher: 'Le Podcaster Mage',
+    year: 2021,
+    category: 'podcasts',
+    secondaryCategories: ['mindset', 'advanced'],
+    level: 'advanced',
+    medium: 'podcast',
+    language: 'fr',
+    linkStatus: 'live',
+    primaryUrl: 'https://podcastermage.podbean.com/e/92-level-up-tourner-autours-de-cartes/',
+    description:
+      "Tous les tips and tricks pour 'tourner autour des cartes' — la skill de jouer autour des cartes adverses sans connaître leur main exacte. Range-finding et lecture d'informations cachées, en français.",
+  },
+
+  {
+    id: 'pcm-125-heuristiques',
+    title: "Level-up : Les heuristiques, c'est pas automatique",
+    subtitle: 'Episode #125',
+    author: 'Théau Méjean & Charles Gindre',
+    publisher: 'Le Podcaster Mage',
+    year: 2022,
+    category: 'podcasts',
+    secondaryCategories: ['mindset', 'advanced'],
+    level: 'advanced',
+    medium: 'podcast',
+    language: 'fr',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://podcastermage.podbean.com/e/125-level-up-les-heuristiques-c-est-pas-automatique/',
+    description:
+      'Les heuristiques — ces petites règles qui permettent de prendre des décisions plus rapidement — et leurs limites. Quand les appliquer, quand les remettre en question. Le pendant audio du PVDDR Six Heuristics dans cette même librairie.',
+  },
+
+  {
+    id: 'pcm-164-erwan-control',
+    title: "Dans la peau d'un grand père à Magic, avec Erwan Maisonneuve",
+    subtitle: 'Episode #164 — La science du control',
+    author: 'Théau Méjean & Erwan Maisonneuve',
+    publisher: 'Le Podcaster Mage',
+    year: 2023,
+    category: 'podcasts',
+    secondaryCategories: ['deckbuilding', 'advanced'],
+    level: 'advanced',
+    medium: 'podcast',
+    language: 'fr',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://podcastermage.podbean.com/e/164-dans-la-peau-d-un-grand-pere-a-magic-avec-erwan-maisonneuve/',
+    description:
+      "Erwan Maisonneuve, co-auteur du Manuel du Joueur de Control, parle de la science du control — l'art de gagner avec des decks qui jouent en réaction. Une masterclass française rare sur l'archétype le plus mal compris.",
   },
 
   // ==========================================================================

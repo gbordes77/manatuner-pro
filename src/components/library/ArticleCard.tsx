@@ -9,6 +9,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import PlayCircleIcon from '@mui/icons-material/PlayCircleOutline'
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay'
+import PodcastsIcon from '@mui/icons-material/Podcasts'
 import PublicIcon from '@mui/icons-material/Public'
 import TableChartIcon from '@mui/icons-material/TableChart'
 import {
@@ -82,6 +83,7 @@ const MEDIUM_META: Record<ArticleMedium, { icon: React.ElementType; label: strin
   pdf: { icon: PictureAsPdfIcon, label: 'PDF' },
   spreadsheet: { icon: TableChartIcon, label: 'Spreadsheet' },
   reference: { icon: PublicIcon, label: 'Reference' },
+  podcast: { icon: PodcastsIcon, label: 'Podcast' },
 }
 
 const LANGUAGE_FLAG: Record<string, string> = {
