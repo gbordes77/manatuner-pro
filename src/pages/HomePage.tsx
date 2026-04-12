@@ -327,10 +327,10 @@ export const HomePage: React.FC = () => {
               }}
             >
               <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                35 essential articles
+                The essential articles
               </Box>{' '}
-              from Karsten, PVDDR, Saito, Chapin, Reid Duke, Fortier — all in one place, with dead
-              links restored via archive.org.
+              from Karsten, PVDDR, Saito, Chapin, Reid Duke — all in one place, with dead links
+              restored via archive.org.
             </Typography>
           </Box>
 
@@ -654,7 +654,7 @@ export const HomePage: React.FC = () => {
             Every essential article a competitive Magic player should read, in one place. From
             Karsten's manabase math to Saito's tournament mindset —{' '}
             <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
-              35 articles across 8 categories
+              a curated library across 8 categories
             </Box>
             , with dead links restored via archive.org.
           </Typography>
@@ -681,7 +681,7 @@ export const HomePage: React.FC = () => {
               tagline: 'Leveling up',
               accent: theme.palette.mana.green,
               description:
-                "PVDDR's 6 Heuristics · Manfield's prep routine · Fortier's ladder strategy — the curriculum from FNM regular to RCQ competitor.",
+                "PVDDR's 6 Heuristics · Manfield's prep routine · ladder strategy essentials — the curriculum from FNM regular to RCQ competitor.",
               href: '/library#track-rcq',
             },
             {
@@ -692,7 +692,7 @@ export const HomePage: React.FC = () => {
               tagline: 'Mastering',
               accent: theme.palette.mana.red,
               description:
-                "Saito's 6-part mindset series · Fortier DASH · Dagen · Moudou game theory — the international canon rescued from link rot.",
+                "Saito's 6-part mindset series · Dagen · Moudou game theory — the international canon rescued from link rot.",
               href: '/library#track-pro-tour',
             },
           ].map((track, idx) => (
