@@ -19,6 +19,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.manatuner.app/library</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.manatuner.app/guide</loc>
     <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>

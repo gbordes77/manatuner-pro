@@ -1,4 +1,5 @@
 import AnalyticsIcon from '@mui/icons-material/Analytics'
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import CloseIcon from '@mui/icons-material/Close'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import GitHubIcon from '@mui/icons-material/GitHub'
@@ -98,6 +99,7 @@ export const Header: React.FC = () => {
     { label: 'Analyzer', path: '/analyzer', icon: AnalyticsIcon },
     { label: 'My Analyses', path: '/my-analyses', icon: HistoryIcon },
     { label: 'Lands', path: '/land-glossary', icon: LandscapeIcon },
+    { label: 'Library', path: '/library', icon: AutoStoriesIcon },
     { label: 'Guide', path: '/guide', icon: GuideIcon },
     { label: 'Mathematics', path: '/mathematics', icon: FunctionsIcon },
     { label: 'About', path: '/about', icon: InfoIcon },
