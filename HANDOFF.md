@@ -2,7 +2,63 @@
 
 ## Project Status: PRODUCTION — LAUNCH-READY
 
-**Latest Session:** 2026-04-13 (Library link audit + 10-agent final go-prod) | **Tests:** 305 pass, 2 skipped, 0 fail | **Build:** ~7.5s | **Commit:** `27ef3a8` (+ pending CI fix + session docs)
+**Latest Session:** 2026-04-13 (late) — Library expansion +11 entries | **Tests:** 305 pass, 2 skipped, 0 fail | **Build:** ~7.5s | **Commit:** `6bcdc64`
+
+---
+
+## Session 2026-04-13 (late) — Library Expansion (+11 entries)
+
+### Workflow
+
+A community contributor sent 11 new entries to add to the library: 6 articles (Reid Duke Level One Full Course; Chapin Information Cascades; Zvi Mowshowitz ×3 — Elephant Method, Using Your Time Wisely, Who's the Beatdown II; PV's Rule) + 5 Podcaster Mage FR podcasts (#15, #67, #92, #125, #164). All 11 URLs verified HTTP 200 + content grep before adding (the Zvi Beatdown II Wayback URL the contributor sent had to be replaced with a more reliable 2020 snapshot — `web/20200804023440` instead of `web/20120701194521`).
+
+### What Was Completed
+
+**Type system additions:**
+
+- New `ArticleMedium 'podcast'` added to the union
+- New `ArticleCategory 'podcasts'` added to the union, `CATEGORY_LABELS` ("Podcasts"), and `CATEGORY_ORDER` (appended after `'advanced'`)
+- New `MEDIUM_META.podcast` entry in `src/components/library/ArticleCard.tsx` with `PodcastsIcon` from `@mui/icons-material/Podcasts`
+- Seed file header bumped to `@version 1.2` with explicit changelog for 1.0 / 1.1 / 1.2
+
+**Content additions (commit `6bcdc64`):**
+
+- Track 2 (RCQ) +1: Zvi "Using Your Time Wisely" — bridges FNM-grinding to RCQ-ready
+- Track 3 (Pro Tour) +2: Chapin "Information Cascades", Zvi "The Elephant Method"
+- Tournament Mindset section +1: PVDDR "PV's Rule"
+- Fundamentals section +2: Reid Duke "Level One: The Full Course" (umbrella index), Zvi "Who's the Beatdown II: Multitasking" (sequel to the existing Flores entry)
+- New PODCASTS section +5: Le Podcaster Mage FR episodes — including #67 which features Jean-Emmanuel Depraz, the same Pro Tour player whose "Petite leçon de stops" video is already in the library
+
+### Distribution after expansion
+
+| linkStatus | Before | After        |
+| ---------- | ------ | ------------ |
+| live       | 19     | **29** (+10) |
+| archived   | 10     | **11** (+1)  |
+| lost       | 6      | **6**        |
+| **Total**  | **35** | **46**       |
+
+### Track sizes after expansion
+
+| Track     | Before | After                                 |
+| --------- | ------ | ------------------------------------- |
+| first-fnm | 5      | 5                                     |
+| rcq       | 6      | 7 (+1 Zvi Time)                       |
+| pro-tour  | 7      | 9 (+2 Chapin Cascades + Zvi Elephant) |
+
+All tracks within the 3-10 integrity-test limit.
+
+### Verification
+
+- 11 new URLs verified HTTP 200 + content grep before adding
+- Zvi Beatdown II Wayback snapshot: original `2012` snapshot the contributor sent didn't contain the article body via curl, so swapped to the verified `20200804023440` snapshot which contains "Beatdown", "Mowshowitz", "Multitask" markers
+- 305 unit tests passing (test count unchanged because the 9 seed integrity tests are structural — they pass regardless of seed size as long as invariants hold)
+- TypeScript clean (`npx tsc --noEmit`)
+- Dev server `/library` returns 200
+
+### Next Priority
+
+Same as the morning session — **post the `@fireshoes` tweet**. The library is now more substantial (46 entries vs. 35) but the distribution problem remains unchanged. The expansion strengthens the library pillar without creating any new technical risk.
 
 ---
 

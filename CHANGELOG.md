@@ -5,6 +5,63 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1.2] - 2026-04-13
+
+### Library Expansion (+11 entries)
+
+Single commit (`6bcdc64`) on top of `2.5.1.1`. Eleven new entries contributed by a community member, expanding the curated library from 35 to 46 entries. All URLs verified HTTP 200 + content grep before adding. Adds a brand-new "Podcasts" category and `medium: 'podcast'` to the type system.
+
+### Added
+
+- **6 new articles** in the reading library:
+  - **Reid Duke "Level One: The Full Course"** (magic.wizards.com, 2015) — the umbrella index of Reid Duke's complete Level One curriculum, linking every chapter from one page. Includes the manabase + sideboarding chapters already featured in the First FNM and RCQ tracks.
+  - **Patrick Chapin "Information Cascades in Magic"** (StarCityGames, 2006) — added to the Pro Tour track. The information theory framework that explains why testing groups converge on flawed conclusions when each member trusts others' tests more than their own.
+  - **Zvi Mowshowitz "The Elephant Method: A Case Study"** (StarCityGames, 2013) — added to the Pro Tour track. Zvi walks through how he used the Elephant method to tune Team SCG's Bant Control deck for Pro Tour Dragon's Maze.
+  - **Zvi Mowshowitz "Using Your Time Wisely"** (StarCityGames, 2010) — added to the RCQ track. Zvi's framework for budgeting prep hours the week before a tournament.
+  - **Zvi Mowshowitz "Who's the Beatdown II: Multitasking"** (TCGPlayer legacy, archived 2003 era) — Wayback snapshot from `20200804023440`. The sequel to Mike Flores's "Who's the Beatdown?" — extending the framework from the binary (offense-or-defense) to multi-axis games where you must do both. Sits next to the original Flores entry in the Fundamentals section.
+  - **Paulo Vitor Damo da Rosa "PV's Rule"** (TCGPlayer Infinite, 2024) — added to the Tournament Mindset section. PVDDR's eponymous decision-making rule, distilled from 20+ years of pro-level play.
+- **New PODCASTS section** with 5 episodes from Le Podcaster Mage (FR):
+  - **#15 "Level-up : Avoir un plan"** (2019) — Théau & Charles on game plans
+  - **#67 "Level-up : La cohérence à Magic, avec J-E Depraz"** (2021) — features Jean-Emmanuel Depraz, the same Pro Tour player whose "Petite leçon de stops" video is already in the library
+  - **#92 "Level-up : Tourner autour des cartes"** (2021) — range-finding & hidden information reads
+  - **#125 "Level-up : Les heuristiques, c'est pas automatique"** (2022) — the audio pendant of PVDDR's "Six Heuristics" article
+  - **#164 "Dans la peau d'un grand père à Magic, avec Erwan Maisonneuve"** (2023) — the science of control with the co-author of "Manuel du Joueur de Control"
+- **New `ArticleMedium 'podcast'`** added to the union in `src/types/referenceArticle.ts`.
+- **New `ArticleCategory 'podcasts'`** added to the union, with `CATEGORY_LABELS` entry "Podcasts" and appended to `CATEGORY_ORDER` after `'advanced'`.
+- **New `MEDIUM_META.podcast`** entry in `src/components/library/ArticleCard.tsx` using `PodcastsIcon` from `@mui/icons-material/Podcasts`.
+
+### Changed
+
+- **Seed file header** bumped to `@version 1.2` (`src/data/articlesReferenceSeed.ts`) with explicit changelog for 1.0 (initial 35-article seed), 1.1 (yesterday's 17-link audit), and 1.2 (this expansion).
+- **README** Overview library bullet now reads "46 essential competitive MTG resources" instead of "35 essential competitive MTG articles", and the features-table Library row updated to reflect the new total + podcasts.
+
+### Track sizes after expansion
+
+| Track     | Before | After                                          |
+| --------- | ------ | ---------------------------------------------- |
+| first-fnm | 5      | 5                                              |
+| rcq       | 6      | 7 (+1 Zvi Using Time Wisely)                   |
+| pro-tour  | 7      | 9 (+2 Chapin Cascades, +1 Zvi Elephant Method) |
+
+All tracks within the 3-10 integrity-test limit.
+
+### Distribution after expansion
+
+| linkStatus | Before | After        |
+| ---------- | ------ | ------------ |
+| live       | 19     | **29** (+10) |
+| archived   | 10     | **11** (+1)  |
+| lost       | 6      | **6**        |
+| **Total**  | **35** | **46**       |
+
+### Verified
+
+- 11 new URLs verified HTTP 200 + content grep before adding
+- The Zvi Beatdown II Wayback snapshot the contributor originally sent (`web/20120701194521`) didn't contain the article body via curl, so swapped to a verified `web/20200804023440` snapshot which contains "Beatdown", "Mowshowitz", and "Multitask" markers
+- 305 unit tests passing including the 9 dedicated `articlesReferenceSeed` integrity guards (unique ids, valid primaryUrl, originalUrl for archived/mirror, curatorNote for tracked, track sizes 3-10, international/rescued picks per track) — test count unchanged because the integrity tests are structural
+- TypeScript clean (`npx tsc --noEmit`)
+- Dev server `/library` returns 200
+
 ## [2.5.1.1] - 2026-04-13
 
 ### Library Link Audit + Launch Prep
