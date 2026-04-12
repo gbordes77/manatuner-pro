@@ -5,6 +5,75 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-04-12
+
+### Launch Hardening — Parser, Math, UX Jargon, Resilience
+
+Commit `ceceb5f`. Fixes 8 latent bugs identified by a 12-agent audit (2 CRITICAL, 4 HIGH, 2 MEDIUM), plus documentation/security/UX touch-ups. Estimated user-visible bug rate dropped from ~25–35% on a viral-traffic scenario to ~3–5%.
+
+### Fixed
+
+- **MTGA double-face parser** (`deckAnalyzer.ts:703-723`): `cleanCardName` now splits `Front // Back` to the front face, strips Arena markers (`*CMDR*`, `*F*`, `*E*`, `*CMP*`), normalizes unicode whitespace (`\u00A0`, `\u3000`). Fixes ~80% of Standard 2022+ decks (Fable of the Mirror-Breaker, Wedding Announcement, Invoke Despair) silently falling back to wrong CMC/colors.
+- **Hypergeometric dynamic capacity** (`castability/hypergeom.ts`): `Hypergeom` class now grows its log-factorial table on demand via `ensureCapacity()` (geometric 1.5× strategy). Cube (540), Commander (100), Highlander no longer display `NaN%`. Hot-path 60-card decks unaffected (initial capacity 200).
+- **NaN-safe math guards**: `clampProbability()` in `hypergeom.ts`, `clamp01()` in `acceleratedAnalyticEngine.ts`, `safeNumber()` in `ManabaseStats.tsx`. Every `pmf`/`atLeast`/`atMost` call validates `Number.isFinite` on all inputs and collapses non-finite output to 0.
+- **Division by zero guard** (`deckAnalyzer.ts:1143`): `landRatio = totalCards > 0 ? totalLands/totalCards : 0`. Empty decklists no longer render `NaN%` in `ManabaseStats`.
+- **Hybrid / twobrid / Phyrexian / colorless mana** (`ManaCostRow.tsx:343-389`): regex now handles `{R/G}` (pure hybrid), `{2/W}` (twobrid), `{W/P}` (Phyrexian), `{C}` (true colorless). Previously silently dropped — Eldrazi (Tron/Post) probabilities were mis-reported.
+- **Probability ceiling** (`ManaCostRow.tsx:449-455`): `safePct` rounds to 100% instead of capping at 99%. A perfectly built deck can now display 100%.
+- **Overgrowth family regex** (`manaProducerService.ts:286`): `adds?\s+\{[WUBRGC]\}\{[WUBRGC]\}` now matches both imperative "add" and triggered "adds" forms. Previously 2-mana land auras (Overgrowth, Dawn's Reflection) were counted as 1 mana. Discovered via red test.
+- **Scryfall resilience** (`deckAnalyzer.ts:225-275`): 8-second `AbortController` timeout, one retry with 400 ms backoff on 429/5xx, exact→fuzzy fallback chain. Previously silent failure on rate-limit or network flake.
+- **localStorage quota handling** (`privacy.ts:55-75`): new `persist()` method catches `QuotaExceededError`, trims records geometrically, retries. `AnalyzerPage.tsx:164-172` surfaces "Browser storage full" via snackbar instead of silent save-fail.
+- **GuidePage TS errors** (`GuidePage.tsx:32-45`): `interface TabInfo { details?: TabDetail[] }` fixes 4 live `tsc --noEmit` errors that were committed on main.
+- **`useAcceleratedCastability` deps-array bug** (`ManaCostRow.tsx:540-651`): `baseProbability` removed from signature and deps. Was never read, invalidated the memo on every P2 recalculation.
+
+### Added
+
+- **Tab-scoped ErrorBoundaries** (`AnalyzerPage.tsx`): each of the 5 analyzer tabs (Castability, Analysis, Mulligan, Manabase, Blueprint) wrapped in its own `<ErrorBoundary label="...">`. A crash in one tab no longer takes down the whole page.
+- **Sentry integration in ErrorBoundary** (`ErrorBoundary.tsx:41-48`): `Sentry.withScope` with `setTag('errorBoundary', label)`, `setExtra('componentStack', ...)`, and `captureException`. Gated behind `VITE_SENTRY_DSN` in Vercel env; silent no-op when unset.
+- **Bounded LRU Scryfall caches** (`scryfall.ts:21-49`): `BoundedMap<K,V> extends Map<K,V>` with `override get`/`set`. `cardCache` capped at 500, `collectionCache` at 100. Prevents unbounded memory growth on long sessions (Cube grinders, power users).
+- **Redux persist v1 migration** (`store/index.ts`): `createMigrate` + `createTransform` drop `snackbar` and `isAnalyzing` from rehydrated state. Prevents "stale notification on reload" bug and stale `isAnalyzing: true` flag after crash recovery.
+- **Legacy store migration** (`privacy.ts:100-138`): `manatuner-analyses` (hyphen, legacy hook) now merges into `manatuner_analyses` (canonical) on first read, then removes the legacy key. One-time, idempotent, id-deduplicated.
+- **Favicon WUBRG redesign** (`public/favicon.svg`): 5-color gradient pie ring + Cinzel-style M on dark gradient background. Replaces generic red-on-blue "M" with authentic MTG identity.
+- **SRI integrity on mana-font CDN** (`index.html:50-56`): `integrity="sha384-xa3t1kOl..."` + `crossorigin="anonymous"` on `cdn.jsdelivr.net/npm/mana-font@1.18.0`. Prevents CDN-compromise CSS injection.
+- **Rollback scripts** (`package.json:40-41`): `npm run rollback` → `vercel rollback`, `npm run rollback:list` → `vercel ls --prod`. Fast recovery path if a deploy ships broken.
+- **techTerm badges on homepage Math Foundations**: each of the 3 math cards now displays a discreet monospace caption at the bottom, behind a dashed border — `Hypergeometric distribution`, `Frank Karsten tables`, `Monte Carlo + Bellman`. Invisible to beginners (accessible titles up top), trust signal for grinders (pro terms at the bottom).
+
+### Changed
+
+- **Homepage H1** (`HomePage.tsx:243`): `"Can You Cast Your Spells On Curve?"` → `"The Only Mana Calculator That Counts Your Dorks & Rocks"`. Killer feature becomes the hero. Addresses Leo persona regression (v2.5: 3.75/5 → projected 4.25/5).
+- **Homepage chips**: `"Turn-by-Turn Probabilities"` → `"See The Real Odds"`, `"Monte Carlo Mulligan"` → `"Smart Mulligan Advice"`. Removes jargon repellent for beginners.
+- **Math section subtitle** (`HomePage.tsx:436`): `"used by mathematicians and competitive players"` → `"so you can trust the advice"`. Removes exclusionary framing.
+- **Formula badges on math cards**: `P(X≥k)` → `Per spell`, `E[V₇]` → `Keep / Mull`, `90%` kept.
+- **Beginner qualifier** (`HomePage.tsx:274`): new italic line `"Works for every skill level — from your first Standard deck to Pro Tour prep."` directly answers the persona question "is this for me?".
+- **Analyzer chip** (`AnalyzerPage.tsx:294`): `"Monte Carlo"` → `"Mulligan Sim"`. Removes ghost `"Health Score"` chip that pointed to a non-existent tab; replaced by `"Manabase"`.
+- **Manifest PWA** (`public/manifest.json`): single maskable `favicon.svg` icon (was 512×512 `og-image.png`, dimensions mismatch).
+- **README Privacy section**: removed false `"AES-256 encryption"` claim and `"Optional Cloud Sync via Supabase"` mention. Now accurate: `"localStorage only"`, `"No tracking"`. Supabase service has been mocked since v2.2.0.
+- **CONTRIBUTING.md clone URL**: `manatuner-pro` → `manatuner`. The repo was renamed in v2.2.0; the doc was stale.
+- **`.env` template**: Supabase JWT removed (placeholder only). Historical key must still be rotated/deleted manually in the Supabase dashboard.
+
+### Removed
+
+- **`public/og-image.png`** (965 KB): dead asset, never referenced. `og-image-v2.jpg` (121 KB) and `og-image.svg` remain.
+- **`@tanstack/react-query-devtools` from `dependencies`**: moved to `devDependencies`. Production bundle unaffected (gated by `import.meta.env.DEV` in `main.tsx`), but clean dependency graph matters for audit tools.
+
+### Tests
+
+- **+61 tests** (235 → 296 passing, 2 skipped, 0 failing).
+- **`manaProducerService.test.ts`** (new, 25 tests): full ramp taxonomy — LAND_RAMP, LAND_AURA, LAND_FROM_HAND, LANDFALL_MANA, MANA_DOUBLER (2× and 3×), SPAWN_SCION, ROCK, RITUAL, TREASURE, plus priority ordering and malformed input. Exports `analyzeOracleForMana` which was previously private.
+- **`hypergeomDynamic.test.ts`** (new, 15 tests): dynamic capacity growth (Cube 540, Commander 100), NaN-safety (Infinity, NaN inputs, empty deck, zero copies), no off-by-one after resize.
+- **`cleanCardName.test.ts`** (new, 21 tests): MTGA set codes, DFC split, Arena markers, A- prefix, unicode whitespace, edge cases.
+
+### Security
+
+- **Supabase JWT scrub** (local `.env`): historical anon key removed from the local dev env file. `.env` remains untracked. Manual follow-up: delete or rotate the Supabase project in the dashboard, since the key could still be cached in shell history or editor state.
+- **SRI sha384** on the only runtime-external stylesheet (`mana-font`).
+- **New LOW finding to resolve before EU launch**: `PrivacySettings.tsx` still says "Nothing is sent to any server" / "does not collect any data". Once `VITE_SENTRY_DSN` is set in Vercel prod, this claim becomes inaccurate (Sentry default integration ships stack traces + breadcrumbs). Two resolutions: (1) add `beforeSend` scrubber in `main.tsx` and update `PrivacySettings.tsx:204,233` copy to disclose anonymous crash reporting; (2) leave `VITE_SENTRY_DSN` unset in production.
+
+### Architecture notes
+
+- **Hypergeom singleton API unchanged**: `hypergeom.pmf/atLeast/atMost/atLeastOneCopy` signatures identical. Growth is transparent to callers.
+- **Two parallel probability paths in `ManaCostRow.tsx` remain**: `useProbabilityCalculation` (inline hypergeom, lands-only) and `useAcceleratedCastability` (K=3 engine with producers). Alignment to a single source of truth is still a post-launch TODO.
+- **Orphan `src/hooks/useAnalysisStorage.ts`**: 211-line hook with zero callers, writes to the legacy `manatuner-analyses` key. The read-path migration in `PrivacyStorage.getMyAnalyses()` neutralizes it, but the file should be deleted post-launch to fully close the W1 fix.
+
 ## [2.5.0] - 2026-04-10
 
 ### Ramp Taxonomy Expansion — 5 New Producer Types

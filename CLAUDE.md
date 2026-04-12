@@ -212,15 +212,39 @@ Heuristic: last blank line that splits a block of 40-100 cards from a block of 1
 - `src/components/analyzer/CastabilityTab.tsx` — `creatureOnlyExtraSources` calculation, props passed to ManaCostRow
 - `src/services/__tests__/sideboardDetection.test.ts` — 14 tests covering all formats
 
+### Launch Hardening (2026-04-12, commit `ceceb5f`)
+
+12-agent audit → fix phase → re-audit workflow. Weighted score 3.75/5 → 4.19/5. See `HANDOFF.md` session `2026-04-12` and `CHANGELOG.md [2.5.1]` for the full fix list. Key architectural notes an agent reading this file needs:
+
+**`Hypergeom` is now dynamic.** `castability/hypergeom.ts` — the singleton grows its `Float64Array` log-factorial table on demand via `ensureCapacity()` (geometric 1.5× strategy). Warm-start at `maxN=200` for 60-card Constructed hot path. Cube/Commander/Highlander no longer produce `NaN%`. **Do not hardcode `maxN` assumptions** — always call `pmf`/`atLeast` and trust growth.
+
+**NaN safety is a first-class concern now.** `clampProbability(x)` in `hypergeom.ts`, `clamp01(x)` in `acceleratedAnalyticEngine.ts`, and `safeNumber(n)` in `ManabaseStats.tsx` all collapse non-finite inputs to 0. Every public hypergeom entry point validates `Number.isFinite` on every parameter. **Never add a new probability entry point without this guard.**
+
+**`cleanCardName` is the single source of truth for name normalization.** `deckAnalyzer.ts:703-723`. In order: unicode whitespace → Arena markers (`*CMDR*`, `*F*`, `*E*`, `*CMP*`) → MTGA set codes `(SET) 123` → `A-` prefix → `//` split to front face. **Do not bypass this** when adding a new parser path. The Scryfall query order is: `exact=` first, then `fuzzy=` fallback for DFCs/split cards.
+
+**Scryfall fetch has a resilience contract now.** `deckAnalyzer.ts:225-275`. 8 s `AbortController` timeout, one retry with 400 ms backoff on 429/5xx, exact → fuzzy fallback. Any new Scryfall integration point should use this pattern, not raw `fetch`.
+
+**`ErrorBoundary` is now tab-scoped.** `AnalyzerPage.tsx` wraps each of the 5 tabs in its own `<ErrorBoundary label="AnalyzerTab.{Name}">`. A crash in the K=3 engine or the Monte Carlo worker no longer takes down the whole page. Sentry `captureException` with the tab label as a tag fires when `VITE_SENTRY_DSN` is set in Vercel env. **Add `label` props to any new ErrorBoundary** so crash reports stay actionable.
+
+**Scryfall in-memory caches are LRU-bounded.** `scryfall.ts:21-49` — `BoundedMap<K,V> extends Map<K,V>` with `override get`/`set`. `cardCache` capped at 500, `collectionCache` at 100. **Do not replace with plain `new Map()`** — long sessions (Cube grinders, power users) would OOM the tab.
+
+**Redux persist has a schema version now.** `store/index.ts:52-64` — `version: 1`, `createMigrate` with a `migrations[1]` stub, `createTransform` drops `snackbar` and `isAnalyzing` from rehydrated state so users don't reload into a stale notification. **Any future change to the `analyzer` slice shape must bump `version: 2` and add a `migrations[2]` handler.**
+
+**ManaCostRow has two parallel probability paths (still).** `useProbabilityCalculation` (inline hypergeom, lands-only) and `useAcceleratedCastability` (K=3 engine with producers). The first is the "base" shown when acceleration is disabled; the second is the "accelerated" value shown otherwise. **Known TODO**: align `useProbabilityCalculation` with `calculateTempoAwareProbability` from the SSOT engine. Not done in `ceceb5f` (hors scope launch).
+
+**Orphan `src/hooks/useAnalysisStorage.ts` still exists**. 211 lines, zero callers, still writes to the legacy `manatuner-analyses` key. `PrivacyStorage.getMyAnalyses()` migrates the legacy key on first read, so the fix is protected, but **this file should be deleted** in a follow-up commit. Don't add new callers to it.
+
+**Test count bumped to 296/298** (was 235/237). +61 new tests in `manaProducerService.test.ts` (25), `cleanCardName.test.ts` (21), `hypergeomDynamic.test.ts` (15). `analyzeOracleForMana` is now exported from `manaProducerService.ts` for testing — do not re-privatize it.
+
 ### Persona Scores History
 
-| Persona           | v2.1 (initial) | v2.4 (04-06) | v2.5 (04-10) |
-| ----------------- | -------------- | ------------ | ------------ |
-| Leo (Beginner)    | 3.69           | 4.11         | 3.75         |
-| Sarah (Regular)   | 4.13           | 4.31         | 4.42         |
-| Karim (Tactician) | 4.13           | 4.44         | 4.50         |
-| Natsuki (Grinder) | 3.75           | 4.03         | 4.08         |
-| David (Architect) | 3.40           | 3.80         | 4.42         |
-| **Average**       | **3.82**       | **4.14**     | **4.23**     |
+| Persona           | v2.1 (initial) | v2.4 (04-06) | v2.5 (04-10) | v2.5.1 (04-12 projected) |
+| ----------------- | -------------- | ------------ | ------------ | ------------------------ |
+| Leo (Beginner)    | 3.69           | 4.11         | 3.75         | **4.25**                 |
+| Sarah (Regular)   | 4.13           | 4.31         | 4.42         | **4.65**                 |
+| Karim (Tactician) | 4.13           | 4.44         | 4.50         | **4.55**                 |
+| Natsuki (Grinder) | 3.75           | 4.03         | 4.08         | **4.15**                 |
+| David (Architect) | 3.40           | 3.80         | 4.42         | **4.50**                 |
+| **Average**       | **3.82**       | **4.14**     | **4.23**     | **4.42**                 |
 
-Leo's v2.5 regression: homepage chips still show "Hypergeometric"/"Monte Carlo" jargon. Fix: replace with accessible labels.
+Leo's v2.5 regression resolved via homepage H1 rewrite, chip renames, math section copy update, and techTerm badges (Hypergeometric / Frank Karsten / Monte Carlo + Bellman) relegated to discreet monospace captions at the bottom of each Math Foundations card.

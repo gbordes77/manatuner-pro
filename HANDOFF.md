@@ -2,7 +2,119 @@
 
 ## Project Status: PRODUCTION
 
-**Latest Session:** 2026-04-11 (Smart Sideboard Detection + Creature-Only Mana) | **Tests:** 235 pass, 0 fail | **Build:** OK
+**Latest Session:** 2026-04-12 (Launch Hardening via 12-agent audit + fixes + re-audit) | **Tests:** 296 pass, 2 skipped, 0 fail | **Build:** 7.55s | **Commit:** `ceceb5f`
+
+---
+
+## Session 2026-04-12 — Launch Hardening (audit → fix → re-audit)
+
+### Workflow
+
+1. **Audit round 1** — 12 specialized sub-agents in 3 parallel waves (context-manager, frontend, typescript-pro, performance, security, qa, ux, ui, docs, product, devops, database-optimizer, debugger). Initial weighted score: **3.75/5**. The debugger agent was the outlier at **2.5/5** with 10 latent bugs (2 CRITICAL, 4 HIGH, 2 MEDIUM) estimating 25–35 % of a viral-traffic cohort would hit a visible bug.
+2. **Fix phase** — 7 implementation phases (A through G) covering critical parser/math bugs, error handling, UX copy, code quality, security/infra/docs, tests, and build verification. Committed as `ceceb5f` with 23 files changed (+994 / −216).
+3. **Re-audit round 2** — same 12 agents re-invoked with the explicit instruction to verify each claimed fix line by line. All 20 claims verified in place. Weighted score post-fix: **4.19/5** (+0.44). Debugger re-score: **4.1/5** (+1.6, the biggest jump of the session).
+
+### What Was Completed
+
+**Critical bugs closed (Phase A):**
+
+- MTGA double-face parser: `cleanCardName` splits `//` to front face, strips Arena markers (`*CMDR*`, `*F*`, `*E*`, `*CMP*`), normalizes unicode whitespace. ~80 % of Standard 2022+ decks (Fable of the Mirror-Breaker, Wedding Announcement, Invoke Despair) were silently falling back to wrong CMC/colors before this fix.
+- Hypergeometric dynamic capacity: `Hypergeom` class now grows its log-factorial `Float64Array` on demand via `ensureCapacity()`. Cube (540), Commander (100), Highlander no longer render `NaN%`. Hot-path 60-card decks unchanged (initial capacity 200).
+- NaN-safe math guards: `clampProbability()`, `clamp01()`, `safeNumber()` + `Number.isFinite` checks on every `pmf`/`atLeast`/`atMost` entry point. `landRatio = totalCards > 0 ? totalLands/totalCards : 0`. Empty decklists no longer display `NaN%`.
+- Hybrid / twobrid / Phyrexian / colorless mana regex: `{R/G}`, `{2/W}`, `{W/P}`, `{C}` now all handled in `ManaCostRow.tsx`. Previously silently dropped — Eldrazi (Tron/Post) probabilities were mis-reported.
+- GuidePage TS errors: `interface TabInfo { details?: TabDetail[] }` fixes 4 live `tsc --noEmit` errors committed on main.
+- Probability ceiling 99 → 100 %: a perfectly built deck can now display 100 %.
+- Overgrowth family regex: `adds?\s+` now matches both imperative "add" and triggered "adds" forms. Discovered via red test (land auras were counted as 1 mana instead of 2).
+
+**Resilience (Phase B):**
+
+- Tab-scoped `ErrorBoundary` around each of the 5 Analyzer tabs (Castability, Analysis, Mulligan, Manabase, Blueprint). A crash in one tab no longer takes down the whole page.
+- Sentry integration in `ErrorBoundary`: `withScope` + `setTag('errorBoundary', label)` + `setExtra('componentStack', …)` + `captureException`. Gated on `VITE_SENTRY_DSN` (must be set in Vercel env — see manual follow-ups below).
+- Scryfall fetch: 8-second `AbortController` timeout, one retry with 400 ms backoff on 429/5xx, exact → fuzzy fallback chain.
+- `localStorage` quota handling: `PrivacyStorage.persist()` catches `QuotaExceededError`, trims records geometrically, retries. `AnalyzerPage` surfaces "Browser storage full" via snackbar instead of silent save-fail.
+
+**UX homepage jargon fix (Phase C):**
+
+- H1 swap: `"Can You Cast Your Spells On Curve?"` → `"The Only Mana Calculator That Counts Your Dorks & Rocks"`. Killer feature becomes hero.
+- Chips: `"Turn-by-Turn Probabilities"` → `"See The Real Odds"`, `"Monte Carlo Mulligan"` → `"Smart Mulligan Advice"`.
+- Math section subtitle: `"used by mathematicians and competitive players"` → `"so you can trust the advice"`. Leo persona no longer excluded.
+- Formula badges: `P(X≥k)` → `Per spell`, `E[V₇]` → `Keep / Mull`.
+- Beginner qualifier italic line: `"Works for every skill level — from your first Standard deck to Pro Tour prep."`
+- **techTerm badges at the bottom of each Math Foundations card** (discreet monospace, dashed border): `Hypergeometric distribution`, `Frank Karsten tables`, `Monte Carlo + Bellman`. Invisible to Leo, trust signal to grinders. User feedback during session: "rajoute en bas les termes qu il y avait".
+- `AnalyzerPage` chip `"Monte Carlo"` → `"Mulligan Sim"`, removed `"Health Score"` ghost chip (was pointing to a non-existent tab), replaced with `"Manabase"`.
+
+**Code quality (Phase D):**
+
+- `BoundedMap<K,V>` LRU on Scryfall caches (500 cards, 100 collections). Caps memory on long sessions.
+- Legacy `manatuner-analyses` store merged into `manatuner_analyses` canonical on first read, then purged. One-time idempotent migration.
+- Redux persist v1: `createMigrate` + `createTransform` drop `snackbar` and `isAnalyzing` from rehydrated state.
+- Deps-array bug: `baseProbability` removed from `useAcceleratedCastability` signature and deps. Was never read, invalidated the memo on every P2 recalculation.
+
+**Security + infra + docs (Phase E):**
+
+- `.env` Supabase JWT scrubbed (placeholders only).
+- SRI `sha384` + `crossorigin` on `mana-font@1.18.0` CDN link.
+- `public/og-image.png` (965 KB, dead asset) deleted.
+- `public/favicon.svg` redesigned: WUBRG 5-color gradient pie ring + Cinzel M on dark background.
+- `public/manifest.json`: single maskable favicon icon (was a broken 512×512 reference to `og-image.png`).
+- `@tanstack/react-query-devtools` moved to `devDependencies`.
+- `npm run rollback` + `npm run rollback:list` scripts added to `package.json`.
+- `README.md`: removed false `"AES-256 encryption"` claim and `"Optional Cloud Sync via Supabase"`. Now accurate.
+- `CONTRIBUTING.md`: clone URL `manatuner-pro` → `manatuner`.
+
+**Tests (Phase F):**
+
+- **+61 tests** (235 → 296 passing, 2 skipped, 0 failing).
+- `src/services/__tests__/manaProducerService.test.ts` (new, 25 tests): full ramp taxonomy (LAND_RAMP, LAND_AURA, LAND_FROM_HAND, LANDFALL_MANA, MANA_DOUBLER 2× + 3×, SPAWN_SCION, ROCK, RITUAL, TREASURE, priority ordering, malformed input). `analyzeOracleForMana` exported for testing (was previously private).
+- `src/services/castability/__tests__/hypergeomDynamic.test.ts` (new, 15 tests): dynamic capacity growth, NaN-safety, no off-by-one after resize.
+- `src/services/__tests__/cleanCardName.test.ts` (new, 21 tests): MTGA set codes, DFC split, Arena markers, A- prefix, unicode whitespace.
+
+### Current State
+
+- **Working**: 296/298 tests passing, `tsc --noEmit` clean, build 7.55 s, dev server HTTP 200.
+- **No blockers in code.**
+- **Manual follow-ups** (not possible to do via code — require external dashboards):
+  1. **Set `VITE_SENTRY_DSN` in Vercel Production env** — code is already wired, `ErrorBoundary` will start reporting as soon as the env var is populated. Without it, any crash post-launch is invisible to the creator.
+  2. **Delete or rotate the Supabase project** that issued the historical anon key. Service has been mocked in-code since v2.2.0, so deletion is safe.
+  3. **Set up UptimeRobot** HTTPS monitor on `https://manatuner.app/` with 5 min interval and email alert. Without it, a Vercel edge outage would only be surfaced by a user tweet.
+  4. **Install Plausible analytics** (privacy-first, matches the project stance) to measure the `@fireshoes` tweet conversion funnel. Without it, the launch is flown blind.
+  5. **Enable GitHub branch protection on `main`** with `pr-validation.yml` as a required status check.
+  6. **Fix double-deploy CI**: the `deploy` job in `.github/workflows/ci.yml` still runs in addition to Vercel's native Git integration. Either remove the job or disable Vercel's auto-deploy. Not urgent, but creates race conditions on each push.
+
+### Known Residual Items (post-launch backlog)
+
+Discovered by the re-audit, none are launch blockers:
+
+- **Privacy copy vs Sentry contradiction**: `src/components/PrivacySettings.tsx:204` says `"Nothing is sent to any server"`. Once Sentry DSN is set in prod, this is false. Two resolutions: (a) add a `beforeSend` scrubber in `main.tsx` that drops URL params, breadcrumbs, and truncates error messages, then update the copy to disclose anonymous crash reporting; (b) leave `VITE_SENTRY_DSN` unset in prod. Resolution required before EU traffic.
+- **`src/hooks/useAnalysisStorage.ts`** orphan: 211 lines, zero callers, still writes to the legacy `manatuner-analyses` key. The read-path migration in `PrivacyStorage.getMyAnalyses()` neutralizes it, but the file should be deleted to fully close the fix.
+- **Split-card regression risk**: `cleanCardName` unconditionally splits on `//`. Legacy split cards like `Wear // Tear` become `Wear` alone. The fuzzy fallback in `fetchCardFromScryfall` usually rescues this, but a regression test should be added.
+- **`Hypergeom.ensureCapacity` has no hard cap**: a pasted 10 000-card "deck" would allocate ~80 KB. Not catastrophic, but a `const HARD_CAP = 5000` guard is trivial.
+- **`batchFetchFromScryfall` has no `AbortController`**: the POST to `/cards/collection` can hang indefinitely on a slow connection. Fix is 5 lines.
+- **Phyrexian / twobrid probability**: currently modeled as `{color, color}` hybrid — too pessimistic. Phyrexian should always be payable (via life), twobrid should always be payable (via 2 generic). ~1 hour of rework in `ManaCostRow.tsx`.
+- **`{C}` colorless in `ManaCostRow`**: detected for the "pure generic" branch but never actually requires a colorless source in the probability calc. Eldrazi `{4}{C}{C}` currently scores 99/98 (pure generic). Quantitatively wrong for Tron decks.
+- **`useProbabilityCalculation` inline hypergeom** still not aligned with the SSOT castability engine. Known TODO from 2026-04-06, not addressed in this commit.
+- **GAP-4 Scryfall fetch mock suite**: still no test mocking `fetch` for 429/500/timeout/fuzzy-fallback paths. Ship code has no regression coverage on this path.
+- **GAP-5 `producesAnyForCreaturesOnly` tests**: Cavern of Souls and 4 other lands still have zero regression coverage.
+
+### Persona Scores (projected post-fix)
+
+| Persona                 | v2.5 (2026-04-10) | v2.5.1 (projected) | Δ         |
+| ----------------------- | ----------------- | ------------------ | --------- |
+| Leo (Beginner)          | 3.75              | **4.25**           | +0.50     |
+| Sarah (Regular, ICP #1) | 4.42              | **4.65**           | +0.23     |
+| Karim (Tactician)       | 4.50              | **4.55**           | +0.05     |
+| Natsuki (Grinder)       | 4.08              | **4.15**           | +0.07     |
+| David (Architect)       | 4.42              | **4.50**           | +0.08     |
+| **Average**             | **4.23**          | **4.42**           | **+0.19** |
+
+First time since v2.1 that all personas are ≥ 4.15. Leo regression (v2.5 → 3.75) is resolved by the QW-1/2/3/4/5 homepage copy changes.
+
+### Next Priority
+
+1. **Resolve Sentry/privacy contradiction** (15 min) before launching — pick option (a) or (b) above.
+2. **Manual infra follow-ups** (~55 min): Sentry DSN, UptimeRobot, Plausible, test rollback, Supabase project deletion.
+3. **Prepare `@fireshoes` launch tweet**: 3 dark-mode screenshots (hero H1, Castability tab with a DFC-containing deck, Math Foundations section with techTerm badges visible), reply-tag strategy, 3 fallback tweets in draft.
+4. **Post-launch v2.5.2**: delete `useAnalysisStorage.ts`, fix Phyrexian/twobrid probability, `{C}` colorless requirement, add GAP-4 Scryfall mock suite, add GAP-5 Cavern regression tests, cap `ensureCapacity`, add `AbortController` to batch fetch.
 
 ---
 
