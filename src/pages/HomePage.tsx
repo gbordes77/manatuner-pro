@@ -173,8 +173,8 @@ export const HomePage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ position: 'relative' }}>
       <SEO
-        title="ManaTuner - Free MTG Mana Base Calculator with Rocks & Dorks"
-        description="The only mana calculator that factors in your mana rocks and dorks — not just lands. Exact probabilities + Monte Carlo mulligan for Magic: The Gathering."
+        title="ManaTuner — Mana Calculator + Competitive MTG Reading Library"
+        description="Exact cast odds for every spell, mulligan timing, and the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke. Free."
         path="/"
         jsonLd={{
           '@context': 'https://schema.org',
