@@ -25,22 +25,22 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
 
   {
     id: 'reid-duke-level-one-building-a-deck',
-    title: 'Level One: Building a Deck',
+    title: 'Level One: Building a Mana Base',
     author: 'Reid Duke',
-    publisher: 'ChannelFireball',
+    publisher: 'Wizards of the Coast',
     year: 2014,
-    category: 'fundamentals',
+    category: 'manabase',
+    secondaryCategories: ['fundamentals'],
     level: 'beginner',
     medium: 'article-series',
     language: 'en',
-    linkStatus: 'archived',
+    linkStatus: 'live',
     primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/reid-duke-level-one-building-a-deck/',
-    originalUrl: 'https://www.channelfireball.com/articles/reid-duke-level-one-building-a-deck/',
+      'https://magic.wizards.com/en/articles/archive/level-one/building-mana-base-2014-11-24',
     description:
-      "Opening chapter of Reid Duke's foundational Level One course. The single best first read on competitive deckbuilding — no gatekeeping, no jargon, every concept built from the ground up.",
+      "From Reid Duke's foundational Level One course on magic.wizards.com — the chapter that teaches you how to build a balanced, reliable mana base. Every concept built from the ground up, no gatekeeping, no jargon.",
     curatorNote:
-      "If you only read ONE thing before your first FNM, make it this. Reid writes like he's patiently teaching his younger self. The original ChannelFireball host is gone but the piece lives on via archive.org — it's THAT good.",
+      "If you only read ONE thing about manabase construction before your first FNM, make it this. Reid writes like he's patiently teaching his younger self — and the chapter is hosted directly on magic.wizards.com. It's THAT good.",
     curatorTrack: 'first-fnm',
   },
 
@@ -57,7 +57,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     language: 'en',
     linkStatus: 'live',
     primaryUrl:
-      'https://infinite.tcgplayer.com/article/How-Many-Lands-Do-You-Need-in-Your-Deck-An-Updated-Analysis/cd1c1a24-d439-4a8e-b369-b936edb0b38a/',
+      'https://www.tcgplayer.com/content/article/How-Many-Lands-Do-You-Need-in-Your-Deck-An-Updated-Analysis/cd1c1a24-d439-4a8e-b369-b936edb0b38a/',
     description:
       "Karsten's 2022 refresh of the definitive answer to 'how many lands should my deck have?' with updated hypergeometric tables adjusted for the London mulligan era. The mathematical foundation of ManaTuner.",
     curatorNote:
@@ -94,10 +94,8 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'beginner',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2022/https://articles.starcitygames.com/premium/the-art-of-the-mulligan/',
-    originalUrl: 'https://articles.starcitygames.com/premium/the-art-of-the-mulligan/',
+    linkStatus: 'live',
+    primaryUrl: 'https://articles.starcitygames.com/articles/the-art-of-the-mulligan/',
     description:
       "Chapin's canonical treatment of when to keep, when to mull, and why. The article that made the mulligan a skill instead of a reflex.",
     curatorNote:
@@ -138,14 +136,14 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     id: 'pvddr-6-heuristics',
     title: 'Six Heuristics to Make You a Better Magic Player',
     author: 'Paulo Vitor Damo da Rosa',
-    publisher: 'StarCityGames Premium',
+    publisher: 'StarCityGames',
     year: 2019,
     category: 'advanced',
     secondaryCategories: ['mindset'],
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'paywall',
+    linkStatus: 'live',
     primaryUrl:
       'https://articles.starcitygames.com/magic-the-gathering/premium/six-heuristics-to-make-you-a-better-magic-player/',
     description:
@@ -167,7 +165,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     language: 'en',
     linkStatus: 'live',
     primaryUrl:
-      'https://infinite.tcgplayer.com/article/How-to-Prepare-for-a-Magic-Tournament/f961017a-117e-4cea-8576-170a0414d3e1/',
+      'https://www.tcgplayer.com/content/article/How-to-Prepare-for-a-Magic-Tournament/f961017a-117e-4cea-8576-170a0414d3e1/',
     description:
       "Hall of Famer Seth Manfield's tournament preparation process — testing cadence, deck selection, sleep, diet, routine. The practical pro workflow.",
     curatorNote:
@@ -179,18 +177,16 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     id: 'reid-duke-level-one-sideboarding',
     title: 'Level One: Sideboarding',
     author: 'Reid Duke',
-    publisher: 'ChannelFireball',
-    year: 2014,
+    publisher: 'Wizards of the Coast',
+    year: 2015,
     category: 'sideboard',
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/reid-duke-level-one-sideboarding/',
-    originalUrl: 'https://www.channelfireball.com/articles/reid-duke-level-one-sideboarding/',
+    linkStatus: 'live',
+    primaryUrl: 'https://magic.wizards.com/en/articles/archive/level-one/sideboard-2015-08-10',
     description:
-      "Reid's sideboarding chapter from the Level One course. The framework for building and piloting a 15-card sideboard that actually wins games.",
+      "Reid's sideboarding chapter from the Level One course on magic.wizards.com. The framework for building and piloting a 15-card sideboard that actually wins games.",
     curatorNote:
       "FNM doesn't really use sideboards. RCQ does. This is the crash course you need before your first competitive event that goes multiple rounds with best-of-three matches.",
     curatorTrack: 'rcq',
@@ -249,14 +245,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/when-to-mulligan/',
-    originalUrl: 'https://www.channelfireball.com/articles/when-to-mulligan/',
+    linkStatus: 'lost',
+    primaryUrl: 'https://www.channelfireball.com/articles/when-to-mulligan/',
     description:
       "PVDDR's decision tree for mulligan decisions in constructed formats. More actionable than Chapin's abstract framework — direct rules for real tournament hands.",
     curatorNote:
-      "Chapin's 'Art of the Mulligan' is the theory; this is the practice. PVDDR gives you concrete rules you can apply at turn zero of game one under a round clock.",
+      "Chapin's 'Art of the Mulligan' is the theory; this is the practice. Lost to link rot — no archive.org snapshot exists and no mirror has been found. If you have a copy (PDF, screenshot, text dump), please reach out on GitHub.",
     curatorTrack: 'rcq',
   },
 
@@ -537,7 +531,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     language: 'en',
     linkStatus: 'archived',
     primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/how-many-colored-mana-sources-do-you-need-to-consistently-cast-your-spells-a-guilds-of-ravnica-update/',
+      'https://web.archive.org/web/20190208133353/https://www.channelfireball.com/articles/how-many-colored-mana-sources-do-you-need-to-consistently-cast-your-spells-a-guilds-of-ravnica-update/',
     originalUrl:
       'https://www.channelfireball.com/articles/how-many-colored-mana-sources-do-you-need-to-consistently-cast-your-spells-a-guilds-of-ravnica-update/',
     description:
@@ -546,7 +540,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
 
   {
     id: 'karsten-commander-manabase',
-    title: 'Mana Base Construction for Commander',
+    title: "What's an Optimal Mana Curve and Land/Ramp Count for Commander?",
     author: 'Frank Karsten',
     publisher: 'ChannelFireball',
     year: 2019,
@@ -556,10 +550,11 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     language: 'en',
     linkStatus: 'archived',
     primaryUrl:
-      'https://web.archive.org/web/2019/https://www.channelfireball.com/articles/mana-base-construction-for-commander/',
-    originalUrl: 'https://www.channelfireball.com/articles/mana-base-construction-for-commander/',
+      'https://web.archive.org/web/20230315090726/https://strategy.channelfireball.com/all-strategy/home/whats-an-optimal-mana-curve-and-land-ramp-count-for-commander/',
+    originalUrl:
+      'https://strategy.channelfireball.com/all-strategy/home/whats-an-optimal-mana-curve-and-land-ramp-count-for-commander/',
     description:
-      "Karsten's adaptation of his manabase math to 100-card singleton Commander. Different formulas, same rigor.",
+      "Karsten's adaptation of his manabase math to 100-card singleton Commander. Optimal curve, land count, and ramp targets — different formulas, same rigor as his Constructed work.",
   },
 
   // ==========================================================================
@@ -570,18 +565,16 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     id: 'chapin-next-level-deckbuilding',
     title: 'Next Level Deckbuilding',
     author: 'Patrick Chapin',
-    publisher: 'ChannelFireball',
+    publisher: 'StarCityGames',
     year: 2013,
     category: 'deckbuilding',
     level: 'intermediate',
-    medium: 'article-series',
+    medium: 'reference',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/next-level-deckbuilding/',
-    originalUrl: 'https://www.channelfireball.com/articles/next-level-deckbuilding/',
+    linkStatus: 'live',
+    primaryUrl: 'https://starcitygames.com/next-level-deckbuilding-ebook/',
     description:
-      "Chapin's deckbuilding theory piece (later expanded into a full book). Archetype theory, innovation cycles, and the discipline of building decks that punch above their individual card quality.",
+      "Chapin's deckbuilding theory book (eBook on StarCityGames). Archetype theory, innovation cycles, and the discipline of building decks that punch above their individual card quality.",
   },
 
   {
@@ -594,12 +587,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/the-ten-commandments-of-deckbuilding/',
-    originalUrl: 'https://www.channelfireball.com/articles/the-ten-commandments-of-deckbuilding/',
+    linkStatus: 'lost',
+    primaryUrl: 'https://www.channelfireball.com/articles/the-ten-commandments-of-deckbuilding/',
     description:
       "PVDDR's ten-point deckbuilding checklist. Every pro who has published a deckbuilding piece since 2013 has referenced this article.",
+    curatorNote:
+      "Lost to link rot — no archive.org snapshot exists and no mirror has been found on SCG, TCGPlayer, or PVDDR's Substack. If you have a copy (PDF, screenshot, text dump), please reach out on GitHub.",
   },
 
   {
@@ -614,7 +607,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     language: 'en',
     linkStatus: 'archived',
     primaryUrl:
-      'https://web.archive.org/web/2020/https://articles.starcitygames.com/premium/whos-the-beatdown/',
+      'https://web.archive.org/web/20210120002241/https://articles.starcitygames.com/premium/whos-the-beatdown/',
     originalUrl: 'https://articles.starcitygames.com/premium/whos-the-beatdown/',
     description:
       "The single most-cited article in competitive Magic history. Flores' 1999 meditation on who plays offense and who plays defense in any matchup.",
@@ -635,12 +628,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2019/https://www.channelfireball.com/articles/what-are-the-new-london-mulligan-odds/',
-    originalUrl: 'https://www.channelfireball.com/articles/what-are-the-new-london-mulligan-odds/',
+    linkStatus: 'lost',
+    primaryUrl: 'https://www.channelfireball.com/articles/what-are-the-new-london-mulligan-odds/',
     description:
       'Karsten computing the mulligan-adjusted probabilities under the London rule. The math behind every "do I keep this?" you face at turn zero.',
+    curatorNote:
+      'Lost to link rot — no archive.org snapshot exists at any URL variant. The 2022 update (above) incorporates London mulligan math, so the substance is preserved. If you have a copy of the original 2019 article, please reach out on GitHub.',
   },
 
   {
@@ -653,12 +646,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/mulligans/',
-    originalUrl: 'https://www.channelfireball.com/articles/mulligans/',
+    linkStatus: 'lost',
+    primaryUrl: 'https://www.channelfireball.com/articles/mulligans/',
     description:
       "LSV's pragmatic take on mulligan decisions — less theoretical than Chapin, less systematic than PVDDR, but delightfully direct.",
+    curatorNote:
+      'Lost to link rot — no archive.org snapshot exists, and the LSV articles index on the strategy.channelfireball.com subdomain has no entry for it. If you have a copy, please reach out on GitHub.',
   },
 
   // ==========================================================================
@@ -675,12 +668,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     level: 'intermediate',
     medium: 'article',
     language: 'en',
-    linkStatus: 'archived',
-    primaryUrl:
-      'https://web.archive.org/web/2018/https://www.channelfireball.com/articles/how-to-sideboard/',
-    originalUrl: 'https://www.channelfireball.com/articles/how-to-sideboard/',
+    linkStatus: 'lost',
+    primaryUrl: 'https://www.channelfireball.com/articles/how-to-sideboard/',
     description:
       "PVDDR's systematic framework for constructing and using a 15-card sideboard. The 'why' behind every slot.",
+    curatorNote:
+      'Lost to link rot — no archive.org snapshot exists. The live SCG URL with the same slug 302-redirects to an unrelated article. If you have a copy, please reach out on GitHub.',
   },
 
   // ==========================================================================
@@ -705,8 +698,8 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
 
   {
     id: 'boa-mtgo-getting-started',
-    title: 'Bien commencer sur MTGO (tutoriel)',
-    author: 'Boa',
+    title: "TUTO MTGO: Est-ce mieux qu'MTGA? (oui)",
+    author: 'El_Gran_Boa',
     publisher: 'YouTube',
     year: 2023,
     category: 'metagame',
@@ -716,13 +709,13 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     linkStatus: 'live',
     primaryUrl: 'https://youtu.be/SoK6Dlm1FPg',
     description:
-      'French video tutorial on Magic Online fundamentals: setup, interface, leagues, deckbuilding on the client. The entry point for every MTGO newcomer.',
+      'French video by El_Gran_Boa (TCG FR channel) comparing Magic Online to MTG Arena, arguing MTGO is the better client for serious players. A natural entry point for French Arena players curious about switching.',
   },
 
   {
-    id: 'boa-mtgo-stops',
-    title: 'Comprendre et maîtriser les stops sur MTGO',
-    author: 'Boa',
+    id: 'depraz-mtgo-stops',
+    title: 'Petite leçon de stops',
+    author: 'Jean-Emmanuel Depraz',
     publisher: 'YouTube',
     year: 2023,
     category: 'metagame',
@@ -732,7 +725,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     linkStatus: 'live',
     primaryUrl: 'https://youtu.be/xLFjxcKmDr4',
     description:
-      'Essential French video on MTGO stops — the priority-passing system every online player must master to avoid catastrophic misplays.',
+      'Essential French video by Pro Tour player Jean-Emmanuel Depraz on MTGO stops — the priority-passing system every online player must master to avoid catastrophic misplays.',
   },
 
   // ==========================================================================
