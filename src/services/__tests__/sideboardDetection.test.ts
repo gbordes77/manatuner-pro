@@ -185,4 +185,54 @@ describe('detectSideboardStartLine', () => {
     const result = detectSideboardStartLine(lines)
     expect(result).toBe(mainLines.length) // blank line index
   })
+
+  // Regression test for audit C3 (2026-04-13): MTGGoldfish/Moxfield
+  // category-grouped exports of a 60-card deck WITHOUT a sideboard were
+  // silently splitting the last category as "sideboard" because the tail
+  // size happened to be in [1, 15]. The fix refuses any blank-line split
+  // whose total matches a canonical complete-deck size (40/60/80/99/100).
+  test('rejects category-grouped 60-card main with no sideboard (C3 false positive)', () => {
+    const lines = [
+      // Creatures section (24 cards)
+      ...makeCardLines(24),
+      '',
+      // Spells section (24 cards)
+      ...makeCardLines(24, 50),
+      '',
+      // Lands section (12 cards) — last block, ∈ [1,15], previously caused false positive
+      ...makeCardLines(12, 100),
+    ]
+    const result = detectSideboardStartLine(lines)
+    expect(result).toBe(-1) // no sideboard, total = 60
+  })
+
+  test('rejects category-grouped 100-card Commander with no sideboard (C3)', () => {
+    // 80 main + blank + 20 lands? Actually Commander is 100 total.
+    // Try: 50 spells + blank + 35 creatures + blank + 15 lands → total 100, last block = 15.
+    const lines = [
+      ...makeCardLines(50),
+      '',
+      ...makeCardLines(35, 60),
+      '',
+      ...makeCardLines(15, 200),
+    ]
+    const result = detectSideboardStartLine(lines)
+    // cardsBefore = 85, cardsAfter = 15. Without C3 fix this would match
+    // (85 ∈ [40,100], 15 ∈ [1,15]). With the fix: 85 + 15 = 100 = canonical → reject.
+    expect(result).toBe(-1)
+  })
+
+  test('still detects legitimate Standard 60+15 even with multiple blank lines', () => {
+    // 60 main is split into 3 blocks by blanks, then 1 blank before the 15-card sideboard.
+    // Total = 75 (NOT in canonical set), so the C3 guard does not interfere.
+    const block1 = makeCardLines(20)
+    const block2 = makeCardLines(20, 50)
+    const block3 = makeCardLines(20, 100)
+    const side = makeCardLines(15, 200)
+    const lines = [...block1, '', ...block2, '', ...block3, '', ...side]
+    const result = detectSideboardStartLine(lines)
+    // The LAST blank line, which sits between block3 (last block of main) and the sideboard
+    const expectedSplitIdx = block1.length + 1 + block2.length + 1 + block3.length
+    expect(result).toBe(expectedSplitIdx)
+  })
 })

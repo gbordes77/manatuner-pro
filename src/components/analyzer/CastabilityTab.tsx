@@ -88,21 +88,28 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
 
       setProducersInDeck(syncProducers)
 
-      // Phase 2: Async Scryfall lookup for cards not in seed/cache
+      // Phase 2: Async Scryfall lookup for cards not in seed/cache.
+      // Audit fix M1 (2026-04-13): cleanup flag + Promise.all so that fast
+      // deck-switching cannot leak stale producers into the new deck's state.
+      let cancelled = false
       if (unknownCards.length > 0) {
-        const fetchUnknown = async () => {
-          const newProducers: ProducerInDeck[] = []
-          for (const card of unknownCards) {
-            const def = await manaProducerService.getProducer(card.name)
-            if (def) {
-              newProducers.push({ def, copies: card.quantity })
-            }
+        Promise.all(
+          unknownCards.map((card) =>
+            manaProducerService
+              .getProducer(card.name)
+              .then((def) => (def ? { def, copies: card.quantity } : null))
+              .catch(() => null)
+          )
+        ).then((results) => {
+          if (cancelled) return
+          const fresh = results.filter((r): r is ProducerInDeck => r !== null)
+          if (fresh.length > 0) {
+            setProducersInDeck((prev) => [...prev, ...fresh])
           }
-          if (newProducers.length > 0) {
-            setProducersInDeck((prev) => [...prev, ...newProducers])
-          }
-        }
-        fetchUnknown()
+        })
+      }
+      return () => {
+        cancelled = true
       }
     }, [analysisResult?.cards])
 

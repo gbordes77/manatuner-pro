@@ -35,7 +35,9 @@
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM instructions" />
 
         <!-- PWA Meta Tags -->
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <!-- apple-touch-icon temporarily removed (audit 2026-04-13) — file
+             was missing from public/, causing iOS Add-to-Homescreen to 404.
+             Re-add when a proper 180×180 PNG is generated from favicon.svg. -->
         <link rel="manifest" href="/manifest.json" />
 
         <!-- Preload critical fonts -->
@@ -54,9 +56,11 @@
             integrity="sha384-xa3t1kOlLmfN4q97IHzv+WfBEbMB1RVLs0txIuuryvjKruuVAD+2352y55hZOn2p"
             crossorigin="anonymous"
         />
-        <!-- MTG-inspired display font (non-blocking: decorative, not needed for initial paint) -->
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
+        <!-- MTG-inspired display font (decorative; render-blocking is fine).
+             Audit fix 2026-04-13: dropped the inline `onload` swap pattern
+             because `script-src 'self'` (without 'unsafe-inline') in the prod
+             CSP blocked the handler, leaving Cinzel unloaded in production. -->
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet" />
 
         <!-- DNS prefetch for external APIs -->
         <link rel="dns-prefetch" href="https://api.scryfall.com" />

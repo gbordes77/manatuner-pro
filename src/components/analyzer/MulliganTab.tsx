@@ -31,7 +31,12 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
+import MulliganArchetypeWorker from '../../workers/mulliganArchetype.worker?worker'
+import type {
+  MulliganWorkerRequest,
+  MulliganWorkerResponse,
+} from '../../workers/mulliganArchetype.worker'
 import {
   Area,
   AreaChart,
@@ -44,7 +49,6 @@ import {
 } from 'recharts'
 import type { DeckCard } from '../../services/deckAnalyzer'
 import {
-  analyzeWithArchetype,
   ARCHETYPE_CONFIGS,
   SCORE_LEGEND,
   type AdvancedMulliganResult,
@@ -804,41 +808,65 @@ export const MulliganTab: React.FC<MulliganTabProps> = memo(
     // Calculate total cards including quantities
     const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0)
 
-    const runAnalysis = useCallback(async () => {
+    // Audit fix H1 + M3 (2026-04-13): Monte Carlo + Bellman now run inside a
+    // dedicated Web Worker so the main thread stays responsive even on the
+    // 50k-iteration "Precise" preset. Each request carries a monotonic id;
+    // we only accept the response matching the id of the most recent request,
+    // which fixes the race when archetype/iterations change while a previous
+    // run is still in flight (the old code had two overlapping useEffects).
+    const workerRef = useRef<Worker | null>(null)
+    const requestIdRef = useRef(0)
+
+    useEffect(() => {
+      const worker = new MulliganArchetypeWorker()
+      workerRef.current = worker
+      return () => {
+        worker.terminate()
+        workerRef.current = null
+      }
+    }, [])
+
+    const runAnalysis = useCallback(() => {
       if (totalCards < 40) {
         setError('You need at least 40 cards for mulligan analysis')
         return
       }
+      const worker = workerRef.current
+      if (!worker) {
+        setError('Worker is not ready yet — try again in a moment.')
+        return
+      }
 
+      const id = ++requestIdRef.current
       setIsAnalyzing(true)
       setError(null)
 
-      // Run in next tick to allow UI to update
-      setTimeout(() => {
-        try {
-          const analysisResult = analyzeWithArchetype(cards, archetype, iterations)
-          setResult(analysisResult)
-        } catch (e) {
-          setError(e instanceof Error ? e.message : 'Analysis failed')
-        } finally {
-          setIsAnalyzing(false)
+      const handler = (event: MessageEvent<MulliganWorkerResponse>) => {
+        if (event.data.id !== id) return // stale response — ignore
+        worker.removeEventListener('message', handler)
+        if (event.data.ok) {
+          setResult(event.data.result)
+        } else {
+          setError(event.data.error)
         }
-      }, 50)
+        setIsAnalyzing(false)
+      }
+      worker.addEventListener('message', handler)
+
+      const request: MulliganWorkerRequest = { id, cards, archetype, iterations }
+      worker.postMessage(request)
     }, [cards, archetype, iterations, totalCards])
 
-    // Auto-run on mount and archetype change
+    // Single auto-run effect (was previously two overlapping effects → M3 fix).
+    // Triggers on initial mount, on cards change, on archetype change, and on
+    // iterations change. The worker request-id pattern guarantees only the
+    // latest run's result reaches React state.
     useEffect(() => {
       if (totalCards >= 40) {
         runAnalysis()
       }
-    }, [archetype, iterations]) // Re-run when archetype or precision changes
-
-    // Initial analysis
-    useEffect(() => {
-      if (totalCards >= 40 && !result) {
-        runAnalysis()
-      }
-    }, [cards, totalCards])
+      // runAnalysis is intentionally listed so dependency churn re-fires it.
+    }, [runAnalysis, totalCards])
 
     if (totalCards < 40) {
       return (

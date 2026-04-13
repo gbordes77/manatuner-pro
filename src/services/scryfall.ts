@@ -18,7 +18,7 @@ interface ScryfallResponse<T> {
  * analyzing 50 decks in one tab). When `max` is reached, the oldest entry is
  * evicted. Re-accessing a key refreshes its recency.
  */
-class BoundedMap<K, V> extends Map<K, V> {
+export class BoundedMap<K, V> extends Map<K, V> {
   constructor(private readonly max: number) {
     super()
   }

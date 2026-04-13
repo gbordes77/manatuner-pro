@@ -154,14 +154,17 @@ export class PrivacyStorage {
   }
 
   /**
-   * Deletes an analysis
+   * Deletes an analysis.
+   * Audit fix M2 (2026-04-13): use `persist()` instead of raw `setItem` so the
+   * QuotaExceededError fallback is honored even on iOS Safari private mode
+   * where the quota can be revoked between tabs.
    */
   static deleteAnalysis(id: string): void {
     if (typeof window === 'undefined') return
 
     const analyses = this.getMyAnalyses()
     const filtered = analyses.filter((a) => a.id !== id)
-    localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(filtered))
+    this.persist(filtered)
   }
 
   /**
@@ -217,7 +220,11 @@ export class PrivacyStorage {
       throw new Error('Invalid analysis data format')
     }
 
-    localStorage.setItem(this.ANALYSES_KEY, JSON.stringify(result.data))
+    // Audit fix M2 (2026-04-13): route through persist() for quota fallback.
+    // Cast is safe — Zod has just validated the shape; `analysis: z.unknown()`
+    // narrows to `unknown | undefined` in TS inference, but the runtime data
+    // matches `AnalysisRecord` by construction.
+    this.persist(result.data as AnalysisRecord[])
   }
 
   /**

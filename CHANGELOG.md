@@ -5,6 +5,262 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.2] - 2026-04-13 (post-launch hardening pass)
+
+### Re-audit + 19-fix sweep
+
+A 10-agent + 5-persona adversarial re-audit of the 2026-04-13 morning launch
+state (`cbe6f21`, score 4.54/5) found that the previous round had been too
+generous: the debugger surfaced 11 latent bugs (3 CRITICAL, 4 HIGH, 3 MEDIUM,
+1 LOW), the security agent caught a Supabase JWT committed in `env.example`
+that the `.gitignore` audits had missed (the file lacks the leading dot, so
+`.env*` doesn't match), and the personas regressed to **3.76/5** average
+(Léo 3.06, Sarah 4.13, Karim 4.13, Natsuki 3.13, David 4.34) because the
+technical audits weren't capturing real friction (Mulligan freeze, jargon,
+hidden sample CTA). Score pondéré: **3.95/5 — GO-WITH-HARD-CAVEATS**.
+
+This release closes 19 of the 20 fix recommendations. The only one explicitly
+deferred is the dark-mode toggle (kept dormant by user decision; the dead-code
+paths stay in place for a possible future re-activation). The full audit
+report lives at `docs/AUDIT_PROD_LAUNCH_2026-04-13.md`.
+
+### Removed
+
+- **Supabase entirely purged from the project** (replaces the JWT rotation
+  bloquant). The audit found a live Supabase anon JWT (`exp 2035-07-12`) in
+  `env.example` (no leading dot, never covered by `.gitignore`), present in
+  `HEAD` since the initial commit. Since ManaTuner's Supabase has been a
+  fully-mocked dead service for months, the cleanest fix is to remove every
+  trace rather than rotate a key for a dependency that does not exist:
+  - `env.example` deleted (was the file with the leaked JWT)
+  - `MESSAGE_EQUIPE.txt` deleted (also referenced Supabase config)
+  - `.env.example` Supabase commented block removed
+  - `src/vite-env.d.ts` `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` types
+    removed
+  - `CLAUDE.md` "Notes Techniques → Supabase" rewritten from "DISABLED" to
+    "REMOVED" with an explicit "do not reintroduce without rouvrir la décision"
+    instruction for future contributors
+  - `grep -ri supabase src/` now returns zero matches
+- **`src/hooks/useAnalysisStorage.ts` deleted** — 211-line orphan flagged
+  in `CLAUDE.md` since v2.5.1.1, zero callers, was still writing to the
+  legacy `manatuner-analyses` localStorage key.
+- **`public/og-image.jpg` (41 KB) and `public/og-image-v2.jpg` (121 KB)**
+  deleted — only `og-image-v3.jpg` is referenced from `index.html`. 160 KB of
+  orphan assets removed from every Vercel deployment.
+- **`<link rel="apple-touch-icon">` removed from `index.html`** — the
+  referenced `/apple-touch-icon.png` was missing from `public/`, causing iOS
+  Add-to-Homescreen to 404. Re-add when a proper 180×180 PNG is generated.
+- **`X-XSS-Protection: 1; mode=block` removed from `vercel.json`** — deprecated
+  header, modern browsers ignore it, OWASP currently recommends `0` or removal
+  to avoid the Chrome XSS Auditor bypass class.
+- **`https://*.ingest.sentry.io` dropped from CSP `connect-src`** — Sentry is
+  intentionally disabled in production (DSN unset), and the audit pointed out
+  that whitelisting an egress endpoint for a service we don't use creates a
+  silent re-activation footgun. When/if Sentry is re-enabled, adding the
+  domain back becomes a forcing function for the diff review.
+
+### Fixed — Bloquants critiques (audit C1/C2/C3)
+
+- **Sideboard heuristic false positive on category-grouped exports (audit C3)**
+  — `src/services/deckAnalyzer.ts` `detectSideboardStartLine`. The blank-line
+  heuristic introduced 2026-04-11 silently treated the last category of a
+  MTGGoldfish/Moxfield "Creatures / Spells / Lands" dump as a sideboard when
+  the last block happened to fall into [1, 15] cards. Estimated 8 % of paste
+  flows affected. Fix: refuse the split if `cardsBefore + cardsAfter` matches
+  a canonical complete-deck size (`{40, 60, 80, 99, 100}`) — these are the
+  formats where no sideboard is implied. +3 regression tests in
+  `sideboardDetection.test.ts` covering 60-card and 100-card category-grouped
+  decks plus a 75-card legitimate Standard split that must still detect.
+- **NaN cascade on empty deck (audit C1)** —
+  `src/services/manaCalculator.ts:138`. `landRatio = totalLands / deck.totalCards`
+  divided by zero on empty decks (autosave race or sideboard-only paste),
+  poisoning Redux Persist with serialized `null`/`NaN`. Fix: guard
+  `deck.totalCards > 0 ? totalLands / deck.totalCards : 0`.
+- **NaN% in spellAnalysis on mono-land deck (audit C2)** —
+  `src/services/deckAnalyzer.ts:1179`. `(castable / total) * 100` produced
+  `NaN` when `total === 0` (deck with no spells, e.g. a "24 Forest" debug
+  paste). Fix: same ternary guard.
+
+### Fixed — Bugs HIGH/MEDIUM (audit H1/H2/H3/H4/M1/M2/M3)
+
+- **Mulligan Monte Carlo + Bellman now runs in a Web Worker (audit H1, M3)**
+  — `src/workers/mulliganArchetype.worker.ts` (new, Vite `?worker` bundle) +
+  `src/components/analyzer/MulliganTab.tsx`. The previous code wrapped the
+  10k–50k iteration loop in `setTimeout(fn, 50)`, which only defers one tick
+  before blocking the main thread for 2-8 s on iOS Safari and mid-tier
+  Android, triggering "page unresponsive" prompts. The worker:
+  - Imports `analyzeWithArchetype` from `mulliganSimulatorAdvanced` directly
+    (full TS module graph via Vite's `?worker` query, no JS duplication).
+  - Carries a monotonic `id` per request so only the latest run's response
+    reaches React state — also fixes M3 (two overlapping `useEffect` hooks
+    that could fire two simultaneous Monte Carlo runs in parallel).
+  - Terminates on component unmount.
+  - The build now ships `dist/assets/mulliganArchetype.worker-*.js` (10.84 KB).
+- **Cavern of Souls divergence between base and accelerated castability paths
+  (audit H3)** — `src/components/ManaCostRow.tsx`. The base path
+  (`useProbabilityCalculation`) received `effectiveDeckSources` (with the
+  `producesAnyForCreaturesOnly` adjustment for tribal lands like Cavern of
+  Souls / Unclaimed Territory / Plaza of Heroes / Ancient Ziggurat applied
+  for creature spells), but the accelerated path (`useAcceleratedCastability`)
+  received raw `deckSources`. Result: on a Humans deck with 4 Cavern of Souls
+  and a `{W}{W}{W}` Thalia's Lieutenant, enabling acceleration could
+  PARADOXICALLY drop the displayed castability from ~95 % to ~78 % —
+  inexplicable to the user and incorrect. Fix: pass `effectiveDeckSources`
+  to both hooks. Tribal Humans/Merfolk/Slivers/Vampires/Elves/Goblins now
+  agree across the two paths.
+- **`scryfallCache` unbounded leak in `deckAnalyzer.ts` (audit H4)** —
+  `src/services/deckAnalyzer.ts:8`. Used a plain `Map<string, ScryfallCard>`
+  while `src/services/scryfall.ts` already had a `BoundedMap` LRU class for
+  the same purpose. CLAUDE.md "in-memory caches are LRU-bounded" applied only
+  to the latter. A power user analysing 50 distinct decks in one tab would
+  accumulate 5-10 KB per card × thousands of entries = 30-60 MB heap leak.
+  Fix: export `BoundedMap` from `scryfall.ts`, import it in `deckAnalyzer.ts`,
+  cap to 500 entries.
+- **`useMonteCarloWorker` event listener leak (audit H2)** —
+  `src/hooks/useMonteCarloWorker.ts`. `runSimulation` added a `message`
+  listener but never removed it, so each call accumulated a permanent handler.
+  Currently dormant (the hook has no live callers since the Mulligan port to
+  the new dedicated worker), but fixed preventively because the audit flagged
+  it and the fix is 4 lines: a `cleanup()` closure that clears the timeout
+  AND removes the listener, called from both the success and timeout paths.
+- **`CastabilityTab` race condition on fast deck switch (audit M1)** —
+  `src/components/analyzer/CastabilityTab.tsx:69-107`. The async Scryfall
+  `fetchUnknown()` for unknown producers had no cleanup flag, so pasting deck
+  A then deck B before A finished could leak A's producers into B's state via
+  `setProducersInDeck((prev) => [...prev, ...newProducers])`. Fix: `cancelled`
+  flag in cleanup + `Promise.all` instead of sequential `for await` loop
+  (also faster: O(1) network latency instead of O(n)).
+- **`PrivacyStorage.deleteAnalysis` and `importAnalyses` bypassed quota
+  fallback (audit M2)** — `src/lib/privacy.ts:164,220`. Both used
+  `localStorage.setItem(...)` directly while `saveAnalysis` went through
+  `persist()` which has the `QuotaExceededError` retry pattern. iOS Safari
+  private mode (revokes quota between tabs) could throw on these otherwise
+  size-reducing operations. Fix: route through `persist()`. The Zod-validated
+  cast at the import boundary is annotated.
+
+### Fixed — UX / WCAG (audit ux-designer #2 #3 #5)
+
+- **Decklist textarea now has proper accessibility labels (WCAG 1.3.1 / 4.1.2)**
+  — `src/components/analyzer/DeckInputSection.tsx`. The primary input had no
+  `aria-label`, no `aria-describedby`, no `id` — screen readers announced
+  "edit multi-line" with no context. Fix: added a complete `aria-label`
+  describing supported formats, an `aria-describedby` pointing to a new
+  `helperText` on the field ("Supported: MTGA, Moxfield, Archidekt, MTGGoldfish.
+  Sideboard auto-detected."), and a `maxLength: 20000` `inputProps` to prevent
+  multi-MB paste pathology. Also bumped mobile `rows` from 8 to 10 for less
+  cramped paste.
+- **Sample CTA surfaced in the empty state of the right results panel** —
+  `src/pages/AnalyzerPage.tsx`. The previous flow had a small `Example` button
+  tucked at the bottom of the LEFT panel while the RIGHT panel said only
+  "Enter your deck and click Analyze" — a first-time visitor (Léo persona)
+  would scan the right panel and bounce. Fix: prominent `<Button variant=
+"outlined">📋 See a Sample Analysis</Button>` directly inside the empty
+  state box, calling the same `handleLoadSample`. The chips below it are
+  re-spaced. Empty state copy reworded to "Paste your decklist on the left
+  and hit Analyze — or try a sample below."
+- **Left-panel `Example` button promoted from `size="small"` to
+  `size="large"`** with a 📋 emoji prefix and bold weight. Was visually
+  indistinguishable from secondary actions; now matches the visual weight of
+  Clear and Analyze.
+
+### Fixed — Documentation drifts (audit documentation-expert)
+
+- **`package.json` version `2.2.0` → `2.5.2`** — the audit found the file
+  had never been bumped past v2.2.0 even though the CHANGELOG was at
+  `[2.5.1.2]` and HANDOFF talked about v2.5.1.2. First thing a contributor
+  or persona David inspecting the GitHub repo sees in 10 seconds; a 3-version
+  drift screams "abandoned". Bumped to a clean semver `2.5.2` — also drops
+  the `2.5.1.x` mid-day patch notation.
+- **`LAUNCH.md` test count `213 → 305`, build time `6s → ~7s`, persona
+  average `4.14 → 3.76`** — it had been static since 2026-04-10. Updated
+  to reflect the re-audit numbers + a "100 % … zero Supabase" line.
+- **`docs/ARCHITECTURE.md` header `2026-01-06 / 2.0.0` → `2026-04-13 / 2.5.1`**
+  with a note pointing readers to `ARCHITECTURE_COMPLETE.md` for the current
+  architecture. The original v2.0.0 baseline doc lives on for historical
+  context but is no longer the entry point.
+
+### Fixed — Performance (audit performance-engineer)
+
+- **`PrivacySettings` is now lazy-loaded in `AnalyzerPage`** —
+  `src/pages/AnalyzerPage.tsx`. Was a non-lazy import even though the
+  component is below-the-fold and only renders after user scrolls. Brings
+  ~14 KB gzip of DOMPurify out of the first-load chunk for every visitor
+  to `/analyzer`.
+- **Cinzel font no longer blocked by CSP** — `index.html`. The previous
+  pattern `<link rel="preload" ... onload="this.onload=null;this.rel='stylesheet'">`
+  was an inline `onload` handler, which `script-src 'self'` (without
+  `'unsafe-inline'`) blocks in the production CSP. Cinzel was therefore
+  never loading in production despite being referenced. Fix: switched to a
+  plain `<link rel="stylesheet">` — Cinzel is decorative, render-blocking
+  is acceptable for ~8 KB of font CSS.
+
+### Hardened — Security (audit Security-Auditor)
+
+- **CSP hardening in `vercel.json`** — added the four directives the audit
+  flagged as missing best-practice defenses:
+  - `base-uri 'none'` — blocks injected `<base>` tag URL hijacking.
+  - `form-action 'self'` — restricts where forms can POST.
+  - `object-src 'none'` — explicit deny on legacy plugins.
+  - `upgrade-insecure-requests` — auto-upgrades any stray `http://`.
+- **`Permissions-Policy` extended** with `interest-cohort=()`,
+  `browsing-topics=()`, `attribution-reporting=()` for explicit GDPR-friendly
+  opt-out of FLoC / Privacy Sandbox / Topics API / Attribution Reporting.
+- **`Cache-Control: no-cache, no-store, must-revalidate` on `/index.html`**
+  — `vercel.json`. Without this header, a user visiting during a deploy
+  could get a stale `index.html` referencing JS chunks that no longer exist
+  in the new deployment, producing a silent 404 cascade. The deployment
+  audit flagged this as the #1 issue.
+
+### Stats post-fix
+
+| Metric                | Pre-audit | Post-fix       |
+| --------------------- | --------- | -------------- |
+| Tests passing         | 305       | **308** (+3)   |
+| Tests failing         | 0         | 0              |
+| `tsc --noEmit` errors | 0         | 0              |
+| Build time            | ~7.5 s    | **6.5 s**      |
+| Latent bugs (audit)   | 11        | 0 unaddressed  |
+| Audit weighted score  | **3.95**  | **~4.45 est.** |
+| Files modified        | —         | 19             |
+| Files deleted         | —         | 5              |
+| Files added           | —         | 2              |
+
+### Files modified
+
+`.env.example`, `CLAUDE.md`, `LAUNCH.md`, `docs/ARCHITECTURE.md`, `index.html`,
+`package.json`, `src/components/ManaCostRow.tsx`,
+`src/components/analyzer/CastabilityTab.tsx`,
+`src/components/analyzer/DeckInputSection.tsx`,
+`src/components/analyzer/MulliganTab.tsx`, `src/hooks/useMonteCarloWorker.ts`,
+`src/lib/privacy.ts`, `src/pages/AnalyzerPage.tsx`,
+`src/services/__tests__/sideboardDetection.test.ts`,
+`src/services/deckAnalyzer.ts`, `src/services/manaCalculator.ts`,
+`src/services/scryfall.ts`, `src/vite-env.d.ts`, `vercel.json`
+
+### Files deleted
+
+`MESSAGE_EQUIPE.txt`, `env.example`, `public/og-image.jpg`,
+`public/og-image-v2.jpg`, `src/hooks/useAnalysisStorage.ts`
+
+### Files added
+
+`src/workers/mulliganArchetype.worker.ts`,
+`docs/AUDIT_PROD_LAUNCH_2026-04-13.md`
+
+### Explicitly deferred (NOT in this release)
+
+- **Dark mode toggle**: dead-code paths in `ManaCostRow`, `Footer`,
+  `FloatingManaSymbols`, `SegmentedProbabilityBar`, `AccelerationSettings`
+  remain in place. `NotificationProvider.toggleTheme()` still has zero
+  callers. Decision: keep dormant for now, will be reactivated in a future
+  release with proper system-pref detection + a header IconButton.
+- **Plausible/Umami analytics**: out of scope for the fix sweep; the launch
+  goes ahead without traffic measurement (acknowledged blind-spot in the
+  audit's "Forte recommandation" section).
+- **noUncheckedIndexedAccess + Zod on JSON.parse cache files**: deferred to
+  v2.6.0 — large refactor surface (~40-80 sites).
+- **README real CI badges + 2 screenshots**: cosmetic, deferred.
+
 ## [2.5.1.2] - 2026-04-13
 
 ### Library Expansion (+11 entries)

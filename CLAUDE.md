@@ -66,7 +66,7 @@ Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabu
 
 ### Supabase
 
-**Status: DISABLED** - Service entièrement mocké (`isConfigured: () => false`). Toutes les données restent en localStorage. App 100% privacy-first.
+**Status: REMOVED** (2026-04-13). Toutes les traces du projet (env vars, types, mock service) ont été purgées. ManaTuner est 100 % localStorage / privacy-first et ne dépend d'aucun backend. Ne pas le réintroduire sans rouvrir explicitement la décision avec le créateur.
 
 ### Sentry
 

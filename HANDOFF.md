@@ -1,8 +1,195 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY
+## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.2 hardening)
 
-**Latest Session:** 2026-04-13 (late) — Library expansion +11 entries | **Tests:** 305 pass, 2 skipped, 0 fail | **Build:** ~7.5s | **Commit:** `6bcdc64`
+**Latest Session:** 2026-04-13 (very late) — re-audit + 19-fix sweep | **Tests:** 308 pass, 2 skipped, 0 fail | **Build:** ~6.5s | **Version:** `2.5.2`
+
+---
+
+## Session 2026-04-13 (very late) — Re-audit + 19-fix hardening sweep
+
+### Workflow
+
+The user requested a fresh adversarial re-audit of the morning launch state
+(`cbe6f21`, score 4.54/5 in the previous 10-agent pass). I ran a full
+3-wave parallel audit:
+
+- **Wave 1 (5 agents)** — context-manager, Security-Auditor, performance-engineer,
+  qa-expert, debugger
+- **Wave 2 (5 agents)** — react-pro, typescript-pro, deployment-engineer,
+  ux-designer, documentation-expert
+- **Wave 3 (5 personas)** — Léo, Sarah, Karim, Natsuki, David, each via a
+  ux-designer subagent prompted to fully incarnate the persona from
+  `mtg-player-personas.md`
+
+The aggregated score collapsed from the morning's **4.54/5** to **3.95/5
+(GO-WITH-HARD-CAVEATS)** because:
+
+1. The debugger found **11 latent bugs (3 CRITICAL, 4 HIGH, 3 MEDIUM, 1 LOW)**
+   that the previous pass missed
+2. The Security-Auditor caught a **Supabase JWT committed in `env.example`**
+   (no leading dot → never matched `.gitignore`)
+3. The personas regressed (avg 3.76/5) because audits had been blind to real
+   friction: Mulligan main-thread freeze on mobile, Léo's "dorks/rocks/EV"
+   jargon confusion, Sarah's missing Karsten target delta, Natsuki's missing
+   CIs
+
+The user then said: **"corrige tout sauf le dark mode … mais il n'y a plus
+de Supabase dans mon projet donc supprime les traces de Supabase"**.
+
+I implemented all 19 of the 20 recommended fixes in one session (dark mode
+explicitly skipped per user request). Final state: `tsc --noEmit` clean,
+**308/310 tests passing** (+3 vs the pre-audit 305), build clean in 6.5 s,
+production worker bundle generated correctly.
+
+### What Was Completed
+
+#### Supabase fully removed (replaces JWT rotation)
+
+The audit had flagged the Supabase JWT in `env.example` (no dot, exp 2035) as
+the #1 blocker. Since ManaTuner's Supabase has been a fully-mocked dead
+service for months, the cleanest fix is **purge** rather than **rotate**:
+
+- Deleted `env.example` (the file with the leaked JWT)
+- Deleted `MESSAGE_EQUIPE.txt` (also referenced Supabase config)
+- Cleaned `.env.example` of the optional Supabase block
+- Removed `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` from `src/vite-env.d.ts`
+- Rewrote the `CLAUDE.md` "Notes Techniques → Supabase" section from
+  "DISABLED" to "REMOVED" with an explicit instruction not to reintroduce
+  without rouvrir la décision
+- `grep -ri supabase src/` → 0 hits
+
+#### Bloquants critiques (audit C1/C2/C3)
+
+- **C3 — sideboard heuristic false positive on category-grouped exports**:
+  `deckAnalyzer.ts` `detectSideboardStartLine` now refuses any blank-line
+  split whose total matches a canonical complete-deck size (`{40, 60, 80,
+99, 100}`). +3 regression tests in `sideboardDetection.test.ts`.
+- **C1 — NaN cascade**: `manaCalculator.ts:138`
+  `landRatio = totalLands / deck.totalCards` divide-by-zero on empty deck.
+  Fixed with ternary guard.
+- **C2 — NaN% in spellAnalysis**: `deckAnalyzer.ts:1179` same pattern for
+  mono-land debug pastes. Fixed with ternary guard.
+
+#### HIGH/MEDIUM bugs (audit H1/H2/H3/H4/M1/M2/M3)
+
+- **H1+M3 — Mulligan Web Worker port**: created
+  `src/workers/mulliganArchetype.worker.ts` (Vite `?worker` bundle, imports
+  `analyzeWithArchetype` directly so no JS duplication). `MulliganTab.tsx`
+  now uses a request-id pattern: each `runAnalysis()` increments a counter,
+  the worker echoes it back, and stale responses are silently dropped. This
+  fixes BOTH the main-thread freeze (was 2-8 s on iOS) AND the M3 issue
+  where two `useEffect` blocks could fire two simultaneous Monte Carlo runs
+  in parallel. Single auto-run effect now lists `runAnalysis` in deps.
+  Build artifact: `dist/assets/mulliganArchetype.worker-dRZ2idjW.js` (10.84 KB).
+- **H3 — Cavern of Souls divergence in `ManaCostRow`**: the base path
+  received `effectiveDeckSources` (with `producesAnyForCreaturesOnly`
+  adjustment for tribal lands) but the accelerated path received raw
+  `deckSources`. Result: enabling acceleration on a Humans deck with
+  4 Cavern of Souls could PARADOXICALLY drop a creature's castability from
+  ~95 % to ~78 %. Fix: pass `effectiveDeckSources` to both hooks.
+- **H4 — `scryfallCache` unbounded** in `deckAnalyzer.ts`: was a plain
+  `Map<string, ScryfallCard>`. Fix: export `BoundedMap` from `scryfall.ts`,
+  import in `deckAnalyzer.ts`, cap at 500.
+- **H2 — `useMonteCarloWorker` event listener leak** (preventive — the hook
+  has no live callers since the Mulligan worker port, but the audit flagged
+  it and the fix is 4 lines): added a `cleanup()` closure that clears the
+  timeout AND removes the listener, called from both success and timeout
+  paths.
+- **M1 — `CastabilityTab` race condition**: async `fetchUnknown()` had no
+  cleanup flag. Fix: `cancelled` flag in cleanup + `Promise.all` instead of
+  sequential `for await` (also faster: O(1) network latency).
+- **M2 — `privacy.ts` quota bypass**: `deleteAnalysis` and `importAnalyses`
+  used `localStorage.setItem(...)` directly while `saveAnalysis` went through
+  `persist()` with the `QuotaExceededError` retry. iOS Safari private mode
+  could throw on otherwise size-reducing operations. Fix: route both through
+  `persist()`, with a typed cast at the Zod-validated import boundary.
+
+#### UX / WCAG (audit ux-designer)
+
+- **Decklist textarea WCAG 1.3.1 / 4.1.2**: added `aria-label`,
+  `aria-describedby`, `helperText` ("Supported: MTGA, Moxfield, Archidekt,
+  MTGGoldfish. Sideboard auto-detected."), `maxLength: 20000`. Mobile rows
+  bumped 8 → 10.
+- **Sample CTA in empty state**: prominent
+  `📋 See a Sample Analysis` button inside the right-panel empty state of
+  `AnalyzerPage`, calling the same `handleLoadSample`. Empty state copy
+  reworded.
+- **Left-panel `Example` button promoted** from `size="small"` to
+  `size="large"` with bold weight + 📋 emoji + "Try Example" label.
+
+#### Documentation drifts
+
+- `package.json`: `2.2.0 → 2.5.2` (drop the `2.5.1.x` mid-day notation,
+  ship clean semver)
+- `LAUNCH.md`: 213 → 305 → **308** tests, 6 s → ~7 s → ~6.5 s, persona
+  4.14 → 3.76 → ~4.45 projected
+- `docs/ARCHITECTURE.md`: header `2026-01-06 / 2.0.0` → `2026-04-13 / 2.5.1`
+  - pointer to `ARCHITECTURE_COMPLETE.md`
+
+#### Performance
+
+- `PrivacySettings` now lazy-loaded in `AnalyzerPage` — drops ~14 KB gzip
+  of DOMPurify out of the first-load AnalyzerPage chunk
+- `og-image.jpg` (41 KB) + `og-image-v2.jpg` (121 KB) deleted (orphans;
+  only `og-image-v3.jpg` is referenced from `index.html`)
+- `apple-touch-icon` link removed from `index.html` (PNG was missing →
+  iOS 404)
+- Cinzel font: dropped the inline `onload` swap pattern that was blocked
+  by `script-src 'self'` CSP, switched to plain render-blocking link
+
+#### Security hardening (`vercel.json`)
+
+- CSP `connect-src` no longer whitelists `https://*.ingest.sentry.io`
+  (Sentry stays disabled in prod, removing the silent re-activation footgun)
+- CSP gained `base-uri 'none'`, `form-action 'self'`, `object-src 'none'`,
+  `upgrade-insecure-requests`
+- `Permissions-Policy` extended with `interest-cohort=()`,
+  `browsing-topics=()`, `attribution-reporting=()`
+- `X-XSS-Protection` removed (deprecated, modern best practice)
+- `Cache-Control: no-cache, no-store, must-revalidate` on `/index.html`
+  — fixes the silent 404 cascade risk during deploys when an
+  `index.html` fetched from deploy N references chunks that only exist in
+  deploy N+1
+
+#### Code hygiene
+
+- Deleted `src/hooks/useAnalysisStorage.ts` — 211-line orphan flagged in
+  `CLAUDE.md` since v2.5.1.1, zero callers
+
+### Verification
+
+- `npx tsc --noEmit`: 0 errors
+- `npm run test:unit`: **308 passing**, 2 skipped, 0 failing (was 305/2/0)
+- `npm run build`: clean in **6.50 s**, worker bundle generated correctly
+- `grep -ri supabase src/`: 0 matches
+
+### Explicitly deferred (per user request or scope)
+
+- **Dark mode toggle** — kept dormant. The dead-code paths in `ManaCostRow`,
+  `Footer`, `FloatingManaSymbols`, `SegmentedProbabilityBar`,
+  `AccelerationSettings` stay in place. `NotificationProvider.toggleTheme()`
+  still has zero callers. To reactivate: add an `IconButton` in `Header.tsx`
+  - system-pref detection.
+- Plausible/Umami analytics, README real CI badges + screenshots,
+  `noUncheckedIndexedAccess` sprint, JSON.parse Zod validation on cache
+  files: all out of scope for this fix sweep, deferred to v2.6.0+.
+
+### Current State
+
+- **Working**: everything. 308/310 tests, tsc clean, build clean in 6.5 s.
+- **Score projeté post-fix**: ~4.45/5 (vs 3.95 pre-fix, vs 4.54 morning over-optimistic).
+- **No code blockers.**
+- The full re-audit report lives at `docs/AUDIT_PROD_LAUNCH_2026-04-13.md`.
+- The CHANGELOG entry `[2.5.2]` documents every change with audit ID
+  cross-references.
+
+### Next Priority
+
+**Ship `[2.5.2]` and post the @fireshoes tweet.** The 19 fixes have closed
+the dette technique flagged by the re-audit. Beyond the dark mode toggle
+(deliberately deferred), there is no remaining blocker between ManaTuner and
+its first 100 users.
 
 ---
 

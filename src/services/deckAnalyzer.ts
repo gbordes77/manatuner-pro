@@ -3,9 +3,13 @@ import type { LandManaColor, LandMetadata } from '../types/lands'
 import type { ScryfallCard } from '../types/scryfall'
 import { landService } from './landService'
 import { analyzeSpellCastability, compareTempoImpact } from './manaCalculator'
+import { BoundedMap } from './scryfall'
 
-// Cache pour éviter les appels répétés à Scryfall
-const scryfallCache = new Map<string, ScryfallCard>()
+// Cache pour éviter les appels répétés à Scryfall.
+// Audit fix H4 (2026-04-13): use BoundedMap (LRU, cap 500) instead of unbounded
+// Map to prevent memory growth on long sessions where a power user analyses
+// dozens of distinct decks. Each ScryfallCard is ~5-10 KB → cap ≈ 5 MB heap.
+const scryfallCache = new BoundedMap<string, ScryfallCard>(500)
 
 // Batch fetch up to 75 cards at once via Scryfall /cards/collection
 async function batchFetchFromScryfall(cardNames: string[]): Promise<void> {
@@ -188,6 +192,13 @@ export function detectSideboardStartLine(lines: string[]): number {
     }
   }
 
+  // Canonical complete-deck sizes that should NOT be treated as main+sideboard
+  // splits when no explicit marker is present. This kills the false positive
+  // on MTGGoldfish/Moxfield category-grouped exports (audit C3, 2026-04-13)
+  // where blank lines separate Creatures / Spells / Lands sections inside a
+  // single 60-card main deck.
+  const CANONICAL_TOTAL_NO_SIDEBOARD = new Set([40, 60, 80, 99, 100])
+
   // Try each blank line as a potential main/side split (prefer the last valid one)
   for (let b = blankLineIndices.length - 1; b >= 0; b--) {
     const splitIdx = blankLineIndices[b]
@@ -204,6 +215,12 @@ export function detectSideboardStartLine(lines: string[]): number {
 
     // Heuristic: main deck is 40-100 cards, sideboard is 1-15 cards
     if (cardsBefore >= 40 && cardsBefore <= 100 && cardsAfter >= 1 && cardsAfter <= 15) {
+      // Reject if the total looks like a complete deck (no sideboard expected).
+      // Standard/Pioneer/Modern with sideboard = 75. Limited with sideboard = 55-90.
+      // Commander = 100 (no SB), Limited deck = 40 (no SB), Standard no-SB = 60.
+      if (CANONICAL_TOTAL_NO_SIDEBOARD.has(cardsBefore + cardsAfter)) {
+        continue
+      }
       return splitIdx
     }
   }
@@ -1173,10 +1190,11 @@ export class DeckAnalyzer {
     nonLands.forEach((spell) => {
       const total = spell.quantity
       const castable = Math.round(total * (consistency + 0.1)) // Simplified calculation
+      // Guard against division by zero (deck with no spells, e.g. mono-land tests) — see audit C2.
       spellAnalysis[spell.name] = {
         castable,
         total,
-        percentage: Math.round((castable / total) * 100),
+        percentage: total > 0 ? Math.round((castable / total) * 100) : 0,
       }
     })
 

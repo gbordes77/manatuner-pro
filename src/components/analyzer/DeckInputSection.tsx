@@ -79,11 +79,21 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = memo(
             <TextField
               fullWidth
               multiline
-              rows={isMobile ? 8 : 12}
+              rows={isMobile ? 10 : 12}
               label="Deck List"
               placeholder="Paste your decklist here...&#10;Format: 4 Lightning Bolt&#10;3 Counterspell&#10;..."
               value={deckList}
               onChange={(e) => setDeckList(e.target.value)}
+              // Audit fix UX/WCAG (2026-04-13): proper accessibility labels for
+              // screen readers + maxLength to prevent multi-MB paste pathology.
+              inputProps={{
+                'aria-label':
+                  'Paste your decklist in MTGA, Moxfield, Archidekt, or plain text format. Each line should be quantity followed by card name, e.g. "4 Lightning Bolt".',
+                'aria-describedby': 'deck-format-hint',
+                maxLength: 20000,
+              }}
+              FormHelperTextProps={{ id: 'deck-format-hint' }}
+              helperText="Supported: MTGA, Moxfield, Archidekt, MTGGoldfish. Sideboard auto-detected."
               sx={{
                 mb: 2,
                 '& .MuiInputBase-root': {
@@ -144,14 +154,15 @@ export const DeckInputSection: React.FC<DeckInputSectionProps> = memo(
 
                 <Button
                   variant="outlined"
-                  size={isMobile ? 'small' : 'small'}
+                  size={isMobile ? 'medium' : 'large'}
                   onClick={onLoadSample}
                   sx={{
-                    minWidth: isMobile ? 'auto' : '90px',
-                    fontSize: isMobile ? '0.7rem' : '0.8rem',
+                    minWidth: isMobile ? 'auto' : '140px',
+                    fontSize: isMobile ? '0.875rem' : '1rem',
+                    fontWeight: 600,
                   }}
                 >
-                  Example
+                  📋 Try Example
                 </Button>
               </Box>
             </Box>

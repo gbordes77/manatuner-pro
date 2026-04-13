@@ -8,6 +8,7 @@ import TerrainIcon from '@mui/icons-material/Terrain'
 import {
   Alert,
   Box,
+  Button,
   Chip,
   Container,
   Grid,
@@ -28,7 +29,10 @@ import { TabPanel } from '../components/analyzer/TabPanel'
 import { ErrorBoundary } from '../components/common/ErrorBoundary'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
 import { SEO } from '../components/common/SEO'
-import PrivacySettings from '../components/PrivacySettings'
+
+// Audit fix perf (2026-04-13): lazy-load PrivacySettings to drop ~14 KB gzip
+// from the first AnalyzerPage paint (DOMPurify ships inside this component).
+const PrivacySettings = React.lazy(() => import('../components/PrivacySettings'))
 
 // Lazy-loaded tabs (only loaded when selected)
 const CastabilityTab = React.lazy(() =>
@@ -468,17 +472,35 @@ const AnalyzerPage: React.FC = () => {
                   <Typography
                     variant={isMobile ? 'body1' : 'h6'}
                     color="text.secondary"
-                    sx={{ maxWidth: 300 }}
+                    sx={{ maxWidth: 320 }}
                   >
-                    Enter your deck and click <strong>"Analyze"</strong> to see results
+                    Paste your decklist on the left and hit <strong>"Analyze"</strong> — or try a
+                    sample below.
                   </Typography>
+                  {/* Audit fix UX (2026-04-13): surface the sample CTA inside
+                      the right-panel empty state so first-time visitors (Léo
+                      persona) discover it without scanning the left panel. */}
+                  <Button
+                    variant="outlined"
+                    size={isMobile ? 'medium' : 'large'}
+                    onClick={handleLoadSample}
+                    sx={{
+                      mt: 1,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      borderWidth: 2,
+                      '&:hover': { borderWidth: 2 },
+                    }}
+                  >
+                    📋 See a Sample Analysis
+                  </Button>
                   <Box
                     sx={{
                       display: 'flex',
                       gap: 1,
                       flexWrap: 'wrap',
                       justifyContent: 'center',
-                      mt: 1,
+                      mt: 2,
                     }}
                   >
                     <Chip
@@ -652,9 +674,11 @@ const AnalyzerPage: React.FC = () => {
           </Grid>
         </Grid>
 
-        {/* Privacy Settings */}
+        {/* Privacy Settings (lazy-loaded — see import comment above) */}
         <Box sx={{ mt: 4 }}>
-          <PrivacySettings />
+          <Suspense fallback={null}>
+            <PrivacySettings />
+          </Suspense>
         </Box>
 
         {/* Snackbar */}

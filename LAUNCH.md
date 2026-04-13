@@ -4,17 +4,17 @@
 
 ---
 
-## L'ETAT DES LIEUX (mis a jour 2026-04-10)
+## L'ETAT DES LIEUX (mis a jour 2026-04-13 post-audit)
 
 Le produit est **pret**. Ce n'est pas une opinion, ce sont les faits :
 
-- 213 tests passent, 0 echec
-- Build en 6s, deploye sur Vercel, live a https://manatuner.app
+- 305 tests passent, 2 skipped, 0 echec
+- Build en ~7s, deploye sur Vercel, live a https://manatuner.app
 - Moteur hypergeometrique unifie, audite, valide contre Karsten
 - Moteur d'acceleration K=3 (DORK/ROCK/ENHANCER) — **aucun concurrent n'a ca**
 - Mulligan Bellman — **aucun concurrent n'a ca**
-- 100% client-side, zero compte, zero tracking — **aucun concurrent ne propose ca**
-- Score persona moyen : 4.14/5
+- 100% client-side, zero compte, zero tracking, zero Supabase — **aucun concurrent ne propose ca**
+- Score persona moyen : 3.76/5 (re-audit adversarial 2026-04-13) — projection 4.4+ apres les fixes du jour
 - Tabs : Castability > Analysis > Mulligan > Manabase > Blueprint
 
 **Tu n'as pas un probleme de produit. Tu as un probleme de distribution.**

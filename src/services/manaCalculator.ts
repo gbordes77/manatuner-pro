@@ -135,7 +135,8 @@ export const analyzeDeckConsistency = (deck: {
   try {
     // FIX: Calcul direct du score basé sur le ratio de terres et la cohérence du deck
     const totalLands = deckWithLands.lands.reduce((sum, land) => sum + land.quantity, 0)
-    const landRatio = totalLands / deck.totalCards
+    // Guard against division by zero (empty deck or sideboard-only) — see audit C1.
+    const landRatio = deck.totalCards > 0 ? totalLands / deck.totalCards : 0
 
     // Score de base basé sur le ratio de terres (optimal autour de 0.4)
     let baseScore = 0.5

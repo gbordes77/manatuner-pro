@@ -1,8 +1,10 @@
 # ManaTuner - Architecture Documentation
 
-> **Last Updated**: 2026-01-06
-> **Version**: 2.0.0
-> **Status**: Production Ready (85/100)
+> **Last Updated**: 2026-04-13
+> **Version**: 2.5.1
+> **Status**: Production Ready
+> **Note**: For the current architecture, see also `ARCHITECTURE_COMPLETE.md`
+> in the same folder. This document describes the v2.0.0 baseline.
 
 ---
 

@@ -693,10 +693,15 @@ const ManaCostRow: React.FC<ManaCostRowProps> = memo(
 
     // Calculate accelerated castability if enabled
     // v1.1: Multi-mana lands now handled probabilistically in engine
+    // Audit fix H3 (2026-04-13): pass effectiveDeckSources (with Cavern of Souls
+    // / Unclaimed Territory / etc. adjustments for creature spells) so the
+    // accelerated path agrees with the base path on tribal decks. Without this,
+    // enabling acceleration could PARADOXICALLY decrease the displayed
+    // castability (e.g. Humans + Cavern: 95% base → 78% accelerated).
     const acceleratedResult = useAcceleratedCastability(
       cardData,
       cardName,
-      deckSources,
+      effectiveDeckSources,
       totalLands,
       totalCards,
       producers,
