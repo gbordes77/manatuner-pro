@@ -209,9 +209,46 @@ const AnalyzerPage: React.FC = () => {
   return (
     <>
       <SEO
-        title="MTG Deck Analyzer - Calculate Mana Base Probabilities | ManaTuner"
-        description="Analyze your MTG deck's mana base with exact hypergeometric probabilities. Includes mana rocks, dorks, Monte Carlo mulligan simulation, and castability per spell."
+        title="MTG Deck Analyzer — Paste Deck, See Castability | ManaTuner"
+        description="Free MTG deck analyzer. Paste your decklist (MTGO, MTGA, Moxfield) and get exact hypergeometric castability probabilities per spell — including mana rocks and dorks. No signup, results in 3 seconds."
         path="/analyzer"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: 'ManaTuner Deck Analyzer',
+          url: 'https://www.manatuner.app/analyzer',
+          applicationCategory: 'UtilityApplication',
+          applicationSubCategory: 'GameUtility',
+          operatingSystem: 'Any (browser-based)',
+          browserRequirements: 'Requires a modern browser with JavaScript enabled',
+          description:
+            'Interactive MTG deck analyzer. Paste any decklist (MTGO, MTGA, Moxfield) and get exact hypergeometric castability probabilities per spell, turn by turn, including mana rocks and dorks.',
+          featureList: [
+            'Castability analysis with P1/P2 probabilities',
+            'Post-board sideboard swap editor',
+            'Monte Carlo mulligan simulation (10,000 hands)',
+            'Turn-by-turn color requirement probabilities',
+            'Export blueprint as PNG, PDF, or JSON',
+          ],
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'Guillaume Bordes',
+            url: 'https://github.com/gbordes77',
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'ManaTuner',
+            url: 'https://www.manatuner.app',
+          },
+          isAccessibleForFree: true,
+          license: 'https://opensource.org/licenses/MIT',
+        }}
       />
       <React.Suspense fallback={null}>
         <Onboarding hasAnalysisResult={!!analysisResult} />
@@ -474,8 +511,7 @@ const AnalyzerPage: React.FC = () => {
                     color="text.secondary"
                     sx={{ maxWidth: 320 }}
                   >
-                    Paste your decklist on the left and hit <strong>"Analyze"</strong> — or try a
-                    sample below.
+                    Paste a decklist and hit <strong>Analyze</strong> — or try a sample below.
                   </Typography>
                   {/* Audit fix UX (2026-04-13): surface the sample CTA inside
                       the right-panel empty state so first-time visitors (Léo

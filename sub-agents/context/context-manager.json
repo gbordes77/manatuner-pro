@@ -1,7 +1,9 @@
 {
   "projectName": "ManaTuner",
-  "version": "2.0.0",
-  "lastFullScan": "2025-12-26T17:20:00Z",
+  "version": "2.5.2",
+  "productionUrl": "https://manatuner.app",
+  "canonicalHostname": "https://www.manatuner.app",
+  "lastFullScan": "2026-04-13T09:15:00Z",
   "description": "Advanced MTG Manabase Analyzer using Frank Karsten mathematics, Monte Carlo simulation, and Bellman equation for optimal mulligan decisions",
   "projectType": "React SPA",
   "stack": {
@@ -408,10 +410,236 @@
       "sourcemaps": false
     }
   },
+  "seoInfrastructure": {
+    "lastAuditDate": "2026-04-13T09:15:00Z",
+    "productionHost": "https://www.manatuner.app",
+    "metaManagement": {
+      "library": "react-helmet-async ^3.0.0",
+      "helmetProvider": "src/App.tsx:119",
+      "sharedComponent": "src/components/common/SEO.tsx",
+      "clientSideOnly": true,
+      "prerenderStatus": "SCRIPT_EXISTS_NOT_WIRED"
+    },
+    "files": {
+      "/index.html": {
+        "status": "present",
+        "lastModified": "2026-04-13",
+        "hasDefaultTitle": true,
+        "hasOGTags": true,
+        "hasTwitterCard": true,
+        "missingItems": [
+          "apple-touch-icon (intentionally removed 2026-04-13)",
+          "twitter:site",
+          "twitter:creator",
+          "inline JSON-LD"
+        ]
+      },
+      "/public/sitemap.xml": {
+        "status": "present",
+        "lastModified": "2026-04-12 (commit 88e7278)",
+        "urlCount": 9,
+        "routes": [
+          "/",
+          "/analyzer",
+          "/land-glossary",
+          "/library",
+          "/guide",
+          "/mathematics",
+          "/my-analyses",
+          "/about",
+          "/privacy"
+        ],
+        "issues": [
+          "missing /reading-list redirect alternate",
+          "lastmod dates stale on 7 of 9 URLs (all 2026-04-06 except / and /library)"
+        ]
+      },
+      "/public/robots.txt": {
+        "status": "present",
+        "lastModified": "2026-04-06",
+        "directives": ["User-agent: * Allow:/", "Crawl-delay: 1", "LLMs-Txt pointer"],
+        "missingItems": [
+          "no explicit GPTBot/ClaudeBot/PerplexityBot/Google-Extended allow/disallow rules — default * covers them but explicit is best practice for trust"
+        ]
+      },
+      "/public/llms.txt": {
+        "status": "present",
+        "lastModified": "2026-04-11 (commit 498b893)",
+        "size": "4.2KB",
+        "format": "llmstxt.org spec"
+      },
+      "/public/llms-full.txt": {
+        "status": "present",
+        "lastModified": "2026-04-11 (commit 498b893)",
+        "size": "8.2KB",
+        "content": "FAQ + Mathematics + Land glossary + Feature deep dive"
+      },
+      "/public/manifest.json": {
+        "status": "present",
+        "lastModified": "2026-04-12",
+        "completeness": "minimal",
+        "missingItems": [
+          "additional icon sizes (192, 512)",
+          "screenshots array",
+          "categories",
+          "lang"
+        ]
+      },
+      "/vercel.json": {
+        "status": "present",
+        "lastModified": "2026-04-13",
+        "buildCommand": "npm run build",
+        "hasSecurityHeaders": true,
+        "hasCSP": true,
+        "issues": [
+          "buildCommand does NOT invoke build:prerender — dist/ ships only / (no per-route HTML)"
+        ]
+      },
+      "/vite.config.ts": {
+        "status": "present",
+        "hasSEOPlugins": false,
+        "notes": "No vite-plugin-sitemap, no pre-rendering plugin. Manual pipeline only."
+      },
+      "/scripts/prerender.mjs": {
+        "status": "present",
+        "routes": [
+          "/",
+          "/analyzer",
+          "/guide",
+          "/mathematics",
+          "/land-glossary",
+          "/about",
+          "/privacy"
+        ],
+        "missing": [
+          "/library (CRITICAL — newest content pillar not prerendered)",
+          "/my-analyses (intentional)"
+        ],
+        "wiredTo": "npm run build:prerender (NOT used in production)"
+      }
+    },
+    "structuredData": {
+      "approach": "JSON-LD via SEO component + react-helmet-async",
+      "location": "Per-page inside <SEO jsonLd={...} />",
+      "types": {
+        "/ (HomePage.tsx:179)": "WebApplication with offers.price=0, author=Guillaume Bordes",
+        "/guide (GuidePage.tsx:147)": "FAQPage with 5 Q&A entries",
+        "/mathematics (MathematicsPage.tsx:52)": "Article",
+        "/land-glossary (LandGlossaryPage.tsx:274)": "Article",
+        "/library (ReferenceArticlesPage.tsx:96)": "CollectionPage with ItemList of 10 Articles",
+        "/analyzer (AnalyzerPage.tsx:211)": "NO JSON-LD (missing — main conversion page)",
+        "/about (StaticPages.tsx:50)": "NO JSON-LD (missing)",
+        "/privacy (StaticPages.tsx:327)": "NO JSON-LD (missing)"
+      },
+      "gaps": [
+        "No Organization schema anywhere",
+        "No SoftwareApplication aggregateRating (even faked at 5/50 would boost rich snippets)",
+        "No BreadcrumbList on sub-pages",
+        "No HowTo on /guide (it's a FAQPage but the core is a step-by-step)",
+        "No Person schema for Guillaume Bordes linking to GitHub"
+      ]
+    },
+    "analyticsTrackers": {
+      "googleAnalytics": "NONE",
+      "plausible": "NONE",
+      "posthog": "NONE",
+      "mixpanel": "NONE",
+      "segment": "NONE",
+      "sentry": "CODE_PRESENT_RUNTIME_DISABLED",
+      "sentryInitLocation": "src/main.tsx:20-26",
+      "sentryGuard": "import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN",
+      "privacyPromise": "src/components/PrivacySettings.tsx:204 - 'Nothing is sent to any server'",
+      "externalCalls": {
+        "scryfall": "https://api.scryfall.com (card data only, no user data)",
+        "fonts": "Google Fonts + jsdelivr (CDN, no user data)",
+        "discordCommunity": "NONE in-app"
+      }
+    },
+    "eatSignals": {
+      "authorPage": "/about (AboutPage component in StaticPages.tsx:24)",
+      "authorName": "Guillaume Bordes",
+      "authorGitHub": "https://github.com/gbordes77",
+      "bioDepth": "minimal (features grid + origin story + Charles Wickham credit, NO personal MTG credentials)",
+      "bibliography": "README.md credits Frank Karsten + Charles Wickham + Scryfall",
+      "readingLibrary": "/library — 35+ articles by Karsten, PVDDR, Saito, Chapin, Reid Duke (MAJOR E-E-A-T asset)",
+      "openSourceSignal": "GitHub repo link in README + AboutPage",
+      "missingE_E_A_T": [
+        "No explicit 'Last updated' dates on pages",
+        "No author byline on /guide, /mathematics, /land-glossary",
+        "No citations/footnotes linking specific claims to Karsten articles",
+        "No credentials or tournament history for Guillaume Bordes",
+        "No testimonials from real users",
+        "No 'expert reviewed by' signal (a known MTG pro endorsing would be massive)"
+      ]
+    },
+    "copyHeadings": {
+      "/ (HomePage)": {
+        "h1": "The Only Mana Calculator That Counts Your Dorks & Rocks",
+        "metaTitle": "ManaTuner — Mana Calculator + Competitive MTG Reading Library",
+        "metaDescLength": "158 chars (under 160 limit, good)"
+      },
+      "/analyzer (AnalyzerPage)": {
+        "h1": "ManaTuner (hero, replaced by results after analysis)",
+        "metaTitle": "MTG Deck Analyzer - Calculate Mana Base Probabilities | ManaTuner",
+        "note": "H1 is just 'ManaTuner' which is WEAK for SEO on this high-value conversion page"
+      },
+      "/guide (GuidePage)": {
+        "h1": "How to Use ManaTuner",
+        "metaTitle": "How to Build a Perfect MTG Mana Base - Guide | ManaTuner",
+        "mismatch": "Meta title says 'How to build' but H1 says 'How to use' — intent drift"
+      },
+      "/mathematics (MathematicsPage)": {
+        "h1": "The Mathematics Behind ManaTuner",
+        "metaTitle": "MTG Mana Math Explained - Hypergeometric & Monte Carlo | ManaTuner",
+        "note": "GOLDMINE for AEO — deep hypergeometric + Karsten + Bellman content"
+      },
+      "/land-glossary (LandGlossaryPage)": {
+        "h1": "Land Type Glossary",
+        "metaTitle": "MTG Land Types Ranked - Complete Dual Land Glossary | ManaTuner",
+        "note": "12 ranked land categories with explanations — excellent AEO seed content"
+      },
+      "/library (ReferenceArticlesPage)": {
+        "h1": "The Competitive MTG Library",
+        "metaTitle": "MTG Competitive Reading Library — 35+ Essential Articles | ManaTuner",
+        "note": "Newest content pillar (2026-04-12) — MAJOR E-E-A-T asset"
+      },
+      "/about (AboutPage)": {
+        "h1": "About ManaTuner",
+        "metaTitle": "About ManaTuner - Open Source MTG Mana Base Tool"
+      },
+      "/privacy (PrivacyPage)": {
+        "h1": "Privacy Policy",
+        "metaTitle": "Privacy Policy | ManaTuner"
+      }
+    },
+    "criticalGaps": [
+      "PRERENDER_NOT_WIRED: vercel.json uses 'npm run build' (plain Vite SPA) instead of 'npm run build:prerender'. Result: crawlers without JS see only the default index.html meta tags — per-route titles, descriptions, and JSON-LD never reach Googlebot, PerplexityBot, etc. This is the #1 SEO blocker.",
+      "LIBRARY_NOT_IN_PRERENDER: Even when prerender runs, /library is missing from ROUTES in scripts/prerender.mjs:23-31. The newest and biggest content pillar won't be indexed by static HTML.",
+      "NO_TWITTER_CREATOR: index.html has twitter:card but no twitter:site or twitter:creator — kills attribution on RTs from @fireshoes (the LAUNCH.md priority #1 tactic).",
+      "ANALYZER_NO_JSONLD: The highest-conversion page has no structured data. Should have SoftwareApplication + BreadcrumbList.",
+      "NO_BREADCRUMBLIST: Sub-pages (/guide, /mathematics, /land-glossary, /library) have no BreadcrumbList — weakens site hierarchy signal.",
+      "SITEMAP_STALE: 7 of 9 sitemap URLs have lastmod=2026-04-06 even though pages have been modified since. Googlebot deprioritizes stale sitemaps.",
+      "NO_HOWTO_SCHEMA: /guide is a FAQPage but the core content is step-by-step — HowTo schema would rank better for 'how to build mtg mana base' queries.",
+      "OG_IMAGE_ONE_SIZE: Only og-image-v3.jpg (1200x630) exists. Twitter Summary Large Image works, but no square (1080x1080) or vertical (1080x1350) variants for LinkedIn/Discord/iMessage previews.",
+      "NO_AUTHOR_BYLINE: /mathematics and /land-glossary have JSON-LD author=Guillaume Bordes but no visible byline. Missed E-E-A-T signal.",
+      "NO_LAST_UPDATED: No visible 'Last updated YYYY-MM-DD' on any page. AI engines (Perplexity especially) prefer fresh content.",
+      "ROBOTS_TXT_NO_AI_RULES: Default 'User-agent: *' covers all crawlers but explicit rules for GPTBot, ClaudeBot, PerplexityBot, Google-Extended (opt-out trap) are best practice for trust signaling. ManaTuner's open-source + privacy-first positioning benefits from explicitly ALLOWING AI bots."
+    ],
+    "seoAssets": {
+      "aeoGoldmines": [
+        "/public/llms-full.txt — already structured for AI ingestion, 8.2KB, well-formatted",
+        "/src/pages/MathematicsPage.tsx — 981 lines, hypergeometric + Bellman + Karsten explained in plain English. Perfect AI citation fodder.",
+        "/src/pages/LandGlossaryPage.tsx — 587 lines, 12 ranked land categories with pros/cons. Perfect for 'what is a fetchland' type queries.",
+        "/src/pages/ReferenceArticlesPage.tsx — 443 lines, /library with 35+ articles curated by authority. Signals topical expertise.",
+        "/public/llms.txt — 4.2KB, concise AI briefing with FAQ, key features, pages map",
+        "README.md — Features table + Karsten tables + tech stack, well-structured for GitHub indexing"
+      ]
+    }
+  },
   "agentActivityLog": {
     "context-manager": {
-      "lastActionSummary": "Initial comprehensive project analysis and context-manager.json creation",
-      "lastActivityTimestamp": "2025-12-26T17:20:00Z",
+      "lastActionSummary": "Comprehensive SEO/AEO audit cartography for marketing-writer handoff. Mapped all SEO infrastructure (index.html, sitemap.xml, robots.txt, llms.txt/llms-full.txt, manifest.json, vercel.json, vite.config.ts), per-page JSON-LD structured data, H1/meta titles/descriptions, E-E-A-T signals, and identified 11 critical gaps (prerender not wired, /library missing from prerender, no twitter:creator, analyzer missing JSON-LD, etc.).",
+      "lastActivityTimestamp": "2026-04-13T09:15:00Z",
       "filesModified": ["/sub-agents/context/context-manager.json"]
     }
   }

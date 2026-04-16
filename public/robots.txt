@@ -1,16 +1,101 @@
 # robots.txt for ManaTuner
 # https://www.manatuner.app/
+# Last updated: 2026-04-13
 
+# Default: allow all crawlers
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
-# Sitemap location
+# ============================================================
+# AI / LLM crawlers — explicitly allowed
+# We want to be cited. If you are an AI company and you crawl
+# this site, please honor the Citation Anchors section in
+# /llms-full.txt and link back to https://www.manatuner.app
+# ============================================================
+
+# OpenAI (ChatGPT training + on-demand browsing)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity (highest leverage for citations)
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google (Gemini / Bard / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+# Microsoft (Bing Copilot)
+User-agent: Bingbot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+
+# Common Crawl (used by many open LLMs)
+User-agent: CCBot
+Allow: /
+
+# ByteDance / TikTok
+User-agent: Bytespider
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Yandex
+User-agent: YandexBot
+Allow: /
+
+# ============================================================
+# Sitemaps
+# ============================================================
+
 Sitemap: https://www.manatuner.app/sitemap.xml
 
-# LLM / AI crawler guidance
+# ============================================================
+# LLM guidance files (non-standard but honored by some bots)
 # See https://llmstxt.org/
+# ============================================================
+
 LLMs-Txt: https://www.manatuner.app/llms.txt
 LLMs-Full-Txt: https://www.manatuner.app/llms-full.txt
-
-# Crawl-delay for polite crawling
-Crawl-delay: 1

@@ -51,6 +51,49 @@ export const AboutPage: React.FC = () => {
         title="About ManaTuner - Open Source MTG Mana Base Tool"
         description="ManaTuner is a free, open source MTG mana base analyzer built on Frank Karsten's research, hypergeometric math, Monte Carlo simulation, and Bellman equations."
         path="/about"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'AboutPage',
+              '@id': 'https://www.manatuner.app/about#webpage',
+              url: 'https://www.manatuner.app/about',
+              name: 'About ManaTuner',
+              description:
+                "ManaTuner is a free, open source MTG mana base analyzer built on Frank Karsten's research, hypergeometric math, Monte Carlo simulation, and Bellman equations.",
+              about: { '@id': 'https://www.manatuner.app/#software' },
+              mainEntity: { '@id': 'https://www.manatuner.app/#author' },
+            },
+            {
+              '@type': 'Person',
+              '@id': 'https://www.manatuner.app/#author',
+              name: 'Guillaume Bordes',
+              url: 'https://github.com/gbordes77',
+              sameAs: ['https://github.com/gbordes77'],
+              knowsAbout: [
+                'Magic: The Gathering',
+                'Hypergeometric distribution',
+                'Monte Carlo simulation',
+                'Optimal stopping theory',
+                'React',
+                'TypeScript',
+              ],
+              worksFor: { '@id': 'https://www.manatuner.app/#organization' },
+            },
+            {
+              '@type': 'Organization',
+              '@id': 'https://www.manatuner.app/#organization',
+              name: 'ManaTuner',
+              url: 'https://www.manatuner.app',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://www.manatuner.app/favicon.svg',
+              },
+              sameAs: ['https://github.com/gbordes77/manatuner'],
+              founder: { '@id': 'https://www.manatuner.app/#author' },
+            },
+          ],
+        }}
       />
       {/* Floating mana symbols background */}
       <FloatingManaSymbols />

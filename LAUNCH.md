@@ -53,7 +53,7 @@ ManaTuner a DEJA plus de profondeur mathematique que ces trois combines sur le s
 
 > "Ran [deck name] through my manabase analyzer — turns out the 23-land build
 > has a 42% chance of casting [spell] on curve. The math says 25 lands.
-> Free tool, no account needed: manatuner.app
+> Free tool, no account needed: manatuner.app/analyzer
 > @fireshoes"
 
 **Pourquoi ca marche :** c'est du contenu, pas de la pub. Il a une raison de RT parce que ca apporte de la valeur a son audience. Un RT de @fireshoes = 500+ visiteurs qualifies.

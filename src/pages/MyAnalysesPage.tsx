@@ -610,6 +610,7 @@ const MyAnalysesPage: React.FC = () => {
         title="My Saved Deck Analyses | ManaTuner"
         description="View and manage your saved MTG deck analyses. Compare mana base results, reload past analyses, and track your deck building progress."
         path="/my-analyses"
+        noindex
       />
       <FloatingManaSymbols />
 

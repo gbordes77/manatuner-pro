@@ -6,9 +6,52 @@ interface SEOProps {
   path: string
   ogImage?: string
   jsonLd?: Record<string, unknown>
+  noindex?: boolean
 }
 
 const BASE_URL = 'https://www.manatuner.app'
+
+const PAGE_TITLES: Record<string, string> = {
+  '/analyzer': 'Deck Analyzer',
+  '/mathematics': 'Mathematics',
+  '/land-glossary': 'Land Glossary',
+  '/guide': 'User Guide',
+  '/library': 'Reading Library',
+  '/my-analyses': 'My Analyses',
+  '/about': 'About',
+  '/privacy': 'Privacy',
+}
+
+interface BreadcrumbItem {
+  '@type': 'ListItem'
+  position: number
+  name: string
+  item: string
+}
+
+function buildBreadcrumbs(path: string): Record<string, unknown> {
+  const items: BreadcrumbItem[] = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${BASE_URL}/`,
+    },
+  ]
+  if (path && path !== '/') {
+    items.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: PAGE_TITLES[path] || path.replace(/^\//, ''),
+      item: `${BASE_URL}${path}`,
+    })
+  }
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items,
+  }
+}
 
 export const SEO: React.FC<SEOProps> = ({
   title,
@@ -16,14 +59,17 @@ export const SEO: React.FC<SEOProps> = ({
   path,
   ogImage = `${BASE_URL}/og-image-v3.jpg`,
   jsonLd,
+  noindex = false,
 }) => {
   const url = `${BASE_URL}${path}`
+  const breadcrumbs = buildBreadcrumbs(path)
 
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
+      {noindex && <meta name="robots" content="noindex,follow" />}
 
       <meta property="og:type" content="website" />
       <meta property="og:url" content={url} />
@@ -39,6 +85,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:image" content={ogImage} />
 
       {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
+      {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbs)}</script>}
     </Helmet>
   )
 }

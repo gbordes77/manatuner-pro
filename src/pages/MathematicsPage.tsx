@@ -46,18 +46,52 @@ const MathematicsPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
       <SEO
-        title="MTG Mana Math Explained - Hypergeometric & Monte Carlo | ManaTuner"
-        description="The mathematics behind ManaTuner: hypergeometric distribution, Monte Carlo simulation (10,000 hands), Bellman equation for mulligan decisions, and Frank Karsten's research."
+        title="MTG Manabase Math — Hypergeometric, Karsten, Bellman | ManaTuner"
+        description="Exact formulas for MTG mana base probability. Hypergeometric P(X≥k), Karsten tables, Monte Carlo 10K hands, Bellman mulligan thresholds — with author attribution and citations."
         path="/mathematics"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: 'The Mathematics Behind MTG Mana Base Optimization',
           description:
-            'Hypergeometric distribution, Monte Carlo simulation, and Bellman equation applied to Magic: The Gathering mana base analysis.',
-          author: { '@type': 'Person', name: 'Guillaume Bordes' },
-          publisher: { '@type': 'Organization', name: 'ManaTuner' },
+            "Hypergeometric distribution, Monte Carlo simulation, and the Bellman equation applied to Magic: The Gathering mana base analysis — based on Frank Karsten's research.",
+          image: 'https://www.manatuner.app/og-image-v3.jpg',
+          datePublished: '2025-10-01',
+          dateModified: '2026-04-13',
+          author: {
+            '@type': 'Person',
+            name: 'Guillaume Bordes',
+            url: 'https://github.com/gbordes77',
+            sameAs: ['https://github.com/gbordes77'],
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'ManaTuner',
+            url: 'https://www.manatuner.app',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://www.manatuner.app/favicon.svg',
+            },
+          },
           mainEntityOfPage: 'https://www.manatuner.app/mathematics',
+          citation: [
+            {
+              '@type': 'ScholarlyArticle',
+              name: 'How Many Sources Do You Need to Consistently Cast Your Spells?',
+              author: 'Frank Karsten',
+              datePublished: '2022',
+              publisher: 'ChannelFireball',
+              url: 'https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/how-many-lands-do-you-need-to-consistently-hit-your-land-drops/',
+            },
+          ],
+          about: [
+            { '@type': 'Thing', name: 'Hypergeometric distribution' },
+            { '@type': 'Thing', name: 'Monte Carlo simulation' },
+            { '@type': 'Thing', name: 'Bellman equation' },
+            { '@type': 'Thing', name: 'Magic: The Gathering manabase' },
+          ],
+          keywords:
+            'mtg mana calculator, hypergeometric distribution, Frank Karsten, Monte Carlo simulation, Bellman equation, mana base probability',
         }}
       />
       <FloatingManaSymbols />

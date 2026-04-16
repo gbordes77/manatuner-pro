@@ -268,18 +268,51 @@ export const LandGlossaryPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
       <SEO
-        title="MTG Land Types Ranked - Complete Dual Land Glossary | ManaTuner"
-        description="Every MTG dual land type ranked from best to worst. Fetchlands, shocklands, fastlands, checklands and more — with explanations for aggro, midrange, and control decks."
+        title="MTG Dual Lands Ranked — Fetch, Shock, Fast, Check | ManaTuner"
+        description="S-tier fetches to F-tier checks. Every MTG dual land type explained for aggro, midrange, and control decks — with a DefinedTermSet for each category."
         path="/land-glossary"
         jsonLd={{
           '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: 'MTG Dual Land Types Ranked from Best to Worst',
-          description:
-            'Complete ranking of all MTG dual land types: fetchlands, shocklands, fastlands, checklands, triomes, and more with explanations.',
-          author: { '@type': 'Person', name: 'Guillaume Bordes' },
-          publisher: { '@type': 'Organization', name: 'ManaTuner' },
-          mainEntityOfPage: 'https://www.manatuner.app/land-glossary',
+          '@graph': [
+            {
+              '@type': 'Article',
+              headline: 'MTG Dual Land Types Ranked from Best to Worst',
+              description:
+                'Complete ranking of all MTG dual land types: fetchlands, shocklands, fastlands, checklands, triomes, and more with explanations.',
+              image: 'https://www.manatuner.app/og-image-v3.jpg',
+              datePublished: '2025-10-01',
+              dateModified: '2026-04-13',
+              author: {
+                '@type': 'Person',
+                name: 'Guillaume Bordes',
+                url: 'https://github.com/gbordes77',
+                sameAs: ['https://github.com/gbordes77'],
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'ManaTuner',
+                url: 'https://www.manatuner.app',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://www.manatuner.app/favicon.svg',
+                },
+              },
+              mainEntityOfPage: 'https://www.manatuner.app/land-glossary',
+            },
+            {
+              '@type': 'DefinedTermSet',
+              '@id': 'https://www.manatuner.app/land-glossary#termset',
+              name: 'MTG Dual Land Types',
+              url: 'https://www.manatuner.app/land-glossary',
+              hasDefinedTerm: LAND_CATEGORIES.map((cat) => ({
+                '@type': 'DefinedTerm',
+                name: cat.name,
+                description: `${cat.description} ${cat.whyPowerful}`,
+                url: `https://www.manatuner.app/land-glossary#${cat.name.toLowerCase().replace(/\s+/g, '-')}`,
+                inDefinedTermSet: 'https://www.manatuner.app/land-glossary#termset',
+              })),
+            },
+          ],
         }}
       />
       {/* Floating mana symbols background */}

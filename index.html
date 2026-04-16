@@ -7,32 +7,51 @@
             name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
         />
-        <meta name="theme-color" content="#1976d2" />
+        <!-- Theme colors (light + dark) -->
+        <meta name="theme-color" content="#1976d2" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0D0D0F" media="(prefers-color-scheme: dark)" />
+
         <!-- Default title - overridden per-page by react-helmet-async -->
-        <title>ManaTuner — Mana Calculator + Competitive MTG Reading Library</title>
+        <title>MTG Mana Calculator — Exact Probabilities + Ramp | ManaTuner</title>
         <meta
             name="description"
-            content="Free mana calculator that counts your dorks & rocks, plus the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke."
+            content="Free MTG mana base calculator. The only tool that counts mana rocks and dorks, not just lands. Exact hypergeometric probabilities, Monte Carlo mulligan, Karsten tables."
         />
+
+        <!-- Canonical fallback (overridden per-page by react-helmet-async) -->
+        <link rel="canonical" href="https://www.manatuner.app/" />
 
         <!-- Default OG tags - overridden per-page by react-helmet-async -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.manatuner.app/" />
-        <meta property="og:title" content="ManaTuner — Mana Calculator + Competitive MTG Reading Library" />
-        <meta property="og:description" content="Free mana calculator that counts your dorks & rocks, plus the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke." />
+        <meta property="og:title" content="MTG Mana Calculator — Exact Probabilities + Ramp | ManaTuner" />
+        <meta property="og:description" content="Free MTG mana base calculator. The only tool that counts mana rocks and dorks. Exact probabilities, Monte Carlo mulligan, Karsten tables." />
         <meta property="og:image" content="https://www.manatuner.app/og-image-v3.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="ManaTuner — MTG mana base calculator showing castability probability charts" />
         <meta property="og:site_name" content="ManaTuner" />
+        <meta property="og:locale" content="en_US" />
 
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@manatuner" />
+        <meta name="twitter:creator" content="@manatuner" />
+        <meta name="twitter:title" content="MTG Mana Calculator — Exact Probabilities + Ramp | ManaTuner" />
+        <meta name="twitter:description" content="The only MTG calculator that counts mana rocks & dorks. Free, open source, 100% local." />
+        <meta name="twitter:image" content="https://www.manatuner.app/og-image-v3.jpg" />
+        <meta name="twitter:image:alt" content="ManaTuner castability chart screenshot" />
 
-        <!-- SEO -->
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="ManaTuner" />
+        <!-- SEO directives -->
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+        <meta name="bingbot" content="index, follow" />
+        <meta name="google" content="notranslate" />
+        <meta name="author" content="Guillaume Bordes" />
+        <meta name="application-name" content="ManaTuner" />
 
         <!-- AI / LLM guidance -->
-        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM instructions" />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM instructions (llms.txt)" />
+        <link rel="alternate" type="text/plain" href="/llms-full.txt" title="LLM full reference (llms-full.txt)" />
 
         <!-- PWA Meta Tags -->
         <!-- apple-touch-icon temporarily removed (audit 2026-04-13) — file
@@ -132,6 +151,82 @@
                 50% { filter: drop-shadow(0 0 8px currentColor); }
             }
         </style>
+
+        <!-- Static JSON-LD @graph fallback (brand-level schemas, crawler-visible without JS execution).
+             Per-page SEO.tsx may add Article/FAQPage/HowTo/etc on top of this via react-helmet-async. -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://www.manatuner.app/#website",
+              "url": "https://www.manatuner.app/",
+              "name": "ManaTuner",
+              "description": "Free MTG mana base calculator with mana rocks and dorks support. Hypergeometric probabilities, Monte Carlo mulligan simulation, and Bellman equation optimization.",
+              "inLanguage": "en-US",
+              "publisher": { "@id": "https://www.manatuner.app/#organization" }
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.manatuner.app/#organization",
+              "name": "ManaTuner",
+              "url": "https://www.manatuner.app/",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.manatuner.app/favicon.svg",
+                "width": 512,
+                "height": 512
+              },
+              "sameAs": [
+                "https://github.com/gbordes77/manatuner"
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "@id": "https://www.manatuner.app/#software",
+              "name": "ManaTuner",
+              "url": "https://www.manatuner.app/",
+              "applicationCategory": "UtilityApplication",
+              "applicationSubCategory": "GameUtility",
+              "operatingSystem": "Any (browser-based)",
+              "browserRequirements": "Requires a modern browser with JavaScript enabled",
+              "softwareVersion": "2.5.2",
+              "releaseNotes": "https://github.com/gbordes77/manatuner/blob/main/CHANGELOG.md",
+              "description": "The only MTG mana base calculator that factors in mana rocks and mana dorks. Calculates exact spell casting probabilities, simulates 10,000-hand Monte Carlo mulligans, and applies the Bellman equation for optimal keep/mulligan thresholds.",
+              "featureList": [
+                "Castability analysis with hypergeometric probabilities",
+                "Post-board analysis with sideboard swap editor",
+                "Creature-aware mana sources (Cavern of Souls modeling)",
+                "Mana acceleration detection (13 ramp types, K=3 engine)",
+                "Monte Carlo mulligan simulator (10,000 hands, Bellman thresholds)",
+                "Land breakdown and color production matrix",
+                "Export analysis as PNG, PDF, or JSON",
+                "100% client-side, no accounts, no tracking"
+              ],
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+              },
+              "author": { "@id": "https://www.manatuner.app/#author" },
+              "publisher": { "@id": "https://www.manatuner.app/#organization" },
+              "isAccessibleForFree": true,
+              "license": "https://opensource.org/licenses/MIT"
+            },
+            {
+              "@type": "Person",
+              "@id": "https://www.manatuner.app/#author",
+              "name": "Guillaume Bordes",
+              "url": "https://github.com/gbordes77",
+              "sameAs": [
+                "https://github.com/gbordes77"
+              ]
+            }
+          ]
+        }
+        </script>
     </head>
     <body>
         <div id="root">

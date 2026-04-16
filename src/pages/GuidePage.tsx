@@ -141,52 +141,138 @@ export const GuidePage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
       <SEO
-        title="How to Build a Perfect MTG Mana Base - Guide | ManaTuner"
-        description="Step-by-step guide to building optimal mana bases in Magic: The Gathering. Learn to read your Health Score, castability charts, Monte Carlo mulligan, and more."
+        title="How to Build an MTG Mana Base (Step by Step) | ManaTuner"
+        description="3-minute walkthrough to building an optimal MTG mana base. Learn to read your Health Score, castability charts, Monte Carlo mulligan, and Blueprint export."
         path="/guide"
         jsonLd={{
           '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
+          '@graph': [
             {
-              '@type': 'Question',
-              name: 'What makes ManaTuner different?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (10,000 hands), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes.",
-              },
+              '@type': 'FAQPage',
+              mainEntity: [
+                {
+                  '@type': 'Question',
+                  name: 'What makes ManaTuner different?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: "The only tool combining Frank Karsten's exact hypergeometric calculations, Monte Carlo mulligan simulation (10,000 hands), and Bellman equation for optimal keep/mulligan thresholds across 4 deck archetypes. It also factors in mana rocks and dorks, not just lands.",
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'What do Best Case and Realistic mean in Castability?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Best Case: probability of having the right colors assuming perfect land drops. Realistic: probability accounting for mana screw. Focus on Realistic.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: "Why is my castability below 90% even when I follow Karsten's recommendations?",
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: "The Castability tab shows single-draw probability (one hand, no mulligan). Karsten's tables target 90% including mulligans. With 14 red sources, your single-draw chance at Turn 1 is 86%, but with mulligans factored in, your effective chance exceeds 90%.",
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Can I export or share my analysis?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes. The Blueprint tab lets you export your complete analysis as PNG, PDF, or JSON. Perfect for sharing on Discord, Reddit, or archiving your deck tuning progress.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Is my deck data saved anywhere?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: "No. ManaTuner is 100% local. Your decks are saved in your browser's localStorage only. We never see your decklists.",
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'How many lands should I run in an aggro MTG deck?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Aggro decks typically run 18-22 lands. The exact number depends on your curve peak and how many sub-2-mana plays you have. Paste your list into ManaTuner — the Health Score will tell you if you are land-light.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'What is the hypergeometric distribution and why does it apply to MTG?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'The hypergeometric distribution calculates the probability of drawing k successes from a finite deck without replacement. In MTG terms: given a 60-card deck with K colored sources, what is the probability of having ≥1 in your opening 7 plus draws? This is the exact math ManaTuner uses for every castability figure.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'How many sources do I need for a turn-2 double-colored spell like Counterspell?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Per Frank Karsten 2022, you need approximately 20 sources of that color in a 60-card deck to cast a UU spell on turn 2 with 90% reliability (including mulligans). ManaTuner recalculates this exactly for your specific decklist.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Does ManaTuner work for Commander decks?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes. ManaTuner analyzes any deck size. For 99-card Commander/EDH decks, the hypergeometric calculations automatically adapt to the larger deck and singleton constraints. Commander-specific ramp cards (Sol Ring, signets, talismans) are all correctly detected.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'How does ManaTuner handle hybrid mana like {R/G}?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Hybrid symbols are treated as "cast if you have either color". For accelerated castability, ManaTuner assigns the hybrid cost to the color with the most available sources in your deck. The display uses a bicolor split circle for clarity.',
+                  },
+                },
+              ],
             },
             {
-              '@type': 'Question',
-              name: 'What do Best Case and Realistic mean in Castability?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Best Case: probability of having the right colors assuming perfect land drops. Realistic: probability accounting for mana screw. Focus on Realistic.',
-              },
-            },
-            {
-              '@type': 'Question',
-              name: "Why is my castability below 90% even when I follow Karsten's recommendations?",
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: "The Castability tab shows single-draw probability (one hand, no mulligan). Karsten's tables target 90% including mulligans. With 14 red sources, your single-draw chance at Turn 1 is 86%, but with mulligans factored in, your effective chance exceeds 90%.",
-              },
-            },
-            {
-              '@type': 'Question',
-              name: 'Can I export or share my analysis?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Yes! The Blueprint tab lets you export your complete analysis as PNG, PDF, or JSON. Perfect for sharing on Discord, Reddit, or archiving your deck tuning progress.',
-              },
-            },
-            {
-              '@type': 'Question',
-              name: 'Is my deck data saved anywhere?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: "No. ManaTuner is 100% local. Your decks are saved in your browser's localStorage only. We never see your decklists.",
-              },
+              '@type': 'HowTo',
+              name: 'How to analyze your MTG mana base with ManaTuner',
+              description:
+                "Step-by-step guide to analyzing a Magic: The Gathering deck's mana base using ManaTuner.",
+              totalTime: 'PT3M',
+              supply: [{ '@type': 'HowToSupply', name: 'An MTG decklist in text format' }],
+              tool: [{ '@type': 'HowToTool', name: 'ManaTuner (web app)' }],
+              step: [
+                {
+                  '@type': 'HowToStep',
+                  position: 1,
+                  name: 'Paste your decklist',
+                  text: 'Open manatuner.app/analyzer and paste your decklist. MTGO, MTGA, and Moxfield formats are all supported. Sideboards are auto-detected.',
+                  url: 'https://www.manatuner.app/analyzer',
+                },
+                {
+                  '@type': 'HowToStep',
+                  position: 2,
+                  name: 'Read your Health Score',
+                  text: 'The Dashboard tab shows a Health Score from 0 to 100%. Above 85% = tournament-ready. Between 70 and 85% = minor adjustments. Below 70% = rebuild.',
+                },
+                {
+                  '@type': 'HowToStep',
+                  position: 3,
+                  name: 'Check Castability per spell',
+                  text: 'The Castability tab shows exact probabilities (P1 Play First, P2 Draw First, Realistic with ramp) turn by turn for every spell in the deck. Anything below 90% on curve is a weak spot.',
+                },
+                {
+                  '@type': 'HowToStep',
+                  position: 4,
+                  name: 'Run the Monte Carlo mulligan',
+                  text: 'The Mulligan tab simulates 10,000 opening hands with the Bellman equation to tell you the exact keep/mulligan threshold for your deck and archetype.',
+                },
+                {
+                  '@type': 'HowToStep',
+                  position: 5,
+                  name: 'Export your Blueprint',
+                  text: 'The Blueprint tab exports the full analysis as PNG, PDF, or JSON for sharing on Discord, Reddit, or archiving your deck progress.',
+                },
+              ],
             },
           ],
         }}

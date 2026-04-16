@@ -38,10 +38,20 @@ Based on Frank Karsten's research ("How Many Sources Do You Need to Consistently
 
 - [Home](https://www.manatuner.app/): Landing page with feature overview
 - [Deck Analyzer](https://www.manatuner.app/analyzer): Paste your decklist and analyze
+- [Reading Library](https://www.manatuner.app/library): 46 curated competitive MTG articles and podcasts (Karsten, PVDDR, Reid Duke, Saito, Chapin, Zvi Mowshowitz)
 - [User Guide](https://www.manatuner.app/guide): How to use ManaTuner step by step
 - [Mathematics](https://www.manatuner.app/mathematics): The math behind the calculations
 - [Land Glossary](https://www.manatuner.app/land-glossary): Every MTG dual land type ranked
 - [About](https://www.manatuner.app/about): Mission, credits, and attributions
+
+## Unique Capabilities
+
+- **Only MTG mana calculator that factors in mana rocks and mana dorks** as acceleration sources. Competitors (manabase.app, mtgoncurve) only count lands.
+- **K=3 engine**: evaluates up to 3 simultaneous mana producers online (dork + rock + enhancer). No other public tool does this.
+- **Bellman equation mulligan thresholds**: backward-induction optimal keep/mulligan by hand size (7, 6, 5, 4). Published MTG theory applied to software.
+- **Creature-aware colored sources**: Cavern of Souls correctly counts only for creature spells, not for non-creature spells.
+- **Smart sideboard detection**: auto-splits mainboard/sideboard from MTGA blank-line format, explicit markers, or inline `SB:` prefixes.
+- **100% client-side**: zero backend, zero tracker, zero account. Decklists never leave the browser.
 
 ## Common Questions
 
