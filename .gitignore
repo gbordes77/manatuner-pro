@@ -148,5 +148,12 @@ auto-generated/
 # Archive files
 *.zip
 *.tar.gz
-*.rar 
+*.rar
 .vercel
+
+# Session-scratch decklists dropped at repo root (move to docs/sample-decks/ to keep)
+/Standard_*_by_*.txt
+/Modern_*_by_*.txt
+/Pioneer_*_by_*.txt
+/Legacy_*_by_*.txt
+/Commander_*_by_*.txt

@@ -215,10 +215,11 @@ const AnalyzerPage: React.FC = () => {
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'SoftwareApplication',
+          '@id': 'https://www.manatuner.app/analyzer#software',
           name: 'ManaTuner Deck Analyzer',
           url: 'https://www.manatuner.app/analyzer',
           applicationCategory: 'UtilityApplication',
-          applicationSubCategory: 'GameUtility',
+          applicationSubCategory: 'Mana Base Analyzer',
           operatingSystem: 'Any (browser-based)',
           browserRequirements: 'Requires a modern browser with JavaScript enabled',
           description:
@@ -230,22 +231,15 @@ const AnalyzerPage: React.FC = () => {
             'Turn-by-turn color requirement probabilities',
             'Export blueprint as PNG, PDF, or JSON',
           ],
+          isPartOf: { '@id': 'https://www.manatuner.app/#software' },
           offers: {
             '@type': 'Offer',
             price: '0',
             priceCurrency: 'USD',
             availability: 'https://schema.org/InStock',
           },
-          author: {
-            '@type': 'Person',
-            name: 'Guillaume Bordes',
-            url: 'https://github.com/gbordes77',
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: 'ManaTuner',
-            url: 'https://www.manatuner.app',
-          },
+          author: { '@id': 'https://www.manatuner.app/#author' },
+          publisher: { '@id': 'https://www.manatuner.app/#organization' },
           isAccessibleForFree: true,
           license: 'https://opensource.org/licenses/MIT',
         }}
