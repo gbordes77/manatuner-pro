@@ -74,7 +74,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ hasAnalysisResult = false }) =>
   // Réinitialiser l'onboarding (pour le développement/debug)
   // Appeler window.resetOnboarding() dans la console
   useEffect(() => {
-    ;(window as any).resetOnboarding = () => {
+    const w = window as Window & { resetOnboarding?: () => void }
+    w.resetOnboarding = () => {
       localStorage.removeItem(ONBOARDING_KEY)
       setRun(true)
     }

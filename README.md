@@ -4,7 +4,8 @@
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-305%20Passing-green)](https://github.com/gbordes77/manatuner)
+[![Tests](https://img.shields.io/badge/Tests-315%20Passing-green)](https://github.com/gbordes77/manatuner)
+[![Version](https://img.shields.io/badge/Version-2.5.3-blue)](https://github.com/gbordes77/manatuner/releases)
 
 **Advanced MTG Manabase Analyzer** - Calculate exact probabilities for casting spells on curve and make optimal mulligan decisions.
 

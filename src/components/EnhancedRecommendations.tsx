@@ -89,7 +89,7 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
     }
   }
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: string): 'error' | 'warning' | 'info' | 'success' => {
     switch (priority) {
       case 'critical':
         return 'error'
@@ -226,11 +226,7 @@ const EnhancedRecommendations: React.FC<EnhancedRecommendationsProps> = ({
                   <Typography variant="h6" fontWeight="600" textTransform="capitalize">
                     {priority} Priority
                   </Typography>
-                  <Chip
-                    label={recs.length}
-                    size="small"
-                    color={getPriorityColor(priority) as any}
-                  />
+                  <Chip label={recs.length} size="small" color={getPriorityColor(priority)} />
                 </Box>
 
                 <List dense>

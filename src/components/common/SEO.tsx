@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
 
 interface SEOProps {
@@ -11,7 +12,7 @@ interface SEOProps {
 
 const BASE_URL = 'https://www.manatuner.app'
 
-const PAGE_TITLES: Record<string, string> = {
+export const PAGE_TITLES: Record<string, string> = {
   '/analyzer': 'Deck Analyzer',
   '/mathematics': 'Mathematics',
   '/land-glossary': 'Land Glossary',
@@ -29,7 +30,7 @@ interface BreadcrumbItem {
   item: string
 }
 
-function buildBreadcrumbs(path: string): Record<string, unknown> {
+export function buildBreadcrumbs(path: string): Record<string, unknown> {
   const items: BreadcrumbItem[] = [
     {
       '@type': 'ListItem',
@@ -62,7 +63,11 @@ export const SEO: React.FC<SEOProps> = ({
   noindex = false,
 }) => {
   const url = `${BASE_URL}${path}`
-  const breadcrumbs = buildBreadcrumbs(path)
+  const jsonLdString = useMemo(() => (jsonLd ? JSON.stringify(jsonLd) : null), [jsonLd])
+  const breadcrumbsString = useMemo(
+    () => (noindex ? null : JSON.stringify(buildBreadcrumbs(path))),
+    [path, noindex]
+  )
 
   return (
     <Helmet>
@@ -84,8 +89,8 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
-      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
-      {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbs)}</script>}
+      {jsonLdString && <script type="application/ld+json">{jsonLdString}</script>}
+      {breadcrumbsString && <script type="application/ld+json">{breadcrumbsString}</script>}
     </Helmet>
   )
 }

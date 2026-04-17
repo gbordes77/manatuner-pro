@@ -1,9 +1,63 @@
 {
   "projectName": "ManaTuner",
   "version": "2.5.2",
+  "headCommit": "9f64d7c",
   "productionUrl": "https://manatuner.app",
   "canonicalHostname": "https://www.manatuner.app",
   "lastFullScan": "2026-04-13T09:15:00Z",
+  "lastIncrementalScan": "2026-04-17T00:00:00Z",
+  "deltaSinceV252": {
+    "commits": [
+      "eb5abf2 design-system-export",
+      "b6dda5e SEO/AEO batch",
+      "9f64d7c JSON-LD @id + decklist relocation"
+    ],
+    "scope": "Docs, SEO/AEO, static JSON-LD schemas. Zero src/services/** or test changes. All math/engine code unchanged since v2.5.2.",
+    "newFiles": [
+      "docs/DESIGN_SYSTEM_EXPORT.md (1016 lines, portable design tokens)",
+      "docs/SEO_AEO_STRATEGY_2026-04-13.md (1164 lines, strategy doc)",
+      "docs/AUDIT_SESSION_REPORT_2026-04-06.md",
+      "docs/PROMPT_MATH_AUDIT.md",
+      "docs/SECURITY_AUDIT_REPORT.md (453 lines)",
+      "docs/ux-accessibility-audit-2026-04-06.md (582 lines)",
+      "docs/performance/performance-audit-2026-04-06.md (441 lines)",
+      "docs/launch/tweet-fireshoes.md (launch copy)",
+      "docs/sample-decks/Standard_Jeskai_Control_by_Goomy_.txt",
+      "docs/sample-decks/Standard_Simic_Natures_Rhythm_by_McWinSauce.txt",
+      "QA_AUDIT_REPORT.md (582 lines, root-level)"
+    ],
+    "modifiedFiles": [
+      "index.html (+114 lines: theme-color dark, canonical fallback, static JSON-LD @graph with WebSite/Organization/SoftwareApplication/Person schemas)",
+      "src/components/common/SEO.tsx (BreadcrumbList auto-emission, noindex prop, PAGE_TITLES map)",
+      "src/components/layout/StaticPages.tsx (AboutPage @graph: AboutPage+Person+Organization)",
+      "src/pages/AnalyzerPage.tsx (SoftwareApplication JSON-LD with @id ref to #software)",
+      "src/pages/GuidePage.tsx (FAQPage expanded 5→10 Q&A + HowTo schema, 5-step walkthrough)",
+      "src/pages/MathematicsPage.tsx (expanded JSON-LD Article schema)",
+      "src/pages/LandGlossaryPage.tsx (DefinedTermSet schema per tier)",
+      "public/llms.txt (Library entry + Unique Capabilities section)",
+      "public/llms-full.txt",
+      "public/robots.txt (AI crawlers allowlist: GPTBot, ChatGPT-User, +)",
+      "public/sitemap.xml (lastmod bumped to 2026-04-13)",
+      "public/manifest.json"
+    ]
+  },
+  "knownTODOs": [
+    "src/components/ManaCostRow.tsx:308 useProbabilityCalculation — STILL NOT aligned with calculateTempoAwareProbability SSOT engine (carried forward from v2.5.1)",
+    "src/hooks/useAnalysisStorage.ts — 211-line orphan, zero callers, still writes legacy manatuner-analyses key. Safe to delete but still present."
+  ],
+  "newSurfaces": {
+    "pages": "No new routes. Existing 9 routes unchanged.",
+    "jsonLdSchemas": [
+      "index.html static @graph: WebSite#website, Organization#organization, SoftwareApplication#software (v2.5.2, MIT), Person#author (Guillaume Bordes)",
+      "/analyzer: SoftwareApplication with @id ref to #software, featureList, Offer(free)",
+      "/guide: FAQPage (10 Q&A) + HowTo (5 steps, PT3M)",
+      "/mathematics: Article schema",
+      "/land-glossary: Article + DefinedTermSet per tier",
+      "/about: AboutPage + Person + Organization @graph",
+      "All pages: BreadcrumbList auto-emitted by SEO.tsx"
+    ],
+    "robotsTxt": "Explicit allowlist for GPTBot, ChatGPT-User, and other AI crawlers; crawl-delay:1"
+  },
   "description": "Advanced MTG Manabase Analyzer using Frank Karsten mathematics, Monte Carlo simulation, and Bellman equation for optimal mulligan decisions",
   "projectType": "React SPA",
   "stack": {

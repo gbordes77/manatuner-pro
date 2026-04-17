@@ -461,7 +461,7 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
       producesMask = producesAny
         ? 0b111111
         : validColors.length > 0
-          ? colorMaskFromLetters(validColors as any)
+          ? colorMaskFromLetters(validColors)
           : 0b100000
     } else {
       // Fallback: use oracle text regex extraction
@@ -471,7 +471,7 @@ async function detectProducerFromScryfall(cardName: string): Promise<ManaProduce
       producesMask = producesAny
         ? 0b111111
         : validColors.length > 0
-          ? colorMaskFromLetters(validColors as any)
+          ? colorMaskFromLetters(validColors)
           : 0b100000
     }
 

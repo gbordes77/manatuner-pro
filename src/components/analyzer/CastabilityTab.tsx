@@ -160,6 +160,9 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
       }
 
       // Count creature-only-any lands
+      const LAND_COLORS = ['W', 'U', 'B', 'R', 'G', 'C'] as const
+      const isLandManaColor = (c: string): c is (typeof LAND_COLORS)[number] =>
+        (LAND_COLORS as readonly string[]).includes(c)
       for (const card of analysisResult.cards) {
         if (!card.isLand || !card.landMetadata) continue
         if (card.landMetadata.producesAny && card.landMetadata.producesAnyForCreaturesOnly) {
@@ -167,7 +170,7 @@ export const CastabilityTab: React.FC<CastabilityTabProps> = memo(
           // These lands can produce any color, so add for each deck color
           for (const color of deckColors) {
             // Only add if the land doesn't already produce this color in its base produces
-            if (!card.landMetadata.produces.includes(color as any)) {
+            if (isLandManaColor(color) && !card.landMetadata.produces.includes(color)) {
               extra[color] = (extra[color] || 0) + qty
             }
           }

@@ -7,7 +7,7 @@
 | Attribute        | Value                      |
 | ---------------- | -------------------------- |
 | **Project**      | ManaTuner                  |
-| **Version**      | 2.2.0                      |
+| **Version**      | 2.5.3                      |
 | **Type**         | Web Application (Monolith) |
 | **Language**     | TypeScript                 |
 | **Framework**    | React 18 + Vite 7.3        |

@@ -1,8 +1,194 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.2 hardening)
+## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.3 follow-up audit)
 
-**Latest Session:** 2026-04-13 (very late) — re-audit + 19-fix sweep | **Tests:** 308 pass, 2 skipped, 0 fail | **Build:** ~6.5s | **Version:** `2.5.2`
+**Latest Session:** 2026-04-17 — 8-agent follow-up audit + 9-task fix sweep | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.3`
+
+---
+
+## Session 2026-04-17 — 8-agent follow-up audit + 9-task fix sweep
+
+### Workflow
+
+Fresh multi-agent audit 4 days after v2.5.2 shipped (`1555466`), covering
+the 3 commits merged since (`eb5abf2` design system export, `b6dda5e` batch
+SEO/AEO + sample decks, `9f64d7c` JSON-LD @id + decklist relocation —
++7188 lines, 53 files). The delta was **100% SEO/AEO/content**, no runtime
+logic or math code changed.
+
+Eight parallel agents delivered: context-manager, Security-Auditor,
+performance-engineer, qa-expert, debugger, react-pro, typescript-pro,
+documentation-expert. Aggregate verdict: **GO — no blocker**, delta clean
+against the v2.5.2 hardened baseline. Findings: 0 CRITICAL, 0 HIGH,
+2 MEDIUM (sitemap/noindex conflict + CSP-vs-inline-JSON-LD hygiene),
+9 LOW + 2 persistent tech-debt items.
+
+### What Was Completed (9 of 10 recommended tasks)
+
+#### SEO / AEO (debugger M1, L2 — crawler-facing fixes)
+
+- **`public/sitemap.xml`**: removed `/my-analyses` URL block (lines 34-38).
+  Page sets `noindex` since `9f64d7c`; sitemaps shouldn't advertise
+  noindexed URLs (per Google guidance). Closes the GSC warning
+  "Submitted URL marked noindex" that would surface within 48h of next
+  crawl.
+- **`index.html:2`**: `<html lang="en">` → `<html lang="en-US">` to align
+  with `manifest.json` `"lang": "en-US"` and per-page JSON-LD
+  `"inLanguage": "en-US"`. Fixes Lighthouse i18n inconsistency flag.
+
+#### SEO perf (react-pro §3)
+
+- **`src/components/common/SEO.tsx`**: wrapped `JSON.stringify(jsonLd)`
+  and `JSON.stringify(breadcrumbs)` in `useMemo`. GuidePage alone renders
+  a FAQPage (10 Q/A) + HowTo (5 steps) JSON-LD on every update — the
+  serialization now only runs when inputs change. Also exported
+  `buildBreadcrumbs` and `PAGE_TITLES` so tests can import the pure
+  helpers without rendering the component.
+
+#### Test coverage (qa-expert §3)
+
+- **`src/components/common/__tests__/SEO.test.tsx`** (new, 7 tests):
+  `buildBreadcrumbs` for `/`, `/analyzer` via `PAGE_TITLES`, unknown-route
+  slug fallback. Component tests render `<SEO>` inside `HelmetProvider`
+  and assert DOM head: canonical absolute URL, `noindex,follow` robots
+  meta + breadcrumb JSON-LD suppression, `jsonLd` round-trip valid JSON,
+  default breadcrumb emission. Protects all 10 SEO callers from silent
+  JSON-LD rot before the AEO traffic arrives per
+  `docs/SEO_AEO_STRATEGY_2026-04-13.md`.
+
+#### Type safety (typescript-pro §2 — 5 grave `as any` fixes)
+
+- **`src/services/advancedMaths.ts:530`**: replaced the post-export
+  monkey-patch `(advancedMathEngine as any).calculateHypergeometric = ...`
+  with a proper `calculateHypergeometric()` method on the class. Class
+  shape now reflects reality; removes the last `as any` on the math
+  singleton.
+- **`src/services/manaProducerService.ts:464,474`**: the `validColors`
+  arrays are already narrowed to `('W'|'U'|'B'|'R'|'G'|'C')[]` via
+  explicit type predicate (line 454, 468-470), so the `as any` to
+  `colorMaskFromLetters` is purely redundant. Removed both.
+- **`src/components/EnhancedRecommendations.tsx:92,232`**: typed the
+  return of `getPriorityColor` as
+  `'error' | 'warning' | 'info' | 'success'` (MUI `Chip` color union).
+  The `as any` on the JSX usage falls out.
+- **`src/components/Onboarding.tsx:77`**: replaced `(window as any)
+.resetOnboarding = ...` with an inline intersection type
+  `Window & { resetOnboarding?: () => void }`. Debug hook still works,
+  type holes closed.
+- **`src/components/analyzer/CastabilityTab.tsx:170`**: replaced
+  `produces.includes(color as any)` with a locally defined
+  `isLandManaColor` type predicate that narrows `string` to the
+  `LandManaColor` union before the check. Same behavior, stricter type.
+
+#### Hook bug fixes (react-pro §2 — `useMonteCarloWorker`, 3 bugs)
+
+**Note: this hook has no live callers in `src/` since the Mulligan worker
+port in v2.5.2 (`MulliganTab` uses `mulliganArchetype.worker`). Kept for
+API compatibility; bugs still worth fixing in case it's ever re-wired.**
+
+- **Double-dispatch `MONTE_CARLO_RESULT`**: the mount `useEffect`
+  installed a global `workerRef.current.onmessage` that called
+  `setResults / setIsRunning / setProgress` on `MONTE_CARLO_RESULT`,
+  AND `runSimulation` installed a per-call `addEventListener('message')`
+  that resolved the Promise on the same message. Both fired on every
+  result. Fix: split into an `attachProgressHandler(worker)` helper that
+  only handles `PROGRESS_UPDATE` + error branch, and move all result
+  state writes into the per-call scoped handler. No more duplicate state
+  updates.
+- **`setTimeout(100)` race on cancel**: `cancelSimulation` terminated
+  the worker then recreated it asynchronously after 100 ms, leaving
+  `workerRef.current = null` during the window. If a consumer called
+  `runSimulation` inside that gap, it hit `setError('Worker not
+initialized')`. Fix: recreate the worker synchronously and re-attach
+  the progress handler in the same tick.
+- **`cancelSimulation` memo invalidation**: deps were `[isRunning]` →
+  the `useCallback` re-emitted a fresh identity on every toggle. Any
+  memoized child receiving `onCancel={cancelSimulation}` invalidated.
+  Fix: added `isRunningRef` mirror synced by a tiny `useEffect`, guard
+  `cancelSimulation` on `isRunningRef.current`, drop the dep → callback
+  is now stable across renders.
+
+#### Documentation drift cleanup
+
+- **`CLAUDE.md:252`** — purged the obsolete paragraph "Orphan
+  `src/hooks/useAnalysisStorage.ts` still exists". File was deleted in
+  v2.5.2 (`1555466`); the line was stale by 4 days. Replaced with a
+  forward-looking note "do not recreate this hook".
+- **`docs/ARCHITECTURE.md:3-4`**: `2.5.1 / 2026-04-13` → `2.5.3 /
+2026-04-17`.
+- **`docs/index.md:10`**: `2.2.0` → `2.5.3` (was 3 months stale).
+- **`README.md`**: Tests badge `305 Passing` → `315 Passing`; new Version
+  `2.5.3` badge added next to the Tests one.
+- **`package.json`**: `2.5.2` → `2.5.3`.
+
+### Verification
+
+- `npx tsc --noEmit`: **0 errors** (was 0, held)
+- `npm run test:unit`: **315 passing**, 2 skipped, 0 failing (was 308/2/0
+  — +7 from the new `SEO.test.tsx` suite)
+- `npm run build`: clean in **7.07 s** (was 7.47 s), all chunk sizes
+  identical to v2.5.2, `mulliganArchetype.worker` still `?worker` at
+  10.84 KB
+- `grep supabase src/`: 0 matches (purge holds)
+- No new npm dependencies added (`package.json` diff = version bump only)
+
+### Explicitly deferred (too risky for a follow-up sweep)
+
+- **`useProbabilityCalculation` → SSOT engine alignment** (react-pro §1
+  top recommendation, 1–1.5 days). The dual path in `ManaCostRow.tsx`
+  has been open since `2026-04-06` and was re-confirmed today. Requires
+  numerical validation against Humans+Cavern, Eldrazi, etc. — not a
+  single-session fix. **Scope v2.6.0.**
+- **`noUncheckedIndexedAccess`** activation (typescript-pro §3, 3–4 h).
+  ~41 sites across `deckAnalyzer.ts`, `manaCalculator.test.ts`,
+  `turnPlan.test.ts` need `array[idx]?.foo`-style guards. Would close
+  the last class of "Cannot read properties of undefined" exposures.
+  **Scope v2.6.0** (already labeled as such in `CLAUDE.md`).
+- **Delete `useMonteCarloWorker` entirely** — it has 0 live callers in
+  `src/`. Fixing the bugs (above) was safer than deleting a public hook
+  export while the library consumer audit wasn't run. **Scope v2.5.4.**
+- **`docs/index.md` full BMAD regen** — I bumped the version field but
+  the 7 "Last Updated: 2026-01-06" cells and the 4 missing entries
+  (`DESIGN_SYSTEM_EXPORT.md`, `SEO_AEO_STRATEGY_2026-04-13.md`,
+  `AUDIT_PROD_LAUNCH_2026-04-13.md`, `sample-decks/`) need a proper
+  `/bmad:core:tasks:index-docs` workflow run, not a manual hand-patch.
+- **M1 CSP-vs-inline-JSON-LD hygiene** (Security-Auditor): `index.html`
+  contains a 73-line `<script type="application/ld+json">` while
+  `vercel.json` sets `script-src 'self'` without `'unsafe-inline'`.
+  Browsers treat `ld+json` as data (not executable) so this works, but
+  the CSP spec is ambiguous. Fix is a SHA-256 source or external JSON
+  file. **Cosmetic, zero security risk, scope v2.5.4.**
+
+### Current State
+
+- **Working**: everything. 315/317 tests, tsc clean, build clean in
+  7.07 s, 0 new dependencies, 0 behavior changes for end users (the
+  `useMonteCarloWorker` fixes are in dead code).
+- **No code blockers.**
+- The full audit findings and agent reports are summarized in the
+  conversation transcript (8 agents × ~60 s each = ~8 min parallel
+  walltime). No standalone audit doc was written for this pass — the
+  delta was small enough that HANDOFF entry + CHANGELOG suffice.
+
+### Persona Impact
+
+Minimal. All fixes are engineering hygiene:
+
+- **Léo** unaffected (no UX copy change)
+- **Sarah** unaffected (no analyzer change)
+- **Karim / Natsuki** slight positive (`useMonteCarloWorker` race fix
+  prevents a theoretical bug if the hook is ever re-wired for a
+  power-user feature)
+- **David** slight positive: the 5 `as any` purges + new SEO test file
+  match his "read the code, verify the rigor" angle
+
+### Next Priority
+
+**Post the @fireshoes tweet.** Still the same priority since v2.4. The
+engineering dette that would preoccupy an architect-persona is reduced
+further today (1 `as any` patch class closed, 3 hook bugs closed,
+1 obsolete TODO paragraph purged), but none of this is load-bearing on
+the distribution problem. See `LAUNCH.md`.
 
 ---
 

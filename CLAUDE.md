@@ -247,9 +247,9 @@ Heuristic: last blank line that splits a block of 40-100 cards from a block of 1
 
 **Redux persist has a schema version now.** `store/index.ts:52-64` — `version: 1`, `createMigrate` with a `migrations[1]` stub, `createTransform` drops `snackbar` and `isAnalyzing` from rehydrated state so users don't reload into a stale notification. **Any future change to the `analyzer` slice shape must bump `version: 2` and add a `migrations[2]` handler.**
 
-**ManaCostRow has two parallel probability paths (still).** `useProbabilityCalculation` (inline hypergeom, lands-only) and `useAcceleratedCastability` (K=3 engine with producers). The first is the "base" shown when acceleration is disabled; the second is the "accelerated" value shown otherwise. **Known TODO**: align `useProbabilityCalculation` with `calculateTempoAwareProbability` from the SSOT engine. Not done in `ceceb5f` (hors scope launch).
+**ManaCostRow has two parallel probability paths (still).** `useProbabilityCalculation` (inline hypergeom, lands-only) and `useAcceleratedCastability` (K=3 engine with producers). The first is the "base" shown when acceleration is disabled; the second is the "accelerated" value shown otherwise. **Known TODO**: align `useProbabilityCalculation` with `calculateTempoAwareProbability` from the SSOT engine. Not done in `ceceb5f` (hors scope launch). Re-confirmed open at v2.5.2 (2026-04-13) and at the 2026-04-17 audit.
 
-**Orphan `src/hooks/useAnalysisStorage.ts` still exists**. 211 lines, zero callers, still writes to the legacy `manatuner-analyses` key. `PrivacyStorage.getMyAnalyses()` migrates the legacy key on first read, so the fix is protected, but **this file should be deleted** in a follow-up commit. Don't add new callers to it.
+**`src/hooks/useAnalysisStorage.ts` deleted in v2.5.2.** Legacy `manatuner-analyses` key migration is handled by `PrivacyStorage.getMyAnalyses()` on first read. Do not recreate this hook.
 
 **Test count bumped to 296/298** (was 235/237). +61 new tests in `manaProducerService.test.ts` (25), `cleanCardName.test.ts` (21), `hypergeomDynamic.test.ts` (15). `analyzeOracleForMana` is now exported from `manaProducerService.ts` for testing — do not re-privatize it.
 

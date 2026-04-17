@@ -5,6 +5,121 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.3] - 2026-04-17 (follow-up audit — 9-task fix sweep)
+
+### Context
+
+Fresh 8-agent parallel audit (context-manager, Security-Auditor,
+performance-engineer, qa-expert, debugger, react-pro, typescript-pro,
+documentation-expert) 4 days after v2.5.2. Target: the +7188 lines of
+SEO/AEO/design system content merged between `1555466` and `9f64d7c`.
+Verdict: 0 CRITICAL, 0 HIGH, 2 MEDIUM, 9 LOW. No blocker. 9 of 10
+recommended fixes landed in this release; the 10th
+(`useProbabilityCalculation` SSOT alignment) is deferred to v2.6.0
+because it requires numerical validation not feasible in one sweep.
+
+### Fixed
+
+- **Sitemap advertised noindexed URL** (`public/sitemap.xml`): the
+  `/my-analyses` entry was live while `MyAnalysesPage` sets `noindex`
+  (introduced in `9f64d7c`). Removed the entry to close the
+  "Submitted URL marked noindex" GSC warning that would have surfaced
+  within 48 h of the next crawl.
+- **Locale inconsistency** (`index.html:2`): `<html lang="en">` did not
+  match `manifest.json` (`"en-US"`) nor the per-page JSON-LD
+  `"inLanguage": "en-US"`. Aligned to `"en-US"`.
+- **`useMonteCarloWorker` double-dispatch** on `MONTE_CARLO_RESULT`:
+  the mount `useEffect` installed a `workerRef.current.onmessage` that
+  wrote `setResults / setIsRunning / setProgress`, AND `runSimulation`
+  installed a per-call `addEventListener('message')` that resolved the
+  Promise — both fired on every result. Split into
+  `attachProgressHandler` (progress + error only) and a scoped
+  per-call handler that owns all result state writes.
+- **`useMonteCarloWorker.cancelSimulation` race**: `setTimeout(100)` to
+  recreate the worker after `terminate()` left `workerRef.current =
+null` for ~100 ms. Any caller invoking `runSimulation` in that
+  window hit `"Worker not initialized"`. Now recreated synchronously.
+- **`useMonteCarloWorker.cancelSimulation` unstable memo**: deps
+  `[isRunning]` invalidated the callback identity on every toggle,
+  breaking downstream `memo` boundaries. Replaced with an
+  `isRunningRef` mirror, deps `[]`, callback is now stable.
+
+### Added
+
+- **7 unit tests for `SEO.tsx`**
+  (`src/components/common/__tests__/SEO.test.tsx`): covers
+  `buildBreadcrumbs` root-only, `/analyzer` with `PAGE_TITLES`,
+  unknown-route slug fallback; component tests canonical URL
+  emission, `noindex,follow` robots meta + breadcrumb JSON-LD
+  suppression, `jsonLd` prop serialization + round-trip JSON
+  validity, default breadcrumb emission. Protects all 10 SEO callers
+  from silent JSON-LD drift.
+
+### Changed
+
+- **`SEO.tsx` JSON-LD serialization memoized**: `JSON.stringify(jsonLd)`
+  and `JSON.stringify(breadcrumbs)` now wrapped in `useMemo`. GuidePage
+  (10 FAQ Q/A + 5 HowTo steps) no longer re-serializes on every render.
+  `buildBreadcrumbs` and `PAGE_TITLES` are now named exports so tests
+  and callers can use the pure helpers without rendering the component.
+- **`advancedMaths.ts` monkey-patch replaced**: the post-export
+  `(advancedMathEngine as any).calculateHypergeometric = ...` pattern is
+  now a proper `calculateHypergeometric()` method on
+  `AdvancedMathEngine`. Class shape reflects reality.
+- **`manaProducerService.ts:464,474`**: removed redundant `as any`
+  on `colorMaskFromLetters(validColors)`. The arrays were already
+  narrowed via explicit type predicate on the preceding `.filter`
+  call; the cast was noise.
+- **`EnhancedRecommendations.tsx`**: typed return of
+  `getPriorityColor` as `'error' | 'warning' | 'info' | 'success'`
+  (MUI `Chip` color union). The JSX-site `as any` falls out.
+- **`Onboarding.tsx:77`**: replaced `(window as any).resetOnboarding`
+  with a local `Window & { resetOnboarding?: () => void }`
+  intersection.
+- **`CastabilityTab.tsx:170`**: replaced
+  `produces.includes(color as any)` with an `isLandManaColor` type
+  predicate that narrows `string` to the `LandManaColor` union.
+
+### Documentation
+
+- **`CLAUDE.md:252`** — removed the obsolete "Orphan
+  `src/hooks/useAnalysisStorage.ts` still exists" paragraph. File was
+  deleted in v2.5.2 (`1555466`); the line was stale by 4 days.
+  Replaced with a forward note.
+- **`docs/ARCHITECTURE.md`** version bumped to `2.5.3 / 2026-04-17`.
+- **`docs/index.md`** version bumped from the stale `2.2.0` (3 months
+  old) to `2.5.3`. Full BMAD regen of the status table deferred.
+- **`README.md`** Tests badge bumped `305 Passing` → `315 Passing`;
+  new Version `2.5.3` badge added.
+
+### Verification
+
+- `npx tsc --noEmit`: **0 errors**
+- `npm run test:unit`: **315 passing**, 2 skipped, 0 failing (+7 vs
+  v2.5.2)
+- `npm run build`: clean in **7.07 s**, bundle sizes identical,
+  `mulliganArchetype.worker` still 10.84 KB
+- `grep supabase src/`: **0 matches** (purge holds)
+- No new npm dependencies (`package.json` diff = version bump only)
+
+### Explicitly deferred (scope v2.5.4 or v2.6.0)
+
+- **`useProbabilityCalculation` SSOT alignment** (v2.6.0, ~1.5 d) —
+  dual path `base` vs `accelerated` in `ManaCostRow.tsx:685+701`
+  open since 2026-04-06.
+- **`noUncheckedIndexedAccess`** activation (v2.6.0, ~3–4 h) —
+  ~41 array-index sites need `?.`-guards.
+- **Delete `useMonteCarloWorker`** (v2.5.4) — 0 live callers in
+  `src/`. Bugs patched today in case it's ever re-wired, deletion
+  deferred pending export-API consumer audit.
+- **CSP hygiene** (v2.5.4) — `index.html` inline `ld+json` vs
+  `vercel.json` `script-src 'self'`. Works today (data-script), but
+  CSP spec ambiguity suggests SHA-256 source or external JSON file.
+- **`docs/index.md`** full BMAD regen (scheduled for the next
+  `/bmad:core:tasks:index-docs` run).
+
+---
+
 ## [2.5.2] - 2026-04-13 (post-launch hardening pass)
 
 ### Re-audit + 19-fix sweep

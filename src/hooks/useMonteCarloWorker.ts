@@ -34,51 +34,54 @@ interface WorkerMessage {
 }
 
 // 🎯 Hook principal pour Web Worker
+// NOTE (2026-04-17): ce hook n'a plus de consommateurs en prod depuis que
+// MulliganTab utilise `mulliganArchetype.worker.ts`. Conservé pour
+// compatibilité API. Corrections audit react-pro 2026-04-17 :
+// - suppression du double-dispatch MONTE_CARLO_RESULT (global onmessage +
+//   addEventListener par appel). Seul le handler scoped résout l'état.
+// - `cancelSimulation` utilise `isRunningRef` au lieu de la state `isRunning`
+//   pour ne plus invalider la memo à chaque toggle.
+// - reconstruction du worker synchrone (plus de setTimeout 100ms).
 export const useMonteCarloWorker = () => {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<MonteCarloResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const workerRef = useRef<Worker | null>(null)
+  const isRunningRef = useRef(false)
+
+  // Keep ref in sync so cancelSimulation can stay memoized
+  useEffect(() => {
+    isRunningRef.current = isRunning
+  }, [isRunning])
+
+  // Progress listener — stateless, does not resolve results.
+  // Result / error handling happens in the per-call scoped listener.
+  const attachProgressHandler = (w: Worker) => {
+    w.onmessage = (e: MessageEvent<WorkerMessage>) => {
+      const { type, data, error: msgError, success } = e.data
+      if (!success && msgError) {
+        setError(msgError)
+        setIsRunning(false)
+        return
+      }
+      if (type === 'PROGRESS_UPDATE' && data && typeof data === 'object' && 'progress' in data) {
+        setProgress((data as { progress: number }).progress)
+      }
+    }
+    w.onerror = (err) => {
+      console.error('Monte Carlo Worker error:', err)
+      setError('Worker initialization failed')
+      setIsRunning(false)
+    }
+  }
 
   // Initialize worker
   useEffect(() => {
     if (typeof Worker !== 'undefined') {
       try {
         workerRef.current = new Worker(new URL('/workers/monteCarlo.worker.js', import.meta.url))
-
-        workerRef.current.onmessage = (e: MessageEvent<WorkerMessage>) => {
-          const { type, data, error, success } = e.data
-
-          if (!success && error) {
-            setError(error)
-            setIsRunning(false)
-            return
-          }
-
-          switch (type) {
-            case 'MONTE_CARLO_RESULT':
-              setResults(data as MonteCarloResult)
-              setIsRunning(false)
-              setProgress(100)
-              break
-
-            case 'PROGRESS_UPDATE':
-              if (data && typeof data === 'object' && 'progress' in data) {
-                setProgress((data as { progress: number }).progress)
-              }
-              break
-
-            default:
-              console.warn('Unknown worker message type:', type)
-          }
-        }
-
-        workerRef.current.onerror = (error) => {
-          console.error('Monte Carlo Worker error:', error)
-          setError('Worker initialization failed')
-          setIsRunning(false)
-        }
+        attachProgressHandler(workerRef.current)
       } catch (err) {
         console.error('Failed to create worker:', err)
         setError('Web Worker not supported')
@@ -137,8 +140,13 @@ export const useMonteCarloWorker = () => {
             if (type === 'MONTE_CARLO_RESULT') {
               cleanup()
               if (success && data) {
-                resolve(data as MonteCarloResult)
+                const result = data as MonteCarloResult
+                setResults(result)
+                setIsRunning(false)
+                setProgress(100)
+                resolve(result)
               } else {
+                setIsRunning(false)
                 reject(new Error(e.data.error || 'Simulation failed'))
               }
             }
@@ -248,23 +256,29 @@ export const useMonteCarloWorker = () => {
     []
   )
 
-  // Cancel running simulation
+  // Cancel running simulation.
+  // Using isRunningRef keeps the callback memoized across isRunning toggles.
+  // Worker recreation is synchronous to close the race window where
+  // workerRef.current was null between terminate() and the previous setTimeout.
   const cancelSimulation = useCallback(() => {
-    if (workerRef.current && isRunning) {
+    if (workerRef.current && isRunningRef.current) {
       workerRef.current.terminate()
 
-      // Recreate worker
-      setTimeout(() => {
-        if (typeof Worker !== 'undefined') {
+      if (typeof Worker !== 'undefined') {
+        try {
           workerRef.current = new Worker(new URL('/workers/monteCarlo.worker.js', import.meta.url))
+          attachProgressHandler(workerRef.current)
+        } catch (err) {
+          console.error('Failed to recreate worker after cancel:', err)
+          workerRef.current = null
         }
-      }, 100)
+      }
 
       setIsRunning(false)
       setProgress(0)
       setError('Simulation cancelled')
     }
-  }, [isRunning])
+  }, [])
 
   return {
     // State

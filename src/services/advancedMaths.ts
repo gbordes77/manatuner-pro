@@ -61,6 +61,13 @@ export class AdvancedMathEngine {
   }
 
   /**
+   * Alias kept for legacy test compatibility — delegates to cumulativeHypergeometric.
+   */
+  calculateHypergeometric(params: HypergeometricParams): ProbabilityResult {
+    return this.cumulativeHypergeometric(params)
+  }
+
+  /**
    * Cumulative hypergeometric — delegates to the unified log-space engine.
    * P(X >= k) = sum(P(X = i)) for i = k to min(n, K)
    */
@@ -525,10 +532,6 @@ export class AdvancedMathEngine {
 
 // Export default instance for compatibility
 export const advancedMathEngine = new AdvancedMathEngine()
-
-// Add missing methods to instance for test compatibility
-;(advancedMathEngine as any).calculateHypergeometric =
-  advancedMathEngine.cumulativeHypergeometric.bind(advancedMathEngine)
 
 // Export compatibility methods for existing tests
 export const calculateHypergeometric = (params: HypergeometricParams) =>
