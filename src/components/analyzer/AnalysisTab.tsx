@@ -70,7 +70,7 @@ export const AnalysisTab: React.FC<AnalysisTabProps> = memo(
             },
           }}
         >
-          <Tab icon={<BoltIcon />} iconPosition="start" label="Spells & Tempo" />
+          <Tab icon={<BoltIcon />} iconPosition="start" label="Spell Breakdown" />
           <Tab icon={<BarChartIcon />} iconPosition="start" label="Probabilities" />
           <Tab icon={<LightbulbIcon />} iconPosition="start" label="Recommendations" />
         </Tabs>

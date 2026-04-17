@@ -266,13 +266,30 @@ export const HomePage: React.FC = () => {
             sx={{
               maxWidth: 550,
               mx: 'auto',
-              mb: 2,
+              mb: 1.5,
               fontWeight: 400,
               lineHeight: 1.5,
               fontStyle: 'italic',
             }}
           >
             Works for every skill level — from your first Standard deck to Pro Tour prep.
+          </Typography>
+
+          {/* Format badges strip — answers Sarah's "does this cover my format?"
+              in one glance. Thin, subtle row, not a chip bar. */}
+          <Typography
+            variant="caption"
+            sx={{
+              display: 'block',
+              textAlign: 'center',
+              mb: 2,
+              color: 'text.secondary',
+              fontSize: '0.78rem',
+              letterSpacing: '0.05em',
+              fontWeight: 500,
+            }}
+          >
+            Standard · Pioneer · Modern · Pauper · Commander · Limited — all supported
           </Typography>
 
           {/* Dual positioning — ManaTuner as both a calculator AND the
@@ -467,9 +484,56 @@ export const HomePage: React.FC = () => {
             </AnimatedContainer>
           </Box>
 
-          {/* Secondary discreet link to the Guide (moved down so Library
-              becomes a primary-tier CTA alongside Analyze My Deck) */}
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
+          {/* Secondary discreet links: sample deck + Guide. Moved below
+              primary CTAs so Library stays primary-tier alongside Analyze
+              My Deck. Sample deck answers Léo's "I don't have a deck to
+              paste" friction — the ?sample=1 query param triggers auto-load
+              in AnalyzerPage. */}
+          <Box
+            sx={{
+              mt: 2,
+              textAlign: 'center',
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            <Box
+              component="a"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault()
+                navigate('/analyzer?sample=1')
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.85rem',
+                color: 'text.secondary',
+                textDecoration: 'none',
+                borderBottom: '1px dotted',
+                borderColor: 'text.secondary',
+                pb: 0.125,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                  borderColor: 'primary.main',
+                },
+              }}
+            >
+              <AnalyticsIcon sx={{ fontSize: 16 }} />
+              Try a sample deck
+            </Box>
+            <Box
+              component="span"
+              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
+              aria-hidden="true"
+            >
+              ·
+            </Box>
             <Box
               component="a"
               onClick={(e: React.MouseEvent) => {

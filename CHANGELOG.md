@@ -5,6 +5,166 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.4] - 2026-04-18 (persona-driven UX polish + stack modernization)
+
+### Context
+
+Three-round persona audit cycle (Léo, Sarah, Karim, Natsuki, David)
+produced a concrete action list; Context7 MCP audit on React / Vite /
+react-helmet-async surfaced safe modernization opportunities. This
+release ships the quick wins identified across both audits. Aggregate
+persona average projected to climb from 3.63 (v2.5.3) to ~3.95 (+0.32);
+biggest movers: Léo (+0.4 from sample picker + clearer labels) and
+Sarah (+0.2 from Manabase tab badge + multi-archetype samples).
+
+### Added
+
+- **HomePage format badges strip** under the beginner qualifier:
+  `Standard · Pioneer · Modern · Pauper · Commander · Limited — all
+supported`. Answers Sarah persona's "does this cover my format?" in
+  one glance.
+- **HomePage "Try a sample deck" discreet link** next to the Guide
+  link; navigates to `/analyzer?sample=1` which auto-loads the default
+  sample deck and cleans the URL. Fixes Léo persona's "I don't have a
+  decklist to paste" friction at first visit.
+- **AnalyzerPage empty-state archetype picker** — three Buttons
+  (`Mono-Red Aggro`, `Midrange Combo`, `Azorius Control`) replacing
+  the single "See a Sample Analysis" CTA. Loads the corresponding deck
+  - deckName via `handleLoadSampleKey('aggro' | 'midrange' | 'control')`.
+    Answers Sarah's "give me more than one archetype" and Léo's "match
+    what I actually play on Arena".
+- **Sample deck keyed URL params**: `?sample=aggro|control|midrange`
+  routes to the matching archetype; `?sample=1` remains a back-compat
+  alias for midrange (HomePage link).
+- **`computeColorDeltas` + `summarizeColorDeltas`** exported from
+  `KarstenTargetDelta.tsx`. Pure functions computing per-color
+  `{color, maxPips, pivotTurn, required, actual, delta, verdict}` and
+  rolling up to `{verdict, shortCount, warnCount}`. Reused by the
+  AnalyzerPage tab badge so the Karsten logic has a single source.
+- **`KarstenTargetDelta` component** on the Manabase tab: per-color
+  chips with red/orange/green verdict (`short` / `warn` / `ok`) +
+  tooltip showing `toughest pip requirement × turn`, Karsten target,
+  your actual sources, and the delta. Pure analytic over the hypergeom
+  - Karsten 2022 tables unified in `types/maths.ts`.
+- **Manabase tab label badge** (`AnalyzerPage.tsx`): compact red/orange
+  counter (e.g. "Manabase 2" when 2 colors are 3+ sources short) or
+  green check (✓) when all colors meet Karsten targets. Surfaces the
+  color-shortfall verdict without requiring the user to click Manabase
+  and scroll (Sarah persona ask). `aria-label` describes the state
+  verbally for screen readers.
+- **CSV export** in the Blueprint tab dropdown
+  (`ManaBlueprint.tsx:handleExportCSV`). Two-section CSV: per-card
+  breakdown (name, quantity, cmc, mana*cost, colors, is_land,
+  produces) + summary (total_cards, total_lands, land_ratio,
+  average_cmc, sources*{W,U,B,R,G}). CSV-escaped for Sheets / Excel /
+  Pandas compatibility. Karim persona ask #2.
+
+### Changed
+
+- **index.html browser title** bumped from
+  `"MTG Mana Calculator — Exact Probabilities + Ramp | ManaTuner"` to
+  `"ManaTuner — Will your deck cast its spells on curve?"` (and
+  og/twitter titles aligned). Fixes Léo's "jargon in the tab title
+  rebuts me" friction.
+- **index.html `<html lang>`** preserved at `en-US`.
+- **AnalysisTab subtab label**: `"Spells & Tempo"` → `"Spell
+Breakdown"`. "Tempo" was flagged by Léo as "a pro word I don't
+  understand"; the new label describes the UI plainly.
+- **KarstenTargetDelta heading**: `"Karsten Check — Colored Sources
+vs Targets"` → `"Color Sources Check — Can You Cast Your Spells?"`,
+  with plain-English explainer (`"Green: you're fine. Orange: one or
+two sources short. Red: three or more short — you'll miss a lot of
+casts."`).
+- **`SAMPLE_DECK` single constant** replaced by `SAMPLE_DECKS` record
+  (keyed `midrange` / `aggro` / `control`). `SAMPLE_DECK` aliased to
+  `SAMPLE_DECKS.midrange.list` for back-compat with the HomePage link.
+
+### Upgraded (Context7 audit — no breaking behavior)
+
+- **React 18.2 → 18.3.1** (minor transition release — identical to
+  18.2 + deprecation warnings for React 19). Preps the React 19
+  migration path.
+- **`@types/react` / `@types/react-dom` → 18.3** (type definitions
+  aligned).
+- **Vite `build.target: 'es2015'` → `'baseline-widely-available'`**
+  (Vite 7 default, 2025-05-01 Baseline Widely Available — chrome107+
+  / edge107+ / firefox104+ / safari16+). Smaller transpile output, no
+  polyfills for features that are now native in every supported
+  browser.
+- **Vite `build.cssMinify: 'lightningcss'`** enabled (previously
+  esbuild default). More aggressive CSS shorthand collapsing and
+  vendor-prefix stripping.
+
+### Performance
+
+- Build time: **7.65 s → 7.09 s** (-7%).
+- `dist/assets/index-*.js` main chunk: **41.89 KB → 39.96 KB gzip**
+  (-4.6%). Driven by the modern build target + lightningcss CSS.
+- `AnalyzerPage-*.js`: 27.01 KB → 29.25 KB gzip (+2.24 KB) from the
+  three-sample-decks + tab badge logic — net increase but the chunk
+  is still lazy-loaded on route entry.
+- `CastabilityTab-*.js`: 17.01 KB → 16.34 KB gzip (-0.67 KB).
+- Bundle sizes for all other chunks: unchanged or marginal gain.
+
+### Context7 audit findings (documented, not acted on)
+
+- **`react-helmet-async` officially broken with React 19** (renders
+  multiple `<title>` tags, loses dedup — per the
+  `@dr.pogodin/react-helmet` README). No impact today because we're
+  on React 18 — but flagged for the future React 19 migration.
+- **Migration path to `@dr.pogodin/react-helmet` blocked**: that lib's
+  v3.x requires React 19 as peer. `@unhead/react@2.1.13` supports
+  React 18.3.1+ but uses a different API (`useSeoMeta` / `useHead`
+  hooks rather than JSX `<Helmet>`). **Deferred to v2.7.0** alongside
+  React 19 migration — API refactor of `SEO.tsx` + tests is non-trivial
+  and not a "does it break the site" scope item.
+- **React Compiler beta** available for React 17/18 via
+  `react-compiler-runtime` + `target: '18'`. Auto-memoization could
+  help `ManaCostRow` hot path. **Deferred** — still beta in 2026-04,
+  risk on edge cases for a math-critical component.
+
+### Verification
+
+- `npx tsc --noEmit`: **0 errors**.
+- `npm run test:unit`: **315 passing**, 2 skipped, 0 failing
+  (unchanged from v2.5.3 — quick wins are UX/copy + data-model
+  additive, no behavior-changing tests needed).
+- `npm run build`: clean in **7.09 s**; main bundle **-1.93 KB gzip**.
+- `grep supabase src/`: 0 matches (purge holds).
+- Dev server live on `http://localhost:3001` (port 3000 taken by
+  Docker on this workstation), title verified as
+  `"ManaTuner — Will your deck cast its spells on curve?"`.
+
+### Explicitly deferred (scope v2.6.0 / v2.7.0)
+
+- **API publique `POST /api/analyze`** — veto Natsuki, blocker Karim,
+  souhait David. Scope v2.6.0.
+- **IC Wilson on Monte Carlo tabs** (Mulligan + Draws on Curve) —
+  Natsuki + David. Deferred with the explicit rationale that CI on
+  analytic hypergeom formulas (Castability) is mathematically
+  meaningless; the MC tabs are the correct target. v2.6.0.
+- **Build Diff A vs B** — Karim + Natsuki. v2.6.0.
+- **Seed-URL Monte Carlo** (xoshiro256\*\*) — David, reproducibility.
+  v2.6.0.
+- **Empirical calibration against MTGO logs** — David. v2.6.0+.
+- **Matchup-tagged sideboard + Tracker X-Y on MyAnalyses** — Sarah.
+  v2.6.0.
+- **`useProbabilityCalculation` → SSOT engine alignment** — open
+  since 2026-04-06, re-confirmed by react-pro audit. v2.6.0 — requires
+  numerical validation against Humans+Cavern, Eldrazi, etc.
+- **Migrate from `react-helmet-async` to `@unhead/react`** — scope
+  v2.7.0 alongside React 19 migration.
+
+### Next priority
+
+Same as since v2.4 — **post the `@fireshoes` tweet**. The quick wins
+in this release close the Léo-friction gap (sample picker + friendly
+browser title) and the Sarah-Karsten-delta ask (tab badge); no
+code-level blocker remains between ManaTuner and its first 100
+Standard-player visitors.
+
+---
+
 ## [2.5.3] - 2026-04-17 (follow-up audit — 9-task fix sweep)
 
 ### Context

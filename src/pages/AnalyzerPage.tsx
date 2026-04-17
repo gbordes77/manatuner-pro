@@ -21,10 +21,11 @@ import {
   useTheme,
 } from '@mui/material'
 import ShareIcon from '@mui/icons-material/Share'
-import React, { Suspense, useCallback, useEffect, useRef } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
+import { computeColorDeltas, summarizeColorDeltas } from '../components/analyzer/KarstenTargetDelta'
 import { TabPanel } from '../components/analyzer/TabPanel'
 import { ErrorBoundary } from '../components/common/ErrorBoundary'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
@@ -66,7 +67,13 @@ import { buildShareUrl, parseShareParams } from '../utils/urlCodec'
 // Lazy-load Onboarding (includes react-joyride ~50KB)
 const Onboarding = React.lazy(() => import('../components/Onboarding'))
 
-const SAMPLE_DECK = `4 Llanowar Elves (FDN) 227
+// Sample decks keyed by archetype — let first-time visitors pick a deck
+// shape matching what they play (Léo+Sarah persona ask: multiple sample
+// archetypes, not just one). Referenced via ?sample={key} URL param.
+const SAMPLE_DECKS: Record<string, { name: string; list: string }> = {
+  midrange: {
+    name: "Nature's Rhythm (Midrange Combo)",
+    list: `4 Llanowar Elves (FDN) 227
 4 Gene Pollinator (EOE) 186
 4 Spider Manifestation (SPM) 148
 4 Badgermole Cub (TLA) 167
@@ -85,7 +92,53 @@ const SAMPLE_DECK = `4 Llanowar Elves (FDN) 227
 4 Temple Garden (ECL) 268
 2 Multiversal Passage (SPM) 180
 2 Plains (FDN) 295
-8 Forest (FDN) 291`
+8 Forest (FDN) 291`,
+  },
+  aggro: {
+    name: 'Mono-Red Aggro',
+    list: `4 Heartfire Hero
+4 Monstrous Rage
+4 Emberheart Challenger
+4 Manifold Mouse
+4 Lightning Helix
+4 Torch the Tower
+3 Screaming Nemesis
+3 Slickshot Show-Off
+3 Hired Claw
+2 Cori-Steel Cutter
+2 Witchstalker Frenzy
+19 Mountain
+4 Mishra's Foundry`,
+  },
+  control: {
+    name: 'Azorius Control',
+    list: `4 Get Lost
+4 Spell Pierce
+3 Wedding Announcement
+3 No More Lies
+3 The Wandering Emperor
+2 Sunfall
+2 Elspeth, Sun's Champion
+2 Siphon Insight
+2 Portent of Calamity
+2 Memory Deluge
+4 Meticulous Archive
+4 Seachrome Coast
+4 Restless Anchorage
+4 Plains
+4 Island
+3 Floodfarm Verge
+2 Brushland
+2 Starting Town
+2 Otawara, Soaring City
+1 Eiganjo, Seat of the Empire
+1 Otherworldly Gaze
+1 Mirrex`,
+  },
+}
+
+// Default fallback for ?sample=1 (back-compat) and the main CTA from home.
+const SAMPLE_DECK = SAMPLE_DECKS.midrange.list
 
 const AnalyzerPage: React.FC = () => {
   const theme = useTheme()
@@ -97,11 +150,27 @@ const AnalyzerPage: React.FC = () => {
   const { deckList, deckName, analysisResult, isAnalyzing, isDeckMinimized, activeTab, snackbar } =
     useSelector((state: RootState) => state.analyzer)
 
-  // URL share: hydrate deck from URL params on mount (once)
+  // URL share: hydrate deck from URL params on mount (once).
+  // Also handles ?sample=1 shortcut from HomePage to auto-load the sample
+  // deck (Léo friction fix — no decklist-pasting required on first visit).
   const hydratedRef = useRef(false)
   useEffect(() => {
     if (hydratedRef.current) return
     hydratedRef.current = true
+
+    // ?sample=1 → default sample (back-compat with HomePage link).
+    // ?sample=aggro|control|midrange → specific archetype sample.
+    const params = new URLSearchParams(window.location.search)
+    const sampleParam = params.get('sample')
+    if (sampleParam) {
+      const sample = sampleParam === '1' ? SAMPLE_DECKS.midrange : SAMPLE_DECKS[sampleParam]
+      if (sample) {
+        dispatch(setDeckList(sample.list))
+        dispatch(setDeckName(sample.name))
+        window.history.replaceState({}, '', '/analyzer')
+        return
+      }
+    }
 
     const shared = parseShareParams()
     if (shared && shared.deckList) {
@@ -125,6 +194,16 @@ const AnalyzerPage: React.FC = () => {
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     dispatch(setActiveTab(newValue))
   }
+
+  // Karsten verdict rollup for the Manabase tab badge — surfaces color
+  // shortfalls on the tab label itself so Sarah doesn't have to click
+  // Manabase and scroll to discover she's short on a color.
+  const manabaseVerdict = useMemo(() => {
+    if (!analysisResult) return null
+    const deltas = computeColorDeltas(analysisResult)
+    if (deltas.length === 0) return null
+    return summarizeColorDeltas(deltas)
+  }, [analysisResult])
 
   // Memoized analyze handler to prevent unnecessary re-renders
   const handleAnalyze = useCallback(async () => {
@@ -204,7 +283,21 @@ const AnalyzerPage: React.FC = () => {
 
   const handleLoadSample = useCallback(() => {
     dispatch(setDeckList(SAMPLE_DECK))
+    dispatch(setDeckName(SAMPLE_DECKS.midrange.name))
   }, [dispatch])
+
+  // Load a specific archetype by key. Used by the 3 sample chips on the
+  // empty-state right panel (Léo + Sarah persona ask — multiple archetypes
+  // so the first-time visitor can match what they play).
+  const handleLoadSampleKey = useCallback(
+    (key: keyof typeof SAMPLE_DECKS) => {
+      const sample = SAMPLE_DECKS[key]
+      if (!sample) return
+      dispatch(setDeckList(sample.list))
+      dispatch(setDeckName(sample.name))
+    },
+    [dispatch]
+  )
 
   return (
     <>
@@ -503,27 +596,49 @@ const AnalyzerPage: React.FC = () => {
                   <Typography
                     variant={isMobile ? 'body1' : 'h6'}
                     color="text.secondary"
-                    sx={{ maxWidth: 320 }}
+                    sx={{ maxWidth: 360 }}
                   >
-                    Paste a decklist and hit <strong>Analyze</strong> — or try a sample below.
+                    Paste a decklist and hit <strong>Analyze</strong> — or try one of the sample
+                    archetypes below.
                   </Typography>
-                  {/* Audit fix UX (2026-04-13): surface the sample CTA inside
-                      the right-panel empty state so first-time visitors (Léo
-                      persona) discover it without scanning the left panel. */}
-                  <Button
-                    variant="outlined"
-                    size={isMobile ? 'medium' : 'large'}
-                    onClick={handleLoadSample}
+                  {/* Three archetype chips so the first-time visitor can pick
+                      a deck shape matching what they actually play (Sarah
+                      persona ask: "don't give me just one sample"). */}
+                  <Box
                     sx={{
+                      display: 'flex',
+                      flexDirection: isMobile ? 'column' : 'row',
+                      gap: 1.5,
+                      flexWrap: 'wrap',
+                      justifyContent: 'center',
                       mt: 1,
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      borderWidth: 2,
-                      '&:hover': { borderWidth: 2 },
                     }}
                   >
-                    📋 See a Sample Analysis
-                  </Button>
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? 'medium' : 'large'}
+                      onClick={() => handleLoadSampleKey('aggro')}
+                      sx={{ fontWeight: 600, textTransform: 'none', borderWidth: 2 }}
+                    >
+                      Mono-Red Aggro
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size={isMobile ? 'medium' : 'large'}
+                      onClick={() => handleLoadSampleKey('midrange')}
+                      sx={{ fontWeight: 600, textTransform: 'none' }}
+                    >
+                      Midrange Combo
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? 'medium' : 'large'}
+                      onClick={() => handleLoadSampleKey('control')}
+                      sx={{ fontWeight: 600, textTransform: 'none', borderWidth: 2 }}
+                    >
+                      Azorius Control
+                    </Button>
+                  </Box>
                   <Box
                     sx={{
                       display: 'flex',
@@ -644,8 +759,74 @@ const AnalyzerPage: React.FC = () => {
                     <Tab
                       icon={<TerrainIcon sx={{ fontSize: 18 }} />}
                       iconPosition="start"
-                      label="Manabase"
-                      aria-label="Manabase - Land breakdown"
+                      label={
+                        <Box
+                          sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 0.75,
+                          }}
+                        >
+                          <span>Manabase</span>
+                          {manabaseVerdict && manabaseVerdict.verdict !== 'ok' && (
+                            <Box
+                              component="span"
+                              sx={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                minWidth: 18,
+                                height: 18,
+                                px: 0.6,
+                                borderRadius: 9,
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                lineHeight: 1,
+                                color: 'white',
+                                bgcolor:
+                                  manabaseVerdict.verdict === 'short' ? '#d32f2f' : '#ed6c02',
+                              }}
+                              aria-label={
+                                manabaseVerdict.verdict === 'short'
+                                  ? `${manabaseVerdict.shortCount} colors short`
+                                  : `${manabaseVerdict.warnCount} colors close to limit`
+                              }
+                            >
+                              {manabaseVerdict.verdict === 'short'
+                                ? manabaseVerdict.shortCount
+                                : manabaseVerdict.warnCount}
+                            </Box>
+                          )}
+                          {manabaseVerdict && manabaseVerdict.verdict === 'ok' && (
+                            <Box
+                              component="span"
+                              sx={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: 14,
+                                height: 14,
+                                borderRadius: '50%',
+                                fontSize: '0.6rem',
+                                fontWeight: 700,
+                                lineHeight: 1,
+                                color: 'white',
+                                bgcolor: '#2e7d32',
+                              }}
+                              aria-label="All colors meet Karsten targets"
+                            >
+                              ✓
+                            </Box>
+                          )}
+                        </Box>
+                      }
+                      aria-label={
+                        manabaseVerdict?.verdict === 'short'
+                          ? `Manabase — ${manabaseVerdict.shortCount} colors short of Karsten targets`
+                          : manabaseVerdict?.verdict === 'warn'
+                            ? `Manabase — ${manabaseVerdict.warnCount} colors close to target`
+                            : 'Manabase - Land breakdown'
+                      }
                     />
                     <Tab
                       icon={<DownloadIcon sx={{ fontSize: 18 }} />}

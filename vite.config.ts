@@ -9,8 +9,15 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'es2015',
+    // 2026-04-17: bumped from 'es2015' to Vite 7's modern default.
+    // Targets Baseline Widely Available (chrome107/edge107/firefox104/safari16)
+    // — covers the browser footprint of MTG Arena/MTGO players. Smaller
+    // bundles + native features instead of polyfills.
+    target: 'baseline-widely-available',
     minify: 'esbuild',
+    // CSS minified with lightningcss — more aggressive shorthand collapsing
+    // and vendor-prefix stripping than esbuild's CSS minifier.
+    cssMinify: 'lightningcss',
     sourcemap: false,
     rollupOptions: {
       output: {

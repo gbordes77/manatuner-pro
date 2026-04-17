@@ -2,6 +2,7 @@ import { Box, Grid, Typography } from '@mui/material'
 import React, { useMemo } from 'react'
 import { COLOR_NAMES, MANA_COLORS, MANA_COLOR_STYLES } from '../../constants/manaColors'
 import { AnalysisResult } from '../../services/deckAnalyzer'
+import { KarstenTargetDelta } from './KarstenTargetDelta'
 import { LandBreakdownList } from './LandBreakdownList'
 import { ManaDistributionChart } from './ManaDistributionChart'
 import { ManabaseStats } from './ManabaseStats'
@@ -83,6 +84,11 @@ export const ManabaseTab: React.FC<ManabaseTabProps> = ({
         {/* Statistiques de la manabase */}
         <Grid item xs={12}>
           <ManabaseStats analysisResult={analysisResult} isMobile={isMobile} />
+        </Grid>
+
+        {/* Karsten target check — per-color delta with color-coded verdict */}
+        <Grid item xs={12}>
+          <KarstenTargetDelta analysisResult={analysisResult} isMobile={isMobile} />
         </Grid>
       </Grid>
 

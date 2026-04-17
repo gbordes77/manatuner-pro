@@ -2,6 +2,7 @@ import DownloadIcon from '@mui/icons-material/Download'
 import ImageIcon from '@mui/icons-material/Image'
 import PdfIcon from '@mui/icons-material/PictureAsPdf'
 import ShareIcon from '@mui/icons-material/Share'
+import TableChartIcon from '@mui/icons-material/TableChart'
 import {
   Box,
   Button,
@@ -226,6 +227,65 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
     URL.revokeObjectURL(link.href)
   }
 
+  /**
+   * CSV export — designed for pivot-table workflow (Sheets, Excel, Pandas).
+   * Two sections delimited by a blank line:
+   *   1. Per-card breakdown (name, quantity, cmc, manaCost, colors, isLand,
+   *      producesColors)
+   *   2. Per-color Karsten summary (target vs actual sources)
+   * Strings are CSV-escaped (quoted + internal quotes doubled) to stay
+   * Sheets-compatible even when card names contain commas (e.g. "Fire // Ice").
+   */
+  const handleExportCSV = () => {
+    handleClose()
+    const escape = (v: unknown): string => {
+      const s = String(v ?? '')
+      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+    }
+    const lines: string[] = []
+    lines.push('# ManaTuner CSV export')
+    lines.push(`# Deck: ${deckName}`)
+    lines.push(`# Format: ${detectedFormat}`)
+    lines.push(`# Generated: ${new Date().toISOString()}`)
+    lines.push(`# Stability: ${stabilityScore}`)
+    lines.push('')
+
+    lines.push('section,card_name,quantity,cmc,mana_cost,colors,is_land,produces')
+    for (const card of analysisResult.cards) {
+      const producesColors = card.landMetadata?.produces?.join('|') ?? ''
+      lines.push(
+        [
+          'deck',
+          escape(card.name),
+          card.quantity,
+          card.cmc ?? 0,
+          escape(card.manaCost ?? ''),
+          (card.colors ?? []).join('|'),
+          card.isLand ? 'true' : 'false',
+          producesColors,
+        ].join(',')
+      )
+    }
+
+    lines.push('')
+    lines.push('section,metric,value')
+    lines.push(`summary,total_cards,${analysisResult.totalCards ?? ''}`)
+    lines.push(`summary,total_lands,${analysisResult.totalLands ?? ''}`)
+    lines.push(`summary,land_ratio,${analysisResult.landRatio ?? ''}`)
+    lines.push(`summary,average_cmc,${analysisResult.averageCMC ?? ''}`)
+    for (const [color, count] of Object.entries(analysisResult.colorDistribution ?? {})) {
+      lines.push(`summary,sources_${color},${count}`)
+    }
+
+    const csv = lines.join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.download = `mana-blueprint-${deckName.replace(/\s+/g, '-').toLowerCase()}.csv`
+    link.href = URL.createObjectURL(blob)
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
+
   return (
     <Box>
       {/* Export Controls */}
@@ -256,6 +316,9 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
           </MenuItem>
           <MenuItem onClick={handleExportJSON}>
             <ShareIcon sx={{ mr: 1 }} /> JSON (Backup)
+          </MenuItem>
+          <MenuItem onClick={handleExportCSV}>
+            <TableChartIcon sx={{ mr: 1 }} /> CSV (Sheets / Pandas)
           </MenuItem>
         </Menu>
       </Box>

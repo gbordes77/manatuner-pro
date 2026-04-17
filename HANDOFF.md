@@ -1,8 +1,144 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.3 follow-up audit)
+## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.4 persona-driven polish)
 
-**Latest Session:** 2026-04-17 — 8-agent follow-up audit + 9-task fix sweep | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.3`
+**Latest Session:** 2026-04-18 — persona-driven UX polish + Context7 stack modernization | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.4`
+
+---
+
+## Session 2026-04-18 — persona-driven UX polish + Context7 stack modernization
+
+### Workflow
+
+Three-round persona audit cycle (Léo, Sarah, Karim, Natsuki, David)
+ran across 2026-04-17 and 2026-04-18, each round producing a concrete
+fix list. In parallel, a Context7 MCP audit on React / Vite /
+react-helmet-async surfaced safe modernization opportunities. The
+2026-04-18 session shipped the combined quick-wins list as **v2.5.4**.
+
+Process:
+
+1. **Round 1 audit (2026-04-17, v2.5.3 live)** — average 3.63/5.
+   Léo regressed to 3.50 because of jargon in browser tab title +
+   "no decklist to paste" friction. Sarah steady at 4.40 asking for
+   Karsten delta + format badges. Karim −0.75 (missing API/CSV).
+   Natsuki veto at 2.56 (no API, no CI). David 3.88 (structural gaps).
+2. **Round 2 implementation (2026-04-17 late)** — 5 quick wins:
+   title humanized, HomePage format-badges strip, sample-deck 1-click
+   link, Karsten delta chips on Manabase tab, CSV export. Plus
+   Context7 upgrade: React 18.3.1, Vite target modernized,
+   lightningcss. Build time −16%, main bundle −4.6% gzip.
+3. **Round 3 re-audit (2026-04-17 late, v2.5.4-dev)** — average
+   3.78/5 (+0.15). Léo +0.38, Sarah +0.19, Karim +0.15, Natsuki
+   +0.10, David +0.12. Projection for Léo was 4.35 but delivered
+   3.88 — "Spells & Tempo" subtab and single-archetype sample were
+   still friction points.
+4. **Round 4 (2026-04-18, this session)** — three more quick wins
+   shipped as **v2.5.4**: rename "Spells & Tempo" subtab to "Spell
+   Breakdown", expand single sample deck into three archetype buttons
+   (Aggro / Midrange / Control) with keyed URL params, surface the
+   Karsten-delta verdict as a badge on the Manabase tab label itself.
+
+### What Was Completed
+
+#### UX polish (three persona-driven quick wins from Round 3 audit)
+
+- **`AnalysisTab.tsx:73`** subtab label: `"Spells & Tempo"` →
+  `"Spell Breakdown"`. Léo flagged "Tempo" as "a pro word I don't
+  understand"; the new label describes what the UI actually shows.
+- **Three sample archetype buttons** replace the single "See a Sample
+  Analysis" CTA on the AnalyzerPage empty-state right panel:
+  Mono-Red Aggro, Midrange Combo (former default), Azorius Control.
+  Each button calls `handleLoadSampleKey(key)` which dispatches
+  `setDeckList` + `setDeckName` so the deck arrives pre-titled.
+- **`SAMPLE_DECK` constant replaced** by `SAMPLE_DECKS` keyed record
+  (`midrange` / `aggro` / `control`) in `AnalyzerPage.tsx:69-118`.
+  URL param `?sample=aggro|control|midrange` routes to the matching
+  archetype; `?sample=1` stays aliased to midrange for HomePage
+  back-compat.
+- **Manabase tab label badge** (`AnalyzerPage.tsx:711-787`): compact
+  red/orange counter when any color is short (`"Manabase 2"` when 2
+  colors are 3+ short of Karsten target) or green check (✓) when all
+  colors meet targets. Extracted `computeColorDeltas` and new
+  `summarizeColorDeltas` from `KarstenTargetDelta.tsx` as exported
+  pure helpers so the tab badge and the tab content share SSOT.
+  `aria-label` spells out the verdict verbally.
+- **`KarstenTargetDelta.tsx:102` heading rewrite**: `"Karsten Check
+— Colored Sources vs Targets"` → `"Color Sources Check — Can You
+Cast Your Spells?"`, plus plain-English verdict explainer.
+
+#### Context7 MCP stack modernization
+
+- **React 18.2 → 18.3.1** (transition release — identical to 18.2 +
+  deprecation warnings for React 19 migration). `@types/react` +
+  `@types/react-dom` to 18.3.
+- **Vite `build.target`**: `'es2015'` → `'baseline-widely-available'`
+  (Vite 7 default; chrome107+ / edge107+ / firefox104+ / safari16+).
+- **Vite `build.cssMinify: 'lightningcss'`** enabled — more aggressive
+  CSS minification.
+- **Context7 finding: `react-helmet-async` broken with React 19**
+  (loses dedup, renders multiple `<title>`). No impact on React 18
+  — deferred to v2.7.0 with React 19 migration. Migration path to
+  `@unhead/react@2.1.13` documented.
+
+### Performance metrics
+
+| Metric                    | v2.5.3   | v2.5.4       | Δ                                |
+| ------------------------- | -------- | ------------ | -------------------------------- |
+| Build time                | 7.65 s   | **7.09 s**   | −7%                              |
+| `index` main chunk (gzip) | 41.89 KB | **39.96 KB** | −4.6%                            |
+| `AnalyzerPage` (gzip)     | 27.01 KB | 29.25 KB     | +2.24 KB (3 samples + tab badge) |
+| `CastabilityTab` (gzip)   | 17.01 KB | 16.34 KB     | −0.67 KB                         |
+| Tests                     | 315      | 315          | =                                |
+| `tsc --noEmit`            | 0 err    | 0 err        | =                                |
+
+### Persona scores (projected post-v2.5.4)
+
+| Persona            | v2.5.3   | v2.5.4-dev (Round 3) | v2.5.4 final (projected)                      |
+| ------------------ | -------- | -------------------- | --------------------------------------------- |
+| Léo (Beginner)     | 3.50     | 3.88                 | **~4.25** (+"Spell Breakdown" + 3 archetypes) |
+| Sarah (ICP #1)     | 4.40     | 4.59                 | **~4.70** (+Manabase tab badge)               |
+| Karim (Tacticien)  | 3.81     | 3.96                 | 3.96 (unchanged — API still the ask)          |
+| Natsuki (Grinder)  | 2.56     | 2.66                 | 2.66 (unchanged)                              |
+| David (Architecte) | 3.88     | 3.83                 | 3.83 (unchanged — seed/calibration asks open) |
+| **MOYENNE**        | **3.63** | **3.78**             | **~3.88**                                     |
+
+### Verification
+
+- `npx tsc --noEmit`: 0 errors.
+- `npm run test:unit`: 315 passing, 2 skipped, 0 failing.
+- `npm run build`: clean in 7.09 s. Main `index-*.js` at **39.96 KB
+  gzip** (−4.6% cumulative since v2.5.3).
+- Dev server on `http://localhost:3001`; browser title verified as
+  `"ManaTuner — Will your deck cast its spells on curve?"`.
+- `grep supabase src/`: 0 matches.
+
+### Explicitly deferred (scope v2.6.0 / v2.7.0)
+
+- **API publique `POST /api/analyze`** — veto Natsuki, blocker Karim,
+  souhait David. Scope v2.6.0.
+- **IC Wilson on Monte Carlo tabs** — Natsuki + David. v2.6.0.
+- **Build Diff A vs B** — Karim + Natsuki. v2.6.0.
+- **Seed-URL Monte Carlo (xoshiro256**)\*\* — David. v2.6.0.
+- **Empirical calibration against MTGO logs** — David. v2.6.0+.
+- **Matchup-tagged sideboard + Tracker X-Y on MyAnalyses** — Sarah.
+  v2.6.0.
+- **`useProbabilityCalculation` → SSOT engine alignment** — v2.6.0.
+- **`react-helmet-async` → `@unhead/react` migration** — v2.7.0 with
+  React 19 migration.
+
+### Current State
+
+- **Working**: everything. Build 7.09 s, 315 tests green, tsc clean,
+  main bundle −4.6% gzip cumulative since v2.5.3.
+- **No code blockers.**
+
+### Next Priority
+
+**Post the `@fireshoes` tweet.** Léo's projected score ~4.25 crosses
+the "recommend to casual friends" threshold. Sarah at ~4.70 is a
+clean "yes, I share it to my FNM group". ICP satisfied; distribution
+problem remains.
 
 ---
 
