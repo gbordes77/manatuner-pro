@@ -59,7 +59,9 @@ echo "Rafraîchis http://localhost:3000/[page-modifiée]"
 
 Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabulaire, parcours de navigation, grille d'evaluation (8 axes, dont "Partage" qui a remplacé "Rétention" en v2), et format de sortie structure.
 
-**Derniers scores (v2.5.4 live — 2026-04-18, audit 6 personas)** : Leo 3.84 | Sarah 4.71 | Karim 4.05 | Natsuki 2.85 | David 3.75 | Thibault 2.56 | **Moy 6p: 3.63/5** (Thibault tire la moyenne vers le bas — honnête sur le gap marché EDH). Thibault projeté ~3.85 post-v2.5.6 Commander framing, soit Moy 6p ~3.88.
+**Derniers scores (v2.5.4 live — 2026-04-18, audit 6 personas whole-site)** : Leo 3.84 | Sarah 4.71 | Karim 4.05 | Natsuki 2.85 | David 3.75 | Thibault 2.56 | **Moy 6p: 3.63/5** (Thibault tire la moyenne vers le bas — honnête sur le gap marché EDH).
+
+**Library-only re-audit (v2.6.0 — 2026-04-18, same day, narrower scope)** : Leo 3.90 | Sarah 4.50 | Karim 3.94 | Natsuki 3.45 | David 3.79 | Thibault 3.89 | **Moy 6p: 3.91/5** (+0.81 vs pre-V2 Library). Thibault passe de 2.56 → 3.89 (+1.33) grâce aux nouveaux tracks 👑 Commander Pod + 📦 Limited. **Ne pas additionner les deux tableaux** — scopes différents (site entier vs Library uniquement).
 
 ---
 
@@ -266,3 +268,23 @@ Heuristic: last blank line that splits a block of 40-100 cards from a block of 1
 | **Average**       | **3.82**       | **4.14**     | **4.23**     | **4.42**                 |
 
 Leo's v2.5 regression resolved via homepage H1 rewrite, chip renames, math section copy update, and techTerm badges (Hypergeometric / Frank Karsten / Monte Carlo + Bellman) relegated to discreet monospace captions at the bottom of each Math Foundations card.
+
+### Library V2 (v2.6.0 — 2026-04-18) — architectural notes
+
+**`CuratorTrack` union extended** — `'first-fnm' | 'rcq' | 'pro-tour' | 'commander' | 'limited'`. Any new track requires: (1) a TRACK_METADATA entry with `id/emoji/title/tagline/description/accentColor`, (2) at least 3 articles in seed (test invariant), (3) at least one non-English OR archived/mirror pick (test invariant "each track has a rescued or international pick"). Commander track accent color is `'b'` but the Commander hex was swapped from `#150B00` (MTG canonical black, unreadable on dark theme) to `#6B3FA0` (purple) in `TrackHeader.tsx:7-13`. Black as an accent stays unusable on dark backgrounds — keep the override.
+
+**`analyzerCtaLabel` / `analyzerCtaHref` on TRACK_METADATA** — only Commander sets these. The CTA routes to `/analyzer?format=commander`; the Analyzer currently ignores the query param but captures intent for the future EDH preset. **Known P1 follow-up**: teach `/analyzer` to consume `?format=commander` → `n=100`, singleton detection, horizon T5–T8. Until then, a Commander user clicking the CTA lands on a 60-card-defaulted Analyzer (honest placeholder, visible in URL).
+
+**`useLibraryProgress` hook** (`src/hooks/useLibraryProgress.ts`) — privacy-first localStorage for read + bookmark state. Key `manatuner-library-progress-v1`. Cross-tab sync via `storage` event listener. Never add a network persistence layer to this hook without re-confirming the privacy contract with the creator (same rule as Supabase/Sentry, see below).
+
+**`ReferenceArticlesPage.tsx` is now ~800 lines**. Mixes SEO/JSON-LD, hero, search, filter toolbar, track loops, category loops, progress footer, feedback CTA. **Split candidates for v2.7** (not done — punt on re-architecture while the page is fresh): `LibraryHero.tsx` (search + quick actions + stats), `LibraryFilters.tsx` (toolbar + secondary row), `LibraryTrackSection.tsx` (jump nav + track loop), `LibraryBrowseSection.tsx` (category filter + grouped grid), `buildLibraryJsonLd.ts` (pure function). Splitting wasn't done in `v2.6.0` to keep the diff reviewable.
+
+**URL state sentinels** — filters keys are `cat`, `level`, `lang`, `medium`, `q`. Any rename breaks external links that users have already pasted into Discord. **Do not rename without a redirect.**
+
+**Library hero copy positioning** — the `/library` page + the HomePage library section use the exact phrase _"from Karsten's manabase math to Saito's tournament mindset"_. Both Karsten and Saito are Hall of Famers in competitive formats. Do NOT replace with "Commander Bracket System" (v2.6.0 reverted this drift) — Commander is a casual/multiplayer format, only Duel Commander is tournament-legal, so anchoring "Competitive MTG Library" on it was a category error. The Commander _track_ stays; the _headline positioning_ anchors on unambiguously competitive names.
+
+**Header Library CTA** (`src/components/layout/Header.tsx:210-245`) — solid `#0E68AB → #6A1B9A` gradient, NOT 35 %-opacity. Matches the HomePage "Browse the Library" button verbatim so the learned association transfers hero → header. One-shot 800 ms mount pulse gated by `prefers-reduced-motion`. Two primary CTAs exist now — Analyzer (gold = action) + Library (blue→purple = knowledge) — and they must remain visually distinct: don't harmonize them to a single color.
+
+**Seed test invariants** (`src/data/__tests__/articlesReferenceSeed.test.ts`) — ≥ 30 articles, unique IDs, valid http(s):// `primaryUrl`, `archived/mirror` carries `originalUrl`, tracked articles carry `curatorNote`, tracks 3–10 articles each, each track has at least one non-English OR archived/mirror pick. New tracks must satisfy the last two. `lost` articles can skip `primaryUrl` validation — they exist to call for community help.
+
+**JSON-LD `ItemList`** on `/library` exposes all 48 articles (was capped at 10 in v1). Don't re-introduce `slice(0, 10)` — every article is long-tail SEO bait.

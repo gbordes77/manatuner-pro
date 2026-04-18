@@ -1,13 +1,97 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY + full format coverage (Constructed + EDH + Limited) + library + OG fix
+## Project Status: PRODUCTION — v2.6.0 Library V2 shipped (Commander + Limited tracks, search, URL-state filters, localStorage progress)
 
-**Latest Session:** 2026-04-18 (night, 4th push) — two follow-up commits after v2.5.7:
+**Latest Session:** 2026-04-18 (night, 5th push) — `v2.6.0` Library V2 after a 6-persona audit → implementation → re-audit loop. Three pushed commits: `8a74ba3` full rewrite, `503fd47` hero copy fix (Commander Bracket System → Saito tournament mindset), `85e1a29` header CTA promoted to primary-tier. **Tests: 315/315 pass. Build: 6.96 s clean. Version: `2.6.0`. Library: 48 entries across 5 tracks.**
 
-1. Library +1 video ("Secrets to INSANE win rates? The MTG Study That Changes Everything", Battle Chads with Eduardo Sajgalik + Sahar Mirhadi) — `articlesReferenceSeed` bumped 1.2 → 1.3, library total 46 → 47.
-2. `index.html` OG / Twitter / description tags restored to the "Mana Calculator + Competitive MTG Reading Library" dual positioning after a silent drift in v2.5.3 was caught when the creator shared `/library` on Discord and only the calculator half appeared.
+---
 
-Tests unchanged since v2.5.7; tagged v2.5.8 on the doc-sweep commit to formalize the content + static-head release. | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** 7.22 s clean | **Version:** `2.5.8`
+## Session 2026-04-18 (night, 5th push) — v2.6.0 Library V2
+
+### Shipped
+
+- **Two new curator tracks**: 👑 **Commander Pod** (5 articles — Karsten 100-card manabase, Wizards Brackets 2024, Command Zone podcast, Game Knights, EDHREC Articles) and 📦 **Limited** (Limited Resources podcast, 17lands blog, LSV draft-signals archived Wayback). Closes the biggest persona gap — Thibault (EDH) jumps 2.56 → 3.89 (+1.33).
+- **Full-text search** on `/library` (title + author + publisher + description + subtitle), 250 ms debounced, state persisted in URL (`?q=...`).
+- **Multi-axis filter toolbar** — category × level × language × medium, all URL-stateful and shareable (`?cat=manabase&level=advanced&lang=fr`). `role="toolbar"` + `aria-pressed` on every chip.
+- **`useLibraryProgress` hook** (`src/hooks/useLibraryProgress.ts`). Read + bookmark state in `localStorage`, cross-tab sync via `storage` event, privacy-first (no backend, no account). Storage key `manatuner-library-progress-v1`.
+- **`ArticleCard` enriched**: reading-time badge ("8 min read" / "1h 30m listen"), mark-as-read toggle, bookmark toggle, copy-shareable-link button (fragment anchor `#article-${id}`). Auto-mark-as-read when the user clicks "Read article".
+- **`TrackHeader` enriched**: progress bar per track (shows once ≥1 article read), read count inside jump-nav chips ("👑 Commander Pod (2/5)"). Heading level fixed `h2 → h3` (tech P0 a11y). Commander track exposes an analyzer CTA pointing to `/analyzer?format=commander` — query param captures intent for the future EDH preset, **not yet consumed** by the Analyzer.
+- **Hero redesigned**: centered search bar, 🎲 "Surprise me" (random live pick, opens directly), ✨ "What's new" (scroll to Recently Added = 5 most recent articles).
+- **Search-active banner**: sticky blue banner "N articles match 'paulo'" with Clear button. When search/filter active, Recently Added + empty track headers hide to reduce noise — fixes the v1 bug where Recently Added stayed static and made the search look broken.
+- **HomePage**: tracks grid 3 → 5 cards (Commander purple `#6B3FA0` + Limited gold `#D4B85A`). Intro copy **reverted from "Commander Bracket System" → "Saito's tournament mindset"** after the creator flagged that Commander isn't a competitive format (only Duel Commander is). The Commander track itself stays; it no longer anchors the Competitive Library positioning.
+- **Header CTA promoted**: Library button swapped from 35 %-opacity background to a solid `#0E68AB → #6A1B9A` gradient matching the HomePage "Browse the Library" button verbatim + 800 ms mount pulse gated by `prefers-reduced-motion`. Two clearly distinct primary CTAs now — Analyzer = gold (action), Library = blue→purple (knowledge).
+- **A11y**: emojis `aria-hidden="true"` everywhere, `role="toolbar"` + `aria-pressed` on filter chips, heading hierarchy fixed, `scrollMarginTop: 80` on anchors for future sticky-header compat, `prefers-reduced-motion` guards on transitions.
+- **Perf**: `AnimatedContainer` stagger capped at 5 items (`Math.min(idx, 5) * 0.05`), so a 10-article track tops out at 0.33 s instead of 0.53 s. JSON-LD `ItemList` uncapped 10 → 48 items (SEO long-tail for every article).
+- **Seed bumped 1.3 → 1.4**. 47 → **48 entries**. LSV draft-signals bumped from `lost` to `archived` (Wayback) to preserve the "every track has a rescued or international pick" test invariant.
+
+### 6-persona audit loop (the process that drove the release)
+
+Parallel audit round 1: 6 persona-incarnated ux-designers + 1 UX architecture review + 1 react-pro tech review, all in one message. Then implementation. Then a second parallel 6-persona audit on the new version to gate ship.
+
+| Persona           | v1 (pre-V2) |   v2.6.0 |         Δ | Verdict               |
+| ----------------- | ----------: | -------: | --------: | --------------------- |
+| Léo (débutant)    |        2.60 |     3.90 |     +1.30 | SHIP                  |
+| Sarah (FNM reg.)  |        3.60 |     4.50 |     +0.90 | SHIP                  |
+| Karim (grinder)   |        3.20 |     3.94 |     +0.74 | SHIP                  |
+| Natsuki (PT qual) |        3.25 |     3.45 |     +0.20 | SHIP                  |
+| David (architect) |        3.40 |     3.79 |     +0.39 | SHIP                  |
+| Thibault (EDH)    |        2.56 |     3.89 |     +1.33 | SHIP _with follow-up_ |
+| **Moyenne 6p**    |    **3.10** | **3.91** | **+0.81** | ✅ unanimous SHIP     |
+
+These scores are **Library-only** — different scope from the 2026-04-18 whole-site audit recorded earlier (v2.5.4 global scores). Don't average the two tables together.
+
+Thibault's _"with follow-up"_: the Commander CTA captures intent via `/analyzer?format=commander` but the Analyzer doesn't yet consume the preset. Honest placeholder; follow-up tracked below.
+
+### Why this mattered
+
+Two strategic gaps in the V1 Library: (1) no Commander track — EDH is ~40–50 % of paper MTG, the absence meant Thibault scored 2.56/5 and the library's "every player" framing was a lie; (2) no search, no filter depth, no progress tracking — Karim/Sarah/Natsuki/David all cited these as their top friction. Fixing both in one release moved six personas in the same direction without compromising any of them.
+
+No engine changes — the castability/hypergeom/Karsten math is untouched. Pure UX + data expansion.
+
+### Verification
+
+- `npx tsc --noEmit` → 0 errors.
+- `npm run test:unit` → **315 passed**, 2 skipped, 0 failing. 3.03 s total.
+- `npm run build` → clean in 6.96 s. `ReferenceArticlesPage` chunk 76.38 kB / 23.96 kB gzip.
+- Manual validation on `localhost:3000/library`: search "paulo" returns 7 PVDDR articles, filter combos work, URL updates, `localStorage` persists across reload, cross-tab sync via the `storage` event confirmed in two tabs.
+- Dev server on port 3000: Screen2Deck Docker container `screen2deck-webapp-1` was temporarily stopped to free the port; restart with `docker start screen2deck-webapp-1` when needed.
+
+### Deferred (explicit backlog — each persona has one outstanding killer)
+
+- **Karim killer** — Copy filter view as Markdown list (export `/library?cat=...` into a Discord-pasteable block). ~2 h.
+- **Natsuki killer** — `/library.json` static endpoint + `/library/feed.xml` RSS of recent additions. Build-time generation, ~4 h.
+- **David killer** — `/library/author/:name` index page + BibTeX copy button per card. ~1 day.
+- **Thibault follow-up** (**P1, not P2**) — teach `/analyzer` to consume `?format=commander` → `n=100`, singleton detection, horizon T5–T8. Without this, the Commander CTA lands on a 60-card-defaulted Analyzer and outputs numbers that don't fit singleton. Currently honest (query param visible in URL) but not yet useful.
+- **Léo polish** — re-elevate "Start Here" above the 5 flat tracks — the beginner path is currently peer-leveled with Pro Tour.
+- **Sarah polish** — hero sticky chip "📚 N/48 read" for global progression at a glance.
+- **Per-article route `/library/:slug`** — fragment deep-link works for Discord citations, but Google won't index individual articles without a real route. SEO long-tail leverage is on hold.
+
+### Next session priority
+
+Pick one of the deferred items based on where the next wave of users blocks. If Discord shares become the primary distribution channel, Karim's markdown export + Thibault's real Commander preset both unlock different personas. If SEO is the growth story, the per-article route + author index are the multipliers.
+
+### Files touched
+
+```
+M src/components/library/ArticleCard.tsx        (reading time, read/bookmark toggles, copy-link, a11y)
+M src/components/library/TrackHeader.tsx        (h3, progress bar, analyzer CTA, aria-hidden emoji)
+M src/components/layout/Header.tsx              (Library CTA solid gradient + pulse)
+M src/data/articlesReferenceSeed.ts             (+8 articles: 5 Commander + 3 Limited + readingTimeMin)
+M src/hooks/index.ts                            (+useLibraryProgress export)
+A src/hooks/useLibraryProgress.ts               (new — localStorage progress hook)
+M src/pages/HomePage.tsx                        (5 tracks grid, hero copy fix)
+M src/pages/ReferenceArticlesPage.tsx           (full rewrite — search, filters, URL state, progress)
+M src/types/referenceArticle.ts                 (CuratorTrack += commander | limited, analyzerCta*, readingTimeMin)
+M package.json                                  (2.5.8 → 2.6.0)
+```
+
+### Historical scores context
+
+Pre-v2.6.0 whole-site audit from earlier the same day (2026-04-18, v2.5.4 live scope — recorded in `CLAUDE.md`): Leo 3.84 | Sarah 4.71 | Karim 4.05 | Natsuki 2.85 | David 3.75 | Thibault 2.56 | **Moy 6p 3.63**. Library-only re-audit scores above (2.60–3.60 range) are strictly lower because the scope is narrower; don't reconcile the two.
+
+---
+
+## Session 2026-04-18 (night, 4th push) — library +1 video + OG fallback regression fix (historical, v2.5.8)
 
 ---
 

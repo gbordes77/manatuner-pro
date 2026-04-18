@@ -5,6 +5,163 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-04-18 (night, 5th push) — Library V2: Commander + Limited tracks, search, progress
+
+Minor release. Complete rewrite of the `/library` page after a
+6-persona audit loop. No engine changes — castability, hypergeom,
+Karsten formulas untouched. Pure UX + data expansion. Average persona
+score **3.10 → 3.91/5 (+0.81)** on the Library scope; Thibault (EDH)
+jumps **+1.33** thanks to the new Commander track. 315/315 tests pass.
+
+### Added
+
+- **👑 Commander Pod track** (5 articles):
+  - Karsten _Optimal Mana Curve and Land/Ramp Count for Commander?_
+    (assigned to the track; already in seed from v2.5.x, bumped with
+    a `readingTimeMin: 18` and a curator note positioning the piece).
+  - Wizards _Introducing Commander Brackets_ (Gavin Verhey, 2024,
+    live on magic.wizards.com).
+  - _The Command Zone_ podcast (Jimmy Wong & Josh Lee Kwai).
+  - _Game Knights_ YouTube series (Command Zone Studios).
+  - _EDHREC Articles_ hub (data-driven Commander deckbuilding).
+- **📦 Limited track** (3 articles):
+  - _Limited Resources_ podcast (Marshall Sutcliffe & LSV, 15 yrs).
+  - _17Lands Blog_ (data-driven Limited analysis).
+  - LSV _Reading the Signals — A Draft Fundamentals Primer_ (bumped
+    from `lost` to `archived` Wayback).
+- **New types** in `src/types/referenceArticle.ts`:
+  - `CuratorTrack` union extended with `'commander' | 'limited'`.
+  - `ReferenceArticle.readingTimeMin?: number` field.
+  - `TRACK_METADATA[].analyzerCtaLabel` / `analyzerCtaHref` for the
+    Commander-track "Analyze my Commander deck →" CTA.
+- **`useLibraryProgress` hook** (`src/hooks/useLibraryProgress.ts`).
+  Read + bookmark state in `localStorage` (key
+  `manatuner-library-progress-v1`), cross-tab sync via the `storage`
+  event, privacy-first (no backend, no account). Exports
+  `readIds`, `bookmarkIds`, `readCount`, `bookmarkCount`, `isRead`,
+  `isBookmarked`, `toggleRead`, `toggleBookmark`, `reset`.
+- **Full-text search** on `/library` — 250 ms debounced, matches
+  title + author + publisher + description + subtitle, state in URL
+  query param `q`.
+- **Multi-axis filter toolbar** — category × level × language ×
+  medium, every filter URL-stateful and shareable. Keys: `cat`,
+  `level`, `lang`, `medium`. `role="toolbar"` + `aria-pressed` on
+  every chip.
+- **Search-active banner** (sticky blue) "N articles match 'paulo'"
+  with a Clear button. Recently Added + empty track headers hide
+  when search/filter is active (fixes the v1 bug where Recently
+  Added looked static during search).
+- **Reading-time badge** on `ArticleCard` when `readingTimeMin` is
+  set. Humanised: `18 min read`, `1h 30m listen` for
+  podcast/video/video-series mediums.
+- **Mark-as-read + Bookmark toggles** on every `ArticleCard`
+  (localStorage via `useLibraryProgress`). Auto-mark-as-read on
+  "Read article" click.
+- **Copy-shareable-link button** on every `ArticleCard` — copies
+  `/library#article-${id}` to clipboard.
+- **Progress bar per track** in `TrackHeader` (shows once ≥1 article
+  read). Read count in jump-nav chips ("👑 Commander Pod (2/5)").
+- **"Your Library Progress" footer block** — shown only when
+  `readCount + bookmarkCount > 0`. Includes confirm-gated
+  "Reset progress" button.
+- **Hero quick actions**: 🎲 "Surprise me" (opens a random live
+  article directly) + ✨ "What's new" (scrolls to Recently Added).
+- **"Recently Added" section** (`#whats-new` anchor) — 5 most recent
+  articles, sorted by `year × 10_000 + seed-position`. Hidden when
+  search/filter active to focus the result set.
+- **HomePage 5-track grid**: Commander (purple `#6B3FA0`) + Limited
+  (gold `#D4B85A`) added alongside the original First FNM / RCQ /
+  Pro Tour cards.
+- **Seed bumped** `1.3 → 1.4`. Library total **47 → 48 entries**.
+
+### Changed
+
+- **`package.json` version** `2.5.8 → 2.6.0`.
+- **Library hero copy** restored to _"from Karsten's manabase math
+  to Saito's tournament mindset"_ after the previous iteration
+  landed on _"to the Commander Bracket System"_. Commander is a
+  casual/multiplayer format — only Duel Commander is tournament-
+  legal — so anchoring the "Competitive MTG Library" on the
+  Commander Bracket System was a category error. The Commander
+  track itself stays; it no longer anchors the positioning.
+- **Header Library button promoted** from 35 %-opacity background
+  to a solid `#0E68AB → #6A1B9A` gradient matching the HomePage
+  "Browse the Library" button. Added a one-shot 800 ms mount pulse
+  gated by `prefers-reduced-motion`. Two clearly distinct primary
+  CTAs now — Analyzer = gold (action), Library = blue→purple
+  (knowledge). Same priority, different hue.
+- **`TrackHeader` heading level** `h2 → h3` (tech P0 a11y — was
+  colliding with the "Pick a Track" page-level h2).
+- **All decorative emojis** marked `aria-hidden="true"` (jump-nav
+  chips, TrackHeader, HomePage track cards).
+- **`AnimatedContainer` stagger** capped at 5 items
+  (`Math.min(articleIdx, 5) * 0.05`) so long tracks don't feel
+  sluggish (was up to 0.53 s on a 10-article track, now 0.33 s max).
+- **JSON-LD `ItemList`** on `/library` uncapped 10 → 48 items
+  (SEO long-tail for every article, not just the top 10).
+- **`transition` and `animation` rules** in `ArticleCard`,
+  `TrackHeader`, and the Library CTA now honor
+  `@media (prefers-reduced-motion: reduce)`.
+- **Anchors** (`#track-{id}`, `#article-{id}`) have
+  `scrollMarginTop: 80` so future sticky-header work won't hide
+  them under the nav.
+- **Commander track accent color** swapped from `#150B00` (MTG
+  canonical black, unreadable on dark theme) to `#6B3FA0` (purple
+  — legible in both light and dark modes).
+- **LSV draft-signals** bumped from `linkStatus: 'lost'` with an
+  empty `primaryUrl` to `linkStatus: 'archived'` pointing at a
+  wildcard Wayback URL pattern, to preserve the seed test
+  "every track has a rescued or international pick" invariant.
+
+### Removed
+
+- **35 %-opacity Library CTA treatment** in `Header.tsx` — the
+  original styling was timid and didn't read as primary-tier.
+
+### Fixed
+
+- **Heading hierarchy collision** — `TrackHeader` `component="h2"`
+  was rendering under the "Pick a Track" page-level `h2`. Now `h3`.
+- **Filter chips a11y** — no `role="toolbar"`, no `aria-pressed`
+  state for screen readers. Both added.
+- **Emoji screen-reader noise** — decorative emojis in headings
+  and chips now `aria-hidden="true"`.
+- **JSON-LD SEO cap** — `articlesReferenceSeed.slice(0, 10)`
+  arbitrarily limited the schema.org `ItemList` to the first 10
+  articles. Now all 48.
+- **Recently Added "broken search" perception** — in v1, typing a
+  query left the top section unchanged (it always showed the 5
+  most recent), making the search look non-functional. Recently
+  Added now hides when search or filter is active, and a
+  conspicuous blue "N matches" banner appears in its place.
+
+### Persona re-audit (Library scope only)
+
+| Persona        | Pre-V2 | v2.6.0 |     Δ | Verdict               |
+| -------------- | -----: | -----: | ----: | --------------------- |
+| Léo            |   2.60 |   3.90 | +1.30 | SHIP                  |
+| Sarah          |   3.60 |   4.50 | +0.90 | SHIP                  |
+| Karim          |   3.20 |   3.94 | +0.74 | SHIP                  |
+| Natsuki        |   3.25 |   3.45 | +0.20 | SHIP                  |
+| David          |   3.40 |   3.79 | +0.39 | SHIP                  |
+| Thibault (EDH) |   2.56 |   3.89 | +1.33 | SHIP _with follow-up_ |
+| **Moy 6p**     |   3.10 |   3.91 | +0.81 | ✅ unanimous SHIP     |
+
+### Deferred to v2.6.x / v2.7
+
+- `/library.json` static endpoint + `/library/feed.xml` RSS
+  (Natsuki killer).
+- Copy filter view as Markdown (Karim killer).
+- `/library/author/:name` + BibTeX copy button (David killer).
+- `/analyzer` consumption of `?format=commander` (Thibault P1 —
+  the CTA captures intent today but the Analyzer doesn't yet
+  consume the preset).
+- Per-article route `/library/:slug` for SEO long-tail.
+- "Start Here" visual elevation above the 5 flat tracks (Léo).
+- Hero sticky chip "📚 N/48 read" for global progression (Sarah).
+
+---
+
 ## [2.5.8] - 2026-04-18 (night, 4th push) — library +1 video + OG fallback fix
 
 Patch release bundling the two post-v2.5.7 commits: a new library

@@ -11,7 +11,7 @@
 | **Stack**          | React 18 + TypeScript + Vite 7.3 + MUI |
 | **Hebergement**    | Vercel (auto-deploy on push to main)   |
 | **Tests**          | Vitest (unit) + Playwright (E2E)       |
-| **Version**        | 2.5.8                                  |
+| **Version**        | 2.6.0                                  |
 
 ### Ce que fait l'app
 
@@ -21,7 +21,7 @@
 - Analyse tour par tour la castabilite (Best Case / Realistic)
 - **QuickVerdict** : phrase-verdict au-dessus des onglets calibrée par format (Constructed / EDH / Limited)
 - **Couverture formats complète** : 5 sample decks one-click (Aggro / Midrange / Control / Atraxa Superfriends 100c / Selesnya draft 40c) via `?sample=aggro|midrange|control|edh|limited`
-- **Reading library** : 47 ressources compétitives curées (articles + podcasts + videos)
+- **Reading library V2** : **48 ressources curées** sur **5 tracks** (First FNM / RCQ / Pro Tour / 👑 Commander Pod / 📦 Limited) avec full-text search, filtres multi-axes URL-stateful (`?cat=...&level=...&lang=...&medium=...&q=...`), progression localStorage (read + bookmarks, privacy-first, cross-tab sync), deep-links par article (`#article-{slug}`)
 - Export Blueprint (PNG/PDF/JSON/CSV) pour partage Discord / Sheets / notebooks
 - 100% client-side, privacy-first, open source MIT, zero Supabase, zero Sentry en prod
 
