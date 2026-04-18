@@ -23,7 +23,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SEO } from '../components/common/SEO'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
@@ -46,6 +46,21 @@ interface TabInfo {
 
 export const GuidePage: React.FC = () => {
   const navigate = useNavigate()
+
+  // Hash-scroll on mount for deep-links like /guide#commander — the default
+  // React Router behaviour scrolls to top and drops the fragment.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const hash = window.location.hash
+    if (!hash) return
+    // Defer to let the page render all anchors first.
+    const id = hash.slice(1)
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 120)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const tabs: TabInfo[] = [
     {
@@ -141,8 +156,8 @@ export const GuidePage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
       <SEO
-        title="How to Build an MTG Mana Base (Step by Step) | ManaTuner"
-        description="3-minute walkthrough to building an optimal MTG mana base. Learn to read your Health Score, castability charts, Monte Carlo mulligan, and Blueprint export."
+        title="How to Build an MTG Mana Base (Standard → Commander) | ManaTuner"
+        description="3-minute walkthrough to building an optimal MTG mana base — Standard, Pioneer, Modern, Legacy, and 100-card Commander. Castability math, Monte Carlo mulligan, and Blueprint export."
         path="/guide"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -753,6 +768,12 @@ export const GuidePage: React.FC = () => {
               tips: ['Duals + fetches', 'Every land untapped'],
               color: '#ff9800',
             },
+            {
+              name: 'Commander',
+              lands: '36-38',
+              tips: ['100-card singleton', 'Color identity only', 'Sol Ring + Signets'],
+              color: '#00bcd4',
+            },
           ].map((format, index) => (
             <Grid item xs={6} md={3} key={index}>
               <Paper
@@ -797,6 +818,206 @@ export const GuidePage: React.FC = () => {
         >
           Explore the Land Type Glossary
         </Button>
+      </Box>
+
+      {/* Commander / EDH section — anchor target for /guide#commander.
+          Thibault persona ask #1: "don't make me read between the lines to
+          know whether ManaTuner covers EDH". */}
+      <Box id="commander" sx={{ mb: 6, scrollMarginTop: '80px' }}>
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Chip
+            label="New in v2.5.6"
+            size="small"
+            sx={{ bgcolor: '#00bcd4', color: 'white', fontWeight: 700, mb: 1.5 }}
+          />
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight={700}
+            sx={{ fontFamily: '"Cinzel", serif' }}
+          >
+            Commander / EDH
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mt: 1, maxWidth: 640, mx: 'auto', lineHeight: 1.6 }}
+          >
+            Yes — ManaTuner works on 100-card Commander decks. Here&apos;s what the tool handles
+            well, what it doesn&apos;t (yet), and the EDH-specific numbers to aim for.
+          </Typography>
+        </Box>
+
+        <Grid container spacing={2.5}>
+          {/* What ManaTuner handles */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 3,
+                height: '100%',
+                borderRadius: 3,
+                borderLeft: '4px solid #4caf50',
+                bgcolor: 'rgba(76, 175, 80, 0.04)',
+              }}
+            >
+              <Typography variant="h6" fontWeight={700} sx={{ color: '#2e7d32', mb: 1.5 }}>
+                ✓ What works on EDH today
+              </Typography>
+              <List dense sx={{ pl: 0 }}>
+                {[
+                  'Hypergeometric math scales automatically to 100 cards — no hardcoded 60-card assumptions.',
+                  'Singleton detection: duplicate basic lands are counted, everything else is expected to be unique.',
+                  'Mana rocks (Sol Ring, Arcane Signet, Signets, Talismans) are detected as non-land sources.',
+                  'Mana dorks (Llanowar Elves, Birds of Paradise, Ignoble Hierarch…) add to your effective sources.',
+                  'Land ramp (Cultivate, Three Visits, Nature’s Lore, Farseek) adjusts the tempo-aware curve.',
+                  'Triomes, shocks, fetches, filters and check-lands are all typed and costed correctly.',
+                  'Color identity: the deck list is analysed as-is; ManaTuner trusts your singleton + identity.',
+                ].map((item, i) => (
+                  <ListItem key={i} sx={{ px: 0, py: 0.25 }}>
+                    <ListItemIcon sx={{ minWidth: 30 }}>
+                      <CheckIcon sx={{ color: '#4caf50', fontSize: 18 }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item}
+                      primaryTypographyProps={{ variant: 'body2', lineHeight: 1.5 }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
+
+          {/* Known caveats */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 3,
+                height: '100%',
+                borderRadius: 3,
+                borderLeft: '4px solid #ed6c02',
+                bgcolor: 'rgba(237, 108, 2, 0.04)',
+              }}
+            >
+              <Typography variant="h6" fontWeight={700} sx={{ color: '#b26a00', mb: 1.5 }}>
+                ⚠ Known caveats (being worked on)
+              </Typography>
+              <List dense sx={{ pl: 0 }}>
+                {[
+                  'Command zone: your commander is always castable but is not modelled as an "extra card" in the probability math. Treat it as free value on top of the numbers.',
+                  'Karsten tables are published for 60-card decks. The Manabase tab still uses them — they’re a useful lower bound in EDH (if you miss them in EDH, you definitely miss them in Constructed).',
+                  'Multiplayer political variance (3 opponents, threat assessment, group hug) is out of scope — this tool is strictly a manabase / castability lens.',
+                  'Partners, Backgrounds, and "one of two commanders" decks should be entered as a single commander line.',
+                ].map((item, i) => (
+                  <ListItem key={i} sx={{ px: 0, py: 0.25 }}>
+                    <ListItemIcon sx={{ minWidth: 30 }}>
+                      <Chip
+                        label="!"
+                        size="small"
+                        sx={{
+                          bgcolor: '#ed6c02',
+                          color: 'white',
+                          fontWeight: 700,
+                          height: 20,
+                          minWidth: 20,
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item}
+                      primaryTypographyProps={{ variant: 'body2', lineHeight: 1.5 }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
+
+          {/* EDH building targets */}
+          <Grid item xs={12}>
+            <Paper
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                borderLeft: '4px solid #1976d2',
+                bgcolor: 'rgba(25, 118, 210, 0.04)',
+              }}
+            >
+              <Typography variant="h6" fontWeight={700} sx={{ color: '#1565c0', mb: 1.5 }}>
+                EDH manabase targets (rule of thumb)
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { label: 'Lands', value: '36–38', hint: '37 is the modal count on EDHREC' },
+                  { label: 'Ramp', value: '10–12', hint: 'Sol Ring + Signets + Cultivate-family' },
+                  {
+                    label: 'Colour fixers',
+                    value: '10+',
+                    hint: 'Triomes, shocks, fetches, checks',
+                  },
+                  { label: 'Basics', value: '≥8', hint: 'Blood Moon + fetch targets' },
+                  {
+                    label: 'Draw',
+                    value: '8–10',
+                    hint: 'Rhystic Study, Esper Sentinel, signets that cycle',
+                  },
+                  {
+                    label: 'Mana rocks turn-1',
+                    value: '1–2',
+                    hint: 'Sol Ring is the single highest-impact card in the format',
+                  },
+                ].map((t) => (
+                  <Grid item xs={6} sm={4} md={2} key={t.label}>
+                    <Box sx={{ textAlign: 'center', p: 1 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: 0.5 }}
+                      >
+                        {t.label.toUpperCase()}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: 800,
+                          color: '#1565c0',
+                          fontFamily: 'monospace',
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {t.value}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.secondary', display: 'block', lineHeight: 1.3 }}
+                      >
+                        {t.hint}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        {/* CTA to the Commander sample */}
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/analyzer?sample=edh')}
+            startIcon={<AnalyticsIcon />}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: 3,
+              fontWeight: 700,
+              bgcolor: '#00bcd4',
+              '&:hover': { bgcolor: '#00838f' },
+            }}
+          >
+            Try the Atraxa Commander sample
+          </Button>
+        </Box>
       </Box>
 
       {/* FAQ */}

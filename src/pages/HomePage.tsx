@@ -548,7 +548,44 @@ export const HomePage: React.FC = () => {
               }}
             >
               <AnalyticsIcon sx={{ fontSize: 16 }} />
-              Try a sample deck
+              Try a 60-card sample
+            </Box>
+            <Box
+              component="span"
+              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
+              aria-hidden="true"
+            >
+              ·
+            </Box>
+            {/* Commander shortcut — Thibault persona ask: "don't make me
+                scroll to know EDH is supported". The cyan accent hints at
+                the Commander color identity used throughout the Guide. */}
+            <Box
+              component="a"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault()
+                navigate('/analyzer?sample=edh')
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.85rem',
+                color: '#00838f',
+                textDecoration: 'none',
+                borderBottom: '1px dotted',
+                borderColor: '#00838f',
+                pb: 0.125,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: '#00bcd4',
+                  borderColor: '#00bcd4',
+                },
+              }}
+            >
+              <AnalyticsIcon sx={{ fontSize: 16 }} />
+              Or a 100-card Commander deck
             </Box>
             <Box
               component="span"

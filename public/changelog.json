@@ -6,8 +6,21 @@
   "format": "keepachangelog-1.0.0",
   "semver": "2.0.0",
   "note": "Machine-readable version history. Generated from CHANGELOG.md. Each entry is summary-level; full changelog at https://github.com/gbordes77/ManaTuner-v2/blob/main/CHANGELOG.md",
-  "current": "2.5.5",
+  "current": "2.5.6",
   "versions": [
+    {
+      "version": "2.5.6",
+      "date": "2026-04-18",
+      "title": "Commander framing unlocked (Q1 shipped)",
+      "highlights": [
+        "100-card Atraxa Superfriends sample deck (?sample=edh)",
+        "Commander (EDH) button on the AnalyzerPage empty state",
+        "/guide#commander anchored section — what works, caveats, manabase targets",
+        "QuickVerdict detects EDH and widens tier bands (80/70/60) + command-zone caveat line",
+        "Commander added to the Quick Tips by Format grid (6 formats)",
+        "HomePage Commander shortcut next to the 60-card sample link"
+      ]
+    },
     {
       "version": "2.5.5",
       "date": "2026-04-18",

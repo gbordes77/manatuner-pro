@@ -37,18 +37,40 @@ interface QuickVerdictProps {
  * analysis lives; it's the hook that tells a casual player whether to dig
  * deeper into the tabs.
  */
+/**
+ * EDH / Commander detection threshold. 99 (library) or 100 (library +
+ * commander in one list) both count. Anything ≥ 99 is treated as a
+ * singleton 100-card format. Below that, we assume 60-card constructed.
+ */
+const EDH_MIN_CARDS = 99
+
 export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, manabaseVerdict }) => {
   const consistencyPct = Math.round((analysisResult.consistency || 0) * 100)
+  const isEDH = (analysisResult.totalCards || 0) >= EDH_MIN_CARDS
 
+  // For EDH, a "solid" consistency number is naturally lower because the
+  // deck is 100 cards (vs 60) and must be singleton. Karsten's 90 %
+  // thresholds calibrated to 60-card don't transfer 1:1. We widen the
+  // tier bands so an EDH deck at 72 % doesn't get labelled "rough".
   let tier: 'excellent' | 'solid' | 'shaky' | 'weak'
-  if (consistencyPct >= 90) tier = 'excellent'
-  else if (consistencyPct >= 80) tier = 'solid'
-  else if (consistencyPct >= 70) tier = 'shaky'
-  else tier = 'weak'
+  if (isEDH) {
+    if (consistencyPct >= 80) tier = 'excellent'
+    else if (consistencyPct >= 70) tier = 'solid'
+    else if (consistencyPct >= 60) tier = 'shaky'
+    else tier = 'weak'
+  } else {
+    if (consistencyPct >= 90) tier = 'excellent'
+    else if (consistencyPct >= 80) tier = 'solid'
+    else if (consistencyPct >= 70) tier = 'shaky'
+    else tier = 'weak'
+  }
 
   const mulliganRate = analysisResult.mulliganAnalysis?.poorHand ?? 0
-  const mulliganRider =
-    mulliganRate >= 20
+  const mulliganRider = isEDH
+    ? // EDH London mulligan keeps free at 7; the ManaTuner "poor hand" %
+      // is less load-bearing than in 60-card. Use a generic EDH rider.
+      'plan mulligans around at least 1 ramp + 2 castable lands'
+    : mulliganRate >= 20
       ? 'mulligan aggressively on borderline hands'
       : 'keep almost any 2–4-land opener'
 
@@ -78,9 +100,13 @@ export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, mana
           ? 'warning'
           : 'error'
 
+  const headline = isEDH
+    ? `EDH — ${consistencyPct}% of spells cast on curve at 100 cards`
+    : `Your deck casts ${consistencyPct}% of spells on curve`
+
   const phrase = colorClause
-    ? `Your deck casts ${consistencyPct}% of spells on curve — ${tierLabel[tier]}, but ${colorClause}; ${mulliganRider}.`
-    : `Your deck casts ${consistencyPct}% of spells on curve — ${tierLabel[tier]}; ${mulliganRider}.`
+    ? `${headline} — ${tierLabel[tier]}, but ${colorClause}; ${mulliganRider}.`
+    : `${headline} — ${tierLabel[tier]}; ${mulliganRider}.`
 
   return (
     <Alert
@@ -97,6 +123,15 @@ export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, mana
       <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: 1.5 }}>
         {phrase}
       </Typography>
+      {isEDH && (
+        <Typography
+          variant="caption"
+          sx={{ display: 'block', mt: 0.5, opacity: 0.85, fontStyle: 'italic' }}
+        >
+          Note: the command zone (your commander cast each game) is not yet modelled in these
+          numbers. EDH analysis lives at <code>/guide#commander</code>.
+        </Typography>
+      )}
     </Alert>
   )
 }

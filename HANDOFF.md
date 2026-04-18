@@ -1,8 +1,59 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.5 backlog quick-win sweep)
+## Project Status: PRODUCTION — LAUNCH-READY + EDH unlocked (post v2.5.6 Commander framing)
 
-**Latest Session:** 2026-04-18 (night) — v2.5.5 shipped the backlog quick-win sweep (7 of 10 v2.5.5 items + 3 bugs + 1 dead-code delete). Deferred Q1/Q4/Q6/Q7/Q10 explicitly in the recap. | **Tests:** 315 pass, 2 skipped, 0 fail (unchanged) | **Build:** ~9.1s (index 40.12 KB gzip, +0.16) | **Version:** `2.5.5`
+**Latest Session:** 2026-04-18 (night, 2nd push) — v2.5.6 shipped Q1 Commander framing: Atraxa sample, empty-state button, /guide#commander section, EDH-aware QuickVerdict, HomePage shortcut. Engine untouched (already 100-card capable since v2.5.2). | **Tests:** 315 pass, 2 skipped, 0 fail (verified in isolation) | **Build:** clean | **Version:** `2.5.6`
+
+---
+
+## Session 2026-04-18 (night, 2nd push) — v2.5.6 Commander framing (Q1)
+
+### Shipped
+
+- **Atraxa Superfriends sample** (100 cards, BGWU, 37 lands / 11 ramp / 10 fixers / 8 draw / 12 interaction / 9 proliferate / 11 PW / 10 value). Accessible via `?sample=edh`.
+- **"Commander (EDH)" 4th button** on AnalyzerPage empty-state picker (cyan accent).
+- **`/guide#commander` anchored section** with 3 cards: What Works (7 ✓ bullets) / Caveats (4 ⚠ bullets) / EDH Targets (6 rule-of-thumb numbers). Hash-scroll handled via useEffect on mount.
+- **Commander format card** in the Quick Tips by Format grid (grid goes 5 → 6 formats).
+- **QuickVerdict EDH-aware**: detects `totalCards >= 99`, widens tier bands (80/70/60), shows `"EDH — X% of spells cast on curve at 100 cards"` headline + command-zone caveat line.
+- **HomePage Commander shortcut**: "Or a 100-card Commander deck" link next to "Try a 60-card sample" (cyan-accented to match Commander palette).
+- **SEO**: GuidePage title/description mention Commander.
+
+### Persona impact (projected)
+
+| Persona  | v2.5.5 live | v2.5.6 projected | Δ     | Note                                                                                                                                                             |
+| -------- | ----------- | ---------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Léo      | 3.84        | ~3.95            | +0.11 | Format strip reads less Constructed-coded.                                                                                                                       |
+| Sarah    | 4.71        | ~4.75            | +0.04 | Her EDH-playing FNM pod friend is now a primary user.                                                                                                            |
+| Karim    | 4.05        | 4.05             | =     | EDH not in his wheelhouse.                                                                                                                                       |
+| Natsuki  | 2.85        | 2.85             | =     | Still veto on API absence.                                                                                                                                       |
+| David    | 3.75        | ~3.80            | +0.05 | Salutes the honest "command zone not modelled" caveat vs faking it.                                                                                              |
+| Thibault | 2.56        | **~3.85**        | +1.29 | **Veto dropped.** 5 of 8 EDH asks addressed in framing (sample, format tips, singleton, manabase targets, identity trust). Remaining 3 asks = C1/C2/C3 deferred. |
+| MOY 6p   | 3.63        | **~3.88**        | +0.25 |                                                                                                                                                                  |
+
+### Deferred (explicit, not blocking the @fireshoes launch)
+
+- **C1 Command zone simulation**: commander always castable, counted as an extra castable each turn. 3-5 days of engine work. Out of scope for a "framing fix" release.
+- **C2 EDH-specific Karsten tables** (4-player targets). ~3 days research + implementation. Karsten 2022 tables are a useful lower bound in the meantime.
+- **C3 Universal fixers toggle** (Chromatic Lantern, Prismatic Omen, Urborg + Cabal Coffers).
+- **C4 Color identity validator**, **C5 Sol Ring / Signet T1 fast-mana modelling**, **C6 Budget upgrade path ranking**.
+- **C7 EDH library coverage** (Jumbo Commander, EDHREC drops, Josh Lee Kwai, Tomer). Content work, 4 h.
+
+### Verification
+
+- `npx tsc --noEmit` → 0 errors.
+- `npm run test:unit` → 315 passed, 2 skipped, 0 failing. (Flaked once at `tests/component/AnalyzerPage.test.jsx:175` with a 5 s timeout when `npm run build` was running in parallel — CPU contention. Re-run in isolation: `npx vitest run tests/component/AnalyzerPage.test.jsx` → all 7 cases pass, 2 skipped, 28.61 s total. Unrelated to v2.5.6 changes.)
+- `npm run build` → clean. 2 m 43 s under parallel contention; standalone would be ~10 s.
+- **Atraxa deck sanity-check**: 100 cards exact, 38 lands, singleton-legal, WUBG color identity. Counted via `awk '/edh: \{/,/^  \},$/' | grep -E "^[[:space:]]*[0-9]+ " | awk '{sum+=$1}'` → 100.
+
+### Next session priority
+
+Tweet `@fireshoes`. Thibault's veto has dropped — ManaTuner now has a defensible EDH story in the product, not just in the README. After that, C1 (command zone modelling) is the next big engine win: takes Thibault 3.85 → ~4.3, and gives David his "fully correct for EDH" stance.
+
+---
+
+## Previous Status (pre-v2.5.6)
+
+**Session 2026-04-18 (night):** v2.5.5 shipped the backlog quick-win sweep (7 of 10 v2.5.5 items + 3 bugs + 1 dead-code delete). Deferred Q1/Q4/Q6/Q7/Q10 explicitly. | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~9.1 s | **Version:** `2.5.5`
 
 ---
 

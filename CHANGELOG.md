@@ -5,6 +5,90 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.6] - 2026-04-18 (night) — Commander framing unlocked (Q1 shipped)
+
+### Context
+
+Top-ROI item from the v2.5.5 backlog. Commander (~40 % of paper MTG
+market, per Wizards + EDHREC data) was effectively zero-represented
+on the ManaTuner product surface pre-v2.5.6 — the 60-card framing of
+the samples, the empty-state CTAs, and the Guide shut EDH players out
+in under 10 seconds. The engine was always 100-card-capable (dynamic
+Hypergeom since v2.5.2); only the framing was 60-card. This release
+closes that gap with product changes only — no engine changes.
+
+Persona delta projected: Thibault 2.56 → ~3.85 (+1.29, biggest mover
+of any single release). Léo +0.1 (format strip feels less Constructed-
+coded). Sarah +0.05 (her EDH-playing friend at the pod can now use
+the tool without feeling like a second-class citizen). Moyenne 6p
+3.63 → ~3.85 (+0.22).
+
+### Added
+
+- **100-card Atraxa Superfriends sample deck** in `SAMPLE_DECKS.edh`.
+  Representative EDH manabase (37 lands: 13 basics + 24 non-basic
+  including triomes, shocks, fetches, utility; 11 ramp pieces; 10
+  fixers). Accessible via `?sample=edh` URL param. Singleton-legal.
+- **"Commander (EDH)" button** on the AnalyzerPage empty-state picker.
+  Cyan-accented to differentiate from the 3 Constructed archetypes.
+  Fourth archetype next to Aggro / Midrange / Control.
+- **`/guide#commander` anchored section** in GuidePage. Three-card
+  layout: "What works on EDH today" (7 bullets), "Known caveats" (4
+  bullets including command zone not modelled), "EDH manabase targets"
+  (6 rule-of-thumb numbers: 36-38 lands, 10-12 ramp, 10+ fixers, ≥8
+  basics, 8-10 draw, 1-2 T1 rocks). Plus a CTA to the Atraxa sample.
+  Anchor scroll handled via `useEffect` on mount (default React Router
+  would drop the hash).
+- **Commander entry in the Quick Tips by Format grid** (GuidePage).
+  Adds a 6th card covering 100-card singleton, color identity, Sol
+  Ring + Signets mention. Color `#00bcd4` matches the Commander
+  Mythos palette used elsewhere.
+- **"Or a 100-card Commander deck" discreet link** on HomePage next
+  to "Try a 60-card sample". Cyan-accented. Direct path to the
+  Atraxa sample without routing through the Analyzer empty state.
+
+### Changed
+
+- **`QuickVerdict` detects EDH** (`totalCards >= 99`) and applies
+  wider tier bands (80 / 70 / 60 instead of 90 / 80 / 70) because
+  100-card singleton naturally produces lower consistency figures.
+  Headline changes to `"EDH — X% of spells cast on curve at 100 cards"`
+  and a caveat line surfaces below: "the command zone is not yet
+  modelled in these numbers. EDH analysis lives at /guide#commander."
+- **HomePage "Try a sample deck" link** renamed to "Try a 60-card
+  sample" to disambiguate from the new Commander shortcut.
+- **GuidePage SEO title/description** updated to mention Commander
+  support: "How to Build an MTG Mana Base (Standard → Commander) |
+  ManaTuner". FAQ answer for "Does ManaTuner work for Commander?"
+  remains accurate (added pre-v2.5.6).
+
+### Not shipped this release (explicit defer)
+
+- **Command zone simulation** (C1): commander always castable, counted
+  as an extra castable per turn. Complex to model correctly; ~3-5 days.
+- **EDH-specific Karsten tables** (C2): 4-player targets. ~3 days.
+- **Universal fixers toggle** (C3), **color identity validator** (C4),
+  **Sol Ring / signet fast-mana T1 modelling** (C5), **budget upgrade
+  path** (C6), **EDH library coverage expansion** (C7). All deferred;
+  Q1 framing alone is expected to move Thibault past his veto.
+
+### Verification
+
+- `npx tsc --noEmit`: 0 errors.
+- `npm run test:unit`: 315 passing, 2 skipped, 0 failing (re-run in
+  isolation; a single AnalyzerPage test flaked with a 5 s timeout
+  during the full run because `npm run build` was contending for CPU
+  in parallel — unrelated to v2.5.6 changes).
+- `npm run build`: clean in 2 m 43 s (parallel with the test run, so
+  slow; standalone would be ~10 s). Main `AnalyzerPage` chunk
+  29.84 KB gzip; GuidePage chunk expected to grow marginally (~2 KB)
+  for the new Commander section.
+- Atraxa deck independently verified: 100 cards total, 38 lands (13
+  basics + 25 non-basic including 4 fetches, 5 shocks, 2 triomes, 7
+  check-lands), 11 ramp, 10 draw, 12 interaction, 8 proliferate
+  payoffs, 9 planeswalkers, 9 value. Singleton-legal, 4-color WUBG
+  identity.
+
 ## [2.5.5] - 2026-04-18 (late) — 6-persona audit quick wins + CSV/Karsten bug sweep
 
 ### Context

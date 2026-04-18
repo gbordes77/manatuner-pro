@@ -136,6 +136,104 @@ const SAMPLE_DECKS: Record<string, { name: string; list: string }> = {
 1 Otherworldly Gaze
 1 Mirrex`,
   },
+  // 100-card Atraxa Superfriends / Proliferate — representative EDH deck
+  // covering the typical EDH manabase patterns: 38 lands, 11 ramp, 10
+  // fixers (tri-lands, shocks, fetches, utility), singleton constraint.
+  // Thibault persona ask #1: "stop pretending 60-card is the only format".
+  edh: {
+    name: "Atraxa, Praetors' Voice — Superfriends (Commander)",
+    list: `1 Atraxa, Praetors' Voice
+1 Sol Ring
+1 Arcane Signet
+1 Talisman of Progress
+1 Talisman of Hierarchy
+1 Talisman of Dominance
+1 Chromatic Lantern
+1 Cultivate
+1 Kodama's Reach
+1 Farseek
+1 Nature's Lore
+1 Three Visits
+1 Rhystic Study
+1 Mystic Remora
+1 Esper Sentinel
+1 Guardian Project
+1 Beast Whisperer
+1 Tezzeret's Gambit
+1 Painful Truths
+1 Swords to Plowshares
+1 Path to Exile
+1 Anguished Unmaking
+1 Assassin's Trophy
+1 Beast Within
+1 Counterspell
+1 Arcane Denial
+1 Cyclonic Rift
+1 Toxic Deluge
+1 Damnation
+1 Wrath of God
+1 Supreme Verdict
+1 Doubling Season
+1 Parallel Lives
+1 Hardened Scales
+1 The Ozolith
+1 Deepglow Skate
+1 Evolution Sage
+1 Flux Channeler
+1 Contagion Engine
+1 Vraska, Golgari Queen
+1 Teferi, Master of Time
+1 Narset, Parter of Veils
+1 Elspeth, Sun's Champion
+1 Jace, the Mind Sculptor
+1 Tamiyo, Field Researcher
+1 Nissa, Voice of Zendikar
+1 Ajani, the Greathearted
+1 Oko, Thief of Crowns
+1 Teferi, Time Raveler
+1 Oath of Teferi
+1 Oath of Kaya
+1 Oath of Gideon
+1 Oath of Ajani
+1 Sage of Hours
+1 Leyline Binding
+1 Spark Double
+1 The Great Henge
+1 Gideon, Ally of Zendikar
+1 Command Tower
+1 Exotic Orchard
+1 Reflecting Pool
+1 Mana Confluence
+1 City of Brass
+1 Reliquary Tower
+1 Bojuka Bog
+1 Urborg, Tomb of Yawgmoth
+1 Hallowed Fountain
+1 Breeding Pool
+1 Overgrown Tomb
+1 Watery Grave
+1 Temple Garden
+1 Godless Shrine
+1 Fabled Passage
+1 Flooded Strand
+1 Misty Rainforest
+1 Polluted Delta
+1 Windswept Heath
+1 Marsh Flats
+1 Indatha Triome
+1 Zagoth Triome
+1 Raffine's Tower
+1 Glacial Fortress
+1 Drowned Catacomb
+1 Woodland Cemetery
+1 Sunpetal Grove
+1 Hinterland Harbor
+1 Isolated Chapel
+4 Forest
+3 Plains
+3 Island
+4 Swamp`,
+  },
 }
 
 // Default fallback for ?sample=1 (back-compat) and the main CTA from home.
@@ -602,9 +700,10 @@ const AnalyzerPage: React.FC = () => {
                     Paste a decklist and hit <strong>Analyze</strong> — or try one of the sample
                     archetypes below.
                   </Typography>
-                  {/* Three archetype chips so the first-time visitor can pick
-                      a deck shape matching what they actually play (Sarah
-                      persona ask: "don't give me just one sample"). */}
+                  {/* Four archetype chips — three 60-card archetypes + a
+                      100-card Commander sample. Thibault persona ask #1:
+                      "don't force me into a 60-card frame; EDH is 40 % of
+                      the paper MTG market". */}
                   <Box
                     sx={{
                       display: 'flex',
@@ -638,6 +737,21 @@ const AnalyzerPage: React.FC = () => {
                       sx={{ fontWeight: 600, textTransform: 'none', borderWidth: 2 }}
                     >
                       Azorius Control
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? 'medium' : 'large'}
+                      onClick={() => handleLoadSampleKey('edh')}
+                      sx={{
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        borderWidth: 2,
+                        borderColor: 'secondary.main',
+                        color: 'secondary.main',
+                        '&:hover': { borderWidth: 2, borderColor: 'secondary.dark' },
+                      }}
+                    >
+                      Commander (EDH)
                     </Button>
                   </Box>
                   <Box
