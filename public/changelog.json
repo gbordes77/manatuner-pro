@@ -6,8 +6,24 @@
   "format": "keepachangelog-1.0.0",
   "semver": "2.0.0",
   "note": "Machine-readable version history. Generated from CHANGELOG.md. Each entry is summary-level; full changelog at https://github.com/gbordes77/ManaTuner-v2/blob/main/CHANGELOG.md",
-  "current": "2.5.8",
+  "current": "2.7.0",
   "versions": [
+    {
+      "version": "2.7.0",
+      "date": "2026-04-18",
+      "title": "Library V3 — per-article SEO routes, author indexes, Markdown + RSS + BibTeX exports, Commander preset live",
+      "highlights": [
+        "Per-article detail route /library/:slug with full Article JSON-LD (SEO long-tail unlocked for all 54 articles)",
+        "Author index route /library/author/:slug — every author page has Schema.org CollectionPage + linked article chips",
+        "BibTeX copy button on every ArticleCard + on the detail page (David ask — academic-grade citations)",
+        "Copy-as-Markdown button in the /library filter toolbar — current filter exports as Discord-pasteable Markdown (Karim ask)",
+        "Build-time /library.json (JSON Feed 1.1) + /library/feed.xml (RSS 2.0, top 30 newest) — static API for grinders (Natsuki ask)",
+        "Dynamic sitemap.xml regenerated from seed at prebuild: 8 static + 54 articles + 27 authors = 89 URLs for Google",
+        "/analyzer?format=commander now auto-loads the Atraxa EDH sample + persistent Commander preset banner (Thibault P1)",
+        "Start Here hero card elevated above the 5-track peer grid for new players (Léo polish)",
+        "Sticky progress chip 📚 N/54 read at top of /library — visible from any scroll (Sarah polish)"
+      ]
+    },
     {
       "version": "2.5.8",
       "date": "2026-04-18",

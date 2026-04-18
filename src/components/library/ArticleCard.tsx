@@ -9,6 +9,7 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import LinkIcon from '@mui/icons-material/Link'
 import LockOutlineIcon from '@mui/icons-material/LockOutlined'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
 import MirrorIcon from '@mui/icons-material/ContentCopy'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
@@ -30,8 +31,10 @@ import {
   Typography,
 } from '@mui/material'
 import React, { memo, useState } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import type { ArticleMedium, LinkStatus, ReferenceArticle } from '../../types/referenceArticle'
 import { CATEGORY_LABELS } from '../../types/referenceArticle'
+import { slugifyAuthor, toBibTeX } from '../../utils/libraryHelpers'
 import { useTheme } from '../common/NotificationProvider'
 
 const LINK_STATUS_META: Record<
@@ -144,6 +147,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
 }) => {
   const { isDark } = useTheme()
   const [copied, setCopied] = useState(false)
+  const [bibCopied, setBibCopied] = useState(false)
 
   const statusMeta = LINK_STATUS_META[article.linkStatus]
   const StatusIcon = statusMeta.icon
@@ -152,15 +156,29 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
 
   const isDisabled = article.linkStatus === 'lost'
   const flag = LANGUAGE_FLAG[article.language] ?? ''
+  const detailPath = `/library/${article.id}`
+  const authorPath = `/library/author/${slugifyAuthor(article.author)}`
 
   const handleCopyLink = async () => {
     try {
-      const url = `${window.location.origin}/library#article-${article.id}`
+      // Canonical per-article URL — crawler-indexable, Discord-rich-preview,
+      // and re-shareable. Falls back to fragment anchor for older bookmarks.
+      const url = `${window.location.origin}${detailPath}`
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
       // clipboard blocked — silently no-op; users can still copy URL manually
+    }
+  }
+
+  const handleCopyBibTeX = async () => {
+    try {
+      await navigator.clipboard.writeText(toBibTeX(article))
+      setBibCopied(true)
+      setTimeout(() => setBibCopied(false), 1800)
+    } catch {
+      // silently no-op
     }
   }
 
@@ -289,7 +307,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
           )}
         </Stack>
 
-        {/* Title */}
+        {/* Title — links to the per-article detail page for SEO + deep linking */}
         <Typography
           variant={compact ? 'subtitle1' : 'h6'}
           component="h3"
@@ -301,7 +319,17 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             fontFamily: '"Cinzel", serif',
           }}
         >
-          {article.title}
+          <Link
+            component={RouterLink}
+            to={detailPath}
+            underline="hover"
+            sx={{
+              color: 'inherit',
+              '&:hover': { color: 'primary.main' },
+            }}
+          >
+            {article.title}
+          </Link>
         </Typography>
 
         {/* Subtitle (series part) */}
@@ -319,7 +347,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
           </Typography>
         )}
 
-        {/* Author · Publisher · Year */}
+        {/* Author · Publisher · Year. Author links to /library/author/:slug */}
         <Typography
           variant="caption"
           color="text.secondary"
@@ -329,7 +357,19 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             fontSize: '0.75rem',
           }}
         >
-          {article.author} · {article.publisher} · {article.year}
+          <Link
+            component={RouterLink}
+            to={authorPath}
+            underline="hover"
+            sx={{
+              color: 'inherit',
+              fontWeight: 600,
+              '&:hover': { color: 'primary.main' },
+            }}
+          >
+            {article.author}
+          </Link>{' '}
+          · {article.publisher} · {article.year}
         </Typography>
 
         {/* Description */}
@@ -425,6 +465,17 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
               sx={{ p: 0.25, color: copied ? 'success.main' : 'text.secondary' }}
             >
               <LinkIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={bibCopied ? 'BibTeX copied!' : 'Copy BibTeX citation'} arrow>
+            <IconButton
+              size="small"
+              onClick={handleCopyBibTeX}
+              aria-label="Copy BibTeX citation for this article"
+              sx={{ p: 0.25, color: bibCopied ? 'success.main' : 'text.secondary' }}
+            >
+              <MenuBookIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Tooltip>
 

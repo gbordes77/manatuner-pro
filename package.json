@@ -1,13 +1,15 @@
 {
   "name": "manatuner",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "description": "ManaTuner - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-library-feeds.mjs && node scripts/generate-sitemap.mjs",
     "build": "vite build",
     "build:prerender": "vite build && node scripts/prerender.mjs",
+    "library:feeds": "node scripts/generate-library-feeds.mjs && node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",

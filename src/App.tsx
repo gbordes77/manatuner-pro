@@ -84,6 +84,12 @@ const LandGlossaryPage = React.lazy(() => import('./pages/LandGlossaryPage'))
 const ReferenceArticlesPage = React.lazy(() =>
   import('./pages/ReferenceArticlesPage').then((m) => ({ default: m.ReferenceArticlesPage }))
 )
+const ArticleDetailPage = React.lazy(() =>
+  import('./pages/ArticleDetailPage').then((m) => ({ default: m.ArticleDetailPage }))
+)
+const AuthorPage = React.lazy(() =>
+  import('./pages/AuthorPage').then((m) => ({ default: m.AuthorPage }))
+)
 
 const AboutPage = React.lazy(() =>
   import('./components/layout/StaticPages').then((m) => ({
@@ -182,6 +188,8 @@ function App() {
                     <Route path="/mes-analyses" element={<Navigate to="/my-analyses" replace />} />
                     <Route path="/land-glossary" element={<LandGlossaryPage />} />
                     <Route path="/library" element={<ReferenceArticlesPage />} />
+                    <Route path="/library/author/:slug" element={<AuthorPage />} />
+                    <Route path="/library/:slug" element={<ArticleDetailPage />} />
                     <Route path="/reading-list" element={<Navigate to="/library" replace />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />

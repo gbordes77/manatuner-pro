@@ -1,18 +1,22 @@
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import CasinoIcon from '@mui/icons-material/Casino'
 import ClearIcon from '@mui/icons-material/Clear'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import FeedbackIcon from '@mui/icons-material/Feedback'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import NewReleasesIcon from '@mui/icons-material/NewReleases'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import SchoolIcon from '@mui/icons-material/School'
 import SearchIcon from '@mui/icons-material/Search'
 import {
+  Alert,
   Box,
   Button,
   Chip,
   Container,
   Grid,
   InputAdornment,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -20,7 +24,7 @@ import {
   useTheme as useMuiTheme,
 } from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import { AnimatedContainer } from '../components/common/AnimatedContainer'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
 import { SEO } from '../components/common/SEO'
@@ -43,6 +47,7 @@ import {
   TRACK_METADATA,
   TRACK_ORDER,
 } from '../types/referenceArticle'
+import { articlesAsMarkdown } from '../utils/libraryHelpers'
 
 type CategoryFilter = ArticleCategory | 'all'
 type LevelFilter = ArticleLevel | 'all'
@@ -104,6 +109,13 @@ export const ReferenceArticlesPage: React.FC = () => {
   // Local debounced search state — we only push to the URL after 250ms
   // so every keystroke doesn't thrash history
   const [searchInput, setSearchInput] = useState(queryFromUrl)
+
+  // Feedback state for the "Copy as Markdown" action (Karim ask — paste into
+  // Discord / Slack / FNM group-chat without leaving the tool).
+  const [markdownCopied, setMarkdownCopied] = useState<null | {
+    count: number
+    error?: boolean
+  }>(null)
   useEffect(() => {
     const id = setTimeout(() => {
       setSearchParams(
@@ -251,6 +263,53 @@ export const ReferenceArticlesPage: React.FC = () => {
     return n
   }, [filteredNonTracked.length, filteredTrackedByTrack])
 
+  // ----- Copy-as-Markdown handler (Karim ask) -----
+  // Flatten the current visible set (tracked + non-tracked, deduped by id)
+  // and emit a Discord-friendly Markdown block. When no filter is active we
+  // export the entire library so the button is useful in any state.
+  const copyCurrentAsMarkdown = useCallback(async () => {
+    const byId = new Map<string, ReferenceArticle>()
+    for (const track of TRACK_ORDER) {
+      for (const a of filteredTrackedByTrack[track]) byId.set(a.id, a)
+    }
+    for (const a of filteredNonTracked) byId.set(a.id, a)
+    const all = Array.from(byId.values())
+
+    const descriptors: string[] = []
+    if (query) descriptors.push(`matching "${queryFromUrl}"`)
+    if (filter !== 'all') descriptors.push(`in ${CATEGORY_LABELS[filter]}`)
+    if (levelFilter !== 'all') descriptors.push(`at ${levelFilter}`)
+    if (langFilter !== 'all') descriptors.push(`(${langFilter.toUpperCase()})`)
+    if (mediumFilter !== 'all') descriptors.push(`as ${mediumFilter}`)
+
+    const heading = anyFilterActive
+      ? `ManaTuner Library — ${descriptors.join(' · ')}`
+      : 'ManaTuner Library — Competitive MTG Reading List'
+
+    const markdown = articlesAsMarkdown(all, {
+      heading,
+      groupBy: all.length > 8 ? 'category' : 'none',
+      categoryLabels: CATEGORY_LABELS as unknown as Record<string, string>,
+    })
+
+    try {
+      await navigator.clipboard.writeText(markdown)
+      setMarkdownCopied({ count: all.length })
+    } catch {
+      setMarkdownCopied({ count: all.length, error: true })
+    }
+  }, [
+    filteredNonTracked,
+    filteredTrackedByTrack,
+    filter,
+    levelFilter,
+    langFilter,
+    mediumFilter,
+    query,
+    queryFromUrl,
+    anyFilterActive,
+  ])
+
   // -------- "What's new" + "Random pick" quick actions --------
   const fiveMostRecent = useMemo(() => {
     return [...articlesReferenceSeed]
@@ -310,6 +369,45 @@ export const ReferenceArticlesPage: React.FC = () => {
       />
 
       <FloatingManaSymbols />
+
+      {/* Sticky progress chip — Sarah ask: "I want my running 📚 N/48 read count
+          visible from any scroll position, not just the hero". Sits just under
+          the site header; hidden when no progress yet to keep the hero clean
+          for new visitors. Fades in on first read-action via MUI's mount
+          transitions (no JS scroll listener — we lean on CSS `position:sticky`
+          so it respects `prefers-reduced-motion`). */}
+      {progress.readCount > 0 && (
+        <Box
+          aria-label={`You have read ${progress.readCount} of ${totalCount} articles in the Library`}
+          sx={{
+            position: 'sticky',
+            top: 72, // clears the site header
+            zIndex: 5,
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 2,
+            pointerEvents: 'none', // chip's own pointerEvents re-enables it
+          }}
+        >
+          <Chip
+            icon={<AutoStoriesIcon sx={{ fontSize: 16 }} />}
+            label={`${progress.readCount}/${totalCount} read${
+              progress.bookmarkCount > 0 ? ` · 🔖 ${progress.bookmarkCount} saved` : ''
+            }`}
+            color="primary"
+            variant="filled"
+            sx={{
+              pointerEvents: 'auto',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.45)' : '0 4px 16px rgba(0,0,0,0.12)',
+              backdropFilter: 'blur(6px)',
+              backgroundColor: isDark ? 'rgba(25,118,210,0.85)' : 'rgba(25,118,210,0.92)',
+              color: 'white',
+            }}
+          />
+        </Box>
+      )}
 
       {/* ============================ HERO ============================ */}
       <AnimatedContainer animation="fadeInUp">
@@ -537,6 +635,181 @@ export const ReferenceArticlesPage: React.FC = () => {
         </Box>
       )}
 
+      {/* ========== "Start Here" elevated beginner CTA (Léo ask) ==========
+          The 5 tracks below are peer-leveled Commander / Pro Tour / RCQ,
+          and that flat treatment is intimidating for brand-new players who
+          don't know where to start. This elevated card promotes the First
+          FNM track as the default on-ramp, positioned ABOVE the track row
+          so a beginner reads "Start Here" first and the peer tracks second.
+          Hidden during search to avoid getting in the way of matches. */}
+      {!query && !anyFilterActive && trackedByTrack['first-fnm'].length > 0 && (
+        <Box sx={{ mb: 4, position: 'relative', zIndex: 1 }}>
+          <Box
+            sx={{
+              borderRadius: 4,
+              overflow: 'hidden',
+              border: '2px solid',
+              borderColor: '#0E68AB',
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(14,104,171,0.15) 0%, rgba(14,104,171,0.03) 100%)'
+                : 'linear-gradient(135deg, rgba(14,104,171,0.08) 0%, rgba(14,104,171,0.02) 100%)',
+              p: { xs: 2.5, md: 3.5 },
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={{ xs: 2, md: 4 }}
+              alignItems={{ xs: 'stretch', md: 'center' }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <SchoolIcon sx={{ fontSize: 28, color: '#0E68AB' }} />
+                  <Chip
+                    size="small"
+                    label="New to competitive MTG?"
+                    color="primary"
+                    sx={{ fontWeight: 700, fontSize: '0.7rem' }}
+                  />
+                </Stack>
+                <Typography
+                  variant="h4"
+                  component="h2"
+                  sx={{
+                    fontWeight: 800,
+                    fontFamily: '"Cinzel", serif',
+                    fontSize: { xs: '1.5rem', md: '2rem' },
+                    lineHeight: 1.15,
+                    mb: 1,
+                  }}
+                >
+                  Start Here — Your First FNM
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mb: 2, lineHeight: 1.55, maxWidth: 560 }}
+                >
+                  Five short, welcoming reads that cover everything you need before your first
+                  Friday Night Magic — mana bases, mulligans, and how to play your deck instead of
+                  fighting it. Skip ahead to RCQ, Pro Tour, Commander, or Limited once these feel
+                  natural.
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ gap: 1 }}>
+                  <Button
+                    component="a"
+                    href="#track-first-fnm"
+                    variant="contained"
+                    size="medium"
+                    sx={{
+                      textTransform: 'none',
+                      fontWeight: 700,
+                      backgroundColor: '#0E68AB',
+                      '&:hover': { backgroundColor: '#08527F' },
+                    }}
+                  >
+                    Start the path →
+                  </Button>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ alignSelf: 'center', fontStyle: 'italic' }}
+                  >
+                    {trackedByTrack['first-fnm'].length} reads ·{' '}
+                    {trackedByTrack['first-fnm'].reduce(
+                      (acc, a) => acc + (a.readingTimeMin ?? 0),
+                      0
+                    )}{' '}
+                    min total
+                  </Typography>
+                </Stack>
+              </Box>
+
+              {/* Preview: first 2 articles from the First FNM track */}
+              <Box
+                sx={{
+                  flex: 1.1,
+                  minWidth: 0,
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                  gap: 1.5,
+                }}
+              >
+                {trackedByTrack['first-fnm'].slice(0, 2).map((article) => (
+                  <Box
+                    key={article.id}
+                    component={RouterLink}
+                    to={`/library/${article.id}`}
+                    sx={{
+                      display: 'block',
+                      p: 1.5,
+                      borderRadius: 2,
+                      border: '1px solid',
+                      borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(14,104,171,0.2)',
+                      backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.6)',
+                      textDecoration: 'none',
+                      color: 'text.primary',
+                      transition: 'all 0.2s ease',
+                      '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+                      '&:hover': {
+                        borderColor: '#0E68AB',
+                        transform: 'translateY(-2px)',
+                      },
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: '#0E68AB',
+                        fontWeight: 700,
+                        letterSpacing: 1,
+                        textTransform: 'uppercase',
+                        fontSize: '0.65rem',
+                      }}
+                    >
+                      {article.author}
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: 700,
+                        lineHeight: 1.25,
+                        mt: 0.25,
+                        fontSize: '0.88rem',
+                      }}
+                    >
+                      {article.title}
+                    </Typography>
+                    {typeof article.readingTimeMin === 'number' && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontSize: '0.7rem' }}
+                      >
+                        {article.readingTimeMin} min read
+                        {progress.isRead(article.id) ? ' · ✅ read' : ''}
+                      </Typography>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            </Stack>
+          </Box>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              display: 'block',
+              textAlign: 'center',
+              mt: 1.5,
+              fontStyle: 'italic',
+            }}
+          >
+            Or jump straight to one of the four peer tracks below.
+          </Typography>
+        </Box>
+      )}
+
       {/* ================== Reading tracks (5 tracks) ================== */}
       <Box sx={{ mb: 6, position: 'relative', zIndex: 1 }}>
         <Box
@@ -572,7 +845,7 @@ export const ReferenceArticlesPage: React.FC = () => {
           >
             {query || anyFilterActive
               ? 'Matches in Reading Tracks'
-              : 'Pick a Track — Start Where You Are'}
+              : 'All Reading Tracks — Pick Your Level'}
           </Typography>
         </Box>
 
@@ -843,6 +1116,34 @@ export const ReferenceArticlesPage: React.FC = () => {
               </Button>
             </>
           )}
+
+          {/* Copy as Markdown — Karim ask: paste the current filtered view
+              into Discord / Slack / a pod chat without leaving the tool.
+              Works on the full library when no filter is active. */}
+          <Box sx={{ width: 12 }} />
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={copyCurrentAsMarkdown}
+            startIcon={<ContentCopyIcon sx={{ fontSize: 14 }} />}
+            aria-label={
+              anyFilterActive
+                ? 'Copy filtered articles as Markdown'
+                : 'Copy full library as Markdown'
+            }
+            sx={{
+              textTransform: 'none',
+              fontSize: '0.72rem',
+              borderColor: 'primary.main',
+              color: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+            }}
+          >
+            Copy as Markdown
+          </Button>
         </Box>
 
         {/* Result count */}
@@ -1010,6 +1311,25 @@ export const ReferenceArticlesPage: React.FC = () => {
           Give Feedback
         </Button>
       </Box>
+
+      <Snackbar
+        open={markdownCopied !== null}
+        autoHideDuration={3000}
+        onClose={() => setMarkdownCopied(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={markdownCopied?.error ? 'error' : 'success'}
+          onClose={() => setMarkdownCopied(null)}
+          variant="filled"
+        >
+          {markdownCopied?.error
+            ? 'Clipboard blocked by your browser. Try again with the page focused.'
+            : `Copied ${markdownCopied?.count ?? 0} article${
+                markdownCopied?.count === 1 ? '' : 's'
+              } as Markdown — paste into Discord or Slack.`}
+        </Alert>
+      </Snackbar>
     </Container>
   )
 }

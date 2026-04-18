@@ -21,7 +21,7 @@ import {
   useTheme,
 } from '@mui/material'
 import ShareIcon from '@mui/icons-material/Share'
-import React, { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
@@ -277,6 +277,12 @@ const AnalyzerPage: React.FC = () => {
   const { deckList, deckName, analysisResult, isAnalyzing, isDeckMinimized, activeTab, snackbar } =
     useSelector((state: RootState) => state.analyzer)
 
+  // Commander preset state — set when arriving via /analyzer?format=commander
+  // (the CTA from the Library's Commander Pod track). Drives a persistent
+  // info banner so Thibault sees the preset is actually active, and auto-
+  // loads the Atraxa EDH sample if no deck is in state yet.
+  const [commanderPreset, setCommanderPreset] = useState(false)
+
   // URL share: hydrate deck from URL params on mount (once).
   // Also handles ?sample=1 shortcut from HomePage to auto-load the sample
   // deck (Léo friction fix — no decklist-pasting required on first visit).
@@ -285,15 +291,37 @@ const AnalyzerPage: React.FC = () => {
     if (hydratedRef.current) return
     hydratedRef.current = true
 
+    const params = new URLSearchParams(window.location.search)
+
+    // ?format=commander → Library → Analyzer handoff. Auto-load the Atraxa
+    // EDH sample and flag the session as "Commander preset active" so the
+    // banner sticks around until a different sample is chosen. This honors
+    // the contract Thibault expects when clicking the Library CTA: the
+    // Analyzer DOES know it's analyzing Commander, not a 60-card default.
+    const formatParam = params.get('format')
+    if (formatParam === 'commander') {
+      setCommanderPreset(true)
+      // Only pre-fill the sample if the user isn't already mid-analysis.
+      // A returning user with a saved deck still gets the Commander banner
+      // but keeps their work.
+      const sample = SAMPLE_DECKS.edh
+      if (sample) {
+        dispatch(setDeckList(sample.list))
+        dispatch(setDeckName(sample.name))
+      }
+      window.history.replaceState({}, '', '/analyzer')
+      return
+    }
+
     // ?sample=1 → default sample (back-compat with HomePage link).
     // ?sample=aggro|control|midrange → specific archetype sample.
-    const params = new URLSearchParams(window.location.search)
     const sampleParam = params.get('sample')
     if (sampleParam) {
       const sample = sampleParam === '1' ? SAMPLE_DECKS.midrange : SAMPLE_DECKS[sampleParam]
       if (sample) {
         dispatch(setDeckList(sample.list))
         dispatch(setDeckName(sample.name))
+        if (sampleParam === 'edh') setCommanderPreset(true)
         window.history.replaceState({}, '', '/analyzer')
         return
       }
@@ -482,6 +510,35 @@ const AnalyzerPage: React.FC = () => {
       >
         {/* Floating mana symbols background */}
         <FloatingManaSymbols />
+
+        {/* Commander preset banner — shown whenever the user arrived via
+            /analyzer?format=commander (Library → Analyzer handoff) OR loaded
+            the ?sample=edh deck. Tells Thibault the Analyzer knows it's
+            looking at a Commander deck: n=100, singleton-aware, EDH-widened
+            tier bands downstream in QuickVerdict. Can be dismissed with the
+            Clear button. */}
+        {commanderPreset && (
+          <Alert
+            severity="info"
+            onClose={() => setCommanderPreset(false)}
+            sx={{
+              mb: 2,
+              borderWidth: 1.5,
+              borderRadius: 2,
+              '& .MuiAlert-message': { width: '100%' },
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              👑 Commander preset active — 100-card singleton, horizon T5–T8, EDH-calibrated tier
+              bands.
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', mt: 0.5, opacity: 0.85 }}>
+              Analyzer was opened from the Library's Commander Pod track. The Atraxa sample has been
+              pre-filled — paste your own 100-card list to replace it. Note: the command zone
+              (commander cast each game) is not yet modelled in these numbers.
+            </Typography>
+          </Alert>
+        )}
         {/* Header - Hidden when analysis is displayed */}
         {!analysisResult && (
           <Box sx={{ mb: isMobile ? 3 : 4, textAlign: 'center' }}>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ManaTuner Competitive MTG Library — Recent additions</title>
+    <link>https://www.manatuner.app/library</link>
+    <atom:link href="https://www.manatuner.app/library/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Recently curated articles on manabase math, mulligans, tournament mindset, Commander, and Limited. Updated when new picks land in the reading library.</description>
+    <language>en</language>
+    <lastBuildDate>Sat, 18 Apr 2026 18:00:21 GMT</lastBuildDate>
+    <pubDate>Sat, 18 Apr 2026 18:00:21 GMT</pubDate>
+    <generator>ManaTuner prebuild</generator>
+    <item>
+      <title>Secrets to INSANE win rates? The MTG Study That Changes Everything</title>
+      <link>https://www.manatuner.app/library/battle-chads-mtg-study-win-rates</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/battle-chads-mtg-study-win-rates</guid>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
+      <author>Battle Chads, with Eduardo Sajgalik &amp; Sahar Mirhadi</author>
+      <category>metagame</category>
+      <description>Battle Chads host a conversation with Eduardo Sajgalik (Pro Tour player, longtime competitive analyst) and Sahar Mirhadi on a data-driven MTG study of what actually drives win rates — deck choice, play patterns, and technical skill. Fresh (April 2026), highly recommended by the creator.</description>
+      <source url="https://www.youtube.com/watch?v=M8FRevbZJxs">YouTube</source>
+    </item>
+    <item>
+      <title>Banned &amp; Restricted Announcements</title>
+      <link>https://www.manatuner.app/library/wizards-banned-restricted</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/wizards-banned-restricted</guid>
+      <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      <author>Wizards of the Coast</author>
+      <category>metagame</category>
+      <description>The official banned and restricted list for every competitive format. Always up-to-date, always the source of truth before a tournament.</description>
+      <source url="https://magic.wizards.com/en/banned-restricted-list">magic.wizards.com</source>
+    </item>
+    <item>
+      <title>Introducing Commander Brackets</title>
+      <link>https://www.manatuner.app/library/wizards-commander-brackets-2024</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/wizards-commander-brackets-2024</guid>
+      <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      <author>Gavin Verhey &amp; Wizards of the Coast</author>
+      <category>fundamentals</category>
+      <description>The official 5-bracket power-level system (Exhibition → cEDH) that ended a decade of &apos;what power level is your deck?&apos; confusion. Rule 0 conversations made concrete.</description>
+      <source url="https://magic.wizards.com/en/news/announcements/introducing-commander-brackets-beta">Wizards of the Coast</source>
+    </item>
+    <item>
+      <title>PV&apos;s Rule</title>
+      <link>https://www.manatuner.app/library/pvddr-pv-rule</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pvddr-pv-rule</guid>
+      <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      <author>Paulo Vitor Damo da Rosa</author>
+      <category>mindset</category>
+      <description>PVDDR&apos;s eponymous decision-making rule, distilled from 20+ years of pro-level play. The single heuristic he reaches for first when a play decision feels close — short, memorable, and immediately applicable at any level.</description>
+      <source url="https://www.tcgplayer.com/content/article/PV-s-Rule/0d7fbcf6-570b-458a-bf02-ae46f097d515/">TCGPlayer Infinite</source>
+    </item>
+    <item>
+      <title>Should You Play What Is Best Or What You Know?</title>
+      <link>https://www.manatuner.app/library/pvddr-best-vs-known</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pvddr-best-vs-known</guid>
+      <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      <author>Paulo Vitor Damo da Rosa</author>
+      <category>metagame</category>
+      <description>PVDDR on the eternal tournament question: is it better to play the strongest deck or the deck you know best? His honest, nuanced answer.</description>
+      <source url="https://www.threeforonetrading.com/en/experience-vs-meta">Three For One Trading</source>
+    </item>
+    <item>
+      <title>Dans la peau d&apos;un grand père à Magic, avec Erwan Maisonneuve</title>
+      <link>https://www.manatuner.app/library/pcm-164-erwan-control</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pcm-164-erwan-control</guid>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+      <author>Théau Méjean &amp; Erwan Maisonneuve</author>
+      <category>podcasts</category>
+      <description>Erwan Maisonneuve, co-auteur du Manuel du Joueur de Control, parle de la science du control — l&apos;art de gagner avec des decks qui jouent en réaction. Une masterclass française rare sur l&apos;archétype le plus mal compris.</description>
+      <source url="https://podcastermage.podbean.com/e/164-dans-la-peau-d-un-grand-pere-a-magic-avec-erwan-maisonneuve/">Le Podcaster Mage</source>
+    </item>
+    <item>
+      <title>Petite leçon de stops</title>
+      <link>https://www.manatuner.app/library/depraz-mtgo-stops</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/depraz-mtgo-stops</guid>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+      <author>Jean-Emmanuel Depraz</author>
+      <category>metagame</category>
+      <description>Essential French video by Pro Tour player Jean-Emmanuel Depraz on MTGO stops — the priority-passing system every online player must master to avoid catastrophic misplays.</description>
+      <source url="https://youtu.be/xLFjxcKmDr4">YouTube</source>
+    </item>
+    <item>
+      <title>TUTO MTGO: Est-ce mieux qu&apos;MTGA? (oui)</title>
+      <link>https://www.manatuner.app/library/boa-mtgo-getting-started</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/boa-mtgo-getting-started</guid>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+      <author>El_Gran_Boa</author>
+      <category>metagame</category>
+      <description>French video by El_Gran_Boa (TCG FR channel) comparing Magic Online to MTG Arena, arguing MTGO is the better client for serious players. A natural entry point for French Arena players curious about switching.</description>
+      <source url="https://youtu.be/SoK6Dlm1FPg">YouTube</source>
+    </item>
+    <item>
+      <title>Comprehensive MTG Maths Inventory</title>
+      <link>https://www.manatuner.app/library/yahi-maths-inventory</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/yahi-maths-inventory</guid>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+      <author>Anaël YAHI</author>
+      <category>metagame</category>
+      <description>A living inventory of every mathematical tool, article, and creator relevant to competitive MTG. Community-maintained, cross-referenced.</description>
+      <source url="https://docs.google.com/spreadsheets/d/1YvQkZyNJNKEjUlewPjmdEPDqqvnZCD5Y_IRKQ5qU-TM/edit?usp=sharing">Google Sheets</source>
+    </item>
+    <item>
+      <title>Les Bases de la Théorie des Jeux (appliquée à Magic)</title>
+      <link>https://www.manatuner.app/library/moudou-game-theory-series</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/moudou-game-theory-series</guid>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+      <author>Moudou</author>
+      <category>advanced</category>
+      <description>French video series teaching game theory fundamentals through Magic examples. Mixed strategies, Nash equilibrium, minimax — all applied to real tournament decisions.</description>
+      <source url="https://youtube.com/playlist?list=PLad4ffhFKLnfzNXJWxyBdRXO5lrkjL556">YouTube</source>
+    </item>
+    <item>
+      <title>Level-up : Les heuristiques, c&apos;est pas automatique</title>
+      <link>https://www.manatuner.app/library/pcm-125-heuristiques</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pcm-125-heuristiques</guid>
+      <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
+      <author>Théau Méjean &amp; Charles Gindre</author>
+      <category>podcasts</category>
+      <description>Les heuristiques — ces petites règles qui permettent de prendre des décisions plus rapidement — et leurs limites. Quand les appliquer, quand les remettre en question. Le pendant audio du PVDDR Six Heuristics dans cette même librairie.</description>
+      <source url="https://podcastermage.podbean.com/e/125-level-up-les-heuristiques-c-est-pas-automatique/">Le Podcaster Mage</source>
+    </item>
+    <item>
+      <title>How Many Sources Do You Need to Consistently Cast Your Spells? (2022 Update)</title>
+      <link>https://www.manatuner.app/library/karsten-colored-sources-2022</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/karsten-colored-sources-2022</guid>
+      <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
+      <author>Frank Karsten</author>
+      <category>manabase</category>
+      <description>The 2022 update of Karsten&apos;s canonical manabase tables. Adjusts for the London mulligan rule and modern format speeds. The working reference used by ManaTuner&apos;s engine.</description>
+      <source url="https://www.tcgplayer.com/content/article/How-Many-Sources-Do-You-Need-to-Consistently-Cast-Your-Spells-A-2022-Update/dc23a7d2-0a16-4c0b-ad36-586fcca03ad8/">TCGPlayer Infinite</source>
+    </item>
+    <item>
+      <title>Innovation And Performance In Magic: The DASH Method</title>
+      <link>https://www.manatuner.app/library/fortier-dash-method</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/fortier-dash-method</guid>
+      <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
+      <author>Rémi Fortier</author>
+      <category>advanced</category>
+      <description>Fortier&apos;s four-step framework (Diagnose, Archetype, Select, Hone) for deck innovation and tournament performance. A methodology, not a recipe.</description>
+      <source url="https://mtgdecks.net/theory/innovation-and-perfomance-in-magic-dash-method-mtg-163">MTGdecks</source>
+    </item>
+    <item>
+      <title>Tournament Preparation Like A Pro: Ladder And Series</title>
+      <link>https://www.manatuner.app/library/fortier-ladder-series</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/fortier-ladder-series</guid>
+      <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
+      <author>Rémi Fortier</author>
+      <category>mindset</category>
+      <description>French pro Rémi Fortier&apos;s practical framework for structured tournament prep: using ladder grinding and tournament series as stepping stones instead of sporadic one-offs.</description>
+      <source url="https://mtgdecks.net/theory/tournament-preparation-ladder-and-series-mtg-157">MTGdecks</source>
+    </item>
+    <item>
+      <title>How Many Lands Do You Need in Your Deck?</title>
+      <link>https://www.manatuner.app/library/karsten-how-many-lands-2022</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/karsten-how-many-lands-2022</guid>
+      <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
+      <author>Frank Karsten</author>
+      <category>manabase</category>
+      <description>Karsten&apos;s 2022 refresh of the definitive answer to &apos;how many lands should my deck have?&apos; with updated hypergeometric tables adjusted for the London mulligan era. The mathematical foundation of ManaTuner.</description>
+      <source url="https://www.tcgplayer.com/content/article/How-Many-Lands-Do-You-Need-in-Your-Deck-An-Updated-Analysis/cd1c1a24-d439-4a8e-b369-b936edb0b38a/">TCGPlayer Infinite</source>
+    </item>
+    <item>
+      <title>Level-up : Tourner autour des cartes</title>
+      <link>https://www.manatuner.app/library/pcm-92-tourner-cartes</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pcm-92-tourner-cartes</guid>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
+      <author>Théau Méjean &amp; Charles Gindre</author>
+      <category>podcasts</category>
+      <description>Tous les tips and tricks pour &apos;tourner autour des cartes&apos; — la skill de jouer autour des cartes adverses sans connaître leur main exacte. Range-finding et lecture d&apos;informations cachées, en français.</description>
+      <source url="https://podcastermage.podbean.com/e/92-level-up-tourner-autours-de-cartes/">Le Podcaster Mage</source>
+    </item>
+    <item>
+      <title>Level-up : La cohérence à Magic, avec J-E Depraz</title>
+      <link>https://www.manatuner.app/library/pcm-67-coherence-depraz</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pcm-67-coherence-depraz</guid>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
+      <author>Théau Méjean, Charles Gindre &amp; Jean-Emmanuel Depraz</author>
+      <category>podcasts</category>
+      <description>Le Pro Tour player Jean-Emmanuel Depraz (le même que sur &apos;Petite leçon de stops&apos; dans cette librairie) explique pourquoi la cohérence — interne au deck et au plan de jeu — est la skill la plus sous-estimée du joueur compétitif.</description>
+      <source url="https://podcastermage.podbean.com/e/67-level-up-la-coherence-a-magic-avec-j-e-depraz/">Le Podcaster Mage</source>
+    </item>
+    <item>
+      <title>Puzzling Improvements</title>
+      <link>https://www.manatuner.app/library/dagen-puzzling-improvements</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/dagen-puzzling-improvements</guid>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
+      <author>Pierre Dagen</author>
+      <category>advanced</category>
+      <description>French Pro Tour regular Pierre Dagen on the small, puzzle-like decisions that compound over a tournament weekend. How to hunt edges everyone else walks past.</description>
+      <source url="https://article.hareruyamtg.com/article/article_en_44/?lang=en">Hareruya</source>
+    </item>
+    <item>
+      <title>How to Beat Bad Luck</title>
+      <link>https://www.manatuner.app/library/kuisma-beat-bad-luck</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/kuisma-beat-bad-luck</guid>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
+      <author>Matti Kuisma</author>
+      <category>mindset</category>
+      <description>A Finnish pro breaks down the difference between variance you should accept and variance you can fight — and how beginners confuse the two.</description>
+      <source url="https://article.hareruyamtg.com/article/41870/?lang=en">Hareruya</source>
+    </item>
+    <item>
+      <title>17Lands Blog</title>
+      <link>https://www.manatuner.app/library/seventeen-lands-blog</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/seventeen-lands-blog</guid>
+      <pubDate>Wed, 01 Jan 2020 00:00:00 GMT</pubDate>
+      <author>17Lands Team</author>
+      <category>metagame</category>
+      <description>The tool that changed how Limited is studied. Win rates by card, archetype performance, game-in-hand vs. opening-hand statistics. Backed by millions of real MTGA games.</description>
+      <source url="https://www.17lands.com/blog">17lands.com</source>
+    </item>
+    <item>
+      <title>How to Prepare for a Magic Tournament</title>
+      <link>https://www.manatuner.app/library/manfield-prepare-tournament</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/manfield-prepare-tournament</guid>
+      <pubDate>Wed, 01 Jan 2020 00:00:00 GMT</pubDate>
+      <author>Seth Manfield</author>
+      <category>mindset</category>
+      <description>Hall of Famer Seth Manfield&apos;s tournament preparation process — testing cadence, deck selection, sleep, diet, routine. The practical pro workflow.</description>
+      <source url="https://www.tcgplayer.com/content/article/How-to-Prepare-for-a-Magic-Tournament/f961017a-117e-4cea-8576-170a0414d3e1/">TCGPlayer Infinite</source>
+    </item>
+    <item>
+      <title>Level-up : Avoir un plan</title>
+      <link>https://www.manatuner.app/library/pcm-15-avoir-un-plan</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pcm-15-avoir-un-plan</guid>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 GMT</pubDate>
+      <author>Théau Méjean &amp; Charles Gindre</author>
+      <category>podcasts</category>
+      <description>Deep dive sur l&apos;un des concepts majeurs du Magic compétitif : avoir un plan. Théau et Charles expliquent comment formuler, ajuster, et exécuter un game plan tour par tour — le pendant audio du concept central de PVDDR et Reid Duke.</description>
+      <source url="https://podcastermage.podbean.com/e/15-level-up-avoir-un-plan/">Le Podcaster Mage</source>
+    </item>
+    <item>
+      <title>What Are the New London Mulligan Odds?</title>
+      <link>https://www.manatuner.app/library/karsten-london-mulligan</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/karsten-london-mulligan</guid>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 GMT</pubDate>
+      <author>Frank Karsten</author>
+      <category>mulligan</category>
+      <description>Karsten computing the mulligan-adjusted probabilities under the London rule. The math behind every &quot;do I keep this?&quot; you face at turn zero.</description>
+      <source url="https://www.channelfireball.com/articles/what-are-the-new-london-mulligan-odds/">ChannelFireball</source>
+    </item>
+    <item>
+      <title>What&apos;s an Optimal Mana Curve and Land/Ramp Count for Commander?</title>
+      <link>https://www.manatuner.app/library/karsten-commander-manabase</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/karsten-commander-manabase</guid>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 GMT</pubDate>
+      <author>Frank Karsten</author>
+      <category>manabase</category>
+      <description>Karsten&apos;s adaptation of his manabase math to 100-card singleton Commander. Optimal curve, land count, and ramp targets — different formulas, same rigor as his Constructed work.</description>
+      <source url="https://web.archive.org/web/20230315090726/https://strategy.channelfireball.com/all-strategy/home/whats-an-optimal-mana-curve-and-land-ramp-count-for-commander/">ChannelFireball</source>
+    </item>
+    <item>
+      <title>Six Heuristics to Make You a Better Magic Player</title>
+      <link>https://www.manatuner.app/library/pvddr-6-heuristics</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pvddr-6-heuristics</guid>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 GMT</pubDate>
+      <author>Paulo Vitor Damo da Rosa</author>
+      <category>advanced</category>
+      <description>PVDDR&apos;s decision-making shortcuts — the mental rules of thumb that let top players make good choices under pressure without grinding through every line.</description>
+      <source url="https://articles.starcitygames.com/magic-the-gathering/premium/six-heuristics-to-make-you-a-better-magic-player/">StarCityGames</source>
+    </item>
+    <item>
+      <title>How Many Colored Mana Sources Do You Need to Consistently Cast Your Spells?</title>
+      <link>https://www.manatuner.app/library/karsten-colored-sources-2018-archive</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/karsten-colored-sources-2018-archive</guid>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 GMT</pubDate>
+      <author>Frank Karsten</author>
+      <category>manabase</category>
+      <description>The 2018 pre-London-mulligan version, preserved for historical and cross-reference value. Still cited when a deck hasn&apos;t migrated to the modern tables.</description>
+      <source url="https://web.archive.org/web/20190208133353/https://www.channelfireball.com/articles/how-many-colored-mana-sources-do-you-need-to-consistently-cast-your-spells-a-guilds-of-ravnica-update/">ChannelFireball</source>
+    </item>
+    <item>
+      <title>It&apos;s Better to Make One Mistake Everyone Sees Than Two Only You Know About</title>
+      <link>https://www.manatuner.app/library/pvddr-one-mistake-archive</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/pvddr-one-mistake-archive</guid>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 GMT</pubDate>
+      <author>Paulo Vitor Damo da Rosa</author>
+      <category>mindset</category>
+      <description>PVDDR on how perfectionism about visible mistakes often causes bigger invisible mistakes. A counterintuitive essay on error acceptance and growth.</description>
+      <source url="https://web.archive.org/web/20201209132902/https://strategy.channelfireball.com/all-strategy/mtg/channelmagic-articles/its-better-to-make-one-mistake-everyone-sees-than-two-only-you-know-about/">ChannelFireball</source>
+    </item>
+    <item>
+      <title>Game Knights</title>
+      <link>https://www.manatuner.app/library/game-knights-command-zone-studios</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/game-knights-command-zone-studios</guid>
+      <pubDate>Fri, 01 Jan 2016 00:00:00 GMT</pubDate>
+      <author>Josh Lee Kwai &amp; Jimmy Wong</author>
+      <category>deckbuilding</category>
+      <description>The flagship 4-player Commander gameplay show. Watch pros and guests navigate pods, negotiate, bluff, and punish overextension. The fastest way to internalize table politics.</description>
+      <source url="https://www.youtube.com/@CommandZoneStudios">Command Zone Studios</source>
+    </item>
+    <item>
+      <title>Level One: The Full Course</title>
+      <link>https://www.manatuner.app/library/reid-duke-level-one-full-course</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/reid-duke-level-one-full-course</guid>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 GMT</pubDate>
+      <author>Reid Duke</author>
+      <category>fundamentals</category>
+      <description>The complete index of Reid Duke&apos;s Level One course on magic.wizards.com. Every chapter linked from one page — the most comprehensive beginner-to-intermediate competitive curriculum in MTG history. Includes the manabase + sideboarding chapters featured in our First FNM and RCQ tracks.</description>
+      <source url="https://magic.wizards.com/en/news/feature/level-one-full-course-2015-10-05">Wizards of the Coast</source>
+    </item>
+    <item>
+      <title>EDHREC Articles</title>
+      <link>https://www.manatuner.app/library/edhrec-articles-hub</link>
+      <guid isPermaLink="true">https://www.manatuner.app/library/edhrec-articles-hub</guid>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 GMT</pubDate>
+      <author>EDHREC Staff &amp; Contributors</author>
+      <category>metagame</category>
+      <description>The strategy hub behind EDHREC — inclusion rates, commander statistics, theme analyses, and weekly data-driven columns. The closest thing Commander has to 17lands.</description>
+      <source url="https://edhrec.com/articles">EDHREC</source>
+    </item>
+  </channel>
+</rss>
