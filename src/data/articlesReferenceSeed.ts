@@ -13,8 +13,11 @@
  * Credits: curation driven by Guillaume Bordes + the Videre Discord
  * community. Archive.org recoveries by KaP and others.
  *
- * @version 1.2 (2026-04-13)
+ * @version 1.3 (2026-04-18)
  *
+ * 1.3 (2026-04-18): +1 video (Battle Chads "The MTG Study That Changes
+ *   Everything", April 2026) in the metagame category. Fresh data-driven
+ *   video flagged by the creator as essential.
  * 1.2 (2026-04-13): +6 articles (Reid Duke Level One Full Course; Chapin
  *   Information Cascades; Zvi Elephant Method, Time Wisely, Beatdown II;
  *   PV's Rule) and +5 podcasts (Le Podcaster Mage FR series). New
@@ -849,6 +852,23 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     primaryUrl: 'https://youtu.be/xLFjxcKmDr4',
     description:
       'Essential French video by Pro Tour player Jean-Emmanuel Depraz on MTGO stops — the priority-passing system every online player must master to avoid catastrophic misplays.',
+  },
+
+  {
+    id: 'battle-chads-mtg-study-win-rates',
+    title: 'Secrets to INSANE win rates? The MTG Study That Changes Everything',
+    author: 'Battle Chads',
+    publisher: 'YouTube',
+    year: 2026,
+    category: 'metagame',
+    secondaryCategories: ['advanced'],
+    level: 'intermediate',
+    medium: 'video',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://www.youtube.com/watch?v=M8FRevbZJxs',
+    description:
+      'Battle Chads unpack a data-driven MTG study on the hidden drivers of win rate — what the numbers reveal about deck choice, play patterns, and technical skill that separate winning players from the rest. Recent upload (April 2026).',
   },
 
   // ==========================================================================
