@@ -812,10 +812,10 @@ export const HomePage: React.FC = () => {
             color="text.secondary"
             sx={{ mt: 1.5, maxWidth: 680, mx: 'auto', lineHeight: 1.6 }}
           >
-            Every essential article a competitive Magic player should read, in one place. From
-            Karsten's manabase math to Saito's tournament mindset —{' '}
+            Every essential article a Magic player should read, in one place. From Karsten's
+            manabase math to the Commander Bracket System —{' '}
             <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
-              a curated library across 8 categories
+              five curated tracks across every format
             </Box>
             , with dead links restored via archive.org.
           </Typography>
@@ -838,7 +838,7 @@ export const HomePage: React.FC = () => {
               id: 'rcq',
               emoji: '🏆',
               title: 'Preparing for an RCQ',
-              count: 6,
+              count: 7,
               tagline: 'Leveling up',
               accent: theme.palette.mana.green,
               description:
@@ -849,12 +849,34 @@ export const HomePage: React.FC = () => {
               id: 'pro-tour',
               emoji: '🎯',
               title: 'Pro Tour Preparation',
-              count: 7,
+              count: 9,
               tagline: 'Mastering',
               accent: theme.palette.mana.red,
               description:
                 "Saito's 6-part mindset series · Dagen · Moudou game theory — the international canon rescued from link rot.",
               href: '/library#track-pro-tour',
+            },
+            {
+              id: 'commander',
+              emoji: '👑',
+              title: 'Commander Pod',
+              count: 5,
+              tagline: 'Piloting 100 cards',
+              accent: '#6B3FA0',
+              description:
+                'Karsten adapted for singleton · Bracket System · Command Zone · Game Knights · EDHREC — the EDH canon 60-card sites ignore.',
+              href: '/library#track-commander',
+            },
+            {
+              id: 'limited',
+              emoji: '📦',
+              title: 'Limited (Draft & Sealed)',
+              count: 3,
+              tagline: 'Cracking packs',
+              accent: '#D4B85A',
+              description:
+                'Limited Resources · 17Lands · LSV — the signals, the curves, and the data-driven coverage that changed how Limited is played.',
+              href: '/library#track-limited',
             },
           ].map((track, idx) => (
             <Grid item xs={12} sm={6} md={4} key={track.id}>
@@ -893,7 +915,7 @@ export const HomePage: React.FC = () => {
                   />
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 1 }}>
-                      <Typography sx={{ fontSize: '1.8rem', lineHeight: 1 }}>
+                      <Typography aria-hidden="true" sx={{ fontSize: '1.8rem', lineHeight: 1 }}>
                         {track.emoji}
                       </Typography>
                       <Typography

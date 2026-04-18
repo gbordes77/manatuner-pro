@@ -1,13 +1,15 @@
-import { Box, Typography } from '@mui/material'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { Box, Button, LinearProgress, Typography } from '@mui/material'
 import React from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import type { CuratorTrack } from '../../types/referenceArticle'
 import { TRACK_METADATA } from '../../types/referenceArticle'
 import { useTheme } from '../common/NotificationProvider'
 
 const MANA_COLOR_HEX: Record<'w' | 'u' | 'b' | 'r' | 'g', string> = {
-  w: '#F8F6D8',
+  w: '#D4B85A', // darker gold-ish white — readable on light + dark backgrounds
   u: '#0E68AB',
-  b: '#150B00',
+  b: '#6B3FA0', // deep purple — Commander "black" but visible on dark theme
   r: '#D3202A',
   g: '#00733E',
 }
@@ -15,12 +17,16 @@ const MANA_COLOR_HEX: Record<'w' | 'u' | 'b' | 'r' | 'g', string> = {
 interface TrackHeaderProps {
   track: CuratorTrack
   articleCount: number
+  /** Number of articles in this track already marked as read (localStorage). */
+  readCount?: number
 }
 
-export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount }) => {
+export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount, readCount = 0 }) => {
   const { isDark } = useTheme()
   const meta = TRACK_METADATA[track]
   const accentHex = MANA_COLOR_HEX[meta.accentColor]
+  const progressPct = articleCount > 0 ? Math.round((readCount / articleCount) * 100) : 0
+  const hasProgress = readCount > 0
 
   return (
     <Box
@@ -29,6 +35,7 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount })
         position: 'relative',
         mb: 3,
         pb: 2,
+        scrollMarginTop: 80, // anchors land below any future sticky header
         borderBottom: '1px solid',
         borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'divider',
       }}
@@ -50,7 +57,7 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount })
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5, flexWrap: 'wrap' }}>
           <Typography
             variant="h4"
-            component="h2"
+            component="h3"
             sx={{
               fontWeight: 800,
               fontFamily: '"Cinzel", serif',
@@ -59,7 +66,7 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount })
               color: isDark ? 'white' : 'text.primary',
             }}
           >
-            <Box component="span" sx={{ fontSize: '1.2em', mr: 1 }}>
+            <Box component="span" aria-hidden="true" sx={{ fontSize: '1.2em', mr: 1 }}>
               {meta.emoji}
             </Box>
             {meta.title}
@@ -75,7 +82,9 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount })
               letterSpacing: '0.08em',
             }}
           >
-            {articleCount} {articleCount === 1 ? 'article' : 'articles'}
+            {hasProgress
+              ? `${readCount}/${articleCount} read`
+              : `${articleCount} ${articleCount === 1 ? 'article' : 'articles'}`}
           </Typography>
         </Box>
 
@@ -103,6 +112,52 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount })
         >
           {meta.description}
         </Typography>
+
+        {/* Progress bar — shown only when user has read at least one */}
+        {hasProgress && (
+          <Box sx={{ mt: 1.5, maxWidth: 360 }}>
+            <LinearProgress
+              variant="determinate"
+              value={progressPct}
+              aria-label={`${progressPct}% of ${meta.title} track read`}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: accentHex,
+                  borderRadius: 3,
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        {/* Optional analyzer CTA (Commander track uses this) */}
+        {meta.analyzerCtaHref && meta.analyzerCtaLabel && (
+          <Box sx={{ mt: 2 }}>
+            <Button
+              component={RouterLink}
+              to={meta.analyzerCtaHref}
+              size="small"
+              endIcon={<ArrowForwardIcon />}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+                color: accentHex,
+                borderColor: accentHex,
+                border: '1px solid',
+                px: 1.5,
+                '&:hover': {
+                  backgroundColor: isDark ? `${accentHex}22` : `${accentHex}15`,
+                  borderColor: accentHex,
+                },
+              }}
+            >
+              {meta.analyzerCtaLabel}
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   )

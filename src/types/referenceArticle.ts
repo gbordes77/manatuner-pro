@@ -41,7 +41,7 @@ export type LinkStatus =
   | 'paywall' // Live but requires a subscription
   | 'lost' // No known working URL — call for help from the community
 
-export type CuratorTrack = 'first-fnm' | 'rcq' | 'pro-tour'
+export type CuratorTrack = 'first-fnm' | 'rcq' | 'pro-tour' | 'commander' | 'limited'
 
 export interface ReferenceArticle {
   /** Stable slug, used as React key and in URL fragments */
@@ -117,6 +117,14 @@ export interface ReferenceArticle {
 
   /** Hide from the main grid (useful if article is only a series sub-part) */
   hideFromMainGrid?: boolean
+
+  /**
+   * Estimated reading time in minutes. Optional — when set, appears as
+   * a badge on the ArticleCard so Léo/Sarah can pick a piece that fits
+   * the time they have before FNM. Rough estimate (±30%). Video/podcast
+   * durations use the actual runtime.
+   */
+  readingTimeMin?: number
 }
 
 export const CATEGORY_LABELS: Record<ArticleCategory, string> = {
@@ -151,7 +159,14 @@ export const TRACK_METADATA: Record<
     title: string
     tagline: string
     description: string
-    accentColor: 'u' | 'g' | 'r' // mana color for the track accent
+    accentColor: 'w' | 'u' | 'b' | 'r' | 'g' // mana color for the track accent
+    /**
+     * Optional action CTA label + analyzer preset link. Used by the
+     * Commander track to surface "Analyze my Commander deck →", closing
+     * the loop between the Library (reading) and the Analyzer (doing).
+     */
+    analyzerCtaLabel?: string
+    analyzerCtaHref?: string
   }
 > = {
   'first-fnm': {
@@ -181,6 +196,31 @@ export const TRACK_METADATA: Record<
       'For grinders who have read the classics. International pros, rescued archives, and deep game theory you will not find on other reading lists.',
     accentColor: 'r',
   },
+  commander: {
+    id: 'commander',
+    emoji: '👑',
+    title: 'Commander Pod',
+    tagline: 'Piloting 100 cards — singleton, multiplayer, political',
+    description:
+      "You're past 60-card. Your deck is 100 cards, singleton, built around a commander. Turns go long, tables have four seats, and the math is different. The Commander canon — manabase theory for 100-card, bracket system, pod politics, and the authors the rest of the internet ignores.",
+    accentColor: 'b',
+    analyzerCtaLabel: 'Analyze my Commander deck →',
+    // /analyzer?format=commander captures the user's intent — the Analyzer
+    // currently ignores the query param but will consume it once the
+    // Commander preset (n=100, singleton, Rule-0-aware) ships. Routing
+    // the click there today means we won't have to chase every inbound
+    // link when the preset lands.
+    analyzerCtaHref: '/analyzer?format=commander',
+  },
+  limited: {
+    id: 'limited',
+    emoji: '📦',
+    title: 'Limited (Draft & Sealed)',
+    tagline: 'Cracking packs — from signals to curves',
+    description:
+      'For the pre-release hero, the cube captain, and the draft grinder. Reading the signals, building the curve from 40-card chaos, and the data-driven Limited coverage that changed how the format is played.',
+    accentColor: 'w',
+  },
 }
 
-export const TRACK_ORDER: CuratorTrack[] = ['first-fnm', 'rcq', 'pro-tour']
+export const TRACK_ORDER: CuratorTrack[] = ['first-fnm', 'rcq', 'pro-tour', 'commander', 'limited']

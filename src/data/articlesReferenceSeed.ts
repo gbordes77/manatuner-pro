@@ -645,6 +645,174 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
       'https://strategy.channelfireball.com/all-strategy/home/whats-an-optimal-mana-curve-and-land-ramp-count-for-commander/',
     description:
       "Karsten's adaptation of his manabase math to 100-card singleton Commander. Optimal curve, land count, and ramp targets — different formulas, same rigor as his Constructed work.",
+    readingTimeMin: 18,
+    curatorTrack: 'commander',
+    curatorNote:
+      'The anchor of the Commander track. Karsten proves that 60-card intuition breaks in singleton — you need different land counts, different ramp curves, different hypergeometric inputs. Read this first, then open ManaTuner with a Commander preset.',
+  },
+
+  // ==========================================================================
+  // TRACK — COMMANDER POD (5 articles)
+  // ==========================================================================
+
+  {
+    id: 'wizards-commander-brackets-2024',
+    title: 'Introducing Commander Brackets',
+    subtitle: 'A shared vocabulary for deck power level',
+    author: 'Gavin Verhey & Wizards of the Coast',
+    publisher: 'Wizards of the Coast',
+    year: 2024,
+    category: 'fundamentals',
+    secondaryCategories: ['deckbuilding'],
+    level: 'beginner',
+    medium: 'reference',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl:
+      'https://magic.wizards.com/en/news/announcements/introducing-commander-brackets-beta',
+    description:
+      "The official 5-bracket power-level system (Exhibition → cEDH) that ended a decade of 'what power level is your deck?' confusion. Rule 0 conversations made concrete.",
+    readingTimeMin: 8,
+    curatorTrack: 'commander',
+    curatorNote:
+      "Before this document, every pod started with a 10-minute negotiation. Now you say 'Bracket 2-3' and everyone shuffles up. Read it, memorize the five tiers, and stop having the same conversation twice a week.",
+  },
+
+  {
+    id: 'command-zone-podcast',
+    title: 'The Command Zone',
+    subtitle: 'Commander deckbuilding & multiplayer theory (podcast)',
+    author: 'Jimmy Wong & Josh Lee Kwai',
+    publisher: 'Command Zone Studios',
+    year: 2015,
+    category: 'podcasts',
+    secondaryCategories: ['deckbuilding', 'mindset'],
+    level: 'intermediate',
+    medium: 'podcast',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://www.thecommandzone.com/',
+    description:
+      'The most-listened-to Commander podcast. Weekly deep-dives on deckbuilding, format theory, multiplayer politics, and threat assessment. Ten years of archives, searchable by topic.',
+    readingTimeMin: 60,
+    curatorTrack: 'commander',
+    curatorNote:
+      "If you commute or do dishes, this is your Commander university. Jimmy and Josh treat threat assessment, archenemy dynamics, and deck ratios with more rigor than most 60-card content. Start with any 'Deckbuilding Discussion' episode — you won't regret it.",
+  },
+
+  {
+    id: 'game-knights-command-zone-studios',
+    title: 'Game Knights',
+    subtitle: 'Commander gameplay & political play patterns (video series)',
+    author: 'Josh Lee Kwai & Jimmy Wong',
+    publisher: 'Command Zone Studios',
+    year: 2016,
+    category: 'deckbuilding',
+    secondaryCategories: ['mindset'],
+    level: 'beginner',
+    medium: 'video-series',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://www.youtube.com/@CommandZoneStudios',
+    description:
+      'The flagship 4-player Commander gameplay show. Watch pros and guests navigate pods, negotiate, bluff, and punish overextension. The fastest way to internalize table politics.',
+    readingTimeMin: 60,
+    curatorTrack: 'commander',
+    curatorNote:
+      "You can read about threat assessment for a year, or you can watch 4 episodes of Game Knights and feel it. Every episode is a masterclass in 'why not attack that player yet?' — the question that separates winners from kingmakers.",
+  },
+
+  {
+    id: 'edhrec-articles-hub',
+    title: 'EDHREC Articles',
+    subtitle: 'Data-driven Commander deckbuilding',
+    author: 'EDHREC Staff & Contributors',
+    publisher: 'EDHREC',
+    year: 2015,
+    category: 'metagame',
+    secondaryCategories: ['deckbuilding'],
+    level: 'intermediate',
+    medium: 'article-series',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://edhrec.com/articles',
+    description:
+      'The strategy hub behind EDHREC — inclusion rates, commander statistics, theme analyses, and weekly data-driven columns. The closest thing Commander has to 17lands.',
+    readingTimeMin: 12,
+    curatorTrack: 'commander',
+    curatorNote:
+      "EDHREC is where Commander players check deck ratios, but the *Articles* section is where you learn WHY those ratios hold. Start with any Community Spotlight or 'Commander Showcase' piece, then dig into the column archives for your favorite color pair.",
+  },
+
+  // ==========================================================================
+  // TRACK — LIMITED (DRAFT & SEALED) (3 articles)
+  // ==========================================================================
+
+  {
+    id: 'limited-resources-podcast',
+    title: 'Limited Resources',
+    subtitle: 'Weekly Limited strategy with Marshall & LSV (podcast)',
+    author: 'Marshall Sutcliffe & Luis Scott-Vargas',
+    publisher: 'Limited Resources',
+    year: 2010,
+    category: 'podcasts',
+    secondaryCategories: ['fundamentals'],
+    level: 'beginner',
+    medium: 'podcast',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://lrcast.com/',
+    description:
+      "15+ years of weekly Limited coverage by two Hall of Fame caliber players. Set reviews, draft archetypes, signal reading, and the format's living history.",
+    readingTimeMin: 90,
+    curatorTrack: 'limited',
+    curatorNote:
+      "If you draft or sealed at all, Limited Resources is non-negotiable. Marshall and LSV walk through every new set, every meta shift, every archetype evolution — usually the week a set drops. Start with the set review for whatever's current on Arena.",
+  },
+
+  {
+    id: 'seventeen-lands-blog',
+    title: '17Lands Blog',
+    subtitle: 'Data-driven Limited analysis',
+    author: '17Lands Team',
+    publisher: '17lands.com',
+    year: 2020,
+    category: 'metagame',
+    secondaryCategories: ['advanced'],
+    level: 'intermediate',
+    medium: 'article-series',
+    language: 'en',
+    linkStatus: 'live',
+    primaryUrl: 'https://www.17lands.com/blog',
+    description:
+      'The tool that changed how Limited is studied. Win rates by card, archetype performance, game-in-hand vs. opening-hand statistics. Backed by millions of real MTGA games.',
+    readingTimeMin: 15,
+    curatorTrack: 'limited',
+    curatorNote:
+      "Before 17lands, 'this card is good' was a feel. After 17lands, it's a GIH WR percentage. This blog is where the team publishes set-level analysis — read it alongside LR to hear intuition and data agree (or disagree).",
+  },
+
+  {
+    id: 'lsv-draft-signals-classic',
+    title: 'Reading the Signals — A Draft Fundamentals Primer',
+    author: 'Luis Scott-Vargas',
+    publisher: 'ChannelFireball',
+    year: 2012,
+    category: 'fundamentals',
+    secondaryCategories: ['mindset'],
+    level: 'beginner',
+    medium: 'article',
+    language: 'en',
+    linkStatus: 'archived',
+    primaryUrl:
+      'https://web.archive.org/web/2020*/channelfireball.com/articles/reading-the-signals',
+    originalUrl: 'https://www.channelfireball.com/articles/reading-the-signals/',
+    description:
+      'The classic beginner primer on reading what your neighbors pass: signals, open colors, when to pivot. Cited in every draft guide ever written; the ChannelFireball original went dark when CFB migrated, archive.org preserves the canonical shape.',
+    readingTimeMin: 12,
+    curatorTrack: 'limited',
+    curatorNote:
+      "A formative draft essay — LSV made 'reading signals' legible to a whole generation. If the Wayback snapshot doesn't open on your first try, the 17lands blog and Limited Resources episodes on signals cover the same ground with modern data.",
   },
 
   // ==========================================================================

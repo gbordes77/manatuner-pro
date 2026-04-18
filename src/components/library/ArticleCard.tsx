@@ -1,8 +1,13 @@
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import ArchiveIcon from '@mui/icons-material/Archive'
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
+import BookmarkIcon from '@mui/icons-material/Bookmark'
 import CheckCircleIcon from '@mui/icons-material/CheckCircleOutline'
+import CheckCircleFilledIcon from '@mui/icons-material/CheckCircle'
 import DescriptionIcon from '@mui/icons-material/Description'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import LinkIcon from '@mui/icons-material/Link'
 import LockOutlineIcon from '@mui/icons-material/LockOutlined'
 import MirrorIcon from '@mui/icons-material/ContentCopy'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
@@ -18,12 +23,13 @@ import {
   Card,
   CardContent,
   Chip,
+  IconButton,
   Link,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material'
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import type { ArticleMedium, LinkStatus, ReferenceArticle } from '../../types/referenceArticle'
 import { CATEGORY_LABELS } from '../../types/referenceArticle'
 import { useTheme } from '../common/NotificationProvider'
@@ -102,14 +108,42 @@ interface ArticleCardProps {
   showCuratorNote?: boolean
   /** Compact variant for series sub-parts */
   compact?: boolean
+  /** Marked as read in localStorage */
+  isRead?: boolean
+  /** Bookmarked in localStorage */
+  isBookmarked?: boolean
+  /** Toggle handlers (optional — cards are read-only if omitted) */
+  onToggleRead?: (id: string) => void
+  onToggleBookmark?: (id: string) => void
+}
+
+/**
+ * Humanise reading time. For long-form audio/video we render hours
+ * when the value is past 60 min so "90 min" → "1h 30". Short values
+ * stay in plain minutes.
+ */
+function formatReadingTime(minutes: number, medium: ArticleMedium): string {
+  const label =
+    medium === 'podcast' || medium === 'video' || medium === 'video-series' ? 'listen' : 'read'
+  if (minutes >= 60) {
+    const h = Math.floor(minutes / 60)
+    const m = minutes % 60
+    return m === 0 ? `${h}h ${label}` : `${h}h ${m}m ${label}`
+  }
+  return `${minutes} min ${label}`
 }
 
 const ArticleCardComponent: React.FC<ArticleCardProps> = ({
   article,
   showCuratorNote = false,
   compact = false,
+  isRead = false,
+  isBookmarked = false,
+  onToggleRead,
+  onToggleBookmark,
 }) => {
   const { isDark } = useTheme()
+  const [copied, setCopied] = useState(false)
 
   const statusMeta = LINK_STATUS_META[article.linkStatus]
   const StatusIcon = statusMeta.icon
@@ -119,8 +153,20 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
   const isDisabled = article.linkStatus === 'lost'
   const flag = LANGUAGE_FLAG[article.language] ?? ''
 
+  const handleCopyLink = async () => {
+    try {
+      const url = `${window.location.origin}/library#article-${article.id}`
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // clipboard blocked — silently no-op; users can still copy URL manually
+    }
+  }
+
   return (
     <Card
+      id={`article-${article.id}`}
       elevation={0}
       sx={{
         height: '100%',
@@ -128,9 +174,18 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
         flexDirection: 'column',
         borderRadius: 3,
         border: '1px solid',
-        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+        borderColor: isRead
+          ? isDark
+            ? 'rgba(76,175,80,0.35)'
+            : 'rgba(76,175,80,0.45)'
+          : isDark
+            ? 'rgba(255,255,255,0.08)'
+            : 'divider',
         backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'background.paper',
+        scrollMarginTop: 80, // deep-link anchors land below any sticky header
+        opacity: isRead ? 0.82 : 1, // subtle dim to signal "done"
         transition: 'all 0.25s ease',
+        '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
         '&:hover': {
           transform: isDisabled ? 'none' : 'translateY(-3px)',
           borderColor: isDisabled ? undefined : isDark ? 'rgba(255,255,255,0.2)' : 'primary.main',
@@ -139,6 +194,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             : isDark
               ? '0 12px 32px rgba(0,0,0,0.5)'
               : '0 12px 32px rgba(0,0,0,0.12)',
+          opacity: 1,
         },
         position: 'relative',
         overflow: 'visible',
@@ -184,11 +240,39 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             <Tooltip title={`Language: ${article.language.toUpperCase()}`} arrow>
               <Typography
                 component="span"
+                aria-hidden="true"
                 sx={{ fontSize: '0.9rem', flexShrink: 0, lineHeight: 1 }}
-                aria-label={`Language: ${article.language}`}
               >
                 {flag}
               </Typography>
+            </Tooltip>
+          )}
+          <Box component="span" sx={{ position: 'absolute', left: -9999 }}>
+            Language: {article.language.toUpperCase()}
+          </Box>
+
+          {typeof article.readingTimeMin === 'number' && article.readingTimeMin > 0 && (
+            <Tooltip
+              title={
+                article.medium === 'podcast' ||
+                article.medium === 'video' ||
+                article.medium === 'video-series'
+                  ? 'Approximate runtime'
+                  : 'Estimated reading time'
+              }
+              arrow
+            >
+              <Chip
+                size="small"
+                icon={<AccessTimeIcon sx={{ fontSize: 12 }} />}
+                label={formatReadingTime(article.readingTimeMin, article.medium)}
+                variant="outlined"
+                sx={{
+                  height: 22,
+                  fontSize: '0.68rem',
+                  '& .MuiChip-icon': { ml: 0.5, mr: -0.25 },
+                }}
+              />
             </Tooltip>
           )}
 
@@ -298,7 +382,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
         )}
 
         {/* Category chip */}
-        <Box sx={{ mt: 2, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+        <Box sx={{ mt: 2, display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}>
           <Chip
             size="small"
             label={CATEGORY_LABELS[article.category]}
@@ -311,6 +395,56 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
               border: 'none',
             }}
           />
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Personal actions: bookmark + copy-link + read toggle */}
+          {onToggleBookmark && (
+            <Tooltip title={isBookmarked ? 'Remove bookmark' : 'Bookmark this article'} arrow>
+              <IconButton
+                size="small"
+                onClick={() => onToggleBookmark(article.id)}
+                aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark article'}
+                aria-pressed={isBookmarked}
+                sx={{ p: 0.25, color: isBookmarked ? 'warning.main' : 'text.secondary' }}
+              >
+                {isBookmarked ? (
+                  <BookmarkIcon sx={{ fontSize: 16 }} />
+                ) : (
+                  <BookmarkBorderIcon sx={{ fontSize: 16 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <Tooltip title={copied ? 'Link copied!' : 'Copy shareable link'} arrow>
+            <IconButton
+              size="small"
+              onClick={handleCopyLink}
+              aria-label="Copy link to this article"
+              sx={{ p: 0.25, color: copied ? 'success.main' : 'text.secondary' }}
+            >
+              <LinkIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Tooltip>
+
+          {onToggleRead && (
+            <Tooltip title={isRead ? 'Mark as unread' : 'Mark as read'} arrow>
+              <IconButton
+                size="small"
+                onClick={() => onToggleRead(article.id)}
+                aria-label={isRead ? 'Mark article as unread' : 'Mark article as read'}
+                aria-pressed={isRead}
+                sx={{ p: 0.25, color: isRead ? 'success.main' : 'text.secondary' }}
+              >
+                {isRead ? (
+                  <CheckCircleFilledIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       </CardContent>
 
@@ -332,6 +466,11 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             href={article.primaryUrl}
             target="_blank"
             rel="noopener noreferrer nofollow"
+            onClick={() => {
+              // Auto-mark as read when the user actually opens the article
+              // (one-way — they can always toggle it off later)
+              if (onToggleRead && !isRead) onToggleRead(article.id)
+            }}
             fullWidth
             variant={article.linkStatus === 'live' ? 'contained' : 'outlined'}
             size="small"
