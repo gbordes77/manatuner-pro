@@ -5,6 +5,94 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.5] - 2026-04-18 (late) — 6-persona audit quick wins + CSV/Karsten bug sweep
+
+### Context
+
+Implementation pass for the persona-v2 audit backlog. Seven of the ten
+v2.5.5 quick-wins (Q2, Q3, Q5, Q8, Q9) plus the three bug fixes (B1,
+B2, B3) and the D3 dead-code deletion landed this cycle. Deferred to
+future sessions: Q1 (Commander preset — needs EDH deck curation), Q4
+(permalink `/a/:slug` — routing + storage change), Q6/Q7/Q10 (recent
+decks / clipboard / library filters — bigger UX surfaces).
+
+### Added
+
+- **`QuickVerdict` component** (`src/components/analyzer/QuickVerdict.tsx`)
+  shown above the results tabs. One-sentence takeaway composed from
+  consistency × Karsten rollup × mulligan rate. Léo persona ask:
+  "tell me plainly whether my deck is good before I read 5 tabs".
+  Variants: excellent / solid / shaky / rough, with color-shortfall
+  rider + mulligan rider. `role="status"` + `aria-live="polite"` so
+  screen readers announce the verdict when the analysis completes.
+- **`utils/manaCostParser.ts`** exporting `countPipsInCost` + the
+  `KarstenColor` type. Single source of truth for pip counting —
+  previously inlined in `KarstenTargetDelta.tsx` only. David persona
+  ask: "any future public API / CLI will duplicate this logic".
+- **`ColorDelta.wasClamped: boolean`** flag. Set when the raw
+  (maxPips, pivotTurn) pair fell outside Karsten's published 1-3 pip,
+  T1-T10 table and had to be clamped. Surfaced in the tooltip with a
+  "⚠ Requirement exceeds Karsten's published range" caveat. Handles
+  Emrakul (`{U}{U}{U}{U}` = 4 pips) and heavy-pip EDH Commanders.
+  David audit ask.
+- **CSV `pip_count_{W,U,B,R,G}` columns** in the Blueprint export
+  summary section. Total pips of each color across all non-land
+  spells (quantity-weighted). Hybrid + phyrexian pips count once per
+  viable color. Natsuki audit ask — a data scientist wants both the
+  source count and the pip count to correlate correctly.
+- **Public `/changelog.json`** (`public/changelog.json`). Machine-
+  readable version history for trust signals, release bots, and
+  third-party integrations. Keep-a-Changelog metadata + per-version
+  highlights. Karim audit ask.
+- **HomePage privacy reassurance line** under the CTAs: "Free. No
+  signup. 100% local — decklists never leave your browser." Matches
+  the `PrivacySettings.tsx` claim verbatim. Léo + Thibault asks.
+- **Manabase tab "Copy link" button** (`ManabaseFullTab.tsx`). Direct
+  in-context share control pinned to `tab=3` so the recipient lands
+  on the Manabase view. Green check + "Copied!" feedback for 2 s.
+  Sarah persona ask — she shares the manabase view to her FNM pod,
+  not the default Castability tab.
+
+### Changed
+
+- **CSV summary section** renamed `sources_{W,U,B,R,G}` →
+  `effective_sources_{W,U,B,R,G}` for disambiguation. Behavior
+  unchanged — the column already held land-source counts, but the
+  previous name was ambiguous next to the new `pip_count_*` column.
+- **HomePage library encart copy** rewritten for beginner-
+  friendliness. Before: "The essential articles from Karsten, PVDDR,
+  Saito, Chapin, Reid Duke — all in one place, with dead links
+  restored via archive.org" (5 author names Léo doesn't recognize).
+  After: "Plus a library of must-read articles — from first FNM to
+  Pro Tour. Curated by the pros (Karsten, PVDDR, Saito and more),
+  organized by skill level. Dead links restored via archive.org so
+  nothing is lost." Léo persona ask.
+
+### Removed
+
+- **`src/hooks/useMonteCarloWorker.ts`** — dead code since v2.5.2
+  (`MulliganTab` migrated to `mulliganArchetype.worker.ts`, no
+  callers remained in `src/`). Also removes `useQuickProbability`
+  wrapper and the `fallbackHypergeometric` function. Cleanup only —
+  no behavior change.
+
+### Fixed
+
+- **`KarstenTargetDelta` tooltip** now explicitly flags
+  extrapolated targets (4+ pips, T11+) with a visible caveat so users
+  don't silently trust Karsten numbers outside the published range.
+
+### Verification
+
+- `npx tsc --noEmit`: 0 errors.
+- `npm run test:unit`: 315 passing, 2 skipped, 0 failing (unchanged).
+- `npm run build`: clean in 9.13 s. Main `index-*.js` 40.12 KB gzip
+  (+0.16 KB vs v2.5.4, QuickVerdict component). `AnalyzerPage`
+  29.84 KB gzip (+0.59 KB, QuickVerdict wiring + deckName prop).
+- Deferred from v2.5.5 backlog: Q1 Commander preset, Q4 permalink
+  `/a/:slug`, Q6 recent decks tile, Q7 load-from-clipboard, Q10
+  library filters. None block launch.
+
 ## [2.5.4] - 2026-04-18 (persona-driven UX polish + stack modernization)
 
 ### Context

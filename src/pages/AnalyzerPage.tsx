@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AnalyzerSkeleton } from '../components/analyzer/AnalyzerSkeleton'
 import { DeckInputSection } from '../components/analyzer/DeckInputSection'
 import { computeColorDeltas, summarizeColorDeltas } from '../components/analyzer/KarstenTargetDelta'
+import { QuickVerdict } from '../components/analyzer/QuickVerdict'
 import { TabPanel } from '../components/analyzer/TabPanel'
 import { ErrorBoundary } from '../components/common/ErrorBoundary'
 import { FloatingManaSymbols } from '../components/common/FloatingManaSymbols'
@@ -707,6 +708,10 @@ const AnalyzerPage: React.FC = () => {
                     )}
                   </Typography>
 
+                  {/* One-phrase verdict — Léo persona ask: "tell me plainly
+                      whether my deck is good before I read 5 tabs". */}
+                  <QuickVerdict analysisResult={analysisResult} manabaseVerdict={manabaseVerdict} />
+
                   {/* Tabs with improved styling */}
                   <Tabs
                     value={activeTab}
@@ -866,6 +871,7 @@ const AnalyzerPage: React.FC = () => {
                           analysisResult={analysisResult}
                           isMobile={isMobile}
                           isSmallMobile={isSmallMobile}
+                          deckName={deckName}
                         />
                       </ErrorBoundary>
                     </TabPanel>

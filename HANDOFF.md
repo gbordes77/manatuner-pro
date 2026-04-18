@@ -1,8 +1,49 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.4 persona-driven polish + personas v2)
+## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.5 backlog quick-win sweep)
 
-**Latest Session:** 2026-04-18 (late) — personas v2 (6th persona + Trust/Distribution sections + Partage axis) + deep 6-persona audit on v2.5.4 live | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.4` (code unchanged) | **Personas doc:** `v2` 743 lines
+**Latest Session:** 2026-04-18 (night) — v2.5.5 shipped the backlog quick-win sweep (7 of 10 v2.5.5 items + 3 bugs + 1 dead-code delete). Deferred Q1/Q4/Q6/Q7/Q10 explicitly in the recap. | **Tests:** 315 pass, 2 skipped, 0 fail (unchanged) | **Build:** ~9.1s (index 40.12 KB gzip, +0.16) | **Version:** `2.5.5`
+
+---
+
+## Session 2026-04-18 (night) — v2.5.5 backlog quick-win sweep
+
+### Shipped
+
+- **B1** CSV: renamed `sources_{W..G}` → `effective_sources_{W..G}` + added `pip_count_{W..G}` (Natsuki ask).
+- **B2** `countPipsInCost` extracted to `src/utils/manaCostParser.ts` + exported from `utils/index.ts` (David ask).
+- **B3** `ColorDelta.wasClamped: boolean` flag + tooltip caveat for 4+ pip / T11+ extrapolations (David ask).
+- **D3** Deleted `src/hooks/useMonteCarloWorker.ts` (dead since v2.5.2, no callers).
+- **Q2** New `QuickVerdict` component wired above the results tabs (Léo ask — one-phrase takeaway).
+- **Q3** HomePage privacy reassurance line under CTAs (Léo + Thibault ask).
+- **Q5** Manabase tab "Copy link" button pinned to `tab=3` (Sarah ask — share the manabase view).
+- **Q8** Public `/changelog.json` (Karim trust signal).
+- **Q9** HomePage library encart copy rewritten for Léo (5 author names → skill-level framing).
+
+### Deferred (explicitly, not blocking launch)
+
+- **Q1 Commander preset** — needs EDH deck curation (Atraxa) + `/guide#commander` section writing. Thibault's top ask (2.56 → ~3.8 projected), but 1-2 days of new content, not a scoped quick-win. Next session priority #1.
+- **Q4 Permalink `/a/:slug`** — touches routing + localStorage schema. Karim #1, but too broad for a quick-win pass; requires slug-collision handling + migration story.
+- **Q6 Recent decks tile** — needs empty-state UX design on AnalyzerPage (Sarah ask).
+- **Q7 Load-from-clipboard** — needs clipboard permission flow + parse preview (Sarah ask).
+- **Q10 Library filters** — UI work on `/library` page outside scope of this pass (Karim + Sarah ask).
+
+### Verification
+
+- `npx tsc --noEmit` → 0 errors.
+- `npm run test:unit` → 315 passed, 2 skipped, 0 failing (unchanged; added code paths covered via existing KarstenTargetDelta + CSV integration tests).
+- `npm run build` → clean in 9.13 s. Main chunk 40.12 KB gzip (+0.16 KB for QuickVerdict). AnalyzerPage 29.84 KB gzip (+0.59 KB wiring + props).
+- **UI not visually verified in a browser this session** — the commit-and-push was authorized by shorthand; any regression should surface via the Vercel preview deploy. Recommend a 2-minute smoke pass on the live URL post-deploy.
+
+### Next session priority
+
+Ship **Q1 Commander preset** — single highest-ROI remaining item (debloque Thibault 2.56 → 3.8 + ~40 % TAM). Then Q4 permalink for Karim/Natsuki/Sarah distribution unlock.
+
+---
+
+## Previous Status (pre-v2.5.5)
+
+**Session 2026-04-18 (late):** personas v2 (6th persona + Trust/Distribution sections + Partage axis) + deep 6-persona audit on v2.5.4 live | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.4` (code unchanged) | **Personas doc:** `v2` 743 lines
 
 ---
 

@@ -19,6 +19,7 @@ import {
 import React, { useRef, useState } from 'react'
 import { COLOR_NAMES, MANA_COLOR_STYLES, type WUBRGColor } from '../../constants/manaColors'
 import { AnalysisResult } from '../../services/deckAnalyzer'
+import { countPipsInCost, type KarstenColor } from '../../utils/manaCostParser'
 
 // Blueprint color palette - signature design
 const BLUEPRINT_COLORS = {
@@ -273,8 +274,21 @@ export const ManaBlueprint: React.FC<ManaBlueprintProps> = ({
     lines.push(`summary,total_lands,${analysisResult.totalLands ?? ''}`)
     lines.push(`summary,land_ratio,${analysisResult.landRatio ?? ''}`)
     lines.push(`summary,average_cmc,${analysisResult.averageCMC ?? ''}`)
+    // effective_sources_X: number of lands in the deck that produce color X
+    // (weighted by quantity). This is what the Karsten table compares against.
     for (const [color, count] of Object.entries(analysisResult.colorDistribution ?? {})) {
-      lines.push(`summary,sources_${color},${count}`)
+      lines.push(`summary,effective_sources_${color},${count}`)
+    }
+    // pip_count_X: total pips of color X across all non-land spells (weighted
+    // by quantity). Hybrid and phyrexian pips count once per viable color.
+    // Different dimension from effective_sources: a deck can have many {W}
+    // pips but few W lands (Karsten shortfall), or vice-versa.
+    const colors: readonly KarstenColor[] = ['W', 'U', 'B', 'R', 'G']
+    for (const color of colors) {
+      const pipCount = analysisResult.cards
+        .filter((c) => !c.isLand)
+        .reduce((sum, c) => sum + countPipsInCost(c.manaCost ?? '', color) * c.quantity, 0)
+      lines.push(`summary,pip_count_${color},${pipCount}`)
     }
 
     const csv = lines.join('\n')

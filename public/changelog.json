@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json.schemastore.org/custom",
+  "name": "ManaTuner",
+  "url": "https://www.manatuner.app",
+  "source": "https://www.manatuner.app/changelog.json",
+  "format": "keepachangelog-1.0.0",
+  "semver": "2.0.0",
+  "note": "Machine-readable version history. Generated from CHANGELOG.md. Each entry is summary-level; full changelog at https://github.com/gbordes77/ManaTuner-v2/blob/main/CHANGELOG.md",
+  "current": "2.5.5",
+  "versions": [
+    {
+      "version": "2.5.5",
+      "date": "2026-04-18",
+      "title": "6-persona audit quick wins + CSV/Karsten bug sweep",
+      "highlights": [
+        "Quick Verdict one-phrase takeaway above the tabs",
+        "countPipsInCost extracted to utils + ColorDelta.wasClamped flag",
+        "CSV summary: effective_sources_{W..G} renamed + pip_count_{W..G} added",
+        "HomePage privacy reassurance line + Léo-friendly library encart copy",
+        "Manabase tab Copy-link button (pins tab=3)",
+        "Public /changelog.json for release bots and trust signals",
+        "Dead useMonteCarloWorker hook deleted"
+      ]
+    },
+    {
+      "version": "2.5.4",
+      "date": "2026-04-18",
+      "title": "persona-driven UX polish + stack modernization",
+      "highlights": [
+        "Home format badges strip (Standard · Pioneer · Modern · Pauper · Commander · Limited)",
+        "Three archetype sample pickers (Mono-Red Aggro / Midrange Combo / Azorius Control)",
+        "Keyed ?sample=aggro|control|midrange URL params",
+        "Manabase tab label badge for Karsten color-shortfall verdict",
+        "CSV export in the Blueprint tab (pivot-table-ready)",
+        "React 18.3.1, Vite build.target modernized, lightningcss cssMinify"
+      ]
+    },
+    {
+      "version": "2.5.3",
+      "date": "2026-04-17",
+      "title": "follow-up audit — 9-task fix sweep",
+      "highlights": [
+        "9 tasks from the follow-up audit landed",
+        "Redux persist schema version bumped",
+        "Scryfall fetch resilience contract (timeout, retry, fuzzy fallback)"
+      ]
+    },
+    {
+      "version": "2.5.2",
+      "date": "2026-04-13",
+      "title": "post-launch hardening pass",
+      "highlights": [
+        "NaN safety first-class (clampProbability, clamp01, safeNumber)",
+        "Dynamic Hypergeom (ensureCapacity — Cube/Commander/Highlander now supported)",
+        "BoundedMap LRU caches for Scryfall (500 / 100 cap)",
+        "cleanCardName SSOT for name normalization",
+        "Tab-scoped ErrorBoundary on AnalyzerPage"
+      ]
+    },
+    {
+      "version": "2.5.1",
+      "date": "2026-04-12",
+      "title": "launch hardening",
+      "highlights": [
+        "12-agent audit → fix phase → re-audit workflow",
+        "Weighted score 3.75 → 4.19 / 5",
+        "Sentry DSN gated by env (privacy-first — disabled in prod)"
+      ]
+    },
+    {
+      "version": "2.5.0",
+      "date": "2026-04-10",
+      "title": "ramp taxonomy expansion",
+      "highlights": [
+        "5 new ManaProducerTypes (LAND_AURA, LAND_FROM_HAND, SPAWN_SCION, LANDFALL_MANA, MANA_DOUBLER)",
+        "Scryfall-audited against 22 MTG ramp mechanisms"
+      ]
+    },
+    {
+      "version": "2.3.0",
+      "date": "2026-04-06",
+      "title": "ENHANCER type + K=3 triple-scenario engine",
+      "highlights": [
+        "ENHANCER producer type (Badgermole Cub)",
+        "K=3 triple producer evaluation (was K=2)",
+        "Hybrid mana base P1/P2 modeling",
+        "Combat-damage treasure exclusion (Sticky Fingers ≠ ramp)",
+        "Sample deck: Nature's Rhythm / Badgermole Cub"
+      ]
+    },
+    {
+      "version": "2.2.0",
+      "date": "2026-04-06",
+      "title": "mathematical audit + unification",
+      "highlights": [
+        "Hypergeometric SSOT (castability/hypergeom.ts)",
+        "Karsten tables SSOT (types/maths.ts)",
+        "Play/Draw propagation chain end-to-end",
+        "Fisher-Yates shuffle enforced everywhere"
+      ]
+    },
+    {
+      "version": "2.1.0",
+      "date": "2026-04-05",
+      "title": "persona framework v1",
+      "highlights": [
+        "5 MTG player personas (Leo, Sarah, Karim, Natsuki, David)",
+        "8-axis evaluation grid"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2025-06-22",
+      "title": "v2 launch",
+      "highlights": [
+        "Vite + MUI rewrite",
+        "Hypergeometric + Karsten + Monte Carlo + Bellman engine"
+      ]
+    }
+  ]
+}

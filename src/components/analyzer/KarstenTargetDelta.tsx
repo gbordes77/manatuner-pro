@@ -2,15 +2,14 @@ import { Box, Paper, Tooltip, Typography } from '@mui/material'
 import React, { useMemo } from 'react'
 import { MANA_COLOR_STYLES } from '../../constants/manaColors'
 import { AnalysisResult } from '../../services/deckAnalyzer'
-import type { ManaColor } from '../../types'
 import { KARSTEN_TABLES } from '../../types/maths'
+import { countPipsInCost, type KarstenColor } from '../../utils/manaCostParser'
 
 interface KarstenTargetDeltaProps {
   analysisResult: AnalysisResult
   isMobile: boolean
 }
 
-type KarstenColor = Exclude<ManaColor, 'C'>
 const COLORS: readonly KarstenColor[] = ['W', 'U', 'B', 'R', 'G']
 
 export interface ColorDelta {
@@ -21,26 +20,13 @@ export interface ColorDelta {
   actual: number
   delta: number
   verdict: 'ok' | 'warn' | 'short'
-}
-
-/**
- * Counts how many pips of `color` appear in a mana cost string.
- * Handles hybrid ({R/G} = 1 pip of R OR G) and phyrexian ({W/P} = 1 W pip).
- */
-function countPipsInCost(cost: string, color: KarstenColor): number {
-  if (!cost) return 0
-  const symbols = cost.match(/\{[^}]+\}/g) || []
-  let count = 0
-  for (const sym of symbols) {
-    const body = sym.slice(1, -1) // strip braces
-    if (body === color) count++
-    else if (body.includes('/')) {
-      // Hybrid or Phyrexian — contributes 1 pip of color if color is present
-      const parts = body.split('/')
-      if (parts.includes(color)) count++
-    }
-  }
-  return count
+  /**
+   * True when the raw (pips, pivotTurn) pair fell outside Karsten's published
+   * table and had to be clamped. Consumers can flag these entries explicitly
+   * — Emrakul ({U}{U}{U}{U} = 4 pips) and some EDH Commanders exceed the
+   * 1-3 pip range, and legendary cascade shells can blow past turn 10.
+   */
+  wasClamped: boolean
 }
 
 /**
@@ -74,12 +60,13 @@ export function computeColorDeltas(analysisResult: AnalysisResult): ColorDelta[]
 
     const clampedPips = Math.min(Math.max(maxPips, 1), 3)
     const clampedTurn = Math.min(Math.max(pivotTurn, 1), 10)
+    const wasClamped = clampedPips !== maxPips || clampedTurn !== pivotTurn
     const required = KARSTEN_TABLES[clampedPips]?.[clampedTurn] ?? 0
     const actual = analysisResult.colorDistribution[color] || 0
     const delta = actual - required
     const verdict: ColorDelta['verdict'] = delta >= 0 ? 'ok' : delta >= -2 ? 'warn' : 'short'
 
-    result.push({ color, maxPips, pivotTurn, required, actual, delta, verdict })
+    result.push({ color, maxPips, pivotTurn, required, actual, delta, verdict, wasClamped })
   }
 
   return result
@@ -161,6 +148,15 @@ export const KarstenTargetDelta: React.FC<KarstenTargetDeltaProps> = ({
                   <Typography variant="caption" sx={{ display: 'block' }}>
                     Your deck: {d.actual} sources ({deltaLabel})
                   </Typography>
+                  {d.wasClamped && (
+                    <Typography
+                      variant="caption"
+                      sx={{ display: 'block', mt: 0.5, fontStyle: 'italic', opacity: 0.85 }}
+                    >
+                      ⚠ Requirement exceeds Karsten&apos;s published range — target is an
+                      extrapolation, treat with extra caution.
+                    </Typography>
+                  )}
                 </Box>
               }
             >

@@ -332,7 +332,7 @@ export const HomePage: React.FC = () => {
               >
                 📚
               </Box>
-              And the most complete reading library in competitive Magic.
+              Plus a library of must-read articles — from first FNM to Pro Tour.
             </Typography>
             <Typography
               variant="body2"
@@ -343,11 +343,11 @@ export const HomePage: React.FC = () => {
                 fontSize: '0.88rem',
               }}
             >
-              <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                The essential articles
+              Curated by the pros (Karsten, PVDDR, Saito and more), organized by skill level.{' '}
+              <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                Dead links restored
               </Box>{' '}
-              from Karsten, PVDDR, Saito, Chapin, Reid Duke — all in one place, with dead links
-              restored via archive.org.
+              via archive.org so nothing is lost.
             </Typography>
           </Box>
 
@@ -483,6 +483,29 @@ export const HomePage: React.FC = () => {
               </Button>
             </AnimatedContainer>
           </Box>
+
+          {/* Privacy reassurance line — sits directly under the CTAs so
+              Léo (first visit, wary of handing over a decklist) and
+              Thibault (pod EDH, trust-first) see the claim before clicking
+              anything. Matches the PrivacySettings copy verbatim. */}
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 1.5,
+              textAlign: 'center',
+              color: 'text.secondary',
+              fontSize: '0.85rem',
+              lineHeight: 1.5,
+              maxWidth: 560,
+              mx: 'auto',
+            }}
+          >
+            Free. No signup. 100% local —{' '}
+            <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+              decklists never leave your browser
+            </Box>
+            .
+          </Typography>
 
           {/* Secondary discreet links: sample deck + Guide. Moved below
               primary CTAs so Library stays primary-tier alongside Analyze
