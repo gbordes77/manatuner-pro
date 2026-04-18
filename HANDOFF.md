@@ -1,8 +1,109 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.4 persona-driven polish)
+## Project Status: PRODUCTION — LAUNCH-READY (post v2.5.4 persona-driven polish + personas v2)
 
-**Latest Session:** 2026-04-18 — persona-driven UX polish + Context7 stack modernization | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.4`
+**Latest Session:** 2026-04-18 (late) — personas v2 (6th persona + Trust/Distribution sections + Partage axis) + deep 6-persona audit on v2.5.4 live | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** ~7.1s | **Version:** `2.5.4` (code unchanged) | **Personas doc:** `v2` 743 lines
+
+---
+
+## Session 2026-04-18 (late) — personas v2 + deep 6-persona audit on live
+
+### Workflow
+
+Closing session of an intensive 2-day cycle (v2.5.3 launch → v2.5.4 quick-wins → personas v2 + deep re-audit). The 2026-04-18 late session did NOT ship code; it shipped the **persona framework v2** and re-validated the product via a 6-persona deep audit on the live v2.5.4 prod.
+
+Process:
+
+1. **Meta-audit of the 5 existing personas** via `ux-designer` + `product-manager` in parallel (per `feedback_parallel_audit_workflow` memory). Both agents independently flagged the same gap: Commander/EDH (~40-50% of the MTG paper market) was zero-represented across the 5 existing personas, all of which live in competitive 60-card Standard/Pioneer/Modern slice (~15-20% of market).
+2. **Personas v2 shipped as `7c3456d`**:
+   - Added **Persona 6 — Thibault "Le Capitaine de Table"** (EDH pilot, pod hebdo, 33yo). 8 EDH-specific product asks captured (100-card preset, Sol Ring T1 modeling, command zone 7+1, EDH-specific Karsten, color identity validator, universal fixers toggle, budget upgrade path, EDH library coverage).
+   - Added **Trust & privacy posture** section to all 6 personas (makes 100% client-side stance a measurable retention lever).
+   - Added **Distribution behavior** section to all 6 personas (directly ties persona evaluation to LAUNCH.md's growth loop — where, how, to whom they share links).
+   - Refined the 5 existing personas with 1 edit each (Léo: trust question; Sarah: share behavior; Karim: cross-window workflow; Natsuki: team testing; David: GitHub audit trust gate).
+   - **Replaced axis "Rétention" with "Partage"** in the evaluation grid — falsifiable (did they send the link?) vs vague (would they return?).
+   - File: 536 → 743 lines.
+3. **Deep 6-persona audit on v2.5.4 live** — 6 parallel `ux-designer` agents incarnating each persona, each given WebFetch access to live prod + source code URLs via `raw.githubusercontent.com`. Each used the new 8-axis grid (with Partage) + the two new template sections.
+
+### Audit scores (deep, v2.5.4 live)
+
+| Persona            | v2.5.4-dev (R3) | v2.5.4 live | Δ     | Key insight                                                                                                                                   |
+| ------------------ | --------------- | ----------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Léo                | 3.88            | **3.84**    | −0.04 | -0.04 strict, +0.08 on 7 comparable axes. New Partage axis (2.5) tires la moyenne — honest: Léo partage rarement.                             |
+| Sarah              | 4.59            | **4.71**    | +0.12 | **Projection 4.70 tenue.** Manabase tab badge = the deliverable that justifies the bump. Shares to Marc (SMS) + Discord FNM (8 membres).      |
+| Karim              | 3.96            | **4.05**    | +0.09 | **Plateau brisé.** CSV + sample=control débloquent son workflow. Thread Twitter oui; pin Discord non (blocked on stable permalink).           |
+| Natsuki            | 2.66            | **2.85**    | +0.19 | **Biggest mover.** Privacy axis 1.2 → 2.3 (+1.1) grâce à la discipline Context7. Veto API tient, mais scepticisme levé sur stack.             |
+| David              | 3.83            | **3.75**    | −0.08 | -0.08 strict, +0.14 on 7 comparable axes. Salue le refus argumenté du "fake CI Wilson" + discipline SSOT. Cite? Non — bloqué par seed-URL MC. |
+| **Thibault** (NEW) | —               | **2.56**    | first | **6/8 asks NON, 2 PARTIEL.** Décroche entre /mathematics et /library. Ne recommande pas au pod EDH. Veto framing 60-card.                     |
+| **MOY 5p**         | 3.78            | **3.84**    | +0.06 |                                                                                                                                               |
+| **MOY 6p**         | —               | **3.63**    |       | Thibault tire la moyenne vers le bas — honnête sur le gap marché.                                                                             |
+
+### Gems trouvées (non-findings avant cet audit)
+
+1. **Natsuki trouve un bug CSV**: la colonne `sources_W/U/B/R/G` du CSV export (ManaBlueprint.tsx:handleExportCSV) sort en fait `colorDistribution[color]` qui est le count des pips `{W}` dans les mana costs des spells, PAS le count de sources W produites par les lands. Le nom est trompeur. Fix: renommer en `pip_count_W` + ajouter une vraie colonne `effective_sources_W` (avec fetches/duals comptés). Est un **vrai bug produit**, pas un détail cosmétique — un data scientist pourrait tirer de mauvaises corrélations.
+2. **David trouve une tech-debt**: `countPipsInCost` est une fonction locale dans `KarstenTargetDelta.tsx` — devrait être exportée car n'importe quel consommateur externe voudra compter des pips (API publique future, CLI, notebook). `ColorDelta` devrait aussi exposer `wasClamped: boolean` pour les coûts 4+ pips (Emrakul `{U}{U}{U}{U}`, certains Commanders).
+3. **Thibault découvre un framing hole**: le moteur math peut DÉJÀ sous-tendre 5-6 des 8 asks EDH (le K=3 engine scale, l'hypergeom dynamique gère 99 cartes, la ramp detection couvre rocks/dorks). **Rien n'est exposé côté produit.** 1-2 jours de framing (Commander dans strip + `?sample=edh` avec deck Atraxa + /guide#commander section) débloquerait 40% du marché MTG. **Reco #1 cross-session pour v2.5.5 ou v2.6.0.**
+4. **Sarah confirme son canal viral réel**: Discord FNM `"Les Tap-Tap du mardi"` (8 membres, channel `#deckbuilding`) + SMS Marc + Julien (Google Sheet partagé). Petit mais 100% conversion.
+
+### Top 5 actions rankées par ROI cross-persona
+
+| #   | Action                                                                                                                    | Personas impactés                      | Effort    | Δ moyenne 6p |
+| --- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | --------- | ------------ |
+| 1   | **Commander preset** (`?sample=edh` + strip badge + /guide#commander)                                                     | Thibault 2.56 → ~3.8, débloque 40% TAM | 1-2 jours | +0.20        |
+| 2   | **Permalink nommé `/a/:slug`** + localStorage index                                                                       | Karim +0.3, Sarah +0.2, Natsuki +0.4   | 1 jour    | +0.15        |
+| 3   | **"Quick Verdict" 1-phrase** post-analyze ("Your deck casts 94% on curve — solid, mulligan aggressively on 2-land hands") | Léo +0.4, Sarah +0.1, Thibault +0.1    | 4h        | +0.10        |
+| 4   | **Seed-URL xoshiro256** MC + CSV v2\*\* (section markers + `effective_sources_W/U/B/R/G` vs `pip_count_W`)                | David +0.3, Natsuki +0.2, Karim +0.1   | 2 jours   | +0.10        |
+| 5   | **API publique REST `POST /api/analyze`**                                                                                 | Karim +0.5, Natsuki +0.8, David +0.3   | 2-3 jours | +0.27        |
+
+**Si 1-3 livrés (≈3-4 jours dev) : moyenne 6p 3.63 → ~3.95.**
+**Si 1-5 livrés (≈8-10 jours dev) : moyenne 6p 3.63 → ~4.40.**
+
+### Axe Partage révèle le plafond viral
+
+Scores Partage par persona:
+
+- Léo 2.5 (DM Discord 1-to-1, URL brute, partage après insight concret)
+- Sarah **4.6** (screenshot badge + SMS Marc + Discord FNM — la seule >3)
+- Karim 3.5 (Thread X technique OUI, pin Discord NON — permalink manquant)
+- Natsuki 0.7 (rien à envoyer à son Slack team — API absente)
+- David 2.2 (fork OUI, cite NON — seed-URL manquant)
+- Thibault 1.5 (framing 60-card = veto social au pod EDH)
+
+**Sarah est la SEULE persona >3 sur Partage.** Les 5 autres sont bloqués par 1-2 features manquantes : permalink stable (Karim/Natsuki), seed reproductible (David), Commander framing (Thibault), Quick Verdict partageable (Léo).
+
+### Verification (inchangé — pas de commit code ce round)
+
+- `npx tsc --noEmit`: 0 errors (inchangé).
+- `npm run test:unit`: 315 passing, 2 skipped, 0 failing (inchangé).
+- `npm run build`: clean in 7.09 s (inchangé depuis v2.5.4 matin).
+- Production: `04c30f6` (v2.5.4) + `7c3456d` (personas v2). HEAD = origin/main propre.
+
+### Explicitly deferred (unchanged + 1 nouveau)
+
+- Top 5 actions ci-dessus (Commander preset → API) sont toutes v2.5.5 ou v2.6.0 scope.
+- Les **bug CSV `sources_W` mislabeled** et **tech-debt `countPipsInCost` non-exporté** s'ajoutent au backlog — à trier entre v2.5.5 quick fix et v2.6.0.
+
+### Memory updated (session close)
+
+Updates to `/Users/guillaumebordes/.claude/projects/-Volumes-DataDisk--Projects-Project-Mana-base-V2/memory/`:
+
+- `feedback_parallel_audit_workflow.md`: bumped to mention 6 personas (Thibault added 2026-04-18) + Partage axis.
+- New `feedback_falsifiable_metrics_preference.md`: captures the Rétention → Partage decision as a broader pattern (user prefers falsifiable axes over vague ones for any audit grid).
+- MEMORY.md index regenerated.
+
+### Current State
+
+- **Working**: v2.5.4 live on www.manatuner.app, personas v2 shipped, 6-persona audit completed.
+- **No code blockers.**
+- **Documentation state**: CHANGELOG, HANDOFF, personas, README, ARCHITECTURE, docs/index all synchronized to 2026-04-18.
+
+### Next Priority (next session)
+
+Two paths:
+
+1. **Launch path** (LAUNCH.md): Sarah hit 4.71 (ICP #1 satisfied), Léo at 3.84 (recommend-to-casuals threshold crossed). Distribution problem is the actual blocker. Post the @fireshoes tweet.
+2. **Feature path** (next audit raises moyenne 6p): Commander preset (1-2j) as the single highest-ROI item (débloque Thibault 2.56 → 3.8 + +40% TAM). Then permalink + Quick Verdict for the next +0.2 moyenne.
+
+Creator's decision: distribution before features, or features before distribution? Both are valid. **Recommendation from personas**: the Commander framing fix is 1-2 days and its absence turns a @fireshoes RT click from EDH players (≈40% of clicks) into a 10-second bounce. Ship Commander framing FIRST, then tweet.
 
 ---
 
