@@ -77,10 +77,96 @@ Scores Partage par persona:
 - `npm run build`: clean in 7.09 s (inchangé depuis v2.5.4 matin).
 - Production: `04c30f6` (v2.5.4) + `7c3456d` (personas v2). HEAD = origin/main propre.
 
-### Explicitly deferred (unchanged + 1 nouveau)
+### Features backlog — FULL INVENTORY (2026-04-18)
 
-- Top 5 actions ci-dessus (Commander preset → API) sont toutes v2.5.5 ou v2.6.0 scope.
-- Les **bug CSV `sources_W` mislabeled** et **tech-debt `countPipsInCost` non-exporté** s'ajoutent au backlog — à trier entre v2.5.5 quick fix et v2.6.0.
+Le "Top 5 actions" ci-dessus n'est qu'un extrait curaté. Inventaire **complet**
+de tout ce qui a été flaggé par les audits (toutes sessions confondues depuis
+2026-04-06). Total: **43 items**. Grouper par scope + thème. Chaque item porte
+ses persona(s) demandeuse(s).
+
+#### BUGS à corriger (v2.5.5 quick fix, <1 jour total)
+
+| #   | Bug                                                                                                        | Source         | Effort | Notes                                                                   |
+| --- | ---------------------------------------------------------------------------------------------------------- | -------------- | ------ | ----------------------------------------------------------------------- |
+| B1  | CSV export `sources_W/U/B/R/G` mislabeled — c'est le pip count dans les spells, PAS le nb de sources lands | Natsuki v2.5.4 | 2h     | Renommer en `pip_count_W` + ajouter vraie colonne `effective_sources_W` |
+| B2  | `countPipsInCost` dans KarstenTargetDelta.tsx non-exporté — sera dupliqué par API/CLI future               | David v2.5.4   | 30min  | Export + déplacer dans utils/                                           |
+| B3  | `ColorDelta` ne trace pas `wasClamped: boolean` pour coûts 4+ pips                                         | David v2.5.4   | 1h     | Emrakul `{U}{U}{U}{U}`, certains Commanders                             |
+
+#### v2.5.5 — Quick wins (~1 semaine dev cumulée)
+
+| #   | Feature                                                                                                                   | Personas                            | Effort | ΔMoy 6p            |
+| --- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------ | ------------------ |
+| Q1  | **Commander preset** (strip badge "Commander" + `?sample=edh` avec deck Atraxa + `/guide#commander` section courte)       | **Thibault VETO**, 40% TAM          | 1-2j   | +0.20              |
+| Q2  | **Quick Verdict 1-phrase** post-analyze ("Your deck casts 94% on curve — solid, mulligan aggressively on 2-land hands")   | Léo ROI #1, Sarah, Thibault         | 4h     | +0.10              |
+| Q3  | **Privacy reassurance line** visible sous CTAs home ("Free. No signup. 100% local — decklists never leave your browser.") | Léo, Thibault                       | 15min  | +0.05              |
+| Q4  | **Permalink nommé `/a/:slug`** + localStorage index (slug auto-généré type `nature-rhythm-v3-post-side`)                  | Karim (pin Discord), Sarah, Natsuki | 1j     | +0.15              |
+| Q5  | **Copy shareable link** button à côté du badge Manabase                                                                   | Sarah (ROI #1), Karim               | 2h     | +0.05              |
+| Q6  | **Recent decks** tuile (localStorage, last 3) sur AnalyzerPage empty state                                                | Sarah                               | 4h     | +0.05              |
+| Q7  | **Load from clipboard** header button sur empty state (parse decklist auto)                                               | Sarah                               | 3h     | +0.03              |
+| Q8  | **`CHANGELOG.json` public scrappable** à `/changelog.json`                                                                | Karim (trust signal)                | <1h    | signal trust +0.02 |
+| Q9  | **Rename "reading library" encart** en langage Léo-friendly (actuellement cite 5 noms dont Léo connaît 1)                 | Léo                                 | 30min  | +0.05              |
+| Q10 | **Library filters** (par format, par date) sur `/library`                                                                 | Karim, Sarah                        | 3h     | +0.05              |
+
+**Total v2.5.5** : ~1 semaine dev, ΔMoy 6p projeté **+0.75** (3.63 → ~4.40 si tout livré).
+
+#### v2.6.0 — Major features (~3-4 semaines)
+
+| #   | Feature                                                                                                                            | Personas                       | Effort | ΔMoy 6p |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------ | ------- |
+| M1  | **API REST publique `POST /api/analyze`** (stateless, rate-limit 60rpm, CORS ouvert, JSON schema versionné)                        | Karim, Natsuki VETO, David     | 2-3j   | +0.27   |
+| M2  | **Seed-URL xoshiro256\*\*** pour MC reproducibility (Mulligan + Draws on Curve)                                                    | David (citation), Natsuki      | 1-2j   | +0.10   |
+| M3  | **IC Wilson sur onglets MC** (Mulligan + Draws on Curve) — PAS Castability (analytique). Refus argumenté maintenu sur Castability. | Natsuki, David                 | 2-3j   | +0.10   |
+| M4  | **Build Diff A vs B** — coller 2 decklists, tableau de deltas par sort/tour                                                        | Karim, Natsuki                 | 5-7j   | +0.15   |
+| M5  | **Matchup-tagged sideboard swaps** — noter "vs UW Control" sur chaque swap, retrouver le plan le mardi suivant                     | Sarah (ROI #1 depuis 2 audits) | 3-4j   | +0.10   |
+| M6  | **Tracker X-Y results** sur MyAnalyses (case "Event result: 4-0" par deck sauvé)                                                   | Sarah                          | 2j     | +0.05   |
+| M7  | **CSV v2**: section markers `# SECTION:` explicites + 3ème section `probabilities` (turn × color × pct) + fix bug B1               | Natsuki, Karim                 | 4h     | +0.05   |
+| M8  | **Bulk JSON multi-deck export** (ZIP de N decks analysés en batch, tout client-side)                                               | David, Natsuki                 | 1-2j   | +0.05   |
+
+**Commander features spécifiques (Thibault, au-delà du Q1 framing):**
+
+| #   | Feature                                                                                                              | Effort | ΔMoy 6p (Thibault) |
+| --- | -------------------------------------------------------------------------------------------------------------------- | ------ | ------------------ |
+| C1  | **Command zone modeling** — input "Commander: [name]" qui exclut 1 carte du shuffle + la compte castable chaque turn | 3-5j   | Thibault +0.5      |
+| C2  | **Karsten EDH tables T5-T8** (4-player, basé sur Karsten 2017 "Commander mana bases" + adaptation)                   | 3j     | Thibault +0.3      |
+| C3  | **Universal mana fixers toggle** (Chromatic Lantern, Prismatic Omen, Urborg+Cabal)                                   | 1j     | Thibault +0.2      |
+| C4  | **Color identity validator** (vérifier singleton + color identity vs commander)                                      | 2j     | Thibault +0.2      |
+| C5  | **Sol Ring T1 / Arcane Signet / talisman signature rocks modeling** (fast mana spike en EDH)                         | 2-3j   | Thibault +0.2      |
+| C6  | **Budget upgrade path** ranking (quel fetch/shock acheter en premier par ROI)                                        | 3-4j   | Thibault +0.2      |
+| C7  | **Library EDH coverage** (ajouter Jumbo Commander, EDHREC data drops, Josh Lee Kwai, Tomer)                          | 4h     | Thibault +0.1      |
+
+#### v2.7.0+ — Long-term / React 19 migration
+
+| #   | Item                                                                | Why / When                                                                                                   |
+| --- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| L1  | **Migrate `react-helmet-async` → `@unhead/react@2.1.13+`**          | Broken avec React 19 (perd dedup `<title>`). API différente — refactor SEO.tsx + tests. v2.7.0 avec React 19 |
+| L2  | **Bump React 18.3.1 → 19.x**                                        | Context7 audit: majeur migration, breaking changes (propTypes removed, nouveau JSX transform). Scope v2.7.0  |
+| L3  | **React Compiler (stable)** pour auto-memo sur ManaCostRow hot path | Beta actuelle → stable attendue. Réduit dette de memoïsation manuelle                                        |
+| L4  | **Empirical calibration** vs MTGO logs (10k+ matchs, open-dataset)  | David (citation académique). Transforme de outil prédictif à outil validé. 1-2 semaines                      |
+| L5  | **Convoke + Delve modeling** dans le K=3 engine                     | David — déférés dans les 9 mécaniques de ramp documentées. Modern/Legacy complets                            |
+
+#### Dette technique historique (ongoing)
+
+| #   | Item                                                                                                                      | Open since                  | Scope                                                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| D1  | **`useProbabilityCalculation` → SSOT engine alignment** (dual path base vs accelerated dans ManaCostRow)                  | 2026-04-06                  | v2.6.0 — requires numerical validation contre Humans+Cavern, Eldrazi, etc. ~1.5j |
+| D2  | **`noUncheckedIndexedAccess` TS flag activation**                                                                         | v2.5.2 audit                | v2.6.0 — ~41 sites à patcher, ~3-4h                                              |
+| D3  | **Delete `useMonteCarloWorker`** (dead code, 0 callers depuis v2.5.2)                                                     | 2026-04-13                  | v2.5.5 (trivial)                                                                 |
+| D4  | **CSP hygiene** sur `index.html` inline JSON-LD                                                                           | Security-Auditor 2026-04-17 | v2.5.4 — cosmétique, zéro risque réel, SHA-256 source ou fichier externe         |
+| D5  | **Phyrexian / twobrid pessimism fix** (actuellement trop pessimiste sur les coûts type `{W/P}` ou `{2/R}`)                | 2026-04-06                  | v2.6.0 — ~1h refactor ManaCostRow                                                |
+| D6  | **`{C}` colorless requirement fix** (Tron/Eldrazi — Eldrazi `{4}{C}{C}` actuellement scoré 99/98 car traité pure generic) | 2026-04-06                  | v2.6.0 — ~2h, impacte Tron decks                                                 |
+
+#### Total récap
+
+- **Bugs**: 3 items (~1j)
+- **v2.5.5 quick wins**: 10 items (~1 semaine)
+- **v2.6.0 major**: 8 items + 7 Commander = **15 items** (~3-4 semaines)
+- **v2.7.0+**: 5 items (React 19 + calibration)
+- **Dette historique**: 6 items
+- **TOTAL = 39 items** + 3 bugs = **42 items de backlog identifié**
+
+**Non blocking launch**: aucun de ces 42 items ne bloque le tweet `@fireshoes`. Le
+Commander framing (Q1) est la seule reco avec urgence réelle car 40% des clics
+du tweet viendront de joueurs Commander qui bounce en 10s sur le framing 60-card.
 
 ### Memory updated (session close)
 
