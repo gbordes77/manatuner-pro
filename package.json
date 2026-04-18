@@ -1,6 +1,6 @@
 {
   "name": "manatuner",
-  "version": "2.5.7",
+  "version": "2.5.8",
   "private": true,
   "description": "ManaTuner - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
   "main": "index.js",

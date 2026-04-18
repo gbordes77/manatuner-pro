@@ -28,7 +28,7 @@
 - **Concurrent Features**: Suspense for lazy loading all analyzer tabs
 - **Strict Mode**: Enabled for development
 - **Hooks**: Extensive use of useState, useEffect, useMemo, useCallback, useReducer
-- **Custom Hooks**: useMonteCarloWorker, useAnalyzer, useDeckHistory
+- **Custom Hooks**: `useProbabilityCalculation`, `useAcceleratedCastability`, `usePrivacyStorage`. (`useMonteCarloWorker` was deleted in v2.5.5 — `MulliganTab` now calls `mulliganArchetype.worker.ts` directly.)
 - **React.memo**: Applied to all 6 analyzer tab components
 
 ### TypeScript 5.9
@@ -119,10 +119,11 @@
 ## Privacy-First Architecture
 
 - **No Backend**: 100% client-side processing
-- **LocalStorage**: Encrypted with AES-256
+- **LocalStorage**: Encrypted via `PrivacyStorage`
 - **No Tracking**: No analytics, no cookies
-- **Supabase**: Disabled (mocked, `isConfigured: () => false`)
+- **Supabase**: **Removed entirely** on 2026-04-13 (not just disabled). All env vars, types, and mock services purged. Do not reintroduce without explicit decision reversal — the 100% client-side stance is load-bearing for `PrivacySettings.tsx:204`.
+- **Sentry**: Code present, `init()` gated on `import.meta.env.PROD && VITE_SENTRY_DSN`. DSN intentionally unset in Vercel production env; see `CLAUDE.md → Sentry` for the 4-step reactivation contract.
 
 ---
 
-_Last Updated: April 2026_
+_Last Updated: 2026-04-18 (v2.5.8)_

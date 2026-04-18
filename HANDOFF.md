@@ -1,8 +1,45 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY + full format coverage (Constructed + EDH + Limited)
+## Project Status: PRODUCTION — LAUNCH-READY + full format coverage (Constructed + EDH + Limited) + library + OG fix
 
-**Latest Session:** 2026-04-18 (night, 3rd push) — v2.5.7 shipped Limited framing: Selesnya 40-card sample, 5th empty-state button, HomePage shortcut, Limited-aware QuickVerdict. Together with v2.5.6 (EDH), the site now treats Constructed / EDH / Limited as three co-primary format families. | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** 7.22 s clean | **Version:** `2.5.7`
+**Latest Session:** 2026-04-18 (night, 4th push) — two follow-up commits after v2.5.7:
+
+1. Library +1 video ("Secrets to INSANE win rates? The MTG Study That Changes Everything", Battle Chads with Eduardo Sajgalik + Sahar Mirhadi) — `articlesReferenceSeed` bumped 1.2 → 1.3, library total 46 → 47.
+2. `index.html` OG / Twitter / description tags restored to the "Mana Calculator + Competitive MTG Reading Library" dual positioning after a silent drift in v2.5.3 was caught when the creator shared `/library` on Discord and only the calculator half appeared.
+
+Tests unchanged since v2.5.7; tagged v2.5.8 on the doc-sweep commit to formalize the content + static-head release. | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** 7.22 s clean | **Version:** `2.5.8`
+
+---
+
+## Session 2026-04-18 (night, 4th push) — library +1 video + OG fallback regression fix
+
+### Shipped
+
+- **Library entry**: `battle-chads-mtg-study-win-rates` in `src/data/articlesReferenceSeed.ts`. YouTube video uploaded 2026-04-16 (2 days old at time of add), 2.1k views / 57 likes / 0 dislikes. Category `metagame`, secondary `advanced`, level intermediate, language `en`. Initially credited to "Battle Chads"; a follow-up commit (`02b7ac4`) corrects the author field to "Battle Chads, with Eduardo Sajgalik & Sahar Mirhadi" after the creator pointed out the two guests featured in the episode.
+- **`articlesReferenceSeed` version bumped 1.2 → 1.3** with changelog entry inline.
+- **Library total** 46 → **47 entries** (30 live + 11 archive.org recoveries + 6 podcasts). Dashboard, README, HomePage encart all reflect the new total.
+- **`index.html` OG / Twitter / meta description tags restored** to the dual "Mana Calculator + Competitive MTG Reading Library" positioning (from commit `7974003`, 2026-04-12). Discord, Facebook, LinkedIn, Slack, iMessage — every platform that doesn't execute JS on link-preview scrape — was reading the STATIC tags in `index.html`, not the `react-helmet-async` values set in `HomePage.tsx`. The HomePage dual positioning had been correct since v2.5.2, but the static fallback silently drifted to a calculator-only pitch in v2.5.3 and nobody noticed until the creator shared `/library` on Discord post-v2.5.7.
+- **7-line guard comment** added above the OG tags in `index.html` documenting why they MUST stay in sync with `HomePage.tsx`. Prevents the same silent regression next time any future edit touches the static head.
+
+### Why this mattered
+
+A manual share test on Discord post-v2.5.7 revealed the `og:title` / `og:description` / `twitter:title` / `twitter:description` / `meta description` were all calculator-only — the "Competitive MTG Reading Library" half of the product's dual pitch was invisible to every social-preview scraper. Traffic from Discord / FNM Slack shares (Sarah's primary distribution channel, per the 2026-04-18 late audit) was landing on link cards that undersold the library component.
+
+The fix is a plain content restore — no schema change, no behavior change. The 7-line explanatory comment is the real prevention.
+
+### Verification
+
+- `grep -c "reading library" index.html` → 6 (was 0 on main before the fix).
+- No tests touch `index.html`; nothing to re-run. `npx tsc --noEmit` unchanged (video entry is already typed via `ReferenceArticle`).
+- Discord social-preview cache typically refreshes within 24 h; manual kick via `https://www.opengraph.xyz/` available if urgent.
+
+### Deferred
+
+- None. These were two tactical fixes to close a regression + add a fresh resource. No new backlog items opened.
+
+### Next session priority
+
+Same as v2.5.7: tweet `@fireshoes`. The product now has defensible stories for every format family AND the social-preview / Discord-share surface pitches both halves of the product correctly again.
 
 ---
 

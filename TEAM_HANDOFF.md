@@ -11,16 +11,19 @@
 | **Stack**          | React 18 + TypeScript + Vite 7.3 + MUI |
 | **Hebergement**    | Vercel (auto-deploy on push to main)   |
 | **Tests**          | Vitest (unit) + Playwright (E2E)       |
-| **Version**        | 2.2.0                                  |
+| **Version**        | 2.5.8                                  |
 
 ### Ce que fait l'app
 
 - Calcule les probabilites exactes de cast (hypergeometrique, Frank Karsten 2022)
 - Simule 10,000 mains pour les decisions de mulligan (Monte Carlo, configurable 3k/10k/50k)
-- Prend en compte les **mana rocks et dorks** (pas juste les terrains)
+- Prend en compte les **mana rocks et dorks** (pas juste les terrains) via le moteur K=3
 - Analyse tour par tour la castabilite (Best Case / Realistic)
-- Export Blueprint (PNG/PDF/JSON) pour partage Discord
-- 100% client-side, privacy-first, open source MIT
+- **QuickVerdict** : phrase-verdict au-dessus des onglets calibrée par format (Constructed / EDH / Limited)
+- **Couverture formats complète** : 5 sample decks one-click (Aggro / Midrange / Control / Atraxa Superfriends 100c / Selesnya draft 40c) via `?sample=aggro|midrange|control|edh|limited`
+- **Reading library** : 47 ressources compétitives curées (articles + podcasts + videos)
+- Export Blueprint (PNG/PDF/JSON/CSV) pour partage Discord / Sheets / notebooks
+- 100% client-side, privacy-first, open source MIT, zero Supabase, zero Sentry en prod
 
 ---
 
@@ -68,15 +71,15 @@ src/
 
 ## 4. Routes
 
-| Route            | Page             | Description                      |
-| ---------------- | ---------------- | -------------------------------- |
-| `/`              | HomePage         | Landing page avec mana flottants |
-| `/analyzer`      | AnalyzerPage     | Analyseur principal (6 onglets)  |
-| `/guide`         | GuidePage        | Guide utilisateur                |
-| `/mathematics`   | MathematicsPage  | Fondements mathematiques         |
-| `/land-glossary` | LandGlossaryPage | Glossaire des terrains           |
-| `/my-analyses`   | MyAnalysesPage   | Historique local                 |
-| `/about`         | AboutPage        | A propos                         |
+| Route            | Page             | Description                                                                                                         |
+| ---------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `/`              | HomePage         | Landing page avec mana flottants                                                                                    |
+| `/analyzer`      | AnalyzerPage     | Analyseur principal (5 onglets : Castability / Analysis / Mulligan / Manabase / Blueprint) + QuickVerdict au-dessus |
+| `/guide`         | GuidePage        | Guide utilisateur                                                                                                   |
+| `/mathematics`   | MathematicsPage  | Fondements mathematiques                                                                                            |
+| `/land-glossary` | LandGlossaryPage | Glossaire des terrains                                                                                              |
+| `/my-analyses`   | MyAnalysesPage   | Historique local                                                                                                    |
+| `/about`         | AboutPage        | A propos                                                                                                            |
 
 ---
 
@@ -114,4 +117,4 @@ npm run lint             # Check ESLint
 
 ---
 
-**Last Updated**: April 2026
+**Last Updated**: 2026-04-18 (v2.5.8)

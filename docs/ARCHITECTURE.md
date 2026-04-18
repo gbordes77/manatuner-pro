@@ -1,10 +1,13 @@
 # ManaTuner - Architecture Documentation
 
 > **Last Updated**: 2026-04-18
-> **Version**: 2.5.4
+> **Version**: 2.5.8
 > **Status**: Production Ready
 > **Note**: For the current architecture, see also `ARCHITECTURE_COMPLETE.md`
-> in the same folder. This document describes the v2.0.0 baseline.
+> in the same folder. This document describes the v2.0.0 baseline. Sample-deck
+> coverage (Constructed / Commander / Limited), `QuickVerdict` component, and
+> `utils/manaCostParser.ts` were added in v2.5.5 – v2.5.7 and are not yet
+> reflected in the diagrams below.
 
 ---
 

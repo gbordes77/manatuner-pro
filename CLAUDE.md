@@ -48,17 +48,18 @@ echo "Rafraîchis http://localhost:3000/[page-modifiée]"
 
 **Fichier** : `mtg-player-personas.md` (racine du projet)
 
-5 personas joueurs MTG pour evaluer l'UX, du casual au Pro Tour :
+**6 personas** joueurs MTG pour evaluer l'UX, du casual au Pro Tour + EDH pod :
 
 1. **Leo (Le Curieux)** — 6 mois, casual Arena, fuit le jargon
 2. **Sarah (La Reguliere)** — FNM weekly, copie/ajuste des decklists
 3. **Karim (Le Tacticien)** — Grinder RCQ, veut data fine et exports
 4. **Natsuki (La Grinder)** — Pro Tour qual, pense en EV/equity, veut l'API
 5. **David (L'Architecte)** — Pro Tour vet, theoricien, lit le code source
+6. **Thibault (Le Capitaine de Table)** — EDH pilot, pod hebdo, 33yo (ajouté 2026-04-18 en personas v2)
 
-Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabulaire, parcours de navigation, grille d'evaluation (8 axes), et format de sortie structure.
+Utiliser pour evaluer toute modification UX. Chaque persona a : identite, vocabulaire, parcours de navigation, grille d'evaluation (8 axes, dont "Partage" qui a remplacé "Rétention" en v2), et format de sortie structure.
 
-**Derniers scores (v2.4 — 2026-04-06)** : Leo 4.11 | Sarah 4.31 | Karim 4.44 | Natsuki 4.03 | David 3.80 | **Moy: 4.14/5** (scoring plus rigoureux que v2.1)
+**Derniers scores (v2.5.4 live — 2026-04-18, audit 6 personas)** : Leo 3.84 | Sarah 4.71 | Karim 4.05 | Natsuki 2.85 | David 3.75 | Thibault 2.56 | **Moy 6p: 3.63/5** (Thibault tire la moyenne vers le bas — honnête sur le gap marché EDH). Thibault projeté ~3.85 post-v2.5.6 Commander framing, soit Moy 6p ~3.88.
 
 ---
 

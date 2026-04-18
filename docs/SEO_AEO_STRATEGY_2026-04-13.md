@@ -6,6 +6,46 @@
 
 ---
 
+## Update 2026-04-18 — OG / Twitter positioning decision REVERSED (dual positioning restored)
+
+The keyword-first, calculator-only OG / Twitter / meta description tags
+proposed in §1.1, §2.4, and §3.1 below were partially adopted in
+v2.5.3, then silently drifted into `index.html`. They were **explicitly
+restored to the dual "Mana Calculator + Competitive MTG Reading
+Library" positioning on commit `4552567` (2026-04-18, 4th push of the
+day)** after a manual Discord share test revealed the library half of
+the product pitch was invisible on every social-preview scraper that
+does not execute JS (Discord, Facebook, LinkedIn, Slack, iMessage).
+
+**Current contract in `index.html`** (load-bearing, do not drift again):
+
+- `og:title` / `twitter:title` →
+  `"ManaTuner — Mana Calculator + Competitive MTG Reading Library"`
+- `og:description` / `twitter:description` / `meta description` →
+  `"Free mana calculator that counts your dorks & rocks, plus the
+most complete reading library in competitive Magic — Karsten,
+PVDDR, Saito, Chapin, Reid Duke."`
+- Browser `<title>` stays at the Léo-friendly
+  `"ManaTuner — Will your deck cast its spells on curve?"` (separate
+  concern — `<title>` is the browser-tab label, not the social-share
+  headline).
+
+A 7-line guard comment above the OG block in `index.html` documents
+why the static tags must stay in sync with `HomePage.tsx`'s
+`react-helmet-async` values — social crawlers don't execute JS, so
+the static `<head>` is what they see.
+
+Treat §1.1 / §2.4 / §3.1 as **archived proposals** from the
+2026-04-13 audit; the dual positioning beats the keyword-first copy
+for the product's actual distribution channels (Discord / FNM Slack
+shares are Sarah persona's #1 channel per the 2026-04-18 persona v2
+audit). Everything else in this document — robots.txt AI bot list,
+JSON-LD schema additions, BreadcrumbList, HowTo, llms.txt / llms-full.txt,
+per-route title / description clusters on non-home routes — remains
+current recommendation.
+
+---
+
 ## TL;DR
 
 ManaTuner's technical SEO baseline is **better than expected**. The foundation is already in place:

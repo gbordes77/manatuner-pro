@@ -4,18 +4,22 @@
 
 ---
 
-## L'ETAT DES LIEUX (mis a jour 2026-04-13 post-audit)
+## L'ETAT DES LIEUX (mis a jour 2026-04-18 post-v2.5.7 + library + OG fix)
 
 Le produit est **pret**. Ce n'est pas une opinion, ce sont les faits :
 
-- 305 tests passent, 2 skipped, 0 echec
+- 315 tests passent, 2 skipped, 0 echec
 - Build en ~7s, deploye sur Vercel, live a https://manatuner.app
 - Moteur hypergeometrique unifie, audite, valide contre Karsten
 - Moteur d'acceleration K=3 (DORK/ROCK/ENHANCER) — **aucun concurrent n'a ca**
 - Mulligan Bellman — **aucun concurrent n'a ca**
 - 100% client-side, zero compte, zero tracking, zero Supabase — **aucun concurrent ne propose ca**
-- Score persona moyen : 3.76/5 (re-audit adversarial 2026-04-13) — projection 4.4+ apres les fixes du jour
+- **Couverture formats full** : Constructed (Aggro / Midrange / Control) + Commander (Atraxa Superfriends 100c) + Limited (Selesnya draft 40c). Cinq sample decks one-click (`?sample=aggro|midrange|control|edh|limited`), QuickVerdict calibre les paliers par format.
+- **Library** : 47 ressources compétitives curées (articles + podcasts + 1 video Battle Chads fraîche d'avril 2026).
+- **Social share preview** : OG / Twitter / meta description restaurés le 2026-04-18 au dual positioning "Mana Calculator + Competitive MTG Reading Library" — Discord / FNM Slack / iMessage voient maintenant les deux moitiés du produit au scrape.
+- Score persona moyen : 3.63/5 sur 6 personas (audit v2.5.4 live, 2026-04-18). Projection post-v2.5.7 : ~3.95 (Thibault 2.56 → ~3.85 grâce au framing Commander).
 - Tabs : Castability > Analysis > Mulligan > Manabase > Blueprint
+- Une-phrase verdict (QuickVerdict) affichée au-dessus des onglets depuis v2.5.5.
 
 **Tu n'as pas un probleme de produit. Tu as un probleme de distribution.**
 

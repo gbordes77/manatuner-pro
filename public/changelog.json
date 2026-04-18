@@ -6,8 +6,20 @@
   "format": "keepachangelog-1.0.0",
   "semver": "2.0.0",
   "note": "Machine-readable version history. Generated from CHANGELOG.md. Each entry is summary-level; full changelog at https://github.com/gbordes77/ManaTuner-v2/blob/main/CHANGELOG.md",
-  "current": "2.5.7",
+  "current": "2.5.8",
   "versions": [
+    {
+      "version": "2.5.8",
+      "date": "2026-04-18",
+      "title": "Library +1 video + OG fallback regression fix",
+      "highlights": [
+        "Library entry: Battle Chads with Eduardo Sajgalik + Sahar Mirhadi (The MTG Study That Changes Everything)",
+        "articlesReferenceSeed version 1.2 → 1.3 (47 entries, was 46)",
+        "index.html OG / Twitter / meta description restored to the 'Mana Calculator + Competitive MTG Reading Library' dual positioning",
+        "7-line guard comment added above static head tags — prevents the same Discord-preview regression",
+        "Documentation sweep: 11 docs updated to reflect v2.5.5–8 reality (README, HANDOFF, LAUNCH, CLAUDE.md, TEAM_HANDOFF, docs/*)"
+      ]
+    },
     {
       "version": "2.5.7",
       "date": "2026-04-18",

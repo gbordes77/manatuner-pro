@@ -5,6 +5,70 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.8] - 2026-04-18 (night, 4th push) — library +1 video + OG fallback fix
+
+Patch release bundling the two post-v2.5.7 commits: a new library
+entry and a static-head OG regression fix. No engine or schema
+changes — content + `<head>` only.
+
+### Added
+
+- **Library entry** `battle-chads-mtg-study-win-rates` in
+  `src/data/articlesReferenceSeed.ts`. YouTube video uploaded
+  2026-04-16 ("Secrets to INSANE win rates? The MTG Study That Changes
+  Everything"), data-driven MTG analytics episode. Category
+  `metagame`, secondary `advanced`, level intermediate, language `en`.
+  Initial attribution "Battle Chads"; follow-up commit (`02b7ac4`)
+  corrects the `author` field to
+  `"Battle Chads, with Eduardo Sajgalik & Sahar Mirhadi"` after the
+  creator pointed out the two guests featured in the episode. Eduardo
+  Sajgalik is a Pro Tour player and longtime competitive analyst.
+- **7-line guard comment** in `index.html` above the OG / Twitter
+  block documenting that the static tags must stay in sync with
+  `src/pages/HomePage.tsx` because Discord / Facebook / LinkedIn /
+  Slack / iMessage do not execute JS when scraping for link previews
+  — they read the static `<head>`, not the `react-helmet-async`
+  values. Prevents the silent regression that triggered this fix.
+
+### Changed
+
+- **`articlesReferenceSeed` version** bumped `1.2` → `1.3` with a
+  one-line changelog entry at the top of the file. Library total now
+  **47 entries** (was 46).
+- **`index.html` OG / Twitter / meta description tags restored** to
+  the dual "Mana Calculator + Competitive MTG Reading Library"
+  positioning (from commit `7974003`, 2026-04-12). Specifically:
+  - `og:title` / `twitter:title` →
+    `"ManaTuner — Mana Calculator + Competitive MTG Reading Library"`
+    (was calculator-only).
+  - `og:description` / `twitter:description` / `meta description` →
+    `"Free mana calculator that counts your dorks & rocks, plus the
+most complete reading library in competitive Magic — Karsten,
+PVDDR, Saito, Chapin, Reid Duke."`
+  - `og:image:alt` / `twitter:image:alt` → mention the reading
+    library too.
+  - The browser `<title>` stays at the Léo-friendly
+    `"ManaTuner — Will your deck cast its spells on curve?"` (Léo
+    persona decision, unchanged).
+
+### Context
+
+Regression was introduced silently in v2.5.3 and caught only when the
+creator shared `/library` on Discord post-v2.5.7 and the preview card
+showed only the calculator half of the product pitch. The HomePage
+React tree had the correct dual positioning the entire time via
+`react-helmet-async`; only the static `index.html` fallback drifted.
+Discord, Facebook, LinkedIn, Slack, iMessage, and most link-preview
+scrapers do **not** execute JS — they read the static `<head>` only.
+
+### Verification
+
+- `grep -c "reading library" index.html` → `6` (was `0` on `main`
+  before the fix).
+- No engine / test / type change; `npx tsc --noEmit` unchanged.
+- Discord social-preview cache typically refreshes within 24 h;
+  manual kick via `https://www.opengraph.xyz/` available if urgent.
+
 ## [2.5.7] - 2026-04-18 (night, 3rd push) — Limited (Draft / Sealed) framing completes the format coverage
 
 ### Context
