@@ -1,8 +1,54 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — LAUNCH-READY + EDH unlocked (post v2.5.6 Commander framing)
+## Project Status: PRODUCTION — LAUNCH-READY + full format coverage (Constructed + EDH + Limited)
 
-**Latest Session:** 2026-04-18 (night, 2nd push) — v2.5.6 shipped Q1 Commander framing: Atraxa sample, empty-state button, /guide#commander section, EDH-aware QuickVerdict, HomePage shortcut. Engine untouched (already 100-card capable since v2.5.2). | **Tests:** 315 pass, 2 skipped, 0 fail (verified in isolation) | **Build:** clean | **Version:** `2.5.6`
+**Latest Session:** 2026-04-18 (night, 3rd push) — v2.5.7 shipped Limited framing: Selesnya 40-card sample, 5th empty-state button, HomePage shortcut, Limited-aware QuickVerdict. Together with v2.5.6 (EDH), the site now treats Constructed / EDH / Limited as three co-primary format families. | **Tests:** 315 pass, 2 skipped, 0 fail | **Build:** 7.22 s clean | **Version:** `2.5.7`
+
+---
+
+## Session 2026-04-18 (night, 3rd push) — v2.5.7 Limited framing
+
+### Shipped
+
+- **Selesnya 40-card Limited sample** (17 lands / 23 spells, WG identity, singleton for non-land / non-basic). Accessible via `?sample=limited`.
+- **"Limited (Draft)" 5th button** on AnalyzerPage empty state (green accent). Row order now Aggro / Midrange / Control / Commander / Limited — every format family covered in the picker.
+- **HomePage "Or a 40-card Limited pool" link** inserted between the 60-card and Commander shortcuts. Green accent matching the Selesnya palette.
+- **QuickVerdict Limited-aware**: `totalCards <= 45` triggers the Limited path — widened tier bands (80/70/60), headline `"Limited (40-card) — X% of spells cast on curve"`, mulligan rider `"most 2–3-land hands are keeps in a 40-card deck"`, caveat line explaining the Karsten ceiling in Limited (~13 sources for 2-pip @ 90 %).
+- **Internal refactor**: `detectFormatFamily(totalCards)` helper in QuickVerdict returns `'limited' | 'constructed' | 'edh'` so all three code paths share one format detection threshold source.
+
+### Why this mattered
+
+Creator flag after v2.5.6: "les joueurs de limité ne doivent pas se sentir à l'écart non plus". Drafters are a big chunk of Arena + paper tournament play. The v2.5.6 framing still implicitly treated 60-card as the default — a drafter landing on HomePage saw "60-card sample / 100-card Commander" and inferred Limited wasn't a first-class use case. v2.5.7 closes the gap with framing only, no engine changes.
+
+### Format coverage matrix (post-v2.5.7)
+
+| Format    | Sample deck                           | Empty-state button | HomePage shortcut            | QuickVerdict path |
+| --------- | ------------------------------------- | ------------------ | ---------------------------- | ----------------- |
+| Aggro     | Mono-Red                              | ✓                  | —                            | Constructed       |
+| Midrange  | Nature's Rhythm (default `?sample=1`) | ✓                  | Try a 60-card sample         | Constructed       |
+| Control   | Azorius Control                       | ✓                  | —                            | Constructed       |
+| Commander | Atraxa Superfriends (100 cards)       | ✓ (cyan)           | Or a 100-card Commander deck | EDH               |
+| Limited   | Selesnya draft (40 cards)             | ✓ (green)          | Or a 40-card Limited pool    | Limited           |
+
+Five one-click sample paths, three format-family-specific QuickVerdict calibrations. No-one has to build a deck to "feel" what the tool does.
+
+### Verification
+
+- `npx tsc --noEmit` → 0 errors.
+- `npm run test:unit` → 315 passed, 2 skipped, 0 failing. 2.60 s total (ran solo, no parallel build contention).
+- `npm run build` → clean in 7.22 s.
+- Selesnya sample verified: 40 cards exact, 17 lands, Selesnya identity.
+
+### Deferred (explicit)
+
+- **Limited-specific Karsten tables** (40-card extrapolation). Currently Manabase tab still uses 60-card Karsten with a caveat.
+- **Draft archetype presets** (BW lifegain, UR spells…). Needs per-set content curation.
+- **`/guide#limited` anchored section** (like `/guide#commander`). Limited manabase is mechanically simpler than EDH so lower ROI.
+
+### Next session priority
+
+1. **Tweet `@fireshoes`** — ManaTuner now has defensible stories for every format family. Distribution is the real blocker now.
+2. **C1 command-zone modelling** — takes Thibault past his next persona ceiling.
 
 ---
 

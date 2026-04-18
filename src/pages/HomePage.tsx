@@ -557,6 +557,43 @@ export const HomePage: React.FC = () => {
             >
               ·
             </Box>
+            {/* Limited shortcut — drafters shouldn't feel sidelined by the
+                Constructed / Commander framing. Green accent matches the
+                Selesnya palette of the sample deck. */}
+            <Box
+              component="a"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault()
+                navigate('/analyzer?sample=limited')
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.85rem',
+                color: '#2e7d32',
+                textDecoration: 'none',
+                borderBottom: '1px dotted',
+                borderColor: '#2e7d32',
+                pb: 0.125,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: '#4caf50',
+                  borderColor: '#4caf50',
+                },
+              }}
+            >
+              <AnalyticsIcon sx={{ fontSize: 16 }} />
+              Or a 40-card Limited pool
+            </Box>
+            <Box
+              component="span"
+              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
+              aria-hidden="true"
+            >
+              ·
+            </Box>
             {/* Commander shortcut — Thibault persona ask: "don't make me
                 scroll to know EDH is supported". The cyan accent hints at
                 the Commander color identity used throughout the Guide. */}

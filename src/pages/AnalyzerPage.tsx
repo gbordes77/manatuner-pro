@@ -136,6 +136,34 @@ const SAMPLE_DECKS: Record<string, { name: string; list: string }> = {
 1 Otherworldly Gaze
 1 Mirrex`,
   },
+  // 40-card Selesnya Limited deck — representative draft/sealed shape:
+  // 17 lands (≈42 % land ratio, higher than Constructed), 2-color fixing
+  // via guild-gates, curve peaking T3-T4, lean removal + tricks. Drafters
+  // persona ask: "don't leave Limited out of the framing."
+  limited: {
+    name: 'Selesnya Limited — 40-card Draft',
+    list: `1 Llanowar Elves
+1 Elvish Mystic
+2 Scavenging Ooze
+2 Elvish Visionary
+1 Voice of Resurgence
+1 Loxodon Smiter
+1 Centaur Courser
+1 Giant Adephage
+1 Qasali Pridemage
+2 Abzan Battle Priest
+2 Dromoka's Command
+2 Selesnya Charm
+2 Wildsize
+1 Path to Exile
+1 Banishing Light
+1 Collected Company
+1 Sundering Growth
+1 Oath of Nissa
+2 Selesnya Guildgate
+8 Plains
+7 Forest`,
+  },
   // 100-card Atraxa Superfriends / Proliferate — representative EDH deck
   // covering the typical EDH manabase patterns: 38 lands, 11 ramp, 10
   // fixers (tri-lands, shocks, fetches, utility), singleton constraint.
@@ -752,6 +780,21 @@ const AnalyzerPage: React.FC = () => {
                       }}
                     >
                       Commander (EDH)
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size={isMobile ? 'medium' : 'large'}
+                      onClick={() => handleLoadSampleKey('limited')}
+                      sx={{
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        borderWidth: 2,
+                        borderColor: 'success.main',
+                        color: 'success.main',
+                        '&:hover': { borderWidth: 2, borderColor: 'success.dark' },
+                      }}
+                    >
+                      Limited (Draft)
                     </Button>
                   </Box>
                   <Box

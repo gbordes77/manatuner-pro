@@ -6,8 +6,20 @@
   "format": "keepachangelog-1.0.0",
   "semver": "2.0.0",
   "note": "Machine-readable version history. Generated from CHANGELOG.md. Each entry is summary-level; full changelog at https://github.com/gbordes77/ManaTuner-v2/blob/main/CHANGELOG.md",
-  "current": "2.5.6",
+  "current": "2.5.7",
   "versions": [
+    {
+      "version": "2.5.7",
+      "date": "2026-04-18",
+      "title": "Limited (Draft / Sealed) framing completes format coverage",
+      "highlights": [
+        "40-card Selesnya Limited sample deck (?sample=limited)",
+        "Limited (Draft) 5th button on AnalyzerPage empty state",
+        "HomePage Limited shortcut between the 60-card and Commander links",
+        "QuickVerdict detects 40-card Limited (<= 45 cards) with widened tier bands + Karsten ceiling caveat",
+        "Picker now covers every major MTG format: Aggro / Midrange / Control / Commander / Limited"
+      ]
+    },
     {
       "version": "2.5.6",
       "date": "2026-04-18",

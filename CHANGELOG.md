@@ -5,6 +5,75 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.7] - 2026-04-18 (night, 3rd push) — Limited (Draft / Sealed) framing completes the format coverage
+
+### Context
+
+Creator flag after shipping v2.5.6: "les joueurs de limité ne doivent pas
+se sentir à l'écart non plus". Fair point — drafters and sealed grinders
+are a third pillar of paper/Arena MTG (alongside Constructed and EDH)
+and the v2.5.6 framing still implicitly treated 60-card as the default.
+This release closes the remaining format-framing gap with a 40-card
+sample deck, an empty-state button, a HomePage shortcut, and a Limited-
+aware QuickVerdict. No engine changes.
+
+### Added
+
+- **40-card Selesnya Limited sample deck** in `SAMPLE_DECKS.limited`.
+  17 lands (8 Plains / 7 Forest / 2 Selesnya Guildgate = ~42 % land
+  ratio), 23 spells with a realistic draft curve: 3 mana dorks, 7
+  creatures 2-3 CMC, 5 removal / tricks (Dromoka's Command, Selesnya
+  Charm, Path to Exile, Banishing Light, Sundering Growth), a late-
+  game Giant Adephage. Accessible via `?sample=limited`.
+- **"Limited (Draft)" 5th button** on the AnalyzerPage empty-state
+  picker (success-green accent). Row order now reads: Mono-Red Aggro
+  / Midrange Combo / Azorius Control / Commander (EDH) / Limited
+  (Draft) — covering every major MTG format family in one picker.
+- **"Or a 40-card Limited pool" discreet link** on HomePage, inserted
+  between the 60-card sample link and the Commander shortcut. Green
+  accent matching the Selesnya palette of the sample.
+
+### Changed
+
+- **`QuickVerdict` now detects Limited** (`totalCards <= 45`) in
+  addition to EDH (`>= 99`) and Constructed (60-89). Tier bands are
+  widened by 10 points for Limited (80 / 70 / 60 instead of 90 / 80 / 70) because 40-card draft decks have mechanically weaker fixing.
+  Headline: `"Limited (40-card) — X% of spells cast on curve"`.
+  Mulligan rider: `"most 2–3-land hands are keeps in a 40-card deck"`.
+  Caveat line explains the Karsten ceiling: `"a 2-pip spell at 90 %
+reliability needs ~13 sources, which is most of your draft pool.
+Aim for 17 lands and at most a 10/7 colour split."`
+- **`QuickVerdict` internal refactor**: extracted a `detectFormatFamily`
+  helper returning `'limited' | 'constructed' | 'edh'` so the three
+  code paths (tier bands, mulligan rider, headline, caveat) share the
+  same format detection. One threshold source of truth per format.
+
+### Not shipped (explicit defer)
+
+- **Limited-specific Karsten extrapolation**. Frank Karsten's 2022
+  tables target 60-card with mulligans; 40-card doesn't have a
+  published sibling. For now the Karsten tab still shows the 60-card
+  targets with a caveat, same as EDH. A future `limited: true` flag
+  on `KarstenTargetDelta` could compute 40-card equivalents.
+- **Draft archetype presets** (BW lifegain, GW tokens, UR spells,
+  etc.). Would need per-set content. v2.5.7 ships one representative
+  2-color sample; per-archetype samples are follow-on work.
+- **`/guide#limited` dedicated section** (like the EDH one). The
+  existing Quick Tips by Format card covers the essentials
+  (40 cards, 17 lands default); a deeper section is lower priority
+  since Limited manabase is genuinely simpler than EDH.
+
+### Verification
+
+- `npx tsc --noEmit`: 0 errors.
+- `npm run test:unit`: 315 passing, 2 skipped, 0 failing. Total
+  duration 2.60 s (ran alone, no parallel build contention this time).
+- `npm run build`: clean in 7.22 s. Main chunk unchanged (40.12 KB
+  gzip); AnalyzerPage chunk grew marginally for the 4-line sample
+  deck + 1 button.
+- Limited sample deck verified: 40 cards exact (17 lands + 23 spells),
+  Selesnya 2-color identity, singleton for non-land / non-basic.
+
 ## [2.5.6] - 2026-04-18 (night) — Commander framing unlocked (Q1 shipped)
 
 ### Context

@@ -38,22 +38,36 @@ interface QuickVerdictProps {
  * deeper into the tabs.
  */
 /**
- * EDH / Commander detection threshold. 99 (library) or 100 (library +
- * commander in one list) both count. Anything ≥ 99 is treated as a
- * singleton 100-card format. Below that, we assume 60-card constructed.
+ * Format detection thresholds.
+ *   - Limited: 40-card decks (draft / sealed). `<= 45` leaves headroom for
+ *     decks with 2-3 extra spells vs the 40-card baseline.
+ *   - EDH / Commander: 99 (library only) or 100 (library + commander in
+ *     one list) both count. Anything `>= 99` is treated as 100-card
+ *     singleton.
+ *   - Constructed: 60-89 cards (Standard, Pioneer, Modern, Legacy).
  */
+const LIMITED_MAX_CARDS = 45
 const EDH_MIN_CARDS = 99
+
+type FormatFamily = 'limited' | 'edh' | 'constructed'
+
+function detectFormatFamily(totalCards: number): FormatFamily {
+  if (totalCards <= LIMITED_MAX_CARDS) return 'limited'
+  if (totalCards >= EDH_MIN_CARDS) return 'edh'
+  return 'constructed'
+}
 
 export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, manabaseVerdict }) => {
   const consistencyPct = Math.round((analysisResult.consistency || 0) * 100)
-  const isEDH = (analysisResult.totalCards || 0) >= EDH_MIN_CARDS
+  const format = detectFormatFamily(analysisResult.totalCards || 0)
+  const isEDH = format === 'edh'
+  const isLimited = format === 'limited'
 
-  // For EDH, a "solid" consistency number is naturally lower because the
-  // deck is 100 cards (vs 60) and must be singleton. Karsten's 90 %
-  // thresholds calibrated to 60-card don't transfer 1:1. We widen the
-  // tier bands so an EDH deck at 72 % doesn't get labelled "rough".
+  // Tier bands calibrated per format. Both Limited and EDH have naturally
+  // lower consistency than Constructed (weaker fixing in Limited; singleton
+  // + 100-card variance in EDH) so we widen the bands 10 points.
   let tier: 'excellent' | 'solid' | 'shaky' | 'weak'
-  if (isEDH) {
+  if (isEDH || isLimited) {
     if (consistencyPct >= 80) tier = 'excellent'
     else if (consistencyPct >= 70) tier = 'solid'
     else if (consistencyPct >= 60) tier = 'shaky'
@@ -66,13 +80,22 @@ export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, mana
   }
 
   const mulliganRate = analysisResult.mulliganAnalysis?.poorHand ?? 0
-  const mulliganRider = isEDH
-    ? // EDH London mulligan keeps free at 7; the ManaTuner "poor hand" %
+  const mulliganRider = (() => {
+    if (isEDH) {
+      // EDH London mulligan keeps free at 7; the ManaTuner "poor hand" %
       // is less load-bearing than in 60-card. Use a generic EDH rider.
-      'plan mulligans around at least 1 ramp + 2 castable lands'
-    : mulliganRate >= 20
+      return 'plan mulligans around at least 1 ramp + 2 castable lands'
+    }
+    if (isLimited) {
+      // Bo3 Limited (draft/sealed) plays the London mulligan too, but the
+      // deck is 40 cards so every mulligan is costlier (smaller library =
+      // bigger variance). Lean towards keeping borderline hands.
+      return 'most 2–3-land hands are keeps in a 40-card deck'
+    }
+    return mulliganRate >= 20
       ? 'mulligan aggressively on borderline hands'
       : 'keep almost any 2–4-land opener'
+  })()
 
   const colorClause = (() => {
     if (!manabaseVerdict || manabaseVerdict.verdict === 'ok') return null
@@ -102,7 +125,9 @@ export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, mana
 
   const headline = isEDH
     ? `EDH — ${consistencyPct}% of spells cast on curve at 100 cards`
-    : `Your deck casts ${consistencyPct}% of spells on curve`
+    : isLimited
+      ? `Limited (40-card) — ${consistencyPct}% of spells cast on curve`
+      : `Your deck casts ${consistencyPct}% of spells on curve`
 
   const phrase = colorClause
     ? `${headline} — ${tierLabel[tier]}, but ${colorClause}; ${mulliganRider}.`
@@ -130,6 +155,16 @@ export const QuickVerdict: React.FC<QuickVerdictProps> = ({ analysisResult, mana
         >
           Note: the command zone (your commander cast each game) is not yet modelled in these
           numbers. EDH analysis lives at <code>/guide#commander</code>.
+        </Typography>
+      )}
+      {isLimited && (
+        <Typography
+          variant="caption"
+          sx={{ display: 'block', mt: 0.5, opacity: 0.85, fontStyle: 'italic' }}
+        >
+          Note: in Limited (40-card), Karsten&apos;s 60-card targets are a hard ceiling — a 2-pip
+          spell at 90 % reliability needs ~13 sources, which is most of your draft pool. Aim for 17
+          lands and at most a 10/7 colour split.
         </Typography>
       )}
     </Alert>
