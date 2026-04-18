@@ -343,8 +343,8 @@ export const ReferenceArticlesPage: React.FC = () => {
             }}
           >
             Every essential article a serious Magic player should read — from Karsten's manabase
-            math to the Commander Bracket System. Curated across 15+ years of pro-level writing.
-            Dead links restored via archive.org.
+            math to Saito's tournament mindset. Curated across 15+ years of pro-level writing. Dead
+            links restored via archive.org.
           </Typography>
 
           {/* Search bar — primary surface */}

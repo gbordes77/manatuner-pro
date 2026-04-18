@@ -813,7 +813,7 @@ export const HomePage: React.FC = () => {
             sx={{ mt: 1.5, maxWidth: 680, mx: 'auto', lineHeight: 1.6 }}
           >
             Every essential article a Magic player should read, in one place. From Karsten's
-            manabase math to the Commander Bracket System —{' '}
+            manabase math to Saito's tournament mindset —{' '}
             <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
               five curated tracks across every format
             </Box>
