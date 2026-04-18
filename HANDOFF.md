@@ -1,8 +1,111 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — v2.6.0 Library V2 shipped (Commander + Limited tracks, search, URL-state filters, localStorage progress)
+## Project Status: PRODUCTION — v2.7.0 Library V3 + v2.7.1 link-rot fix shipped, launch comms prepared
 
-**Latest Session:** 2026-04-18 (night, 5th push) — `v2.6.0` Library V2 after a 6-persona audit → implementation → re-audit loop. Three pushed commits: `8a74ba3` full rewrite, `503fd47` hero copy fix (Commander Bracket System → Saito tournament mindset), `85e1a29` header CTA promoted to primary-tier. **Tests: 315/315 pass. Build: 6.96 s clean. Version: `2.6.0`. Library: 48 entries across 5 tracks.**
+**Latest Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) follows with a full site-audit sweep (new `scripts/full-site-audit.mjs`) and two link-rot fixes on live Commander content (Command Zone podcast → Apple Podcasts; Game Knights channel renamed `@CommandZone`). Plus `tools/launch-preview.html` — local single-file HTML that previews the 3 launch posts (X EN, Discord FR, FB MTGA fr) with one-click copy. **Tests: 332/332 pass (+17 new in `libraryHelpers.test.ts`). Build: ~9 s clean. Version: `2.7.0`. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+
+---
+
+## Session 2026-04-18 (night, 6th–7th push) — v2.7.0 Library V3 + v2.7.1 link-rot + launch prep
+
+### v2.7.0 (commit `1dff2c0`) — 7 deferred persona items closed
+
+Every one of the 7 items left deferred in v2.6.0 HANDOFF shipped in a single release:
+
+- **Per-article SEO routes** `/library/:slug` — full `Article` JSON-LD, canonical link, breadcrumbs, curator note, related reading grid. Every one of the 54 articles now has its own indexable page (`src/pages/ArticleDetailPage.tsx`).
+- **Author index routes** `/library/author/:slug` — 27 author pages with `CollectionPage` JSON-LD + linked track/category chips (`src/pages/AuthorPage.tsx`). `slugifyAuthor` strips accents + ampersands so "Rémi Fortier" → `remi-fortier`, "Jimmy Wong & Josh Lee Kwai" → `jimmy-wong-josh-lee-kwai`.
+- **BibTeX copy button** on every `ArticleCard` + on the detail page. `@online` format with `authorlastname_year_slug` key. David ask — academic-grade citations.
+- **Copy-as-Markdown button** in the `/library` filter toolbar. Exports the current filtered view as a Discord-paste Markdown block, grouped by category beyond 8 results. Karim ask.
+- **Static feeds**: `scripts/generate-library-feeds.mjs` emits `public/library.json` (JSON Feed 1.1, all 54 articles, machine-readable re-export of the typed seed) and `public/library/feed.xml` (RSS 2.0, newest 30). `scripts/generate-sitemap.mjs` rebuilds `sitemap.xml` from the seed: 8 static + 54 articles + 27 authors = 89 URLs. Both wired into `prebuild`. Natsuki ask.
+- **`/analyzer?format=commander`** now auto-loads the Atraxa EDH sample + a persistent dismissible Commander preset `Alert` (n=100, singleton, horizon T5–T8). `?sample=edh` also lights the banner. Thibault P1.
+- **"Start Here — Your First FNM"** elevated hero card above the 5-track peer grid, blue-bordered with preview of the first 2 FNM reads. Hidden during search. Track section heading softened to "All Reading Tracks — Pick Your Level". Léo ask.
+- **Sticky `📚 N/54 read` chip** at top of `/library`, glued to `top: 72` with blurred background, visible from any scroll. Hidden until ≥1 article read. Sarah ask.
+
+Plus `src/utils/libraryHelpers.ts` (`slugifyAuthor`, `findAuthorsBySlug`, `toBibTeX`, `articleAsMarkdown`, `articlesAsMarkdown`) as the single source of truth for slug + BibTeX + Markdown formatting, backed by 17 new unit tests. `package.json` 2.6.0 → 2.7.0.
+
+### v2.7.1 (commit `d8c2e6a`) — post-push link-rot sweep
+
+`scripts/full-site-audit.mjs` was added to run a comprehensive local audit: every static route + per-article + per-author route on the dev server (97/97 pass), parallel HEAD/GET on every `primaryUrl` + `originalUrl` (62 URLs), and structural validation of `library.json` / `feed.xml` / `sitemap.xml`. Classifier distinguishes real-dead vs Cloudflare bot-blocked (403) vs expected-dead (`originalUrl` on `archived`/`mirror` articles — they 404 by design because that's why we archived). Two real dead `primaryUrl`s fixed:
+
+- `thecommandzone.com/` → `podcasts.apple.com/us/podcast/the-command-zone/id898023861` (iTunes search API confirmed canonical, 200 OK). Old URL preserved as `originalUrl`.
+- `youtube.com/@CommandZoneStudios` → `youtube.com/@CommandZone` (channel renamed; old handle now 404s). Old URL preserved as `originalUrl`.
+
+Final audit: **97/97 site routes · 49/62 external 2xx · 13 expected-dead originalUrls · 0 REAL dead · 0 feed/sitemap problems**.
+
+### Launch comms prep (not yet pushed — creator posts manually)
+
+`tools/launch-preview.html` — single-file, self-contained HTML (no deps, 23 KB) that previews the 3 launch posts with platform-accurate skins (X black card, Discord dark chat with Markdown rendering, FB MTGA fr group card). One-click Copy button per panel; FB copy auto-strips `**` since Facebook does not render Markdown. Not deployed (lives in `tools/`, not `public/`).
+
+Key positioning decision: the 3 posts are framed as **fresh discovery, not a v2.7 release** — nobody knows the site yet, so "New in v2.7…" framing would miss the audience entirely. "Je partage un outil que j'ai build" / "je voulais vous partager" for FR channels; pain-point cold-open for X.
+
+Final X post (after 4 iterations + creator approval):
+
+```
+🎯 Your deck fizzled turn 3 on a color you thought you had.
+
+ManaTuner: exact probabilities per spell, turn by turn. Rocks + dorks counted, not just lands.
+
+📚 The canon of competitive MTG, curated — 54 essays from Karsten to Saito.
+
+Free. https://www.manatuner.app
+
+@xxx @yyy
+```
+
+The library framing ("**the canon** of competitive MTG, curated") + 2 Hall-of-Fame names as bornes (Karsten → Saito = math → mindset spectrum) beat the earlier flat 5-name list. Placeholder `@xxx @yyy` reserved for 2 mentions (~35 chars of slack). Creator flagged: "**on retravaillera surement les autres com**" — Discord + FB drafts may still iterate.
+
+Adjacent deliverable: `product-manager` agent wrote a tight 48h launch playbook (DMs open not forms, don't tag HoF players, track `/library.json` hits from non-browser UA as the Natsuki-grinder proxy). Captured in session context, not a durable doc.
+
+### Verification
+
+- `npx tsc --noEmit` → 0 errors.
+- `npm run test:unit` → **332 passed, 2 skipped, 0 failing**. (+17 new from `libraryHelpers.test.ts`.)
+- `npm run build` → clean ~9 s. `ArticleDetailPage-*.js` 7.78 kB gzip, `AuthorPage-*.js` 4.38 kB gzip.
+- `node scripts/full-site-audit.mjs` → 97/97 site routes, 49/62 external 2xx, 0 real dead, feeds valid.
+- Dev server manual check: `/library/karsten-how-many-lands-2022`, `/library/author/frank-karsten`, `/analyzer?format=commander`, `/library.json`, `/library/feed.xml` all 200.
+
+### Deferred (explicit, unchanged from v2.6.0 unless noted)
+
+- **Discord + FB posts may iterate** — creator explicitly left them open for rework ("on retravaillera surement les autres com"). X is locked.
+- **C1 Command-zone simulation** — still not modelled. Commander preset widens tier bands + auto-loads Atraxa but the engine still counts the 99 other cards only. Thibault's next ceiling.
+- **C2 EDH-specific Karsten tables** (4-player targets) — still deferred. Current tier bands are widened heuristics, not calibrated.
+- **C3 Universal fixers toggle** (Chromatic Lantern / Prismatic Omen / Urborg+Coffers) — deferred.
+- **`useProbabilityCalculation` in `ManaCostRow.tsx`** — still the lone inline hypergeom path. TODO from v2.5.1 to align with SSOT engine.
+- **Per-article prerender** — `scripts/prerender.mjs` exists but is only wired to `build:prerender` (not default `build`). Google's JS rendering will index per-article routes in production; prerender is a fallback if we need stronger bot support.
+
+### Next session priority
+
+1. **Creator publishes the 3 launch posts** (X EN ready; Discord FR + FB MTGA fr likely iterate first). Replace `@xxx @yyy` in the X post before sending.
+2. **Monitor 48h**: Vercel logs for `/library.json` hits from non-browser UA (curl, python-requests, feedparser, Go-http-client) — that's the Natsuki-grinder-scripted-against-feed signal. CTR ≥ 2 % on X's `manatuner.app` link. 5+ unique IPs on `/library/feed.xml`.
+3. **Possibly rework Discord + FB posts** based on early reactions.
+4. **C1 command-zone simulation** remains the highest-ROI engine win for Thibault.
+
+### Files touched this session
+
+```
+M package.json                                 (2.6.0 → 2.7.0, prebuild hook for feeds + sitemap, library:feeds script)
+M public/changelog.json                        (+v2.7.0 entry)
+M public/sitemap.xml                           (regenerated: 89 URLs)
+M src/App.tsx                                  (+/library/:slug, +/library/author/:slug routes)
+M src/components/library/ArticleCard.tsx       (RouterLink title/author, BibTeX button, copy-link → canonical slug)
+M src/pages/AnalyzerPage.tsx                   (?format=commander handler + preset Alert)
+M src/pages/ReferenceArticlesPage.tsx          (Start Here card, sticky progress chip, Copy as Markdown, Snackbar)
+M src/data/articlesReferenceSeed.ts            (Command Zone + Game Knights URL fixes)
+A src/pages/ArticleDetailPage.tsx              (new — per-article detail page)
+A src/pages/AuthorPage.tsx                     (new — author index page)
+A src/utils/libraryHelpers.ts                  (new — slug + BibTeX + Markdown helpers)
+A src/utils/__tests__/libraryHelpers.test.ts   (new — 17 tests)
+A scripts/generate-library-feeds.mjs           (new — build-time JSON + RSS)
+A scripts/generate-sitemap.mjs                 (new — build-time sitemap from seed)
+A scripts/full-site-audit.mjs                  (new — local audit + link health)
+A public/library.json                          (new — JSON Feed output, 55 KB)
+A public/library/feed.xml                      (new — RSS output, 23 KB)
+A tools/launch-preview.html                    (new — local launch preview, not deployed)
+```
+
+### Historical context
+
+Previous sessions chronology: v2.6.0 Library V2 (5th push, 2026-04-18 night) → personas v2 + 6-persona audit → v2.5.5 backlog sweep → v2.5.6 Commander framing → v2.5.7 Limited framing → v2.5.8 library +1 video + OG fallback fix. All retained below.
 
 ---
 

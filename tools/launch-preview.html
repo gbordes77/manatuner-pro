@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ManaTuner v2.7.0 — Launch preview</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d11;
+        --bg-panel: #15181d;
+        --bg-elev: #1c2026;
+        --border: #2a2f37;
+        --text: #e9ecf1;
+        --text-muted: #8a92a1;
+        --accent: #6a9fff;
+        --accent-strong: #4f86ff;
+        --x-bg: #000000;
+        --x-text: #e7e9ea;
+        --x-muted: #71767b;
+        --x-border: #2f3336;
+        --discord-bg: #313338;
+        --discord-chat: #383a40;
+        --discord-text: #dbdee1;
+        --discord-muted: #949ba4;
+        --discord-link: #00a8fc;
+        --discord-code-bg: #2b2d31;
+        --fb-bg: #18191a;
+        --fb-card: #242526;
+        --fb-text: #e4e6eb;
+        --fb-muted: #b0b3b8;
+        --fb-link: #4599ff;
+        --fb-border: #3e4042;
+        --ok: #2dd4bf;
+        --warn: #f59e0b;
+        --danger: #ef4444;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.55;
+      }
+      header {
+        padding: 32px 24px 12px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+      header h1 {
+        margin: 0 0 6px;
+        font-size: 1.6rem;
+        letter-spacing: -0.01em;
+      }
+      header p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+      main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 28px 18px 80px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+      @media (max-width: 1100px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+      .channel {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .channel-head {
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-elev);
+      }
+      .channel-head .pill {
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .channel-head h2 {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 700;
+      }
+      .channel-head .lang {
+        margin-left: auto;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+      .preview-pane {
+        padding: 20px 18px;
+        background: var(--bg);
+        min-height: 380px;
+      }
+      .actions {
+        padding: 14px 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .count {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        font-feature-settings: 'tnum';
+      }
+      .count.ok {
+        color: var(--ok);
+      }
+      .count.warn {
+        color: var(--warn);
+      }
+      .count.danger {
+        color: var(--danger);
+      }
+      .copy {
+        margin-left: auto;
+        padding: 8px 14px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #07090d;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .copy:hover {
+        background: var(--accent-strong);
+        border-color: var(--accent-strong);
+      }
+      .copy.done {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      footer.notes {
+        padding: 12px 18px;
+        border-top: 1px solid var(--border);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        background: var(--bg-panel);
+      }
+      footer.notes strong {
+        color: var(--text);
+      }
+
+      /* ============ X / Twitter preview ============ */
+      .x-card {
+        background: var(--x-bg);
+        color: var(--x-text);
+        border: 1px solid var(--x-border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.97rem;
+        line-height: 1.4;
+      }
+      .x-head {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .x-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0e68ab 0%, #6a1b9a 100%);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .x-names {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .x-names .name {
+        font-weight: 700;
+        color: #fff;
+      }
+      .x-names .handle {
+        color: var(--x-muted);
+        font-size: 0.88rem;
+      }
+      .x-body {
+        margin-top: 8px;
+        white-space: pre-wrap;
+      }
+      .x-body a {
+        color: #1d9bf0;
+        text-decoration: none;
+      }
+      .x-meta {
+        margin-top: 10px;
+        color: var(--x-muted);
+        font-size: 0.82rem;
+      }
+      .x-shortened {
+        color: #1d9bf0;
+      }
+      .x-explain {
+        margin-top: 12px;
+        font-size: 0.78rem;
+        color: var(--x-muted);
+        font-style: italic;
+      }
+
+      /* ============ Discord preview ============ */
+      .dc {
+        background: var(--discord-chat);
+        color: var(--discord-text);
+        font-family:
+          'gg sans', 'Noto Sans', 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 0.95rem;
+        line-height: 1.45;
+        padding: 14px 16px;
+        border-radius: 8px;
+      }
+      .dc-head {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .dc-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #5865f2;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+      }
+      .dc-names {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .dc-names .name {
+        color: #f2f3f5;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .dc-names .ts {
+        color: var(--discord-muted);
+        font-size: 0.75rem;
+      }
+      .dc-body {
+        margin-top: 2px;
+      }
+      .dc-body a {
+        color: var(--discord-link);
+        text-decoration: none;
+      }
+      .dc-body a:hover {
+        text-decoration: underline;
+      }
+      .dc-body code {
+        background: var(--discord-code-bg);
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-family: Menlo, Consolas, Monaco, monospace;
+        font-size: 0.87em;
+      }
+      .dc-body strong {
+        font-weight: 700;
+        color: #fff;
+      }
+      .dc-body ul {
+        padding-left: 22px;
+        margin: 6px 0;
+      }
+      .dc-body li {
+        margin: 4px 0;
+      }
+      .dc-body p {
+        margin: 6px 0;
+      }
+
+      /* ============ Facebook preview ============ */
+      .fb {
+        background: var(--fb-card);
+        color: var(--fb-text);
+        border: 1px solid var(--fb-border);
+        border-radius: 8px;
+        overflow: hidden;
+        font-family:
+          'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 0.93rem;
+      }
+      .fb-head {
+        display: flex;
+        gap: 10px;
+        padding: 12px 16px;
+        align-items: center;
+      }
+      .fb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1877f2 0%, #42a5f5 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+      }
+      .fb-meta {
+        display: flex;
+        flex-direction: column;
+      }
+      .fb-meta .name {
+        font-weight: 700;
+        color: #fff;
+      }
+      .fb-meta .sub {
+        color: var(--fb-muted);
+        font-size: 0.78rem;
+      }
+      .fb-body {
+        padding: 0 16px 14px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+      }
+      .fb-body a {
+        color: var(--fb-link);
+        text-decoration: none;
+      }
+      .fb-fold-hint {
+        color: var(--fb-link);
+        cursor: pointer;
+        user-select: none;
+        font-weight: 600;
+        margin-top: 4px;
+        display: inline-block;
+      }
+      .fb-fold {
+        padding: 10px 16px;
+        border-top: 1px solid var(--fb-border);
+        color: var(--fb-muted);
+        font-size: 0.78rem;
+      }
+
+      .quick-bar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: rgba(11, 13, 17, 0.92);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+      .quick-bar strong {
+        color: var(--text);
+      }
+      .quick-bar .sp {
+        flex: 1;
+      }
+      .quick-bar button {
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        background: var(--bg-elev);
+        color: var(--text);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.82rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quick-bar">
+      <strong>ManaTuner</strong> · Preview des 3 posts de découverte
+      <span class="sp"></span>
+      <span>Généré localement — rien n'est envoyé</span>
+    </div>
+
+    <header>
+      <h1>Preview des 3 posts de lancement</h1>
+      <p>
+        Le site est <strong>présenté comme une nouveauté pour le lecteur</strong> (personne
+        ne le connaît encore) — pas comme une mise à jour. Clique sur « Copier » sous chaque
+        panneau pour coller directement dans X, Discord ou Facebook.
+      </p>
+    </header>
+
+    <main>
+      <!-- ================= X ================= -->
+      <section class="channel" data-key="x">
+        <div class="channel-head">
+          <span class="pill">X (Twitter)</span>
+          <h2>@manatuner_app — post unique</h2>
+          <span class="lang">EN · ≤ 280 chars</span>
+        </div>
+        <div class="preview-pane">
+          <div class="x-card">
+            <div class="x-head">
+              <div class="x-avatar">MT</div>
+              <div class="x-names">
+                <span class="name">ManaTuner</span>
+                <span class="handle">@manatuner_app · now</span>
+              </div>
+            </div>
+            <div class="x-body" id="x-body"></div>
+            <div class="x-meta">
+              0 Replies · 0 Reposts · 0 Likes · <span id="x-impressions">–</span>
+            </div>
+            <div class="x-explain">Lien raccourci à ~23 chars via t.co lors de l'envoi.</div>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="count" id="x-count">–</span>
+          <button class="copy" data-target="x">Copier le post X</button>
+        </div>
+        <footer class="notes">
+          <strong>Angle :</strong> hook pain-point 🎯, biblio pitchée comme <em>« canon » de MTG compétitif</em> (un mot qui résonne chez les grinders / theorycrafters). Karsten → Saito en bornes = proof social instantané. <code>@xxx @yyy</code> = placeholders à remplacer avant d'envoyer (30+ chars encore dispo).
+        </footer>
+      </section>
+
+      <!-- ================= Discord ================= -->
+      <section class="channel" data-key="discord">
+        <div class="channel-head">
+          <span class="pill">Discord</span>
+          <h2>Message peer-to-peer</h2>
+          <span class="lang">FR · Markdown</span>
+        </div>
+        <div class="preview-pane">
+          <div class="dc">
+            <div class="dc-head">
+              <div class="dc-avatar">GB</div>
+              <div style="flex:1; min-width:0">
+                <div class="dc-names">
+                  <span class="name">Guillaume</span>
+                  <span class="ts">aujourd'hui à l'instant</span>
+                </div>
+                <div class="dc-body" id="discord-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="count" id="discord-count">–</span>
+          <button class="copy" data-target="discord">Copier le post Discord</button>
+        </div>
+        <footer class="notes">
+          <strong>Angle :</strong> « je partage un outil que j'ai build ». Présentation initiale, pas une release note. Copy-as-Markdown est pitché comme feature native (pas comme nouveauté).
+        </footer>
+      </section>
+
+      <!-- ================= Facebook ================= -->
+      <section class="channel" data-key="fb">
+        <div class="channel-head">
+          <span class="pill">Facebook</span>
+          <h2>MTGA fr Community</h2>
+          <span class="lang">FR · casual Arena</span>
+        </div>
+        <div class="preview-pane">
+          <div class="fb">
+            <div class="fb-head">
+              <div class="fb-avatar">GB</div>
+              <div class="fb-meta">
+                <span class="name">Guillaume Bordes</span>
+                <span class="sub">Partagé dans <strong>MTGA fr</strong> · à l'instant · 🌍</span>
+              </div>
+            </div>
+            <div class="fb-body" id="fb-body"></div>
+            <div class="fb-fold">
+              <strong>NB :</strong> FB ne rend pas la syntaxe Markdown. Le bouton Copier renvoie une version sans <code>**</code> ; le bloc ci-dessus est déjà affiché « à la FB ».
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="count" id="fb-count">–</span>
+          <button class="copy" data-target="fb">Copier le post Facebook</button>
+        </div>
+        <footer class="notes">
+          <strong>Angle :</strong> découverte d'outil, pas une release. Hook ancien-admin (warmth), pain-point Arena casual (fizzle T3), l'analyseur en lead, la biblio en bonus.
+        </footer>
+      </section>
+    </main>
+
+    <script>
+      // ============ Raw posts (single source of truth for copy + render) ============
+
+      const POSTS = {
+        x: `🎯 Your deck fizzled turn 3 on a color you thought you had.
+
+ManaTuner: exact probabilities per spell, turn by turn. Rocks + dorks counted, not just lands.
+
+📚 The canon of competitive MTG, curated — 54 essays from Karsten to Saito.
+
+Free. https://www.manatuner.app
+
+@xxx @yyy`,
+
+        discord: `**ManaTuner** (https://www.manatuner.app) — je partage un outil gratuit que j'ai build pour les joueurs qui veulent savoir si leur deck va caster ses sorts à l'heure.
+
+**Ce que tu peux faire avec :**
+
+- Colle ta decklist (Moxfield, MTGA, MTGO) et tu obtiens les probabilités exactes de caster chaque sort au tour 1, 2, 3, 4… Pas juste les terrains : les mana rocks (Talismans, Signets) et les mana dorks (Llanowar Elves, etc.) sont pris en compte.
+- Preset Commander/EDH : \`/analyzer?format=commander\` charge un deck sample à 100 cartes singleton, avec des bandes de tiers élargies pour le format. (Honnêteté : la zone de commandement n'est pas encore simulée — c'est un premier pas, pas l'arrivée.)
+
+**Bonus : une bibliothèque de 54 articles compétitifs** sur la construction de manabase — Karsten, PVDDR, Saito, Reid Duke, Chapin, LSV, l'équipe du Command Zone. Plusieurs sauvetages archive.org de vieux CFB qui avaient disparu du web. Parcours de lecture 🎴 FNM → 🏆 RCQ → 🎯 Pro Tour + 👑 Commander + 📦 Limited.
+
+Deux features faites exprès pour Discord :
+
+- 📋 **Copy as Markdown** sur la toolbar de \`/library\` — tu filtres (track, niveau, langue), tu copies, tu colles ici. Bloc prêt à partager, pensé pour ça.
+- 🔗 **Chaque article a sa propre URL** — fini le partage de screenshot. Exemple : https://www.manatuner.app/library/karsten-how-many-lands-2022 (le papier Karsten 2022 sur le nombre de terrains, la référence que tout le monde cite et que personne ne relit).
+
+Et pour les power users : \`/library.json\` (JSON Feed 1.1) + \`/library/feed.xml\` (RSS 2.0) — pour plug la biblio dans Feedly, un bot, ou ton propre outil.
+
+**100% client-side, zéro backend, zéro inscription, open-source.** Aucune decklist ne quitte ton navigateur.
+
+👉 https://www.manatuner.app
+🐙 https://github.com/gbordes77/manatuner`,
+
+        // FB raw — still uses **bold** in the markdown source but the copy
+        // handler strips asterisks on copy so paste-to-FB yields a clean
+        // text-only message.
+        fbMd: `Salut la communauté MTGA fr 👋
+
+Ancien admin qui repasse dire bonjour. Je voulais vous partager un outil gratuit que j'ai construit pour les joueurs Magic : **ManaTuner** — un analyseur de manabase qui peut vraiment servir aux joueurs casual Arena ici.
+
+**Le problème qu'il résout :**
+
+Tu build un deck 2 couleurs sur Arena, tu lances ta partie, et au tour 3 tu tires 3 Plaines + 1 Île — impossible de caster ton Sheoldred. ManaTuner te dit AVANT de lancer la game combien de sources de chaque couleur il te faut pour caster chaque sort à l'heure, tour par tour.
+
+**Comment l'utiliser :**
+
+1. Exporte ta decklist depuis Arena (en format MTGA — clic droit sur le deck → Export)
+2. Colle sur https://www.manatuner.app/analyzer
+3. Tu obtiens les probabilités exactes pour chaque sort — et les mana rocks (Arcane Signet, Talisman) et mana dorks (Llanowar Elves) sont inclus, pas juste les terrains
+
+**En bonus :** j'ai aussi monté une bibliothèque de 54 articles curatés sur la manabase, pour tous niveaux. Du « pourquoi mon deck manafix mal » au « comment construire une base 3 couleurs qui tient la route ». 👉 https://www.manatuner.app/library
+
+**100% dans ton navigateur.** Aucune decklist ne quitte ta machine, pas d'inscription, pas de compte. C'est gratuit et open-source.
+
+Testez, dites-moi en commentaire ou en MP ce qu'il manque 🙂
+
+https://www.manatuner.app`,
+      }
+
+      // Strip **bold** markers for FB paste (FB renders them as literal **).
+      POSTS.fb = POSTS.fbMd.replace(/\*\*(.*?)\*\*/g, '$1')
+
+      // ============ Renderers ============
+
+      function escapeHtml(s) {
+        return s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+      }
+
+      // Auto-link URLs (naive but enough for our posts)
+      function linkify(html) {
+        const urlRe = /(https?:\/\/[^\s<]+)/g
+        return html.replace(urlRe, (m) => `<a href="${m}" target="_blank" rel="noreferrer">${m}</a>`)
+      }
+
+      // Basic Markdown renderer for Discord: **bold**, `code`, `- lists`, auto-links, paragraphs.
+      function renderDiscord(src) {
+        const escaped = escapeHtml(src)
+        const lines = escaped.split('\n')
+        const out = []
+        let i = 0
+        while (i < lines.length) {
+          const line = lines[i]
+          if (line.startsWith('- ')) {
+            // list block
+            out.push('<ul>')
+            while (i < lines.length && lines[i].startsWith('- ')) {
+              out.push('<li>' + inlineMd(lines[i].slice(2)) + '</li>')
+              i++
+            }
+            out.push('</ul>')
+            continue
+          }
+          if (line.trim() === '') {
+            out.push('<div style="height:6px"></div>')
+            i++
+            continue
+          }
+          out.push('<p>' + inlineMd(line) + '</p>')
+          i++
+        }
+        return out.join('\n')
+      }
+
+      function inlineMd(s) {
+        // Order matters: code first (so ** inside code is safe), then bold, then links.
+        s = s.replace(/`([^`]+)`/g, '<code>$1</code>')
+        s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        s = linkify(s)
+        return s
+      }
+
+      function renderX(src) {
+        const escaped = escapeHtml(src)
+        return linkify(escaped)
+      }
+
+      function renderFB(src) {
+        // Facebook does not render Markdown; show plain text with line breaks
+        // and auto-linked URLs. Strip ** for visual truth.
+        const stripped = src.replace(/\*\*(.*?)\*\*/g, '$1')
+        const escaped = escapeHtml(stripped)
+        return linkify(escaped)
+      }
+
+      // ============ Character counters ============
+
+      // X counts URLs as 23 chars (t.co shortening), line breaks as 1 char each.
+      // CJK / emoji nuance: each emoji = 2 weighted chars in the old counter,
+      // but X now uses grapheme counting. For our texts (Latin + a few emojis),
+      // treating URLs as 23 and everything else as grapheme is close enough.
+      function xWeight(text) {
+        let t = text
+        const urlRe = /https?:\/\/[^\s]+/g
+        const urls = t.match(urlRe) || []
+        t = t.replace(urlRe, '')
+        // Use Intl.Segmenter for graphemes (handles emoji + flags correctly)
+        let graphemes = 0
+        if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+          const seg = new Intl.Segmenter('en', { granularity: 'grapheme' })
+          for (const _ of seg.segment(t)) graphemes++
+        } else {
+          graphemes = [...t].length
+        }
+        return graphemes + urls.length * 23
+      }
+
+      function graphemeLen(text) {
+        if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+          let n = 0
+          for (const _ of new Intl.Segmenter('fr', { granularity: 'grapheme' }).segment(text)) n++
+          return n
+        }
+        return [...text].length
+      }
+
+      function setCount(id, value, limit) {
+        const el = document.getElementById(id)
+        el.textContent = limit ? `${value} / ${limit}` : `${value} caractères`
+        el.classList.remove('ok', 'warn', 'danger')
+        if (!limit) return
+        if (value > limit) el.classList.add('danger')
+        else if (value > limit * 0.93) el.classList.add('warn')
+        else el.classList.add('ok')
+      }
+
+      // ============ Bind ============
+
+      document.getElementById('x-body').innerHTML = renderX(POSTS.x)
+      document.getElementById('discord-body').innerHTML = renderDiscord(POSTS.discord)
+      document.getElementById('fb-body').innerHTML = renderFB(POSTS.fbMd)
+
+      setCount('x-count', xWeight(POSTS.x), 280)
+      setCount('discord-count', graphemeLen(POSTS.discord))
+      setCount('fb-count', graphemeLen(POSTS.fb))
+
+      document.querySelectorAll('.copy').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const target = btn.dataset.target
+          const text = POSTS[target]
+          try {
+            await navigator.clipboard.writeText(text)
+            const original = btn.textContent
+            btn.textContent = '✓ Copié — prêt à coller'
+            btn.classList.add('done')
+            setTimeout(() => {
+              btn.textContent = original
+              btn.classList.remove('done')
+            }, 2200)
+          } catch (err) {
+            alert(
+              "Le presse-papier est bloqué. Ouvre la console, copie POSTS." +
+                target +
+                ' manuellement, ou utilise Ctrl+C sur une sélection.'
+            )
+          }
+        })
+      })
+    </script>
+  </body>
+</html>
