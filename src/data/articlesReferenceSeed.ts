@@ -857,7 +857,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
   {
     id: 'battle-chads-mtg-study-win-rates',
     title: 'Secrets to INSANE win rates? The MTG Study That Changes Everything',
-    author: 'Battle Chads',
+    author: 'Battle Chads, with Eduardo Sajgalik & Sahar Mirhadi',
     publisher: 'YouTube',
     year: 2026,
     category: 'metagame',
@@ -868,7 +868,7 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     linkStatus: 'live',
     primaryUrl: 'https://www.youtube.com/watch?v=M8FRevbZJxs',
     description:
-      'Battle Chads unpack a data-driven MTG study on the hidden drivers of win rate — what the numbers reveal about deck choice, play patterns, and technical skill that separate winning players from the rest. Recent upload (April 2026).',
+      'Battle Chads host a conversation with Eduardo Sajgalik (Pro Tour player, longtime competitive analyst) and Sahar Mirhadi on a data-driven MTG study of what actually drives win rates — deck choice, play patterns, and technical skill. Fresh (April 2026), highly recommended by the creator.',
   },
 
   // ==========================================================================
