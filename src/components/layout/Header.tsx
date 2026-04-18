@@ -203,22 +203,45 @@ export const Header: React.FC = () => {
                       fontWeight: 'bold',
                       textTransform: 'none',
                     }),
-                    // Style pour Library — knowledge tier avec accent mana-blue
-                    // (distinct du Guide blanc, distinct du Analyzer gold)
+                    // Style pour Library — knowledge tier, primary CTA paired
+                    // with Analyzer (gold = action, blue-purple = knowledge).
+                    // Matches the HomePage "Browse the Library" button verbatim
+                    // so the learned association transfers hero → header.
                     ...(item.path === '/library' && {
-                      background:
-                        'linear-gradient(135deg, rgba(14, 104, 171, 0.35) 0%, rgba(106, 27, 154, 0.3) 100%)',
-                      border: '1px solid rgba(125, 180, 255, 0.45)',
-                      boxShadow: '0 0 14px rgba(14, 104, 171, 0.35)',
-                      fontWeight: 'bold',
+                      background: 'linear-gradient(135deg, #0E68AB 0%, #6A1B9A 100%)',
+                      color: '#ffffff',
+                      fontWeight: 700,
                       textTransform: 'none',
+                      px: 2.5,
+                      border: '1px solid rgba(255, 255, 255, 0.45)',
+                      boxShadow:
+                        '0 2px 14px rgba(14, 104, 171, 0.65), 0 0 18px rgba(125, 180, 255, 0.35)',
                       '&:hover': {
-                        background:
-                          'linear-gradient(135deg, rgba(14, 104, 171, 0.5) 0%, rgba(106, 27, 154, 0.45) 100%)',
-                        boxShadow: '0 0 20px rgba(125, 180, 255, 0.55)',
+                        background: 'linear-gradient(135deg, #1976D2 0%, #7B1FA2 100%)',
+                        boxShadow:
+                          '0 4px 22px rgba(14, 104, 171, 0.85), 0 0 28px rgba(125, 180, 255, 0.65)',
                         transform: 'translateY(-1px)',
                       },
+                      '& .MuiSvgIcon-root': {
+                        color: '#ffffff',
+                      },
+                      // Subtle pulse once on mount to draw the eye, respecting motion preferences
+                      animation: 'libraryPulse 2.8s ease-out 0.8s 1',
+                      '@keyframes libraryPulse': {
+                        '0%, 100%': {
+                          boxShadow:
+                            '0 2px 14px rgba(14, 104, 171, 0.65), 0 0 18px rgba(125, 180, 255, 0.35)',
+                        },
+                        '50%': {
+                          boxShadow:
+                            '0 2px 14px rgba(14, 104, 171, 0.9), 0 0 34px rgba(180, 120, 255, 0.8)',
+                        },
+                      },
                       transition: 'all 0.3s ease',
+                      '@media (prefers-reduced-motion: reduce)': {
+                        animation: 'none',
+                        transition: 'none',
+                      },
                     }),
                   }}
                 >
