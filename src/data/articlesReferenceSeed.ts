@@ -691,7 +691,12 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     medium: 'podcast',
     language: 'en',
     linkStatus: 'live',
-    primaryUrl: 'https://www.thecommandzone.com/',
+    // thecommandzone.com now 404s (2026-04 audit). Canonical home for the
+    // podcast is Apple Podcasts / Megaphone RSS. We send users to Apple
+    // (nicest player for first-timers); power users can copy the RSS from
+    // the Apple page description.
+    primaryUrl: 'https://podcasts.apple.com/us/podcast/the-command-zone/id898023861',
+    originalUrl: 'https://www.thecommandzone.com/',
     description:
       'The most-listened-to Commander podcast. Weekly deep-dives on deckbuilding, format theory, multiplayer politics, and threat assessment. Ten years of archives, searchable by topic.',
     readingTimeMin: 60,
@@ -713,7 +718,10 @@ export const articlesReferenceSeed: ReferenceArticle[] = [
     medium: 'video-series',
     language: 'en',
     linkStatus: 'live',
-    primaryUrl: 'https://www.youtube.com/@CommandZoneStudios',
+    // Channel renamed to @CommandZone (2026-04 audit, old handle
+    // @CommandZoneStudios now 404s). Same team, same Game Knights show.
+    primaryUrl: 'https://www.youtube.com/@CommandZone',
+    originalUrl: 'https://www.youtube.com/@CommandZoneStudios',
     description:
       'The flagship 4-player Commander gameplay show. Watch pros and guests navigate pods, negotiate, bluff, and punish overextension. The fastest way to internalize table politics.',
     readingTimeMin: 60,

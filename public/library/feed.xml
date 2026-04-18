@@ -6,8 +6,8 @@
     <atom:link href="https://www.manatuner.app/library/feed.xml" rel="self" type="application/rss+xml" />
     <description>Recently curated articles on manabase math, mulligans, tournament mindset, Commander, and Limited. Updated when new picks land in the reading library.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 18 Apr 2026 18:00:21 GMT</lastBuildDate>
-    <pubDate>Sat, 18 Apr 2026 18:00:21 GMT</pubDate>
+    <lastBuildDate>Sat, 18 Apr 2026 18:11:01 GMT</lastBuildDate>
+    <pubDate>Sat, 18 Apr 2026 18:11:01 GMT</pubDate>
     <generator>ManaTuner prebuild</generator>
     <item>
       <title>Secrets to INSANE win rates? The MTG Study That Changes Everything</title>
@@ -287,7 +287,7 @@
       <author>Josh Lee Kwai &amp; Jimmy Wong</author>
       <category>deckbuilding</category>
       <description>The flagship 4-player Commander gameplay show. Watch pros and guests navigate pods, negotiate, bluff, and punish overextension. The fastest way to internalize table politics.</description>
-      <source url="https://www.youtube.com/@CommandZoneStudios">Command Zone Studios</source>
+      <source url="https://www.youtube.com/@CommandZone">Command Zone Studios</source>
     </item>
     <item>
       <title>Level One: The Full Course</title>

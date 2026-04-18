@@ -1,6 +1,6 @@
 {
   "$schema": "https://jsonfeed.org/version/1.1",
-  "generated": "2026-04-18T18:00:21.434Z",
+  "generated": "2026-04-18T18:11:01.446Z",
   "source": "https://www.manatuner.app/library",
   "count": 54,
   "articles": [
@@ -494,7 +494,8 @@
       "medium": "video-series",
       "language": "en",
       "linkStatus": "live",
-      "primaryUrl": "https://www.youtube.com/@CommandZoneStudios",
+      "primaryUrl": "https://www.youtube.com/@CommandZone",
+      "originalUrl": "https://www.youtube.com/@CommandZoneStudios",
       "description": "The flagship 4-player Commander gameplay show. Watch pros and guests navigate pods, negotiate, bluff, and punish overextension. The fastest way to internalize table politics.",
       "curatorTrack": "commander",
       "curatorNote": "You can read about threat assessment for a year, or you can watch 4 episodes of Game Knights and feel it. Every episode is a masterclass in 'why not attack that player yet?' — the question that separates winners from kingmakers.",
@@ -550,7 +551,8 @@
       "medium": "podcast",
       "language": "en",
       "linkStatus": "live",
-      "primaryUrl": "https://www.thecommandzone.com/",
+      "primaryUrl": "https://podcasts.apple.com/us/podcast/the-command-zone/id898023861",
+      "originalUrl": "https://www.thecommandzone.com/",
       "description": "The most-listened-to Commander podcast. Weekly deep-dives on deckbuilding, format theory, multiplayer politics, and threat assessment. Ten years of archives, searchable by topic.",
       "curatorTrack": "commander",
       "curatorNote": "If you commute or do dishes, this is your Commander university. Jimmy and Josh treat threat assessment, archenemy dynamics, and deck ratios with more rigor than most 60-card content. Start with any 'Deckbuilding Discussion' episode — you won't regret it.",
