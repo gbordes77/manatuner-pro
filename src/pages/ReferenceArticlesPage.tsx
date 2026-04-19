@@ -610,18 +610,23 @@ export const ReferenceArticlesPage: React.FC = () => {
                   </Box>
                 }
                 sx={{
-                  fontWeight: 600,
-                  height: 32,
+                  fontWeight: 700,
+                  height: 38,
+                  fontSize: '0.85rem',
+                  px: 0.5,
                   textDecoration: 'none',
                   flexShrink: 0,
+                  borderWidth: 1.5,
                   borderColor: 'primary.main',
                   color: 'primary.main',
+                  backgroundColor: isDark ? 'rgba(14,104,171,0.08)' : 'rgba(14,104,171,0.04)',
                   transition: 'all 0.2s ease',
                   '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
                   '&:hover': {
                     backgroundColor: 'primary.main',
                     color: 'white',
                     transform: 'translateY(-1px)',
+                    borderColor: 'primary.main',
                   },
                 }}
               />
@@ -1173,13 +1178,12 @@ export const ReferenceArticlesPage: React.FC = () => {
             {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((lvl) => (
               <Chip
                 key={lvl}
-                size="small"
                 label={lvl === 'all' ? 'Any' : LEVEL_LABEL[lvl]}
                 onClick={() => updateParam('level', lvl === 'all' ? null : lvl)}
                 variant={levelFilter === lvl ? 'filled' : 'outlined'}
                 color={levelFilter === lvl ? 'primary' : 'default'}
                 aria-pressed={levelFilter === lvl}
-                sx={{ height: 24, fontSize: '0.7rem' }}
+                sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
               />
             ))}
 
@@ -1194,13 +1198,12 @@ export const ReferenceArticlesPage: React.FC = () => {
             {(['all', 'en', 'fr', 'jp', 'multi'] as const).map((lg) => (
               <Chip
                 key={lg}
-                size="small"
                 label={lg === 'all' ? 'Any' : LANGUAGE_LABEL[lg]}
                 onClick={() => updateParam('lang', lg === 'all' ? null : lg)}
                 variant={langFilter === lg ? 'filled' : 'outlined'}
                 color={langFilter === lg ? 'primary' : 'default'}
                 aria-pressed={langFilter === lg}
-                sx={{ height: 24, fontSize: '0.7rem' }}
+                sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
               />
             ))}
 
@@ -1216,13 +1219,12 @@ export const ReferenceArticlesPage: React.FC = () => {
               (md) => (
                 <Chip
                   key={md}
-                  size="small"
                   label={md === 'all' ? 'Any' : MEDIUM_LABEL[md]}
                   onClick={() => updateParam('medium', md === 'all' ? null : md)}
                   variant={mediumFilter === md ? 'filled' : 'outlined'}
                   color={mediumFilter === md ? 'primary' : 'default'}
                   aria-pressed={mediumFilter === md}
-                  sx={{ height: 24, fontSize: '0.7rem' }}
+                  sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
                 />
               )
             )}
