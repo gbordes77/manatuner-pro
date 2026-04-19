@@ -187,9 +187,30 @@ function App() {
                     <Route path="/my-analyses" element={<MyAnalysesPage />} />
                     <Route path="/mes-analyses" element={<Navigate to="/my-analyses" replace />} />
                     <Route path="/land-glossary" element={<LandGlossaryPage />} />
-                    <Route path="/library" element={<ReferenceArticlesPage />} />
-                    <Route path="/library/author/:slug" element={<AuthorPage />} />
-                    <Route path="/library/:slug" element={<ArticleDetailPage />} />
+                    <Route
+                      path="/library"
+                      element={
+                        <ErrorBoundary label="Library.Index">
+                          <ReferenceArticlesPage />
+                        </ErrorBoundary>
+                      }
+                    />
+                    <Route
+                      path="/library/author/:slug"
+                      element={
+                        <ErrorBoundary label="Library.Author">
+                          <AuthorPage />
+                        </ErrorBoundary>
+                      }
+                    />
+                    <Route
+                      path="/library/:slug"
+                      element={
+                        <ErrorBoundary label="Library.Article">
+                          <ArticleDetailPage />
+                        </ErrorBoundary>
+                      }
+                    />
                     <Route path="/reading-list" element={<Navigate to="/library" replace />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />

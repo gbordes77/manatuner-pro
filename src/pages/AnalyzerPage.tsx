@@ -813,7 +813,7 @@ const AnalyzerPage: React.FC = () => {
                       onClick={() => handleLoadSampleKey('midrange')}
                       sx={{ fontWeight: 600, textTransform: 'none' }}
                     >
-                      Midrange Combo
+                      Gruul Midrange (Nature's Rhythm)
                     </Button>
                     <Button
                       variant="outlined"
@@ -836,7 +836,7 @@ const AnalyzerPage: React.FC = () => {
                         '&:hover': { borderWidth: 2, borderColor: 'secondary.dark' },
                       }}
                     >
-                      Commander (EDH)
+                      Atraxa Superfriends (Commander)
                     </Button>
                     <Button
                       variant="outlined"
@@ -1058,7 +1058,7 @@ const AnalyzerPage: React.FC = () => {
                   <Suspense fallback={<AnalyzerSkeleton />}>
                     <TabPanel value={activeTab} index={0}>
                       <ErrorBoundary label="AnalyzerTab.Castability">
-                        <CastabilityTab deckList={deckList} analysisResult={analysisResult} />
+                        <CastabilityTab analysisResult={analysisResult} />
                       </ErrorBoundary>
                     </TabPanel>
 

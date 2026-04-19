@@ -443,12 +443,29 @@ export const ReferenceArticlesPage: React.FC = () => {
               mx: 'auto',
               fontWeight: 400,
               lineHeight: 1.55,
-              mb: 3,
+              mb: 2,
             }}
           >
             Every essential article a serious Magic player should read — from Karsten's manabase
             math to Saito's tournament mindset. Curated across 15+ years of pro-level writing. Dead
             links restored via archive.org.
+          </Typography>
+
+          {/* Beginner on-ramp — the Karsten → Saito positioning stays, but Leo
+              needs an explicit "this-is-also-for-you" hook before he bounces.
+              Points at the First FNM track below; zero-jargon promise. */}
+          <Typography
+            variant="body2"
+            sx={{
+              maxWidth: 560,
+              mx: 'auto',
+              mb: 2.5,
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              fontSize: '0.92rem',
+            }}
+          >
+            New to MTG? Start with the Your First FNM track — zero jargon.
           </Typography>
 
           {/* Search bar — primary surface */}

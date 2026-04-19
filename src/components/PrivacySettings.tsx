@@ -198,10 +198,13 @@ export const PrivacySettings: React.FC = () => {
           </Typography>
           <List dense>
             <ListItem>
-              <ListItemText primary="• Your analyses are stored in your browser" />
+              <ListItemText primary="• Your analyses and decklists never leave your browser" />
             </ListItem>
             <ListItem>
-              <ListItemText primary="• Nothing is sent to any server" />
+              <ListItemText primary="• Card data is fetched from Scryfall (the public MTG card API)" />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="• No accounts, no tracking, no analytics, no crash reports" />
             </ListItem>
             <ListItem>
               <ListItemText primary="• Clearing browser data will delete your analyses" />

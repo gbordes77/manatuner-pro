@@ -63,9 +63,16 @@ export const SEO: React.FC<SEOProps> = ({
   noindex = false,
 }) => {
   const url = `${BASE_URL}${path}`
-  const jsonLdString = useMemo(() => (jsonLd ? JSON.stringify(jsonLd) : null), [jsonLd])
+  // Escape `<` so any literal `</script>` in serialized fields cannot
+  // break out of the JSON-LD <script> block. Harmless for parsers
+  // (they'll decode \u003c), critical if a future seed ever contains
+  // `</script>` in a curatorNote or description.
+  const jsonLdString = useMemo(
+    () => (jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null),
+    [jsonLd]
+  )
   const breadcrumbsString = useMemo(
-    () => (noindex ? null : JSON.stringify(buildBreadcrumbs(path))),
+    () => (noindex ? null : JSON.stringify(buildBreadcrumbs(path)).replace(/</g, '\\u003c')),
     [path, noindex]
   )
 

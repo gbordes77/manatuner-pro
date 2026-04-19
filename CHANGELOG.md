@@ -5,6 +5,140 @@ All notable changes to ManaTuner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] - 2026-04-19 — Privacy claim accuracy, version triad, Library ErrorBoundary, launch hardening
+
+Patch release. Post-14-agent audit (6 personas whole-site, 6 technical,
+2 strategic). Moyenne 6 personas **3.63 → 3.99 (+0.36)** ; Thibault
+**+1.39** (Commander preset livré), Natsuki **+0.50** (BibTeX/RSS),
+David +0.20, Karim +0.15, Sarah +0.04, **Leo -0.12 flagué** (Library V3
+intimide → Progressive Disclosure pass ciblé). 332 / 334 tests pass,
+0 errors lint.
+
+### Added
+
+- **Tab-scoped ErrorBoundary** wraps each of the 3 Library routes
+  (`/library`, `/library/:slug`, `/library/author/:slug`) with
+  `label="Library.Index" | "Library.Article" | "Library.Author"`.
+  A crash on any of them no longer takes down the main region; Sentry
+  groups crash reports by route.
+- **Leo beginner on-ramp line** on `/library` hero — _"New to MTG?
+  Start with the Your First FNM track — zero jargon."_ — directly
+  below the Karsten → Saito subtitle. Canon positioning protected.
+- **HomePage subtitle translates the H1 jargon in-block** — replaces
+  _"Works for every skill level"_ with _"Dorks = mana creatures.
+  Rocks = mana artifacts. We count both."_ Leo-friendly without
+  demoting Sarah's "differentiator" win.
+- **ArticleDetailPage conditional rendering** — for `level: 'beginner'`
+  articles, secondary category chips + level chip + medium chip + the
+  BibTeX button are hidden. Leo sees Category only. Intermediate /
+  advanced readers see the full chip row and BibTeX.
+
+### Changed
+
+- **Privacy claim reformulated to factual accuracy** (`PrivacySettings.tsx`) —
+  _"Nothing is sent to any server"_ was legally exposed under GDPR
+  (Google Fonts IP leak, Scryfall card fetch). Replaced by _"Your
+  analyses and decklists never leave your browser. Card data is
+  fetched from Scryfall (public MTG API). No accounts, no tracking,
+  no analytics, no crash reports."_
+- **Version triad synchronized** — `package.json 2.7.0 → 2.7.1`,
+  README badge `2.6.0 → 2.7.1`, README test count `315 → 332`, README
+  library count `48 → 54` + mention of `/library/:slug` +
+  `/library/author/:slug` + BibTeX + RSS/JSON feeds.
+- **Stale comment fixed** (`src/types/referenceArticle.ts:208-212`) —
+  was saying the Analyzer ignored `?format=commander` ; the preset
+  has shipped since `1dff2c0` (`AnalyzerPage.tsx:302`) and auto-loads
+  the Atraxa sample. Comment now describes current state + EDH-
+  calibrated Karsten targets as the open follow-up.
+- **AnalyzerPage sample button labels concrete** — _"Midrange Combo" →
+  "Gruul Midrange (Nature's Rhythm)"_, _"Commander (EDH)" → "Atraxa
+  Superfriends (Commander)"_. Sarah and Thibault now see the actual
+  deck in the button.
+
+### Fixed
+
+- **JSON-LD `</script>` breakout hardening** (`SEO.tsx`) — every
+  `JSON.stringify(jsonLd)` payload now escapes `<` as `\u003c` before
+  injection into the `<script type="application/ld+json">` block.
+  Seed is clean today; prevents the class of bug where a future
+  article description or curator note containing the literal
+  `</script>` would break the JSON-LD parse.
+
+### Deferred (explicit)
+
+- **SSOT_DIVERGENCE in `ManaCostRow.tsx`** — `useProbabilityCalculation`
+  still coexists with `useAcceleratedCastability`. 6-version-open TODO.
+  Fix plan drafted (unify `useProbabilityCalculation` onto
+  `computeBaseCastabilityAtTurn` with `producers=[]`), 6-10 h effort
+  with parity test + persona re-read. Scheduled for v2.8.
+- **`ReferenceArticlesPage.tsx` split** (1678 L → 5 sub-components +
+  1 pure fn) — scheduled for v2.8. Extraction plan in react-pro
+  audit.
+
+## [2.7.0] - 2026-04-18 (night, 7th push) — Library V3: per-article SEO routes, author indexes, BibTeX/Markdown/RSS exports, Commander preset live
+
+Minor release. Library V2 becomes Library V3 — each of the 54
+resources now has its own SEO-ready page, author indexes group works
+by writer, and the Commander track CTA now routes to a working
+Commander-calibrated Analyzer preset (Thibault P1 closed). No engine
+changes on the math side. 332 / 334 tests pass.
+
+### Added
+
+- **Per-article detail route** `/library/:slug` with full `Article`
+  JSON-LD (`ArticleDetailPage.tsx`, 418 L) — SEO long-tail unlocked
+  for all 54 articles. Breadcrumbs, category chip → back to filtered
+  `/library`, author chip → new author index, Related articles by
+  author + category, "Read on original" / "Read on Wayback Machine"
+  depending on `linkStatus`.
+- **Author index route** `/library/author/:slug` (`AuthorPage.tsx`,
+  207 L) — every author has a Schema.org `CollectionPage` + linked
+  article chips sorted by year. Year-range display (e.g.
+  _"2018–2024"_). Empty state → redirect to `/library`.
+- **BibTeX citation copy** (`utils/libraryHelpers.ts` `toBibTeX`) on
+  every `ArticleCard` + the detail page. Format
+  `@online{authorlastname_year_slug}` with `urldate` auto-computed
+  - `note` for archive.org fallbacks. David + Natsuki ask — academic
+    -grade citations.
+- **Copy-as-Markdown** button in the `/library` filter toolbar —
+  current filter set exports as Discord-pasteable Markdown list
+  (Karim ask).
+- **Build-time `/library.json`** (JSON Feed 1.1) + **`/library/feed.xml`**
+  (RSS 2.0, top 30 newest) — static API regenerated on every
+  `npm run build` via `scripts/generate-library-feeds.mjs`. Natsuki
+  ask — grinders can feed the library into their prep pipelines.
+- **Dynamic sitemap** (`scripts/generate-sitemap.mjs`) regenerated
+  from seed at prebuild: 8 static + 54 articles + 27 authors = 89
+  URLs indexed for Google.
+- **Commander preset on Analyzer** (`AnalyzerPage.tsx:280-313`) —
+  `/analyzer?format=commander` now auto-loads the Atraxa EDH sample
+  - shows a persistent banner _"Commander preset active — 100-card
+    singleton, horizon T5–T8, EDH-calibrated tier bands"_. Honest trou
+    admis: _"the command zone is not yet modelled"_. Query param
+    stripped on hydration (idempotent reload).
+- **Start Here hero card** elevated above the 5-track peer grid on
+  `/library` for new players (Léo polish).
+- **Sticky progress chip** 📚 N/54 read at top of `/library` —
+  visible from any scroll position (Sarah polish).
+
+### Changed
+
+- **`ReferenceArticlesPage.tsx`** expanded from ~800 L to 1678 L.
+  Split candidate for v2.8 (5 sub-components + 1 pure JSON-LD fn).
+- **Library seed** bumped from 48 to **54 resources**. New entries:
+  Battle Chads video (Sajgalik + Mirhadi), link-rot sweeps on Command
+  Zone Apple Podcasts + Game Knights Command Zone channel.
+
+### Deferred
+
+- **Per-article OG image generation** — every `/library/:slug` still
+  inherits the global `og-image-v3.jpg` (_Mana Calculator +
+  Competitive MTG Reading Library_). Dynamic OG images per article
+  scheduled for v2.8 or later.
+- **EDH-calibrated Karsten targets** — the `ManabaseTab` flags a
+  3-color EDH deck as _"shaky"_ using the 60-card table. Disclosed
+  in the Commander banner. True 100-card targets = v2.9+ chantier.
+
 ## [2.6.0] - 2026-04-18 (night, 5th push) — Library V2: Commander + Limited tracks, search, progress
 
 Minor release. Complete rewrite of the `/library` page after a

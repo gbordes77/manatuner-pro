@@ -90,7 +90,6 @@ export const ManabaseFullTab: React.FC<ManabaseFullTabProps> = memo(
         {/* Manabase Analysis */}
         {subTab === 0 && (
           <ManabaseTab
-            deckList={deckList}
             analysisResult={analysisResult}
             isMobile={isMobile}
             isSmallMobile={isSmallMobile}

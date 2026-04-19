@@ -1,6 +1,6 @@
 {
   "name": "manatuner",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "private": true,
   "description": "ManaTuner - Advanced MTG Manabase Analyzer inspired by Charles Wickham's Project Manabase",
   "main": "index.js",
@@ -55,7 +55,6 @@
     "@mui/icons-material": "^5.11.9",
     "@mui/lab": "^5.0.0-alpha.120",
     "@mui/material": "^5.11.10",
-    "@mui/x-charts": "^6.0.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "^10.47.0",
     "@tanstack/react-query": "^5.80.10",

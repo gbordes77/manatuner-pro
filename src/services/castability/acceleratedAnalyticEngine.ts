@@ -25,7 +25,7 @@ import type {
   ProducerInDeck,
 } from '../../types/manaProducers'
 import { colorsFromMask, maskHasColor, netManaPerTurn } from '../../types/manaProducers'
-import { Hypergeom, cardsSeenByTurn } from './hypergeom'
+import { Hypergeom, cardsSeenByTurn, hypergeom } from './hypergeom'
 
 // =============================================================================
 // CONSTANTS (no magic numbers in calculations)
@@ -378,8 +378,6 @@ function bestP1GivenOnlineProducers(
   ctx: AccelContext,
   onlineProducers: ProducerInDeck[]
 ): number {
-  const cardsSeen = cardsSeenByTurn(turn, ctx.playDraw)
-
   const neededColors = (Object.keys(spell.pips) as LandManaColor[]).filter(
     (c) => (spell.pips[c] ?? 0) > 0
   )
@@ -756,7 +754,10 @@ export function computeAcceleratedCastability(
   producers: ProducerInDeck[],
   ctx: AccelContext
 ): AcceleratedCastabilityResult {
-  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
+  // Use the singleton — it self-manages capacity via ensureCapacity()
+  // called inside pmf/atLeast. Avoids 40 KB of throwaway Float64Array
+  // allocation per ManaCostRow render on Castability (audit 2026-04-19).
+  const hg = hypergeom
 
   const naturalTurn = spell.mv
   const base = computeBaseCastability(hg, deck, spell, naturalTurn, ctx)
@@ -809,8 +810,8 @@ export function computeBaseCastabilityAtTurn(
   turn: number,
   ctx: AccelContext
 ): CastabilityResult {
-  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
-  return computeBaseCastability(hg, deck, spell, turn, ctx)
+  // Singleton grows dynamically via ensureCapacity() in pmf/atLeast.
+  return computeBaseCastability(hypergeom, deck, spell, turn, ctx)
 }
 
 /**
@@ -823,7 +824,7 @@ export function computeCastabilityByTurn(
   ctx: AccelContext,
   maxTurn: number = 7
 ): Array<{ turn: number; base: CastabilityResult; withAcceleration: CastabilityResult }> {
-  const hg = new Hypergeom(Math.max(200, deck.deckSize + 20))
+  const hg = hypergeom
   const results: Array<{
     turn: number
     base: CastabilityResult

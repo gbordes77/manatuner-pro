@@ -11,6 +11,7 @@
 
 import { chromium } from 'playwright'
 import { preview } from 'vite'
+import { build } from 'esbuild'
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -18,9 +19,10 @@ import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const DIST = join(ROOT, 'dist')
+const SEED_ENTRY = join(ROOT, 'src/data/articlesReferenceSeed.ts')
 
-// Routes to prerender
-const ROUTES = [
+// Static routes always prerendered
+const STATIC_ROUTES = [
   '/',
   '/analyzer',
   '/guide',
@@ -28,10 +30,57 @@ const ROUTES = [
   '/land-glossary',
   '/about',
   '/privacy',
+  '/library',
 ]
 
 const PORT = 4174
 const PAGE_TIMEOUT = 15000
+
+/**
+ * Deterministic, URL-safe author slug. Kept in sync with
+ * src/utils/libraryHelpers.ts::slugifyAuthor. Duplicated here because
+ * this script runs outside the TS build — a future refactor could
+ * extract both into a shared .mjs helper.
+ */
+function slugifyAuthor(author) {
+  return author
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-+|-+$)/g, '')
+}
+
+async function loadSeed() {
+  const result = await build({
+    entryPoints: [SEED_ENTRY],
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+    target: 'node18',
+    write: false,
+    logLevel: 'silent',
+  })
+  const js = result.outputFiles[0]?.text
+  if (!js) throw new Error('esbuild produced no output for seed')
+  const dataUrl = 'data:text/javascript;base64,' + Buffer.from(js).toString('base64')
+  const mod = await import(dataUrl)
+  if (!Array.isArray(mod.articlesReferenceSeed)) {
+    throw new Error('Seed module did not export articlesReferenceSeed as an array')
+  }
+  return mod.articlesReferenceSeed
+}
+
+async function computeLibraryRoutes() {
+  const articles = await loadSeed()
+  const articleRoutes = articles.map((a) => `/library/${a.id}`)
+  const authorSlugs = Array.from(new Set(articles.map((a) => slugifyAuthor(a.author)))).filter(
+    Boolean
+  )
+  const authorRoutes = authorSlugs.map((slug) => `/library/author/${slug}`)
+  return { articleRoutes, authorRoutes, articleCount: articles.length, authorCount: authorSlugs.length }
+}
 
 async function prerender() {
   console.log('\n--- Prerendering ManaTuner ---\n')
@@ -40,6 +89,15 @@ async function prerender() {
     console.error('Error: dist/ not found. Run "vite build" first.')
     process.exit(1)
   }
+
+  // Build full route list — static + /library article detail pages
+  // + author index pages. Each article and author gets its own HTML
+  // so Google/Discord/Twitter see real content with JSON-LD.
+  const { articleRoutes, authorRoutes, articleCount, authorCount } = await computeLibraryRoutes()
+  const ROUTES = [...STATIC_ROUTES, ...articleRoutes, ...authorRoutes]
+  console.log(
+    `Routes: ${STATIC_ROUTES.length} static + ${articleCount} articles + ${authorCount} authors = ${ROUTES.length} total`
+  )
 
   // Start Vite preview server
   console.log('Starting preview server...')

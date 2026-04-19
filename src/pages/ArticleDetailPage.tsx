@@ -244,19 +244,28 @@ export const ArticleDetailPage: React.FC = () => {
             to={`/library?cat=${article.category}`}
             clickable
           />
-          {article.secondaryCategories?.map((c) => (
-            <Chip
-              key={c}
-              size="small"
-              label={CATEGORY_LABELS[c]}
-              variant="outlined"
-              component={RouterLink}
-              to={`/library?cat=${c}`}
-              clickable
-            />
-          ))}
-          <Chip size="small" label={article.level} variant="outlined" />
-          <Chip size="small" label={article.medium} variant="outlined" />
+          {/* Secondary categories + level + medium: only shown to
+              intermediate/advanced readers. Leo (beginner) gets the
+              primary Category only — extra chips felt like a thesis
+              page and drove the -0.12 Library V3 regression in the
+              2026-04-19 persona audit. */}
+          {article.level !== 'beginner' && (
+            <>
+              {article.secondaryCategories?.map((c) => (
+                <Chip
+                  key={c}
+                  size="small"
+                  label={CATEGORY_LABELS[c]}
+                  variant="outlined"
+                  component={RouterLink}
+                  to={`/library?cat=${c}`}
+                  clickable
+                />
+              ))}
+              <Chip size="small" label={article.level} variant="outlined" />
+              <Chip size="small" label={article.medium} variant="outlined" />
+            </>
+          )}
         </Stack>
 
         <Typography variant="body1" sx={{ fontSize: '1.05rem', lineHeight: 1.7, mb: 3 }}>
@@ -375,15 +384,21 @@ export const ArticleDetailPage: React.FC = () => {
           >
             {copiedLink ? 'Link copied!' : 'Copy link to this page'}
           </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<ContentCopyIcon />}
-            onClick={handleCopyBibTeX}
-            sx={{ textTransform: 'none' }}
-          >
-            {copiedBib ? 'BibTeX copied!' : 'Copy BibTeX citation'}
-          </Button>
+          {/* BibTeX citation: advanced-only surface. Beginners don't cite —
+              it intimidates them (2026-04-19 Leo audit). Natsuki/David/
+              Karim recognize it as a signal of academic rigor and want
+              it visible. Copy-link stays universal (useful for everyone). */}
+          {article.level !== 'beginner' && (
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<ContentCopyIcon />}
+              onClick={handleCopyBibTeX}
+              sx={{ textTransform: 'none' }}
+            >
+              {copiedBib ? 'BibTeX copied!' : 'Copy BibTeX citation'}
+            </Button>
+          )}
         </Stack>
       </Paper>
 

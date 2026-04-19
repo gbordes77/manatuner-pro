@@ -9,14 +9,12 @@ import { ManabaseStats } from './ManabaseStats'
 import { categorizeLandFromMetadata } from './landUtils'
 
 interface ManabaseTabProps {
-  deckList: string
   analysisResult: AnalysisResult
   isMobile: boolean
   isSmallMobile: boolean
 }
 
 export const ManabaseTab: React.FC<ManabaseTabProps> = ({
-  deckList,
   analysisResult,
   isMobile,
   isSmallMobile,

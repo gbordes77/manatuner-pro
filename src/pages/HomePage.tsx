@@ -259,7 +259,10 @@ export const HomePage: React.FC = () => {
             <strong>exactly when to mulligan</strong>.
           </Typography>
 
-          {/* Beginner-friendly qualifier — answers Leo's "is this for me?" */}
+          {/* Beginner-friendly qualifier — answers Leo's "is this for me?"
+              by translating the H1 jargon in-block. "Dorks" and "Rocks" are
+              differentiator terms Sarah/Karim love; Leo needs the
+              translation immediately below the H1, same visual block. */}
           <Typography
             variant="body2"
             color="text.secondary"
@@ -272,7 +275,7 @@ export const HomePage: React.FC = () => {
               fontStyle: 'italic',
             }}
           >
-            Works for every skill level — from your first Standard deck to Pro Tour prep.
+            Dorks = mana creatures. Rocks = mana artifacts. We count both.
           </Typography>
 
           {/* Format badges strip — answers Sarah's "does this cover my format?"

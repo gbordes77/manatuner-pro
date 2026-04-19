@@ -1,699 +1,621 @@
 {
   "projectName": "ManaTuner",
-  "version": "2.5.2",
-  "headCommit": "9f64d7c",
+  "version": "2.7.1",
+  "headCommit": "e499c83",
+  "branch": "main",
+  "gitStatus": "clean",
   "productionUrl": "https://manatuner.app",
   "canonicalHostname": "https://www.manatuner.app",
   "lastFullScan": "2026-04-13T09:15:00Z",
-  "lastIncrementalScan": "2026-04-17T00:00:00Z",
-  "deltaSinceV252": {
-    "commits": [
-      "eb5abf2 design-system-export",
-      "b6dda5e SEO/AEO batch",
-      "9f64d7c JSON-LD @id + decklist relocation"
-    ],
-    "scope": "Docs, SEO/AEO, static JSON-LD schemas. Zero src/services/** or test changes. All math/engine code unchanged since v2.5.2.",
-    "newFiles": [
-      "docs/DESIGN_SYSTEM_EXPORT.md (1016 lines, portable design tokens)",
-      "docs/SEO_AEO_STRATEGY_2026-04-13.md (1164 lines, strategy doc)",
-      "docs/AUDIT_SESSION_REPORT_2026-04-06.md",
-      "docs/PROMPT_MATH_AUDIT.md",
-      "docs/SECURITY_AUDIT_REPORT.md (453 lines)",
-      "docs/ux-accessibility-audit-2026-04-06.md (582 lines)",
-      "docs/performance/performance-audit-2026-04-06.md (441 lines)",
-      "docs/launch/tweet-fireshoes.md (launch copy)",
-      "docs/sample-decks/Standard_Jeskai_Control_by_Goomy_.txt",
-      "docs/sample-decks/Standard_Simic_Natures_Rhythm_by_McWinSauce.txt",
-      "QA_AUDIT_REPORT.md (582 lines, root-level)"
-    ],
-    "modifiedFiles": [
-      "index.html (+114 lines: theme-color dark, canonical fallback, static JSON-LD @graph with WebSite/Organization/SoftwareApplication/Person schemas)",
-      "src/components/common/SEO.tsx (BreadcrumbList auto-emission, noindex prop, PAGE_TITLES map)",
-      "src/components/layout/StaticPages.tsx (AboutPage @graph: AboutPage+Person+Organization)",
-      "src/pages/AnalyzerPage.tsx (SoftwareApplication JSON-LD with @id ref to #software)",
-      "src/pages/GuidePage.tsx (FAQPage expanded 5→10 Q&A + HowTo schema, 5-step walkthrough)",
-      "src/pages/MathematicsPage.tsx (expanded JSON-LD Article schema)",
-      "src/pages/LandGlossaryPage.tsx (DefinedTermSet schema per tier)",
-      "public/llms.txt (Library entry + Unique Capabilities section)",
-      "public/llms-full.txt",
-      "public/robots.txt (AI crawlers allowlist: GPTBot, ChatGPT-User, +)",
-      "public/sitemap.xml (lastmod bumped to 2026-04-13)",
-      "public/manifest.json"
-    ]
-  },
-  "knownTODOs": [
-    "src/components/ManaCostRow.tsx:308 useProbabilityCalculation — STILL NOT aligned with calculateTempoAwareProbability SSOT engine (carried forward from v2.5.1)",
-    "src/hooks/useAnalysisStorage.ts — 211-line orphan, zero callers, still writes legacy manatuner-analyses key. Safe to delete but still present."
-  ],
-  "newSurfaces": {
-    "pages": "No new routes. Existing 9 routes unchanged.",
-    "jsonLdSchemas": [
-      "index.html static @graph: WebSite#website, Organization#organization, SoftwareApplication#software (v2.5.2, MIT), Person#author (Guillaume Bordes)",
-      "/analyzer: SoftwareApplication with @id ref to #software, featureList, Offer(free)",
-      "/guide: FAQPage (10 Q&A) + HowTo (5 steps, PT3M)",
-      "/mathematics: Article schema",
-      "/land-glossary: Article + DefinedTermSet per tier",
-      "/about: AboutPage + Person + Organization @graph",
-      "All pages: BreadcrumbList auto-emitted by SEO.tsx"
-    ],
-    "robotsTxt": "Explicit allowlist for GPTBot, ChatGPT-User, and other AI crawlers; crawl-delay:1"
-  },
-  "description": "Advanced MTG Manabase Analyzer using Frank Karsten mathematics, Monte Carlo simulation, and Bellman equation for optimal mulligan decisions",
-  "projectType": "React SPA",
+  "lastIncrementalScan": "2026-04-19T16:10:00Z",
+  "description": "Advanced MTG Manabase Analyzer — privacy-first React SPA with Karsten hypergeometric math, Monte Carlo + Bellman mulligan, K=3 ramp engine, and a curated Competitive MTG Library (48+ articles + per-article SEO + exports).",
+  "projectType": "React SPA (Vite) — localStorage-only, zero backend",
   "stack": {
-    "frontend": "React 18 + TypeScript",
-    "ui": "Material-UI (MUI) v5",
-    "state": "Redux Toolkit + Redux Persist",
-    "dataFetching": "TanStack React Query v5",
+    "frontend": "React 18 + TypeScript 5",
+    "ui": "Material-UI (MUI) v5 + Emotion",
+    "state": "Redux Toolkit + Redux Persist v1 schema",
+    "dataFetching": "TanStack React Query v5 (Scryfall caching)",
     "routing": "React Router DOM v6",
     "bundler": "Vite 7",
     "testing": {
-      "unit": "Vitest",
+      "unit": "Vitest (296+ tests)",
       "e2e": "Playwright",
       "component": "Testing Library"
     },
-    "deployment": "Vercel"
+    "deployment": "Vercel (auto-deploy on push to main)",
+    "observability": "Sentry code present, DSN INTENTIONALLY UNSET in prod (privacy claim)"
   },
-  "directoryTree": {
-    "path": "/",
-    "purpose": "Root directory containing project configuration, documentation, and source code",
-    "lastScanned": "2025-12-26T17:20:00Z",
-    "keyFiles": [
-      "package.json",
-      "tsconfig.json",
-      "vite.config.ts",
-      "CLAUDE.md",
-      "README.md",
-      "HANDOFF.md"
-    ],
-    "subdirectories": {
-      "src": {
-        "path": "/src",
-        "purpose": "Primary application source code",
-        "lastScanned": "2025-12-26T17:20:00Z",
-        "subdirectories": {
-          "components": {
-            "path": "/src/components",
-            "purpose": "React components organized by feature/domain",
-            "subdirectories": {
-              "analyzer": {
-                "path": "/src/components/analyzer",
-                "purpose": "Core analyzer page components including tabs and deck analysis UI",
-                "keyFiles": [
-                  "AnalysisTab.tsx",
-                  "CastabilityTab.tsx",
-                  "DashboardTab.tsx",
-                  "DeckInputSection.tsx",
-                  "ManabaseFullTab.tsx",
-                  "MulliganTab.tsx",
-                  "ProbabilitiesTab.tsx"
-                ]
-              },
-              "analysis": {
-                "path": "/src/components/analysis",
-                "purpose": "Specialized analysis visualization components",
-                "keyFiles": ["MonteCarloResults.tsx", "TurnByTurnAnalysis.tsx"]
-              },
-              "common": {
-                "path": "/src/components/common",
-                "purpose": "Reusable UI components",
-                "keyFiles": [
-                  "ErrorBoundary.tsx",
-                  "NotificationProvider.tsx",
-                  "VirtualList.tsx",
-                  "ManaSymbols.tsx"
-                ]
-              },
-              "layout": {
-                "path": "/src/components/layout",
-                "purpose": "Layout components for page structure",
-                "keyFiles": ["Header.tsx", "Footer.tsx", "StaticPages.tsx"]
-              },
-              "performance": {
-                "path": "/src/components/performance",
-                "purpose": "Performance-optimized components",
-                "keyFiles": ["OptimizedComponents.tsx"]
-              }
-            }
-          },
-          "services": {
-            "path": "/src/services",
-            "purpose": "Business logic and API services - Core mathematical engine",
-            "keyFiles": [
-              {
-                "name": "manaCalculator.ts",
-                "purpose": "Frank Karsten hypergeometric probability calculations with tempo-aware analysis",
-                "exports": [
-                  "ManaCalculator",
-                  "calculateHypergeometric",
-                  "calculateTempoAwareProbability",
-                  "analyzeSpellCastability"
-                ]
-              },
-              {
-                "name": "advancedMaths.ts",
-                "purpose": "Advanced mathematical engine with caching, Monte Carlo, and multivariate analysis",
-                "exports": [
-                  "AdvancedMathEngine",
-                  "calculateKarstenProbability",
-                  "runMonteCarloSimulation"
-                ]
-              },
-              {
-                "name": "mulliganSimulator.ts",
-                "purpose": "Monte Carlo + Dynamic Programming mulligan simulator using Bellman equation",
-                "exports": ["analyzeMulliganStrategy", "quickMulliganAnalysis", "evaluateHand"]
-              },
-              {
-                "name": "mulliganSimulatorAdvanced.ts",
-                "purpose": "Archetype-aware mulligan analysis (Aggro/Midrange/Control/Combo)",
-                "exports": ["analyzeWithArchetype", "quickArchetypeAnalysis", "ARCHETYPE_CONFIGS"]
-              },
-              {
-                "name": "deckAnalyzer.ts",
-                "purpose": "Main deck analysis orchestrator with Scryfall integration",
-                "exports": ["DeckAnalyzer", "DeckCard", "AnalysisResult"]
-              },
-              {
-                "name": "landService.ts",
-                "purpose": "Land detection, ETB analysis, and tempo calculations",
-                "exports": ["landService", "createDeckContext", "LandService"]
-              },
-              {
-                "name": "scryfall.ts",
-                "purpose": "Scryfall API client with caching",
-                "exports": ["searchCardByName", "fetchLandData", "parseDecklistText"]
-              }
-            ]
-          },
-          "hooks": {
-            "path": "/src/hooks",
-            "purpose": "Custom React hooks for state and calculations",
-            "keyFiles": [
-              "useDeckAnalysis.ts",
-              "useManaCalculations.ts",
-              "useAdvancedAnalysis.ts",
-              "useWebWorker.ts",
-              "useMonteCarloWorker.ts"
-            ]
-          },
-          "pages": {
-            "path": "/src/pages",
-            "purpose": "Main application pages/routes",
-            "keyFiles": [
-              "AnalyzerPage.tsx",
-              "HomePage.tsx",
-              "GuidePage.tsx",
-              "MathematicsPage.tsx",
-              "LandGlossaryPage.tsx",
-              "MyAnalysesPage.tsx"
-            ]
-          },
-          "store": {
-            "path": "/src/store",
-            "purpose": "Redux store configuration and slices",
-            "subdirectories": {
-              "slices": {
-                "path": "/src/store/slices",
-                "purpose": "Redux Toolkit slices for state management",
-                "keyFiles": ["analyzerSlice.ts", "deckSlice.ts", "analysisSlice.ts", "uiSlice.ts"]
-              }
-            }
-          },
-          "types": {
-            "path": "/src/types",
-            "purpose": "TypeScript type definitions",
-            "keyFiles": ["index.ts", "lands.ts", "maths.ts", "scryfall.ts"]
-          },
-          "utils": {
-            "path": "/src/utils",
-            "purpose": "Utility functions for land detection and calculations",
-            "keyFiles": [
-              "landDetection.ts",
-              "landDetectionComplete.ts",
-              "hybridLandDetection.ts",
-              "intelligentLandAnalysis.ts"
-            ]
-          },
-          "data": {
-            "path": "/src/data",
-            "purpose": "Static data and seed files",
-            "keyFiles": ["landSeed.ts"]
-          },
-          "lib": {
-            "path": "/src/lib",
-            "purpose": "Custom libraries for privacy and validation",
-            "keyFiles": ["privacy.ts", "validations.ts"]
-          },
-          "theme": {
-            "path": "/src/theme",
-            "purpose": "MUI theme configuration",
-            "keyFiles": ["index.ts"]
-          },
-          "styles": {
-            "path": "/src/styles",
-            "purpose": "Global CSS styles",
-            "keyFiles": ["index.css", "contrast-fixes.css", "ux-improvements.css"]
-          }
-        }
-      },
-      "tests": {
-        "path": "/tests",
-        "purpose": "Test files organized by type",
-        "subdirectories": {
-          "component": {
-            "path": "/tests/component",
-            "purpose": "Component tests",
-            "keyFiles": ["AnalyzerPage.test.jsx"]
-          },
-          "e2e": {
-            "path": "/tests/e2e",
-            "purpose": "Playwright E2E tests",
-            "subdirectories": {
-              "core-flows": { "purpose": "Main user flow tests" },
-              "tabs": { "purpose": "Analyzer tab tests" },
-              "responsive": { "purpose": "Mobile/desktop responsive tests" },
-              "accessibility": { "purpose": "A11y compliance tests" },
-              "performance": { "purpose": "Loading performance tests" }
-            }
-          },
-          "mtg-specific": {
-            "path": "/tests/mtg-specific",
-            "purpose": "MTG domain-specific tests",
-            "subdirectories": {
-              "mana-calculations": { "purpose": "Frank Karsten formula validation" },
-              "card-types": { "purpose": "Special land detection tests" }
-            }
-          },
-          "fixtures": {
-            "path": "/tests/fixtures",
-            "purpose": "Test data and sample decklists"
-          }
-        }
-      },
-      "public": {
-        "path": "/public",
-        "purpose": "Static assets and Web Workers",
-        "subdirectories": {
-          "workers": {
-            "path": "/public/workers",
-            "purpose": "Web Workers for heavy calculations",
-            "keyFiles": ["manaCalculator.worker.js", "monteCarlo.worker.js"]
-          }
-        }
-      },
-      "docs": {
-        "path": "/docs",
-        "purpose": "Project documentation and technical guides",
-        "keyFiles": [
-          "MULLIGAN_SYSTEM.md",
-          "MATHEMATICAL_REFERENCE.md",
-          "LAND_SYSTEM_REDESIGN.md",
-          "FUTURE_IDEAS.md"
+  "currentState": {
+    "versionPackageJson": "2.7.0",
+    "versionEffective": "v2.7.1 (HANDOFF 2026-04-19 Library filter UX tester loop)",
+    "lastMeaningfulCommit": "e499c83 📝 HANDOFF 2026-04-19 + commit 90fc178 (library hierarchy restoration)",
+    "workingTree": "clean (no uncommitted changes at session start)"
+  },
+  "routes": {
+    "/": "HomePage — hero, dual positioning (calculator + library)",
+    "/analyzer": "AnalyzerPage — 5 tabs (Castability/Manabase/Mulligan/DeckList/Analysis) + Commander preset (ignores ?format=commander currently)",
+    "/guide": "GuidePage — FAQPage + HowTo schema",
+    "/mathematics": "MathematicsPage — Karsten / hypergeom / Bellman / Monte Carlo plain-English",
+    "/land-glossary": "LandGlossaryPage — 12 land categories + DefinedTermSet schemas",
+    "/library": "ReferenceArticlesPage — 48 articles, 5 tracks, search, filters, progress",
+    "/library/author/:slug": "AuthorPage — per-author index (NEW v2.7.0)",
+    "/library/:slug": "ArticleDetailPage — per-article SEO page (NEW v2.7.0)",
+    "/my-analyses": "MyAnalysesPage (localStorage only)",
+    "/mes-analyses": "Navigate → /my-analyses",
+    "/reading-list": "Navigate → /library",
+    "/about": "AboutPage",
+    "/privacy": "PrivacyPage"
+  },
+  "srcStructure": {
+    "path": "/src",
+    "topLevelDirs": [
+      "components/ — analyzer, analysis, common, export, layout, library, performance",
+      "contexts/ — (AccelerationContext etc.)",
+      "data/ — articlesReferenceSeed.ts (1169L), landSeed.ts, manaProducerSeed.ts, glossary.ts",
+      "hooks/ — useLibraryProgress, usePrivacyStorage, useCardImage, useAdvancedAnalysis, useManaCalculations, useWebWorker",
+      "lib/ — privacy.ts, validations.ts",
+      "pages/ — 9 pages (HomePage, AnalyzerPage, ReferenceArticlesPage, ArticleDetailPage, AuthorPage, GuidePage, MathematicsPage, LandGlossaryPage, MyAnalysesPage)",
+      "services/ — deckAnalyzer, manaCalculator, castability/{hypergeom,acceleratedAnalyticEngine}, manaProducerService, mulliganSimulator, mulliganSimulatorAdvanced, advancedMaths, scryfall, landService, landCacheService",
+      "store/ — Redux Toolkit + persist v1 (analyzer slice only whitelisted)",
+      "styles/",
+      "theme/",
+      "types/ — index, lands, maths, manaProducers, referenceArticle, scryfall",
+      "utils/ — libraryHelpers (NEW v2.7.0), landDetection*, hybridLandDetection, intelligentLandAnalysis, manabase",
+      "workers/"
+    ]
+  },
+  "criticalFiles": {
+    "libraryV2": {
+      "primaryPage": {
+        "path": "/src/pages/ReferenceArticlesPage.tsx",
+        "lines": 1678,
+        "purpose": "Library V3 — hero, search, TOC card-tiles, segmented filter panel, track sections, browse grid, feedback CTA, JSON-LD ItemList of ALL 48 articles",
+        "warnings": [
+          "800L → 1678L now — candidate for v2.8 split: LibraryHero, LibraryFilters, LibraryTrackSection, LibraryBrowseSection, buildLibraryJsonLd",
+          "URL filter sentinels (cat, level, lang, medium, q) are external-link-stable — do NOT rename without redirect"
         ]
       },
-      ".github": {
-        "path": "/.github",
-        "purpose": "GitHub workflows and CI/CD",
-        "subdirectories": {
-          "workflows": { "purpose": "GitHub Actions workflows" }
-        }
-      }
-    }
-  },
-  "coreArchitecture": {
-    "entryPoint": "/src/main.tsx",
-    "mainApp": "/src/App.tsx",
-    "routing": {
-      "/": "HomePage",
-      "/analyzer": "AnalyzerPage (lazy loaded)",
-      "/guide": "GuidePage (lazy loaded)",
-      "/mathematics": "MathematicsPage (lazy loaded)",
-      "/land-glossary": "LandGlossaryPage (lazy loaded)",
-      "/mes-analyses": "MyAnalysesPage (lazy loaded)",
-      "/privacy-first": "PrivacyFirstPage (lazy loaded)"
-    },
-    "stateManagement": {
-      "redux": {
-        "slices": ["deck", "analysis", "ui", "auth", "analyzer"],
-        "persisted": ["deck", "analysis", "analyzer"]
+      "perArticlePage": {
+        "path": "/src/pages/ArticleDetailPage.tsx",
+        "lines": 418,
+        "purpose": "NEW v2.7.0 — per-article SEO page with JSON-LD Article schema"
       },
-      "reactQuery": {
-        "purpose": "Scryfall API caching",
-        "staleTime": "10 minutes",
-        "gcTime": "15 minutes"
-      }
-    }
-  },
-  "mathematicalEngine": {
-    "frankKarsten": {
-      "formula": "P(X >= k) = sum(C(K,i) * C(N-K,n-i) / C(N,n)) for i = k to min(n,K)",
-      "karstenTables": {
-        "1symbol": { "turn1": 14, "turn2": 13, "turn3": 12, "turn4": 11 },
-        "2symbols": { "turn2": 20, "turn3": 18, "turn4": 16 },
-        "3symbols": { "turn3": 23, "turn4": 20 }
+      "authorPage": {
+        "path": "/src/pages/AuthorPage.tsx",
+        "lines": 207,
+        "purpose": "NEW v2.7.0 — per-author index (links from ArticleCard + library search)"
       },
-      "cardsSeen": "handSize + turn - 1 (on the play)"
+      "components": [
+        "/src/components/library/ArticleCard.tsx — meta-badges, progress dot, host credit",
+        "/src/components/library/TrackHeader.tsx — accent color per track (Commander forced to #6B3FA0 purple, NOT canonical black)"
+      ],
+      "data": {
+        "path": "/src/data/articlesReferenceSeed.ts",
+        "lines": 1169,
+        "articleCount": "48 articles across 5 CuratorTracks: first-fnm, rcq, pro-tour, commander, limited",
+        "testInvariants": "/src/data/__tests__/articlesReferenceSeed.test.ts — unique IDs, valid http(s) URLs, archived→originalUrl, each track has ≥1 non-English OR rescued pick"
+      },
+      "hooks": {
+        "path": "/src/hooks/useLibraryProgress.ts",
+        "lines": 126,
+        "purpose": "Privacy-first localStorage (key: manatuner-library-progress-v1), cross-tab sync via storage event. DO NOT add network layer."
+      },
+      "utils": {
+        "path": "/src/utils/libraryHelpers.ts",
+        "lines": 134,
+        "purpose": "Shared helpers for Library V3 (article normalization, filter URL state)"
+      },
+      "feeds": [
+        "/public/library.json — generated by scripts/generate-library-feeds.mjs (prebuild hook)",
+        "/public/library/feed.xml — RSS feed",
+        "/public/sitemap.xml — includes all per-article + per-author URLs"
+      ]
     },
-    "mulliganSimulator": {
-      "algorithm": "Monte Carlo + Dynamic Programming",
-      "bellmanEquation": "V(k) = E[max(Score(best k from 7), V(k-1))]",
-      "handSizes": [4, 5, 6, 7],
-      "defaultIterations": 10000,
-      "quickIterations": 2000,
-      "archetypes": ["aggro", "midrange", "control", "combo"]
+    "analyzer": {
+      "primaryPage": {
+        "path": "/src/pages/AnalyzerPage.tsx",
+        "lines": 1139,
+        "warnings": [
+          "Each of the 5 tabs wrapped in own <ErrorBoundary label=...> for crash isolation + Sentry tag",
+          "Currently IGNORES ?format=commander query param — CTA captures intent but Analyzer doesn't consume it yet (known P1 open)"
+        ]
+      },
+      "tabs": [
+        "/src/components/analyzer/CastabilityTab.tsx — main probability grid, feeds ManaCostRow",
+        "/src/components/analyzer/ManabaseTab.tsx + ManabaseFullTab.tsx + ManabaseStats.tsx",
+        "/src/components/analyzer/MulliganTab.tsx",
+        "/src/components/analyzer/DeckListTab.tsx",
+        "/src/components/analyzer/AnalysisTab.tsx"
+      ],
+      "supporting": [
+        "/src/components/analyzer/AccelerationSettings.tsx — play/draw toggle, ramp producers",
+        "/src/components/analyzer/QuickVerdict.tsx — top banner (honest format labels)",
+        "/src/components/analyzer/KarstenTargetDelta.tsx",
+        "/src/components/analyzer/LandBreakdownList.tsx",
+        "/src/components/analyzer/ManaDistributionChart.tsx",
+        "/src/components/analyzer/SideboardSwapEditor.tsx",
+        "/src/components/ManaCostRow.tsx — 1067L, dual probability path: useProbabilityCalculation (inline hypergeom, lands only) + useAcceleratedCastability (K=3 engine). SSOT alignment TODO open."
+      ]
     },
-    "tempoAwareCalculations": {
-      "purpose": "Account for ETB tapped lands in probability calculations",
-      "landCategories": [
-        "basic",
-        "fetch",
-        "shock",
-        "fast",
-        "slow",
-        "check",
-        "battle",
-        "pain",
-        "filter",
-        "triome",
-        "pathway",
-        "channel",
-        "creature",
-        "bounce",
-        "dual",
-        "utility"
+    "mathsEngine": {
+      "hypergeom": {
+        "path": "/src/services/castability/hypergeom.ts",
+        "lines": 194,
+        "purpose": "SINGLE SOURCE OF TRUTH. Log-space PMF/atLeast. Dynamic Float64Array capacity (warm-start n=200, geometric 1.5× growth via ensureCapacity). NaN safety: clampProbability(x), every entry point validates Number.isFinite.",
+        "consumers": [
+          "advancedMaths.ts — delegates to hypergeom.pmf/atLeast",
+          "manaCalculator.ts — delegates to hypergeom.pmf/atLeast",
+          "ManaCostRow.tsx — uses via useProbabilityCalculation (base) + useAcceleratedCastability (accel)"
+        ]
+      },
+      "manaCalculator": {
+        "path": "/src/services/manaCalculator.ts",
+        "lines": 911,
+        "purpose": "Tempo-aware probability, Karsten table lookup, landProducesColorForSpell (creature-only mana like Cavern of Souls), calculateTempoAwareProbability, analyzeSpellCastability",
+        "karstenSource": "Imports from types/maths.ts (SSOT, T1-T10)"
+      },
+      "acceleratedEngine": {
+        "path": "/src/services/castability/acceleratedAnalyticEngine.ts",
+        "lines": 848,
+        "purpose": "K=0/1/2/3 triple-producer scenarios online. ENHANCER + 2 dorks supported. clamp01(x) guards. Handles dorks, rocks, treasures, rituals, one-shots, land-ramp, aura-land, land-from-hand, spawn, landfall, doubler (5 new types 2026-04-10)."
+      },
+      "advancedMaths": "/src/services/advancedMaths.ts — AdvancedMathEngine wrapper with cache + Monte Carlo + multivariate",
+      "mulligan": [
+        "/src/services/mulliganSimulator.ts — Monte Carlo + DP base",
+        "/src/services/mulliganSimulatorAdvanced.ts — archetype-aware (line 922-941 has Bellman backward induction, threshold derivation). Do NOT modify without understanding recursion."
+      ]
+    },
+    "deckParser": {
+      "deckAnalyzer": {
+        "path": "/src/services/deckAnalyzer.ts",
+        "lines": 1507,
+        "purpose": "Orchestrator + Scryfall integration + parser",
+        "keyFunctions": [
+          "cleanCardName (line 703-723) — SINGLE source of truth for name normalization: unicode → Arena markers (CMDR/F/E/CMP) → MTGA (SET) 123 → A- prefix → // split-to-front",
+          "detectSideboardStartLine — smart auto-detect: explicit markers + inline 'SB:' prefix + blank-line heuristic (40-100 main / 1-15 side)",
+          "Scryfall resilience (line 225-275): 8s AbortController timeout, 1 retry w/ 400ms backoff on 429/5xx, exact= → fuzzy= fallback",
+          "isCreature populated from Scryfall type_line (feeds creature-only mana)"
+        ]
+      },
+      "scryfall": {
+        "path": "/src/services/scryfall.ts",
+        "purpose": "LRU-BOUNDED caches: cardCache 500 entries, collectionCache 100 entries. BoundedMap<K,V> extends Map. Never replace with plain new Map() — long sessions OOM."
+      }
+    },
+    "types": {
+      "maths": {
+        "path": "/src/types/maths.ts",
+        "lines": 262,
+        "purpose": "Karsten tables SSOT (symbols × turn → sources, T1–T10). getKarstenSources() helper."
+      },
+      "lands": {
+        "path": "/src/types/lands.ts",
+        "lines": 413,
+        "keyFields": [
+          "LandMetadata.producesAnyForCreaturesOnly (Cavern, Unclaimed, Secluded, Plaza, Ziggurat)",
+          "TempoCalculationParams.isCreatureSpell"
+        ]
+      },
+      "manaProducers": "/src/types/manaProducers.ts — 5 new types added 2026-04-10: LAND_AURA, LAND_FROM_HAND, SPAWN_SCION, LANDFALL_MANA, MANA_DOUBLER + existing ENHANCER (2026-04-06)",
+      "referenceArticle": "/src/types/referenceArticle.ts — CuratorTrack union: first-fnm | rcq | pro-tour | commander | limited",
+      "scryfall": "/src/types/scryfall.ts"
+    },
+    "state": {
+      "store": {
+        "path": "/src/store/index.ts",
+        "lines": 88,
+        "config": "version:1 persist schema, whitelist=['analyzer'] only, createTransform strips {snackbar, isAnalyzing} from rehydrated state, createMigrate handles pre-v2.2 corruption. MUST bump to version:2 + migrations[2] for any analyzer slice shape change."
+      },
+      "slices": "/src/store/slices/ — analyzerSlice (only slice in use)"
+    },
+    "hooks": {
+      "active": [
+        "/src/hooks/useLibraryProgress.ts — localStorage read/bookmark state",
+        "/src/hooks/usePrivacyStorage.ts",
+        "/src/hooks/useCardImage.ts",
+        "/src/hooks/useAdvancedAnalysis.ts",
+        "/src/hooks/useManaCalculations.ts",
+        "/src/hooks/useWebWorker.ts"
+      ],
+      "removed": [
+        "/src/hooks/useAnalysisStorage.ts — DELETED in v2.5.2. Legacy 'manatuner-analyses' key migration now handled by PrivacyStorage.getMyAnalyses() on first read. DO NOT RECREATE."
+      ],
+      "inlinedInComponents": [
+        "useProbabilityCalculation (inside ManaCostRow.tsx, line 308) — inline hypergeom, lands-only. Not hoisted to SSOT yet.",
+        "useAcceleratedCastability — K=3 engine path inside ManaCostRow"
       ]
     }
   },
+  "recentChanges_last10days": {
+    "window": "2026-04-09 → 2026-04-19",
+    "commits": [
+      {
+        "hash": "e499c83",
+        "date": "2026-04-19",
+        "summary": "HANDOFF 2026-04-19: Library filter UX 3-round tester loop",
+        "files": ["HANDOFF.md"]
+      },
+      {
+        "hash": "90fc178",
+        "date": "2026-04-18/19",
+        "summary": "library: restore hierarchy — primary Category filter out-weighs segmented sub-filters",
+        "files": ["src/pages/ReferenceArticlesPage.tsx"]
+      },
+      {
+        "hash": "c5c621a",
+        "date": "2026-04-18/19",
+        "summary": "library: visual-language shift — segmented filters, TOC card-tiles, elevated panel",
+        "files": ["src/pages/ReferenceArticlesPage.tsx"]
+      },
+      {
+        "hash": "6568c66",
+        "date": "2026-04-18",
+        "summary": "library: bump clickable controls above meta-badge visual weight",
+        "files": ["src/pages/ReferenceArticlesPage.tsx"]
+      },
+      {
+        "hash": "812aef5",
+        "date": "2026-04-18",
+        "summary": "library: tester feedback polish — TOC, filter card, honest labels, podcast host fix",
+        "files": [
+          "public/library.json",
+          "public/library/feed.xml",
+          "src/components/library/ArticleCard.tsx",
+          "src/components/library/TrackHeader.tsx",
+          "src/data/articlesReferenceSeed.ts",
+          "src/pages/ReferenceArticlesPage.tsx",
+          "src/utils/__tests__/libraryHelpers.test.ts"
+        ]
+      },
+      {
+        "hash": "da0e62b",
+        "summary": "HANDOFF v2.7.0/v2.7.1 + launch-preview tool",
+        "files": ["HANDOFF.md", "tools/launch-preview.html"]
+      },
+      {
+        "hash": "d8c2e6a",
+        "summary": "library link-rot fix: Command Zone podcast + Game Knights URLs"
+      },
+      {
+        "hash": "1dff2c0",
+        "date": "2026-04-17/18",
+        "summary": "v2.7.0 Library V3 — per-article SEO pages, author indexes, Markdown/RSS/BibTeX exports, Commander preset live",
+        "files": [
+          "src/pages/ArticleDetailPage.tsx (NEW)",
+          "src/pages/AuthorPage.tsx (NEW)",
+          "src/utils/libraryHelpers.ts (NEW)",
+          "scripts/generate-library-feeds.mjs (NEW prebuild hook)",
+          "scripts/generate-sitemap.mjs (NEW prebuild hook)",
+          "src/pages/AnalyzerPage.tsx (Commander preset)",
+          "src/App.tsx (+2 routes)"
+        ]
+      },
+      {
+        "hash": "85e1a29",
+        "summary": "header: Library button promoted to primary-tier CTA (intentional, locked)",
+        "files": ["src/components/layout/Header.tsx"]
+      },
+      {
+        "hash": "503fd47",
+        "summary": "library hero copy: swap 'Commander Bracket System' → 'Saito's tournament mindset' (v2.6.0 revert — canonical HoF bornes: Karsten → Saito)"
+      },
+      {
+        "hash": "8a74ba3",
+        "date": "2026-04-17/18",
+        "summary": "v2.6.0 Library V2 — Commander + Limited tracks, search, progress",
+        "files": [
+          "src/components/library/ArticleCard.tsx",
+          "src/components/library/TrackHeader.tsx",
+          "src/data/articlesReferenceSeed.ts",
+          "src/hooks/useLibraryProgress.ts (NEW)",
+          "src/types/referenceArticle.ts (CuratorTrack union extended)",
+          "src/pages/HomePage.tsx",
+          "src/pages/ReferenceArticlesPage.tsx"
+        ]
+      },
+      {
+        "hash": "64726dc",
+        "summary": "v2.5.7 Limited (Draft/Sealed) framing"
+      },
+      {
+        "hash": "f9d8955",
+        "summary": "v2.5.6 Commander framing unlocked"
+      },
+      {
+        "hash": "431a1a8",
+        "summary": "v2.5.5 backlog quick-win sweep — 7 quick-wins + 3 bugs + 1 dead-code delete"
+      }
+    ],
+    "hotspotsForRegressionAudits": [
+      "src/pages/ReferenceArticlesPage.tsx (touched in 5 of last 10 commits — primary risk surface)",
+      "src/data/articlesReferenceSeed.ts (link-rot fixes + polish)",
+      "src/components/library/ArticleCard.tsx + TrackHeader.tsx",
+      "src/pages/AnalyzerPage.tsx (Commander preset added in 1dff2c0, NEW ArticleDetail/Author pages wired)",
+      "public/library.json + public/library/feed.xml + public/sitemap.xml (regenerated by prebuild script on every build)"
+    ]
+  },
+  "knownTODOs_knownFrictionPoints": [
+    {
+      "id": "SSOT_DIVERGENCE",
+      "location": "src/components/ManaCostRow.tsx:308",
+      "issue": "useProbabilityCalculation still uses inline hypergeom (lands-only) — NOT aligned with calculateTempoAwareProbability SSOT engine. Open since v2.5.1 (2026-04-12), re-confirmed at v2.5.2, v2.5.4, and the 2026-04-17 audit. Carrying into v2.7.1."
+    },
+    {
+      "id": "LIBRARY_PAGE_SIZE",
+      "location": "src/pages/ReferenceArticlesPage.tsx",
+      "issue": "1678 lines (was 800L at v2.6.0 — grew +100 % in 2 weeks). Mixes SEO/JSON-LD, hero, search, filter toolbar, track loops, category loops, progress footer, feedback CTA. Split candidates (deferred to v2.8): LibraryHero / LibraryFilters / LibraryTrackSection / LibraryBrowseSection / buildLibraryJsonLd pure function."
+    },
+    {
+      "id": "ANALYZER_IGNORES_FORMAT_PARAM",
+      "location": "src/pages/AnalyzerPage.tsx",
+      "issue": "Commander track CTA routes to /analyzer?format=commander but Analyzer currently IGNORES the query param. Intent captured for future EDH preset (n=100, singleton, T5–T8 horizon). Commander users clicking CTA land on a 60-card-defaulted Analyzer — honest placeholder but leaks intent."
+    },
+    {
+      "id": "URL_SENTINELS_LOCKED",
+      "location": "src/pages/ReferenceArticlesPage.tsx",
+      "issue": "Filter keys {cat, level, lang, medium, q} are external-link-stable. Renaming breaks Discord-pasted deep links. Redirect required before any rename."
+    },
+    {
+      "id": "COMMANDER_ACCENT_OVERRIDE",
+      "location": "src/components/library/TrackHeader.tsx:7-13",
+      "issue": "Commander accent color is MTG canonical black (#150B00) in the color system but overridden to purple (#6B3FA0) for dark-theme readability. Do NOT revert to canonical black."
+    },
+    {
+      "id": "HERO_COPY_LOCKED",
+      "location": "/src/pages/HomePage.tsx + /src/pages/ReferenceArticlesPage.tsx",
+      "issue": "Hero copy must use 'from Karsten's manabase math to Saito's tournament mindset' (both HoF competitive names). Do NOT revert to 'Commander Bracket System' — category error (Commander is casual/multiplayer)."
+    },
+    {
+      "id": "ESLINT_WARNINGS",
+      "count": 17,
+      "locations": [
+        "MulliganTab.tsx (unused isMobile prop, missing useEffect deps)",
+        "OptimizedComponents.tsx (missing useCallback dep)",
+        "useAdvancedAnalysis.ts (missing useMemo deps)",
+        "useManaCalculations.ts (complex dep expression)",
+        "mulliganSimulator.ts (unused HAND_SIZES)"
+      ]
+    }
+  ],
+  "nonNegotiableConstraints": [
+    {
+      "id": "NO_BACKEND",
+      "rule": "Supabase REMOVED 2026-04-13. ManaTuner is 100 % localStorage / privacy-first. Do NOT reintroduce a backend without re-opening the decision with the creator."
+    },
+    {
+      "id": "SENTRY_DSN_UNSET",
+      "rule": "Sentry code integrated (src/main.tsx:13-26, ErrorBoundary.tsx:35-49) but Sentry.init() gated on import.meta.env.PROD && VITE_SENTRY_DSN. VITE_SENTRY_DSN MUST remain UNSET in Vercel prod to preserve PrivacySettings.tsx:204 promise ('Nothing is sent to any server'). Re-enabling requires 4 prerequisites in order: (1) beforeSend scrubber, (2) PrivacySettings disclaimer update, (3) opt-out toggle for EU/GDPR, (4) CSP verification."
+    },
+    {
+      "id": "LIBRARY_CTA_PRIMARY_TIER",
+      "rule": "Header Library button + HomePage 'Browse the Library' are INTENTIONALLY primary-tier (solid #0E68AB → #6A1B9A gradient, NOT 35 %-opacity). Two primary CTAs exist: Analyzer (gold = action) + Library (blue→purple = knowledge). Keep visually distinct — do NOT harmonize to a single color. User memory flag: 'Do not demote.'"
+    },
+    {
+      "id": "PRIVACY_FIRST_DATA_LAYER",
+      "rule": "useLibraryProgress, privacy.ts, and any storage layer must use localStorage only. No network persistence without re-opening the decision."
+    },
+    {
+      "id": "HYPERGEOM_SSOT",
+      "rule": "src/services/castability/hypergeom.ts is the ONE source of truth for log-space PMF/atLeast. Do NOT hardcode maxN — always call pmf/atLeast and trust dynamic growth. Never add a probability entry point without Number.isFinite + clamp guard."
+    },
+    {
+      "id": "CLEANCARDNAME_SSOT",
+      "rule": "src/services/deckAnalyzer.ts:703-723 cleanCardName is SSOT for name normalization. Do NOT bypass when adding new parser path. Scryfall query order: exact= first, fuzzy= fallback."
+    },
+    {
+      "id": "LRU_BOUNDED_CACHES",
+      "rule": "Scryfall in-memory caches use BoundedMap (cardCache 500 / collectionCache 100). Do NOT replace with plain new Map() — long sessions (Cube grinders) would OOM."
+    },
+    {
+      "id": "REDUX_PERSIST_VERSIONED",
+      "rule": "store/index.ts uses version:1 + createMigrate. Any analyzer slice shape change must bump to version:2 and add migrations[2] handler."
+    },
+    {
+      "id": "LIBRARY_SEED_INVARIANTS",
+      "rule": "articlesReferenceSeed.test.ts enforces: ≥30 articles, unique IDs, valid http(s) primaryUrl, archived/mirror carries originalUrl, tracked articles carry curatorNote, tracks 3-10 articles each, each track has ≥1 non-English OR rescued pick. New tracks must satisfy last two."
+    },
+    {
+      "id": "JSON_LD_FULL_LIST",
+      "rule": "/library JSON-LD ItemList MUST expose all 48 articles. Do NOT reintroduce slice(0, 10) — every article is long-tail SEO bait."
+    },
+    {
+      "id": "FISHER_YATES_ONLY",
+      "rule": "Every shuffle in codebase uses backward Fisher-Yates pattern. NEVER use .sort(() => Math.random() - 0.5) — biased."
+    },
+    {
+      "id": "TTS_HOOKS_MANDATORY",
+      "rule": ".claude/hooks/play-tts.sh returns muted in this project but the hook MUST fire at action start + completion per AgentVibes protocol."
+    }
+  ],
   "testStatus": {
-    "unitTests": {
-      "total": 99,
-      "passed": 97,
-      "failed": 0,
-      "skipped": 2,
-      "coverage": "85%+"
-    },
-    "eslint": {
-      "errors": 0,
-      "warnings": 17
-    },
-    "criticalTestsValidated": [
-      "Frank Karsten hypergeometric formulas",
-      "P1 vs P2 probability differences",
-      "90% threshold validation",
-      "Performance < 1ms per calculation",
-      "Monte Carlo stability",
-      "Mulligan threshold calculations"
-    ]
+    "unitTests": "296+ (was 235/237 at v2.5.0, +61 at v2.5.1 — manaProducerService +25, cleanCardName +21, hypergeomDynamic +15)",
+    "eslint": "0 errors, 17 warnings",
+    "e2e": "Playwright present, not currently executed in this session"
   },
-  "technicalDebt": {
-    "eslintWarnings": [
-      "MulliganTab.tsx: unused 'isMobile' prop, missing useEffect dependencies",
-      "OptimizedComponents.tsx: missing useCallback dependency",
-      "useAdvancedAnalysis.ts: missing useMemo dependencies",
-      "useManaCalculations.ts: complex dependency expression",
-      "mulliganSimulator.ts: unused HAND_SIZES constant",
-      "Several components with react-refresh warnings (exports)"
-    ],
-    "codeQualityIssues": [
-      "Some components mix exports with constants (react-refresh warning)",
-      "Some hooks have complex dependency arrays",
-      "2 skipped tests in AnalyzerPage.test.jsx"
-    ],
-    "futureImprovements": [
-      "Complete Web Worker implementation for heavy calculations",
-      "Add more comprehensive E2E tests",
-      "Improve error handling in deck parsing",
-      "Add visual regression testing"
-    ]
-  },
-  "keyPatterns": {
-    "lazyLoading": "React.lazy() for all pages except HomePage",
-    "errorBoundary": "ErrorBoundary wraps entire app",
-    "suspense": "PageLoader component for loading states",
-    "notifications": "NotificationProvider context",
-    "privacy": "PrivacyStorage for encrypted local storage (AES-256)",
-    "caching": "React Query + localStorage + in-memory caches"
-  },
-  "externalAPIs": {
-    "scryfall": {
-      "base": "https://api.scryfall.com",
-      "endpoints": ["/cards/named", "/cards/collection", "/cards/search"],
-      "rateLimit": "100ms between requests",
-      "caching": "1 week for card data, 1 month for images"
+  "personaScoreHistory": {
+    "v2.1_initial": {
+      "Leo": 3.69,
+      "Sarah": 4.13,
+      "Karim": 4.13,
+      "Natsuki": 3.75,
+      "David": 3.4,
+      "average": 3.82
     },
-    "supabase": {
-      "purpose": "Optional cloud sync",
-      "status": "Optional - not required for core functionality"
+    "v2.5.1_projected": {
+      "Leo": 4.25,
+      "Sarah": 4.65,
+      "Karim": 4.55,
+      "Natsuki": 4.15,
+      "David": 4.5,
+      "average": 4.42
+    },
+    "v2.5.4_live_6p_whole_site": {
+      "Leo": 3.84,
+      "Sarah": 4.71,
+      "Karim": 4.05,
+      "Natsuki": 2.85,
+      "David": 3.75,
+      "Thibault": 2.56,
+      "average": 3.63,
+      "note": "Thibault (Commander) pulls average down — honest about EDH market gap"
+    },
+    "v2.6.0_library_only_same_day": {
+      "Leo": 3.9,
+      "Sarah": 4.5,
+      "Karim": 3.94,
+      "Natsuki": 3.45,
+      "David": 3.79,
+      "Thibault": 3.89,
+      "average": 3.91,
+      "note": "+0.81 vs pre-V2 Library. Thibault jumped 2.56 → 3.89 (+1.33) from new tracks. DO NOT sum with whole-site table — different scopes."
     }
   },
-  "buildOptimizations": {
-    "chunks": {
-      "vendor-react": ["react", "react-dom", "react-router-dom"],
-      "vendor-mui": ["@mui/material", "@mui/icons-material", "@emotion/react"],
-      "vendor-charts": ["recharts"],
-      "vendor-redux": ["@reduxjs/toolkit", "react-redux"]
+  "briefingPackagesForAuditors": {
+    "persona_Leo": {
+      "summary": "Leo = 6-month casual Arena player, fears jargon. Audit H1s, tooltips, landing copy, first-FNM track, Badgermole Cub sample deck. Flag any technical term not explained inline.",
+      "relevantPaths": [
+        "/src/pages/HomePage.tsx",
+        "/src/pages/AnalyzerPage.tsx",
+        "/src/pages/GuidePage.tsx",
+        "/src/pages/MathematicsPage.tsx",
+        "/src/components/analyzer/QuickVerdict.tsx",
+        "/src/data/articlesReferenceSeed.ts (first-fnm track)"
+      ],
+      "relatedActivity": "Library hero copy locked at 'Karsten → Saito'. techTerm badges relegated to monospace captions at bottom of Math cards."
     },
-    "pwa": {
-      "enabled": true,
-      "caching": "Scryfall API + card images + fonts"
-    },
-    "production": {
-      "dropConsole": true,
-      "dropDebugger": true,
-      "sourcemaps": false
-    }
-  },
-  "seoInfrastructure": {
-    "lastAuditDate": "2026-04-13T09:15:00Z",
-    "productionHost": "https://www.manatuner.app",
-    "metaManagement": {
-      "library": "react-helmet-async ^3.0.0",
-      "helmetProvider": "src/App.tsx:119",
-      "sharedComponent": "src/components/common/SEO.tsx",
-      "clientSideOnly": true,
-      "prerenderStatus": "SCRIPT_EXISTS_NOT_WIRED"
-    },
-    "files": {
-      "/index.html": {
-        "status": "present",
-        "lastModified": "2026-04-13",
-        "hasDefaultTitle": true,
-        "hasOGTags": true,
-        "hasTwitterCard": true,
-        "missingItems": [
-          "apple-touch-icon (intentionally removed 2026-04-13)",
-          "twitter:site",
-          "twitter:creator",
-          "inline JSON-LD"
-        ]
-      },
-      "/public/sitemap.xml": {
-        "status": "present",
-        "lastModified": "2026-04-12 (commit 88e7278)",
-        "urlCount": 9,
-        "routes": [
-          "/",
-          "/analyzer",
-          "/land-glossary",
-          "/library",
-          "/guide",
-          "/mathematics",
-          "/my-analyses",
-          "/about",
-          "/privacy"
-        ],
-        "issues": [
-          "missing /reading-list redirect alternate",
-          "lastmod dates stale on 7 of 9 URLs (all 2026-04-06 except / and /library)"
-        ]
-      },
-      "/public/robots.txt": {
-        "status": "present",
-        "lastModified": "2026-04-06",
-        "directives": ["User-agent: * Allow:/", "Crawl-delay: 1", "LLMs-Txt pointer"],
-        "missingItems": [
-          "no explicit GPTBot/ClaudeBot/PerplexityBot/Google-Extended allow/disallow rules — default * covers them but explicit is best practice for trust"
-        ]
-      },
-      "/public/llms.txt": {
-        "status": "present",
-        "lastModified": "2026-04-11 (commit 498b893)",
-        "size": "4.2KB",
-        "format": "llmstxt.org spec"
-      },
-      "/public/llms-full.txt": {
-        "status": "present",
-        "lastModified": "2026-04-11 (commit 498b893)",
-        "size": "8.2KB",
-        "content": "FAQ + Mathematics + Land glossary + Feature deep dive"
-      },
-      "/public/manifest.json": {
-        "status": "present",
-        "lastModified": "2026-04-12",
-        "completeness": "minimal",
-        "missingItems": [
-          "additional icon sizes (192, 512)",
-          "screenshots array",
-          "categories",
-          "lang"
-        ]
-      },
-      "/vercel.json": {
-        "status": "present",
-        "lastModified": "2026-04-13",
-        "buildCommand": "npm run build",
-        "hasSecurityHeaders": true,
-        "hasCSP": true,
-        "issues": [
-          "buildCommand does NOT invoke build:prerender — dist/ ships only / (no per-route HTML)"
-        ]
-      },
-      "/vite.config.ts": {
-        "status": "present",
-        "hasSEOPlugins": false,
-        "notes": "No vite-plugin-sitemap, no pre-rendering plugin. Manual pipeline only."
-      },
-      "/scripts/prerender.mjs": {
-        "status": "present",
-        "routes": [
-          "/",
-          "/analyzer",
-          "/guide",
-          "/mathematics",
-          "/land-glossary",
-          "/about",
-          "/privacy"
-        ],
-        "missing": [
-          "/library (CRITICAL — newest content pillar not prerendered)",
-          "/my-analyses (intentional)"
-        ],
-        "wiredTo": "npm run build:prerender (NOT used in production)"
-      }
-    },
-    "structuredData": {
-      "approach": "JSON-LD via SEO component + react-helmet-async",
-      "location": "Per-page inside <SEO jsonLd={...} />",
-      "types": {
-        "/ (HomePage.tsx:179)": "WebApplication with offers.price=0, author=Guillaume Bordes",
-        "/guide (GuidePage.tsx:147)": "FAQPage with 5 Q&A entries",
-        "/mathematics (MathematicsPage.tsx:52)": "Article",
-        "/land-glossary (LandGlossaryPage.tsx:274)": "Article",
-        "/library (ReferenceArticlesPage.tsx:96)": "CollectionPage with ItemList of 10 Articles",
-        "/analyzer (AnalyzerPage.tsx:211)": "NO JSON-LD (missing — main conversion page)",
-        "/about (StaticPages.tsx:50)": "NO JSON-LD (missing)",
-        "/privacy (StaticPages.tsx:327)": "NO JSON-LD (missing)"
-      },
-      "gaps": [
-        "No Organization schema anywhere",
-        "No SoftwareApplication aggregateRating (even faked at 5/50 would boost rich snippets)",
-        "No BreadcrumbList on sub-pages",
-        "No HowTo on /guide (it's a FAQPage but the core is a step-by-step)",
-        "No Person schema for Guillaume Bordes linking to GitHub"
+    "persona_Sarah": {
+      "summary": "Sarah = FNM weekly regular, copies decklists. Audit paste flow, sideboard detection, mana distribution chart, print/save.",
+      "relevantPaths": [
+        "/src/components/analyzer/DeckInputSection.tsx",
+        "/src/services/deckAnalyzer.ts (detectSideboardStartLine)",
+        "/src/components/analyzer/ManaDistributionChart.tsx",
+        "/src/pages/MyAnalysesPage.tsx"
       ]
     },
-    "analyticsTrackers": {
-      "googleAnalytics": "NONE",
-      "plausible": "NONE",
-      "posthog": "NONE",
-      "mixpanel": "NONE",
-      "segment": "NONE",
-      "sentry": "CODE_PRESENT_RUNTIME_DISABLED",
-      "sentryInitLocation": "src/main.tsx:20-26",
-      "sentryGuard": "import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN",
-      "privacyPromise": "src/components/PrivacySettings.tsx:204 - 'Nothing is sent to any server'",
-      "externalCalls": {
-        "scryfall": "https://api.scryfall.com (card data only, no user data)",
-        "fonts": "Google Fonts + jsdelivr (CDN, no user data)",
-        "discordCommunity": "NONE in-app"
-      }
-    },
-    "eatSignals": {
-      "authorPage": "/about (AboutPage component in StaticPages.tsx:24)",
-      "authorName": "Guillaume Bordes",
-      "authorGitHub": "https://github.com/gbordes77",
-      "bioDepth": "minimal (features grid + origin story + Charles Wickham credit, NO personal MTG credentials)",
-      "bibliography": "README.md credits Frank Karsten + Charles Wickham + Scryfall",
-      "readingLibrary": "/library — 35+ articles by Karsten, PVDDR, Saito, Chapin, Reid Duke (MAJOR E-E-A-T asset)",
-      "openSourceSignal": "GitHub repo link in README + AboutPage",
-      "missingE_E_A_T": [
-        "No explicit 'Last updated' dates on pages",
-        "No author byline on /guide, /mathematics, /land-glossary",
-        "No citations/footnotes linking specific claims to Karsten articles",
-        "No credentials or tournament history for Guillaume Bordes",
-        "No testimonials from real users",
-        "No 'expert reviewed by' signal (a known MTG pro endorsing would be massive)"
+    "persona_Karim": {
+      "summary": "Karim = RCQ grinder, wants fine data + exports. Audit Markdown/RSS/BibTeX exports (NEW v2.7.0), LandBreakdownList, CastabilityTab depth, RCQ track.",
+      "relevantPaths": [
+        "/src/pages/ReferenceArticlesPage.tsx",
+        "/scripts/generate-library-feeds.mjs",
+        "/src/components/analyzer/LandBreakdownList.tsx",
+        "/src/components/analyzer/CastabilityTab.tsx",
+        "/src/data/articlesReferenceSeed.ts (rcq track)"
       ]
     },
-    "copyHeadings": {
-      "/ (HomePage)": {
-        "h1": "The Only Mana Calculator That Counts Your Dorks & Rocks",
-        "metaTitle": "ManaTuner — Mana Calculator + Competitive MTG Reading Library",
-        "metaDescLength": "158 chars (under 160 limit, good)"
-      },
-      "/analyzer (AnalyzerPage)": {
-        "h1": "ManaTuner (hero, replaced by results after analysis)",
-        "metaTitle": "MTG Deck Analyzer - Calculate Mana Base Probabilities | ManaTuner",
-        "note": "H1 is just 'ManaTuner' which is WEAK for SEO on this high-value conversion page"
-      },
-      "/guide (GuidePage)": {
-        "h1": "How to Use ManaTuner",
-        "metaTitle": "How to Build a Perfect MTG Mana Base - Guide | ManaTuner",
-        "mismatch": "Meta title says 'How to build' but H1 says 'How to use' — intent drift"
-      },
-      "/mathematics (MathematicsPage)": {
-        "h1": "The Mathematics Behind ManaTuner",
-        "metaTitle": "MTG Mana Math Explained - Hypergeometric & Monte Carlo | ManaTuner",
-        "note": "GOLDMINE for AEO — deep hypergeometric + Karsten + Bellman content"
-      },
-      "/land-glossary (LandGlossaryPage)": {
-        "h1": "Land Type Glossary",
-        "metaTitle": "MTG Land Types Ranked - Complete Dual Land Glossary | ManaTuner",
-        "note": "12 ranked land categories with explanations — excellent AEO seed content"
-      },
-      "/library (ReferenceArticlesPage)": {
-        "h1": "The Competitive MTG Library",
-        "metaTitle": "MTG Competitive Reading Library — 35+ Essential Articles | ManaTuner",
-        "note": "Newest content pillar (2026-04-12) — MAJOR E-E-A-T asset"
-      },
-      "/about (AboutPage)": {
-        "h1": "About ManaTuner",
-        "metaTitle": "About ManaTuner - Open Source MTG Mana Base Tool"
-      },
-      "/privacy (PrivacyPage)": {
-        "h1": "Privacy Policy",
-        "metaTitle": "Privacy Policy | ManaTuner"
-      }
+    "persona_Natsuki": {
+      "summary": "Natsuki = Pro Tour qual, thinks in EV/equity, wants API. Pain point: no API exposed. Audit acceleratedAnalyticEngine K=3, Pro Tour track, math depth.",
+      "relevantPaths": [
+        "/src/services/castability/acceleratedAnalyticEngine.ts",
+        "/src/services/mulliganSimulatorAdvanced.ts (Bellman)",
+        "/src/pages/MathematicsPage.tsx",
+        "/src/data/articlesReferenceSeed.ts (pro-tour track)"
+      ]
     },
-    "criticalGaps": [
-      "PRERENDER_NOT_WIRED: vercel.json uses 'npm run build' (plain Vite SPA) instead of 'npm run build:prerender'. Result: crawlers without JS see only the default index.html meta tags — per-route titles, descriptions, and JSON-LD never reach Googlebot, PerplexityBot, etc. This is the #1 SEO blocker.",
-      "LIBRARY_NOT_IN_PRERENDER: Even when prerender runs, /library is missing from ROUTES in scripts/prerender.mjs:23-31. The newest and biggest content pillar won't be indexed by static HTML.",
-      "NO_TWITTER_CREATOR: index.html has twitter:card but no twitter:site or twitter:creator — kills attribution on RTs from @fireshoes (the LAUNCH.md priority #1 tactic).",
-      "ANALYZER_NO_JSONLD: The highest-conversion page has no structured data. Should have SoftwareApplication + BreadcrumbList.",
-      "NO_BREADCRUMBLIST: Sub-pages (/guide, /mathematics, /land-glossary, /library) have no BreadcrumbList — weakens site hierarchy signal.",
-      "SITEMAP_STALE: 7 of 9 sitemap URLs have lastmod=2026-04-06 even though pages have been modified since. Googlebot deprioritizes stale sitemaps.",
-      "NO_HOWTO_SCHEMA: /guide is a FAQPage but the core content is step-by-step — HowTo schema would rank better for 'how to build mtg mana base' queries.",
-      "OG_IMAGE_ONE_SIZE: Only og-image-v3.jpg (1200x630) exists. Twitter Summary Large Image works, but no square (1080x1080) or vertical (1080x1350) variants for LinkedIn/Discord/iMessage previews.",
-      "NO_AUTHOR_BYLINE: /mathematics and /land-glossary have JSON-LD author=Guillaume Bordes but no visible byline. Missed E-E-A-T signal.",
-      "NO_LAST_UPDATED: No visible 'Last updated YYYY-MM-DD' on any page. AI engines (Perplexity especially) prefer fresh content.",
-      "ROBOTS_TXT_NO_AI_RULES: Default 'User-agent: *' covers all crawlers but explicit rules for GPTBot, ClaudeBot, PerplexityBot, Google-Extended (opt-out trap) are best practice for trust signaling. ManaTuner's open-source + privacy-first positioning benefits from explicitly ALLOWING AI bots."
-    ],
-    "seoAssets": {
-      "aeoGoldmines": [
-        "/public/llms-full.txt — already structured for AI ingestion, 8.2KB, well-formatted",
-        "/src/pages/MathematicsPage.tsx — 981 lines, hypergeometric + Bellman + Karsten explained in plain English. Perfect AI citation fodder.",
-        "/src/pages/LandGlossaryPage.tsx — 587 lines, 12 ranked land categories with pros/cons. Perfect for 'what is a fetchland' type queries.",
-        "/src/pages/ReferenceArticlesPage.tsx — 443 lines, /library with 35+ articles curated by authority. Signals topical expertise.",
-        "/public/llms.txt — 4.2KB, concise AI briefing with FAQ, key features, pages map",
-        "README.md — Features table + Karsten tables + tech stack, well-structured for GitHub indexing"
+    "persona_David": {
+      "summary": "David = Pro Tour vet + theorist, reads source. Audit README, CHANGELOG, docs/MATHEMATICAL_REFERENCE, acceleratedAnalyticEngine comments, types/maths SSOT.",
+      "relevantPaths": [
+        "/README.md",
+        "/CHANGELOG.md",
+        "/docs/MATHEMATICAL_REFERENCE.md",
+        "/docs/MATH_AUDIT_REPORT.md",
+        "/src/types/maths.ts",
+        "/src/services/castability/hypergeom.ts"
+      ]
+    },
+    "persona_Thibault": {
+      "summary": "Thibault = EDH pilot (ADDED 2026-04-18), pod hebdo. Commander track + Commander preset in Analyzer are the two touchpoints. Analyzer ignores ?format=commander currently.",
+      "relevantPaths": [
+        "/src/data/articlesReferenceSeed.ts (commander track)",
+        "/src/pages/AnalyzerPage.tsx",
+        "/src/components/library/TrackHeader.tsx (purple accent)",
+        "/src/pages/ReferenceArticlesPage.tsx (track section)"
+      ]
+    },
+    "performanceEngineer": {
+      "summary": "Hot paths: hypergeom log-factorial dynamic growth, ManaCostRow K=3 loop, LRU-bounded caches. Bundle: vendor-react / vendor-mui / vendor-charts / vendor-redux chunks.",
+      "relevantPaths": [
+        "/src/services/castability/hypergeom.ts",
+        "/src/services/castability/acceleratedAnalyticEngine.ts",
+        "/src/services/scryfall.ts (BoundedMap)",
+        "/src/components/ManaCostRow.tsx",
+        "/vite.config.ts",
+        "/docs/performance/performance-audit-2026-04-06.md"
+      ]
+    },
+    "securityAuditor": {
+      "summary": "No backend, CSP in vercel.json, AES-256 PrivacyStorage, Sentry DSN intentionally unset. Audit CSP + header config + localStorage patterns.",
+      "relevantPaths": [
+        "/vercel.json",
+        "/src/lib/privacy.ts",
+        "/src/main.tsx (Sentry guard)",
+        "/src/components/PrivacySettings.tsx",
+        "/docs/SECURITY_AUDIT_REPORT.md"
+      ]
+    },
+    "qaExpert": {
+      "summary": "296+ unit tests (Vitest), Playwright E2E tree. Coverage hot zones: manaProducerService (25), cleanCardName (21), hypergeomDynamic (15), sideboardDetection (14).",
+      "relevantPaths": [
+        "/src/services/__tests__/",
+        "/src/data/__tests__/articlesReferenceSeed.test.ts",
+        "/src/utils/__tests__/libraryHelpers.test.ts",
+        "/tests/e2e/",
+        "/QA_AUDIT_REPORT.md"
+      ]
+    },
+    "reactPro": {
+      "summary": "React 18 + lazy routes + Suspense + ErrorBoundary per tab + React Query v5 + Redux Persist v1 schema. Audit hook deps + state locality.",
+      "relevantPaths": [
+        "/src/App.tsx",
+        "/src/store/index.ts",
+        "/src/hooks/",
+        "/src/components/common/ErrorBoundary.tsx",
+        "/src/pages/AnalyzerPage.tsx (tab ErrorBoundaries)"
+      ]
+    },
+    "typescriptPro": {
+      "summary": "types/ = 6 files. SSOT: maths.ts (Karsten tables), lands.ts (producesAnyForCreaturesOnly), manaProducers.ts (5 new types + ENHANCER), referenceArticle.ts (CuratorTrack union).",
+      "relevantPaths": ["/src/types/", "/tsconfig.json", "/src/services/castability/index.ts"]
+    },
+    "documentationExpert": {
+      "summary": "Dense: README / CHANGELOG / HANDOFF / TEAM_HANDOFF / LAUNCH / CLAUDE / 30+ files in docs/. Recent focus: SEO/AEO strategy, persona framework, tester feedback loops.",
+      "relevantPaths": [
+        "/README.md",
+        "/CHANGELOG.md",
+        "/HANDOFF.md (133KB)",
+        "/TEAM_HANDOFF.md",
+        "/LAUNCH.md",
+        "/CLAUDE.md",
+        "/mtg-player-personas.md (6 personas)",
+        "/docs/"
+      ]
+    },
+    "productManager": {
+      "summary": "v2.7.1 (HANDOFF 2026-04-19). LAUNCH plan = gate for feature proposals. 42-item backlog logged a937a9a. Priorities: Commander preset honoring ?format=commander, Library split refactor, Analyzer SSOT alignment.",
+      "relevantPaths": [
+        "/LAUNCH.md",
+        "/HANDOFF.md",
+        "/TEAM_HANDOFF.md",
+        "/ACTION_TRACKER.md",
+        "/FEEDBACK_TRACKER.md"
+      ]
+    },
+    "marketingWriter": {
+      "summary": "Positioning: 'mana calculator + competitive MTG library'. Hero: 'Karsten → Saito'. Library as 'canon of competitive MTG' per user memory. LLMs.txt + llms-full.txt already AEO-ready. Twitter creator handle missing.",
+      "relevantPaths": [
+        "/src/pages/HomePage.tsx",
+        "/src/pages/ReferenceArticlesPage.tsx",
+        "/index.html (OG tags, missing twitter:creator)",
+        "/public/llms.txt",
+        "/public/llms-full.txt",
+        "/docs/SEO_AEO_STRATEGY_2026-04-13.md",
+        "/docs/MARKETING_CONTENT.md"
       ]
     }
   },
   "agentActivityLog": {
     "context-manager": {
-      "lastActionSummary": "Comprehensive SEO/AEO audit cartography for marketing-writer handoff. Mapped all SEO infrastructure (index.html, sitemap.xml, robots.txt, llms.txt/llms-full.txt, manifest.json, vercel.json, vite.config.ts), per-page JSON-LD structured data, H1/meta titles/descriptions, E-E-A-T signals, and identified 11 critical gaps (prerender not wired, /library missing from prerender, no twitter:creator, analyzer missing JSON-LD, etc.).",
-      "lastActivityTimestamp": "2026-04-13T09:15:00Z",
+      "lastActionSummary": "Full bootstrap for 14-agent audit run: updated to v2.7.1 head (e499c83), mapped 5 new library commits in last 10 days (including Library V3 release 1dff2c0), added ArticleDetailPage + AuthorPage + libraryHelpers as NEW surfaces, tracked ReferenceArticlesPage growth 800L → 1678L, flagged 7 non-negotiable constraints + 7 open friction points, prepared 14 tailored briefing packages (6 personas + 8 specialist agents).",
+      "lastActivityTimestamp": "2026-04-19T16:10:00Z",
       "filesModified": ["/sub-agents/context/context-manager.json"]
     }
   }

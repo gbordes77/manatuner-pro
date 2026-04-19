@@ -205,11 +205,12 @@ export const TRACK_METADATA: Record<
       "You're past 60-card. Your deck is 100 cards, singleton, built around a commander. Turns go long, tables have four seats, and the math is different. The Commander canon — manabase theory for 100-card, bracket system, pod politics, and the authors the rest of the internet ignores.",
     accentColor: 'b',
     analyzerCtaLabel: 'Analyze my Commander deck →',
-    // /analyzer?format=commander captures the user's intent — the Analyzer
-    // currently ignores the query param but will consume it once the
-    // Commander preset (n=100, singleton, Rule-0-aware) ships. Routing
-    // the click there today means we won't have to chase every inbound
-    // link when the preset lands.
+    // /analyzer?format=commander is consumed by AnalyzerPage.tsx:302 —
+    // auto-loads the Atraxa EDH sample and sets the persistent Commander
+    // preset banner. Future work: format-aware horizon (T5–T8), singleton
+    // detection, Rule-0 caveat copy, EDH-calibrated Karsten targets (the
+    // 60-card table is still applied today — "command zone not yet
+    // modelled" is disclosed in the banner).
     analyzerCtaHref: '/analyzer?format=commander',
   },
   limited: {
