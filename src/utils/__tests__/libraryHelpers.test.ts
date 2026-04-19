@@ -32,7 +32,7 @@ describe('slugifyAuthor', () => {
 
   it('strips accents', () => {
     expect(slugifyAuthor('Rémi Fortier')).toBe('remi-fortier')
-    expect(slugifyAuthor('Théau Méjean')).toBe('theau-mejean')
+    expect(slugifyAuthor('Javier Domínguez')).toBe('javier-dominguez')
   })
 
   it('collapses ampersands and punctuation', () => {

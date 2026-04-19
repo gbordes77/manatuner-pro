@@ -6,8 +6,8 @@
     <atom:link href="https://www.manatuner.app/library/feed.xml" rel="self" type="application/rss+xml" />
     <description>Recently curated articles on manabase math, mulligans, tournament mindset, Commander, and Limited. Updated when new picks land in the reading library.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 18 Apr 2026 18:11:01 GMT</lastBuildDate>
-    <pubDate>Sat, 18 Apr 2026 18:11:01 GMT</pubDate>
+    <lastBuildDate>Sun, 19 Apr 2026 01:35:43 GMT</lastBuildDate>
+    <pubDate>Sun, 19 Apr 2026 01:35:43 GMT</pubDate>
     <generator>ManaTuner prebuild</generator>
     <item>
       <title>Secrets to INSANE win rates? The MTG Study That Changes Everything</title>
@@ -64,7 +64,7 @@
       <link>https://www.manatuner.app/library/pcm-164-erwan-control</link>
       <guid isPermaLink="true">https://www.manatuner.app/library/pcm-164-erwan-control</guid>
       <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
-      <author>Théau Méjean &amp; Erwan Maisonneuve</author>
+      <author>Théau Mery &amp; Erwan Maisonneuve</author>
       <category>podcasts</category>
       <description>Erwan Maisonneuve, co-auteur du Manuel du Joueur de Control, parle de la science du control — l&apos;art de gagner avec des decks qui jouent en réaction. Une masterclass française rare sur l&apos;archétype le plus mal compris.</description>
       <source url="https://podcastermage.podbean.com/e/164-dans-la-peau-d-un-grand-pere-a-magic-avec-erwan-maisonneuve/">Le Podcaster Mage</source>
@@ -114,7 +114,7 @@
       <link>https://www.manatuner.app/library/pcm-125-heuristiques</link>
       <guid isPermaLink="true">https://www.manatuner.app/library/pcm-125-heuristiques</guid>
       <pubDate>Sat, 01 Jan 2022 00:00:00 GMT</pubDate>
-      <author>Théau Méjean &amp; Charles Gindre</author>
+      <author>Charles Wickham &amp; Théau Mery</author>
       <category>podcasts</category>
       <description>Les heuristiques — ces petites règles qui permettent de prendre des décisions plus rapidement — et leurs limites. Quand les appliquer, quand les remettre en question. Le pendant audio du PVDDR Six Heuristics dans cette même librairie.</description>
       <source url="https://podcastermage.podbean.com/e/125-level-up-les-heuristiques-c-est-pas-automatique/">Le Podcaster Mage</source>
@@ -164,7 +164,7 @@
       <link>https://www.manatuner.app/library/pcm-92-tourner-cartes</link>
       <guid isPermaLink="true">https://www.manatuner.app/library/pcm-92-tourner-cartes</guid>
       <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
-      <author>Théau Méjean &amp; Charles Gindre</author>
+      <author>Charles Wickham &amp; Théau Mery</author>
       <category>podcasts</category>
       <description>Tous les tips and tricks pour &apos;tourner autour des cartes&apos; — la skill de jouer autour des cartes adverses sans connaître leur main exacte. Range-finding et lecture d&apos;informations cachées, en français.</description>
       <source url="https://podcastermage.podbean.com/e/92-level-up-tourner-autours-de-cartes/">Le Podcaster Mage</source>
@@ -174,7 +174,7 @@
       <link>https://www.manatuner.app/library/pcm-67-coherence-depraz</link>
       <guid isPermaLink="true">https://www.manatuner.app/library/pcm-67-coherence-depraz</guid>
       <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
-      <author>Théau Méjean, Charles Gindre &amp; Jean-Emmanuel Depraz</author>
+      <author>Charles Wickham, Théau Mery &amp; Jean-Emmanuel Depraz</author>
       <category>podcasts</category>
       <description>Le Pro Tour player Jean-Emmanuel Depraz (le même que sur &apos;Petite leçon de stops&apos; dans cette librairie) explique pourquoi la cohérence — interne au deck et au plan de jeu — est la skill la plus sous-estimée du joueur compétitif.</description>
       <source url="https://podcastermage.podbean.com/e/67-level-up-la-coherence-a-magic-avec-j-e-depraz/">Le Podcaster Mage</source>
@@ -224,7 +224,7 @@
       <link>https://www.manatuner.app/library/pcm-15-avoir-un-plan</link>
       <guid isPermaLink="true">https://www.manatuner.app/library/pcm-15-avoir-un-plan</guid>
       <pubDate>Tue, 01 Jan 2019 00:00:00 GMT</pubDate>
-      <author>Théau Méjean &amp; Charles Gindre</author>
+      <author>Charles Wickham &amp; Théau Mery</author>
       <category>podcasts</category>
       <description>Deep dive sur l&apos;un des concepts majeurs du Magic compétitif : avoir un plan. Théau et Charles expliquent comment formuler, ajuster, et exécuter un game plan tour par tour — le pendant audio du concept central de PVDDR et Reid Duke.</description>
       <source url="https://podcastermage.podbean.com/e/15-level-up-avoir-un-plan/">Le Podcaster Mage</source>

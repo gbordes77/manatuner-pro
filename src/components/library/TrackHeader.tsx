@@ -17,7 +17,9 @@ const MANA_COLOR_HEX: Record<'w' | 'u' | 'b' | 'r' | 'g', string> = {
 interface TrackHeaderProps {
   track: CuratorTrack
   articleCount: number
-  /** Number of articles in this track already marked as read (localStorage). */
+  /** Number of articles in this track already opened by the user (localStorage).
+   *  We say "opened" rather than "read" because the count is incremented when
+   *  the user clicks to open the link — a click is not a read. */
   readCount?: number
 }
 
@@ -83,7 +85,7 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount, r
             }}
           >
             {hasProgress
-              ? `${readCount}/${articleCount} read`
+              ? `${readCount}/${articleCount} opened`
               : `${articleCount} ${articleCount === 1 ? 'article' : 'articles'}`}
           </Typography>
         </Box>
@@ -113,13 +115,13 @@ export const TrackHeader: React.FC<TrackHeaderProps> = ({ track, articleCount, r
           {meta.description}
         </Typography>
 
-        {/* Progress bar — shown only when user has read at least one */}
+        {/* Progress bar — shown only when the user has opened at least one */}
         {hasProgress && (
           <Box sx={{ mt: 1.5, maxWidth: 360 }}>
             <LinearProgress
               variant="determinate"
               value={progressPct}
-              aria-label={`${progressPct}% of ${meta.title} track read`}
+              aria-label={`${progressPct}% of ${meta.title} track opened`}
               sx={{
                 height: 6,
                 borderRadius: 3,

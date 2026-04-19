@@ -370,15 +370,18 @@ export const ReferenceArticlesPage: React.FC = () => {
 
       <FloatingManaSymbols />
 
-      {/* Sticky progress chip — Sarah ask: "I want my running 📚 N/48 read count
-          visible from any scroll position, not just the hero". Sits just under
-          the site header; hidden when no progress yet to keep the hero clean
-          for new visitors. Fades in on first read-action via MUI's mount
-          transitions (no JS scroll listener — we lean on CSS `position:sticky`
-          so it respects `prefers-reduced-motion`). */}
+      {/* Sticky progress chip — Sarah ask: "I want my running N/48 count
+          visible from any scroll position, not just the hero". Sits just
+          under the site header; hidden when no progress yet to keep the
+          hero clean for new visitors.
+          NOTE on wording: we say "opened" not "read". The hook tracks a
+          click on the article-open button (or a manual toggle), neither
+          of which proves the user actually read the piece. "Opened" is
+          honest about what we measure. The internal API stays
+          `readCount` / `isRead` to avoid a storage migration. */}
       {progress.readCount > 0 && (
         <Box
-          aria-label={`You have read ${progress.readCount} of ${totalCount} articles in the Library`}
+          aria-label={`You have opened ${progress.readCount} of ${totalCount} articles in the Library`}
           sx={{
             position: 'sticky',
             top: 72, // clears the site header
@@ -391,7 +394,7 @@ export const ReferenceArticlesPage: React.FC = () => {
         >
           <Chip
             icon={<AutoStoriesIcon sx={{ fontSize: 16 }} />}
-            label={`${progress.readCount}/${totalCount} read${
+            label={`${progress.readCount}/${totalCount} opened${
               progress.bookmarkCount > 0 ? ` · 🔖 ${progress.bookmarkCount} saved` : ''
             }`}
             color="primary"
@@ -508,13 +511,6 @@ export const ReferenceArticlesPage: React.FC = () => {
             >
               What's new
             </Button>
-            {progress.readCount + progress.bookmarkCount > 0 && (
-              <Chip
-                label={`📚 ${progress.readCount} read · 🔖 ${progress.bookmarkCount} saved`}
-                variant="outlined"
-                sx={{ fontWeight: 600, borderColor: 'primary.main', color: 'primary.main' }}
-              />
-            )}
           </Stack>
 
           {/* Stats */}
@@ -539,6 +535,100 @@ export const ReferenceArticlesPage: React.FC = () => {
           </Stack>
         </Box>
       </AnimatedContainer>
+
+      {/* =============== Section TOC — "what's on this page" ===============
+          Tester feedback (2026-04-19): on first scroll, users land on
+          "What's new" or the Reading Tracks and assume that's the whole
+          page — they miss "Browse by Topic" entirely. Especially true on
+          mobile where everything stacks vertically. This chip-row makes
+          the page structure visible at first glance without hiding any
+          content. Hidden during active search to reduce noise. */}
+      {!query && !anyFilterActive && (
+        <Box
+          role="navigation"
+          aria-label="Library page sections"
+          sx={{
+            mb: 4,
+            display: 'flex',
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 1,
+              ...(isMobile && {
+                overflowX: 'auto',
+                flexWrap: 'nowrap',
+                justifyContent: 'flex-start',
+                pb: 1,
+                px: 1,
+                width: '100%',
+                scrollSnapType: 'x mandatory',
+                '& > *': { scrollSnapAlign: 'start' },
+              }),
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 700,
+                letterSpacing: 1,
+                textTransform: 'uppercase',
+                alignSelf: 'center',
+                fontSize: '0.7rem',
+                mr: 0.5,
+                flexShrink: 0,
+              }}
+            >
+              On this page →
+            </Typography>
+            {[
+              { id: 'whats-new', emoji: '🆕', label: "What's new" },
+              { id: 'track-first-fnm', emoji: '🎓', label: 'Start Here' },
+              { id: 'reading-tracks', emoji: '📚', label: 'Reading Paths' },
+              { id: 'browse-by-topic', emoji: '🔍', label: 'Browse by Topic' },
+            ].map((section) => (
+              <Chip
+                key={section.id}
+                component="a"
+                href={`#${section.id}`}
+                clickable
+                variant="outlined"
+                label={
+                  <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <Box component="span" aria-hidden="true" sx={{ mr: 0.5 }}>
+                      {section.emoji}
+                    </Box>
+                    {section.label}
+                  </Box>
+                }
+                sx={{
+                  fontWeight: 600,
+                  height: 32,
+                  textDecoration: 'none',
+                  flexShrink: 0,
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  transition: 'all 0.2s ease',
+                  '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    transform: 'translateY(-1px)',
+                  },
+                }}
+              />
+            ))}
+          </Stack>
+        </Box>
+      )}
 
       {/* ============== Global search-result banner (when active) ============== */}
       {(query || anyFilterActive) && (
@@ -786,7 +876,7 @@ export const ReferenceArticlesPage: React.FC = () => {
                         sx={{ fontSize: '0.7rem' }}
                       >
                         {article.readingTimeMin} min read
-                        {progress.isRead(article.id) ? ' · ✅ read' : ''}
+                        {progress.isRead(article.id) ? ' · ✅ opened' : ''}
                       </Typography>
                     )}
                   </Box>
@@ -811,7 +901,7 @@ export const ReferenceArticlesPage: React.FC = () => {
       )}
 
       {/* ================== Reading tracks (5 tracks) ================== */}
-      <Box sx={{ mb: 6, position: 'relative', zIndex: 1 }}>
+      <Box id="reading-tracks" sx={{ mb: 6, position: 'relative', zIndex: 1, scrollMarginTop: 80 }}>
         <Box
           sx={{
             textAlign: 'center',
@@ -970,7 +1060,7 @@ export const ReferenceArticlesPage: React.FC = () => {
       </Box>
 
       {/* ================== Browse by topic ================== */}
-      <Box sx={{ position: 'relative', zIndex: 1 }}>
+      <Box id="browse-by-topic" sx={{ position: 'relative', zIndex: 1, scrollMarginTop: 80 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography
             variant="overline"
@@ -997,153 +1087,193 @@ export const ReferenceArticlesPage: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Primary filter: category */}
+        {/* Filter toolbar — card-wrapped so it doesn't blur into article
+            grids on fast scroll. Tester feedback (2026-04-19): "les parties
+            filtre pourraient être mises plus en évidence (ceux de Browse by
+            topic ne sont pas très visibles si on scroll trop rapidement)".
+            Gives the chips a clear container without boxing them in heavy
+            chrome — soft border + 3% tint reads as "panel of controls". */}
         <Box
-          role="toolbar"
-          aria-label="Filter articles by category"
           sx={{
-            display: 'flex',
-            gap: 1,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            mb: 2,
-            alignItems: 'center',
-          }}
-        >
-          <FilterAltIcon sx={{ color: 'text.secondary', fontSize: 18 }} aria-hidden="true" />
-          <Chip
-            label="All"
-            onClick={() => updateParam('cat', null)}
-            color={filter === 'all' ? 'primary' : 'default'}
-            variant={filter === 'all' ? 'filled' : 'outlined'}
-            aria-pressed={filter === 'all'}
-            sx={{ fontWeight: 600 }}
-          />
-          {CATEGORY_ORDER.map((cat) => (
-            <Chip
-              key={cat}
-              label={CATEGORY_LABELS[cat]}
-              onClick={() => updateParam('cat', cat)}
-              color={filter === cat ? 'primary' : 'default'}
-              variant={filter === cat ? 'filled' : 'outlined'}
-              aria-pressed={filter === cat}
-              sx={{ fontWeight: 600 }}
-            />
-          ))}
-        </Box>
-
-        {/* Secondary filters: level, language, medium (compact row) */}
-        <Box
-          role="toolbar"
-          aria-label="Advanced filters"
-          sx={{
-            display: 'flex',
-            gap: 0.75,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
+            p: { xs: 2, sm: 2.5 },
             mb: 3,
-            alignItems: 'center',
-            fontSize: '0.78rem',
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: isDark ? 'rgba(14,104,171,0.35)' : 'rgba(14,104,171,0.18)',
+            backgroundColor: isDark ? 'rgba(14,104,171,0.06)' : 'rgba(14,104,171,0.03)',
           }}
         >
-          <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}>
-            Level:
-          </Typography>
-          {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((lvl) => (
-            <Chip
-              key={lvl}
-              size="small"
-              label={lvl === 'all' ? 'Any' : LEVEL_LABEL[lvl]}
-              onClick={() => updateParam('level', lvl === 'all' ? null : lvl)}
-              variant={levelFilter === lvl ? 'filled' : 'outlined'}
-              color={levelFilter === lvl ? 'primary' : 'default'}
-              aria-pressed={levelFilter === lvl}
-              sx={{ height: 24, fontSize: '0.7rem' }}
-            />
-          ))}
-
-          <Box sx={{ width: 12 }} />
-
-          <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}>
-            Language:
-          </Typography>
-          {(['all', 'en', 'fr', 'jp', 'multi'] as const).map((lg) => (
-            <Chip
-              key={lg}
-              size="small"
-              label={lg === 'all' ? 'Any' : LANGUAGE_LABEL[lg]}
-              onClick={() => updateParam('lang', lg === 'all' ? null : lg)}
-              variant={langFilter === lg ? 'filled' : 'outlined'}
-              color={langFilter === lg ? 'primary' : 'default'}
-              aria-pressed={langFilter === lg}
-              sx={{ height: 24, fontSize: '0.7rem' }}
-            />
-          ))}
-
-          <Box sx={{ width: 12 }} />
-
-          <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}>
-            Format:
-          </Typography>
-          {(['all', 'article', 'article-series', 'video', 'podcast', 'pdf'] as const).map((md) => (
-            <Chip
-              key={md}
-              size="small"
-              label={md === 'all' ? 'Any' : MEDIUM_LABEL[md]}
-              onClick={() => updateParam('medium', md === 'all' ? null : md)}
-              variant={mediumFilter === md ? 'filled' : 'outlined'}
-              color={mediumFilter === md ? 'primary' : 'default'}
-              aria-pressed={mediumFilter === md}
-              sx={{ height: 24, fontSize: '0.7rem' }}
-            />
-          ))}
-
-          {anyFilterActive && (
-            <>
-              <Box sx={{ width: 12 }} />
-              <Button
-                size="small"
-                onClick={clearAllFilters}
-                startIcon={<RestartAltIcon sx={{ fontSize: 14 }} />}
-                sx={{
-                  textTransform: 'none',
-                  fontSize: '0.72rem',
-                  color: 'text.secondary',
-                  '&:hover': { color: 'primary.main' },
-                }}
-              >
-                Clear filters
-              </Button>
-            </>
-          )}
-
-          {/* Copy as Markdown — Karim ask: paste the current filtered view
-              into Discord / Slack / a pod chat without leaving the tool.
-              Works on the full library when no filter is active. */}
-          <Box sx={{ width: 12 }} />
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={copyCurrentAsMarkdown}
-            startIcon={<ContentCopyIcon sx={{ fontSize: 14 }} />}
-            aria-label={
-              anyFilterActive
-                ? 'Copy filtered articles as Markdown'
-                : 'Copy full library as Markdown'
-            }
+          {/* Primary filter: category */}
+          <Box
+            role="toolbar"
+            aria-label="Filter articles by category"
             sx={{
-              textTransform: 'none',
-              fontSize: '0.72rem',
-              borderColor: 'primary.main',
-              color: 'primary.main',
-              '&:hover': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-              },
+              display: 'flex',
+              gap: 1,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              mb: 2,
+              alignItems: 'center',
             }}
           >
-            Copy as Markdown
-          </Button>
+            <FilterAltIcon sx={{ color: 'primary.main', fontSize: 18 }} aria-hidden="true" />
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'primary.main',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+                fontSize: '0.7rem',
+                mr: 0.5,
+              }}
+            >
+              Filters
+            </Typography>
+            <Chip
+              label="All"
+              onClick={() => updateParam('cat', null)}
+              color={filter === 'all' ? 'primary' : 'default'}
+              variant={filter === 'all' ? 'filled' : 'outlined'}
+              aria-pressed={filter === 'all'}
+              sx={{ fontWeight: 600 }}
+            />
+            {CATEGORY_ORDER.map((cat) => (
+              <Chip
+                key={cat}
+                label={CATEGORY_LABELS[cat]}
+                onClick={() => updateParam('cat', cat)}
+                color={filter === cat ? 'primary' : 'default'}
+                variant={filter === cat ? 'filled' : 'outlined'}
+                aria-pressed={filter === cat}
+                sx={{ fontWeight: 600 }}
+              />
+            ))}
+          </Box>
+
+          {/* Secondary filters: level, language, medium (compact row) */}
+          <Box
+            role="toolbar"
+            aria-label="Advanced filters"
+            sx={{
+              display: 'flex',
+              gap: 0.75,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontSize: '0.78rem',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            >
+              Level:
+            </Typography>
+            {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((lvl) => (
+              <Chip
+                key={lvl}
+                size="small"
+                label={lvl === 'all' ? 'Any' : LEVEL_LABEL[lvl]}
+                onClick={() => updateParam('level', lvl === 'all' ? null : lvl)}
+                variant={levelFilter === lvl ? 'filled' : 'outlined'}
+                color={levelFilter === lvl ? 'primary' : 'default'}
+                aria-pressed={levelFilter === lvl}
+                sx={{ height: 24, fontSize: '0.7rem' }}
+              />
+            ))}
+
+            <Box sx={{ width: 12 }} />
+
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            >
+              Language:
+            </Typography>
+            {(['all', 'en', 'fr', 'jp', 'multi'] as const).map((lg) => (
+              <Chip
+                key={lg}
+                size="small"
+                label={lg === 'all' ? 'Any' : LANGUAGE_LABEL[lg]}
+                onClick={() => updateParam('lang', lg === 'all' ? null : lg)}
+                variant={langFilter === lg ? 'filled' : 'outlined'}
+                color={langFilter === lg ? 'primary' : 'default'}
+                aria-pressed={langFilter === lg}
+                sx={{ height: 24, fontSize: '0.7rem' }}
+              />
+            ))}
+
+            <Box sx={{ width: 12 }} />
+
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            >
+              Format:
+            </Typography>
+            {(['all', 'article', 'article-series', 'video', 'podcast', 'pdf'] as const).map(
+              (md) => (
+                <Chip
+                  key={md}
+                  size="small"
+                  label={md === 'all' ? 'Any' : MEDIUM_LABEL[md]}
+                  onClick={() => updateParam('medium', md === 'all' ? null : md)}
+                  variant={mediumFilter === md ? 'filled' : 'outlined'}
+                  color={mediumFilter === md ? 'primary' : 'default'}
+                  aria-pressed={mediumFilter === md}
+                  sx={{ height: 24, fontSize: '0.7rem' }}
+                />
+              )
+            )}
+
+            {anyFilterActive && (
+              <>
+                <Box sx={{ width: 12 }} />
+                <Button
+                  size="small"
+                  onClick={clearAllFilters}
+                  startIcon={<RestartAltIcon sx={{ fontSize: 14 }} />}
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '0.72rem',
+                    color: 'text.secondary',
+                    '&:hover': { color: 'primary.main' },
+                  }}
+                >
+                  Clear filters
+                </Button>
+              </>
+            )}
+
+            {/* Copy as Markdown — Karim ask: paste the current filtered view
+              into Discord / Slack / a pod chat without leaving the tool.
+              Works on the full library when no filter is active. */}
+            <Box sx={{ width: 12 }} />
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={copyCurrentAsMarkdown}
+              startIcon={<ContentCopyIcon sx={{ fontSize: 14 }} />}
+              aria-label={
+                anyFilterActive
+                  ? 'Copy filtered articles as Markdown'
+                  : 'Copy full library as Markdown'
+              }
+              sx={{
+                textTransform: 'none',
+                fontSize: '0.72rem',
+                borderColor: 'primary.main',
+                color: 'primary.main',
+                '&:hover': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                },
+              }}
+            >
+              Copy as Markdown
+            </Button>
+          </Box>
         </Box>
 
         {/* Result count */}
@@ -1238,7 +1368,7 @@ export const ReferenceArticlesPage: React.FC = () => {
             Your Library Progress
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {progress.readCount} article{progress.readCount === 1 ? '' : 's'} read ·{' '}
+            {progress.readCount} article{progress.readCount === 1 ? '' : 's'} opened ·{' '}
             {progress.bookmarkCount} bookmarked. Stored on this device only —{' '}
             <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
               nothing leaves your browser
@@ -1251,7 +1381,7 @@ export const ReferenceArticlesPage: React.FC = () => {
             onClick={() => {
               if (
                 window.confirm(
-                  'Reset your reading progress? This clears read + bookmark state on this device.'
+                  'Reset your Library progress? This clears your opened + bookmarked state on this device.'
                 )
               ) {
                 progress.reset()

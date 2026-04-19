@@ -438,7 +438,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Personal actions: bookmark + copy-link + read toggle */}
+          {/* Personal actions: bookmark + copy-link + opened toggle */}
           {onToggleBookmark && (
             <Tooltip title={isBookmarked ? 'Remove bookmark' : 'Bookmark this article'} arrow>
               <IconButton
@@ -480,11 +480,11 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
           </Tooltip>
 
           {onToggleRead && (
-            <Tooltip title={isRead ? 'Mark as unread' : 'Mark as read'} arrow>
+            <Tooltip title={isRead ? 'Mark as not opened' : 'Mark as opened'} arrow>
               <IconButton
                 size="small"
                 onClick={() => onToggleRead(article.id)}
-                aria-label={isRead ? 'Mark article as unread' : 'Mark article as read'}
+                aria-label={isRead ? 'Mark article as not opened' : 'Mark article as opened'}
                 aria-pressed={isRead}
                 sx={{ p: 0.25, color: isRead ? 'success.main' : 'text.secondary' }}
               >
@@ -499,7 +499,7 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
         </Box>
       </CardContent>
 
-      {/* Action: read article */}
+      {/* Action: open article */}
       <Box sx={{ p: 2, pt: 0 }}>
         {isDisabled ? (
           <Button
@@ -518,8 +518,10 @@ const ArticleCardComponent: React.FC<ArticleCardProps> = ({
             target="_blank"
             rel="noopener noreferrer nofollow"
             onClick={() => {
-              // Auto-mark as read when the user actually opens the article
-              // (one-way — they can always toggle it off later)
+              // Auto-mark as "opened" when the user clicks to open the link.
+              // We surface this in the UI as "opened" (not "read") because a
+              // click is not a read — see useLibraryProgress sticky-chip note.
+              // One-way mark — they can always toggle it off via the check icon.
               if (onToggleRead && !isRead) onToggleRead(article.id)
             }}
             fullWidth
