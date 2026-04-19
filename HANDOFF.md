@@ -1,10 +1,106 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — v2.7.1 live · Library filter UX tightened via 3-commit tester loop (2026-04-19)
+## Project Status: PRODUCTION — v2.7.1 shipped (commit `2ca4b67`) · 14-agent audit P0 bundle live (2026-04-19 evening)
 
-**Latest Session:** 2026-04-19 — Three rapid commits on `/library` driven by external tester Aimdeh (Discord screenshots, non-tech MTG player). First round (`6568c66`) bumped chip sizes; tester said "un peu mieux oui" — creator flagged the plateau. Second round (`c5c621a`, `ux-designer` delegation) shipped a visual-language shift: `ToggleButtonGroup` segmented controls for Level/Language/Format, `Paper elevation={2}` filter container, TOC as card-tiles, `What's new` TOC doublon removed. Tester: "Ah oui bien plus clair comme ça." Third round (`90fc178`) fixed a hierarchy inversion (ToggleButtonGroup h36 out-weighing Category chips h32) by bumping primary Category chips to h40 / 0.92rem. Final tier order: Category (h40) > Level/Lang/Format (h36) > card meta badges (h22) — three tiers, unambiguous. **No semver bump (UI polish). Version stays `2.7.1`. Tests unchanged. A11y net-improved (aria-label on each ToggleButtonGroup — was missing before).**
+**Latest Session:** 2026-04-19 (evening) — Ultra-complete 14-agent audit (1 context + 6 personas whole-site + 6 technical + 2 strategic) + P0 execution + ship. Persona mean **3.63 → 3.99 (+0.36)**; Leo flagged as **-0.12 launch blocker** and treated in-session. 24 files touched, +1 323 / -2 199 lines net (-876, 3 dead hooks = -942 L). Committed + pushed on `main` as `2ca4b67` → Vercel auto-deploy. SSOT_DIVERGENCE explicitly deferred to v2.8 (7 versions open now).
 
-**Previous Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) follows with a full site-audit sweep (new `scripts/full-site-audit.mjs`) and two link-rot fixes on live Commander content (Command Zone podcast → Apple Podcasts; Game Knights channel renamed `@CommandZone`). Plus `tools/launch-preview.html` — local single-file HTML that previews the 3 launch posts (X EN, Discord FR, FB MTGA fr) with one-click copy. **Tests: 332/332 pass (+17 new in `libraryHelpers.test.ts`). Build: ~9 s clean. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+**Previous Session:** 2026-04-19 (afternoon) — Three rapid commits on `/library` driven by external tester Aimdeh (Discord screenshots, non-tech MTG player). First round (`6568c66`) bumped chip sizes; tester said "un peu mieux oui" — creator flagged the plateau. Second round (`c5c621a`, `ux-designer` delegation) shipped a visual-language shift: `ToggleButtonGroup` segmented controls for Level/Language/Format, `Paper elevation={2}` filter container, TOC as card-tiles, `What's new` TOC doublon removed. Tester: "Ah oui bien plus clair comme ça." Third round (`90fc178`) fixed a hierarchy inversion (ToggleButtonGroup h36 out-weighing Category chips h32) by bumping primary Category chips to h40 / 0.92rem. Final tier order: Category (h40) > Level/Lang/Format (h36) > card meta badges (h22). **No semver bump (UI polish). Version stayed `2.7.1` then. Tests unchanged. A11y net-improved.**
+
+**Pre-previous Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) followed with a full site-audit sweep + link-rot fixes on Commander content. Plus `tools/launch-preview.html`. **Tests: 332/332 pass. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+
+---
+
+## Session 2026-04-19 (evening) — 14-agent audit ultra-complet + P0 ship (`2ca4b67`)
+
+Creator asked for "l'etude la plus complete que tu peux" after several evolutions. Followed the parallel multi-agent pattern (`feedback_parallel_audit_workflow`) at maximum scale: **15 agents across 3 waves** (1 context-manager + 6 ux-designer personas + 6 technical + 2 strategic). After synthesis, creator said "fais tout" → `feedback_judgment_on_scope` pattern applied (execute safe + Progressive Disclosure + P1-safe architectural, defer risky refactors explicitly).
+
+### Audit phase — persona scores 2026-04-19 (baseline v2.5.4 whole-site 2026-04-18)
+
+| Persona              | Baseline | New      | Δ         | Signal                                                                |
+| -------------------- | -------- | -------- | --------- | --------------------------------------------------------------------- |
+| Leo (Curieux)        | 3.84     | **3.72** | **-0.12** | **Launch blocker**. Library V3 chips/BibTeX/Curator's Note intimident |
+| Sarah (Régulière)    | 4.71     | **4.75** | +0.04     | ICP plateau. Shares to 3/4 FNM potes                                  |
+| Karim (Tacticien)    | 4.05     | **4.20** | +0.15     | Poste Discord RCQ privé avec caveat SSOT                              |
+| Natsuki (Grinder)    | 2.85     | **3.35** | **+0.50** | BibTeX = WOW. No API = ceiling                                        |
+| David (Architecte)   | 3.75     | **3.95** | +0.20     | Repo star + thread avec caveat                                        |
+| Thibault (Capitaine) | 2.56     | **3.95** | **+1.39** | Partage pod Discord ce soir                                           |
+| **Moyenne**          | **3.63** | **3.99** | **+0.36** | —                                                                     |
+
+### Execution phase (P0 + P0-b + P1-safe shipped)
+
+**Privacy / legal**:
+
+- `PrivacySettings.tsx:197-209` — "Nothing is sent to any server" → factual 4-item list (GDPR-safe, covers Scryfall disclose)
+- `SEO.tsx:66-74` — JSON-LD `replace(/</g, '\\u003c')` defense-in-depth
+
+**Version triad sync**:
+
+- `package.json`: 2.7.0 → **2.7.1**
+- `README.md`: badge 2.6.0 → 2.7.1, Tests 315 → 332, Library 48 → 54, add `/library/:slug` + `/library/author/:slug` mention
+- `CHANGELOG.md`: backfilled [2.7.0] + [2.7.1] blocks (Keep-a-Changelog)
+- `types/referenceArticle.ts:207-213` — stale comment lying about Commander preset status → truth
+
+**Leo Progressive Disclosure** (the launch-blocker treatment):
+
+- `HomePage.tsx:275` — "Works for every skill level…" → **"Dorks = mana creatures. Rocks = mana artifacts. We count both."** (translates H1 jargon in-block)
+- `ReferenceArticlesPage.tsx:454-470` — new italic line _"New to MTG? Start with the Your First FNM track — zero jargon."_ directly below Karsten→Saito subtitle (canon positioning untouched)
+- `ArticleDetailPage.tsx:237-269` — `level !== 'beginner'` gates secondaryCategories + level + medium chips (beginner sees Category only)
+- `ArticleDetailPage.tsx:378-394` — `level !== 'beginner'` gates BibTeX button (beginner sees Copy-link only)
+- `AnalyzerPage.tsx:816,839` — "Midrange Combo" → **"Gruul Midrange (Nature's Rhythm)"**, "Commander (EDH)" → **"Atraxa Superfriends (Commander)"**
+
+**ErrorBoundary coverage**:
+
+- `App.tsx:190-215` — 3 Library routes wrapped with `label="Library.Index" | "Library.Article" | "Library.Author"` for Sentry grouping (dormant but ready if re-enabled)
+
+**Architectural safe-wins (P1)**:
+
+- `acceleratedAnalyticEngine.ts:28,757,810,823` — 3 `new Hypergeom(...)` sites replaced with imported singleton `hypergeom`. Was flagged by `performance-engineer` + `react-pro`: engine was allocating ~40 KB `Float64Array` per `ManaCostRow` render, ignoring the dynamic singleton. Singleton self-manages capacity via `ensureCapacity` called inside `pmf`/`atLeast`.
+- **942 lines of dead hooks purged**: `useAdvancedAnalysis.ts` (339L), `useManaCalculations.ts` (302L), `useWebWorker.ts` (301L). Zero consumers externally (grep-verified).
+- `@mui/x-charts` uninstalled (dead dep, zero imports in `src/`)
+- `cardsSeen` dead var removed (`acceleratedAnalyticEngine.ts:381`)
+- `deckList` dead prop removed from `CastabilityTab` + `ManabaseTab` + their 2 callers
+
+**Prerender SEO unlock**:
+
+- `scripts/prerender.mjs` — added esbuild-based seed loader, dynamic route computation: 8 static + **54 articles** + **27 authors** = **89 routes prerendered** (was 7). Google/Discord/Twitter rich previews unlocked for `/library/:slug` and `/library/author/:slug`.
+
+### Validation
+
+- `npm run type-check`: silent pass, 0 errors
+- `npm run lint`: **25 warnings** (down from 32, **-7**), 0 errors
+- `npm run test:unit`: **332/334 pass**, 2 skipped intentional, **0 fails** (singleton hypergeom refactor didn't break engine)
+- `npm run build`: 42.35s, pipeline complete, feeds/sitemap/library.json regenerated (54 articles)
+- Dev smoke: 7/7 routes 200 including new `/library/karsten-how-many-lands-2022` and `/library/author/frank-karsten`
+
+### Deferred explicitly to v2.8 (bucket 3 — risky refactors)
+
+1. **SSOT_DIVERGENCE** (`ManaCostRow.useProbabilityCalculation` vs engine) — **7 versions open now**. React-pro proposed concrete fix (6-10h + parity test + persona re-read). Noted in CHANGELOG v2.7.1 "Deferred". Creator must commit-or-retire this TODO in v2.8 (don't let it reach v2.9).
+2. **Split `ReferenceArticlesPage.tsx` 1678 L** — 5 sub-components + 1 pure fn. Extraction plan with exact line boundaries in react-pro audit.
+3. **`noUncheckedIndexedAccess: true`** — typescript-pro estimates 20-50 errors to fix, codebase ~70% ready.
+4. **Commander preset E2E + `ArticleDetailPage`/`AuthorPage` unit tests** (qa-expert P0-a/b) — integrate with SSOT PR or ship v2.7.2.
+
+### Files touched (final commit `2ca4b67`)
+
+```
+M CHANGELOG.md, README.md, package-lock.json, package.json
+M public/{library.json, library/feed.xml, sitemap.xml}   (regenerated by prebuild)
+M scripts/prerender.mjs
+M src/App.tsx
+M src/components/{PrivacySettings.tsx, common/SEO.tsx}
+M src/components/analyzer/{CastabilityTab.tsx, ManabaseTab.tsx, ManabaseFullTab.tsx}
+M src/pages/{AnalyzerPage.tsx, ArticleDetailPage.tsx, HomePage.tsx, ReferenceArticlesPage.tsx}
+M src/services/castability/acceleratedAnalyticEngine.ts
+M src/types/referenceArticle.ts
+M sub-agents/context/context-manager.json
+D src/hooks/{useAdvancedAnalysis.ts, useManaCalculations.ts, useWebWorker.ts}
+```
+
+### Next session priority
+
+1. **Monitor Vercel auto-deploy of `2ca4b67`** — should be live within 5 min of push. Verify `manatuner.app/library/karsten-how-many-lands-2022` returns 200 with prerendered HTML (look for `<!-- prerendered -->` marker in view-source).
+2. **Creator action LAUNCH.md P1** — tweet @fireshoes cette semaine with screenshot Castability of one of his 5-0 MTGO decklists. Library = proof-of-seriousness in bio, not the hook.
+3. **Solo Leo re-audit** via single `ux-designer` call 48-72h after deploy — validate 3.72 → ≥ 4.05 on Library scope (falsifiable: did the beginner on-ramp + conditional chips/BibTeX clear the regression?). If < 3.95, iterate on copy, not design.
+4. **v2.8 scope decision** — commit SSOT_DIVERGENCE fix OR retire the TODO flag from CLAUDE.md. Don't let another audit flag it unresolved.
 
 ---
 
