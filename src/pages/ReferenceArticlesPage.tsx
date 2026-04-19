@@ -1138,7 +1138,13 @@ export const ReferenceArticlesPage: React.FC = () => {
           }}
         >
           {/* Primary filter: category (stays as chips — 10 values, flex-wrap
-              required, already unambiguous with filled selected state) */}
+              required, already unambiguous with filled selected state).
+              Sized up 2026-04-19 (Aimdeh: "les filtres de section pourraient
+              être aggrandis aussi") so the primary row visually out-weighs
+              the secondary segmented controls below — height 40 + 0.92rem
+              vs secondary ~36 + 0.82rem reasserts "category first, refine
+              after". Border thickened to 1.5 px on outlined state so
+              unselected chips still read as controls. */}
           <Box
             role="toolbar"
             aria-label="Filter articles by category"
@@ -1151,7 +1157,7 @@ export const ReferenceArticlesPage: React.FC = () => {
               alignItems: 'center',
             }}
           >
-            <FilterAltIcon sx={{ color: 'primary.main', fontSize: 18 }} aria-hidden="true" />
+            <FilterAltIcon sx={{ color: 'primary.main', fontSize: 20 }} aria-hidden="true" />
             <Typography
               variant="caption"
               sx={{
@@ -1159,8 +1165,8 @@ export const ReferenceArticlesPage: React.FC = () => {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: 1,
-                fontSize: '0.7rem',
-                mr: 0.5,
+                fontSize: '0.78rem',
+                mr: 0.75,
               }}
             >
               Category
@@ -1171,7 +1177,13 @@ export const ReferenceArticlesPage: React.FC = () => {
               color={filter === 'all' ? 'primary' : 'default'}
               variant={filter === 'all' ? 'filled' : 'outlined'}
               aria-pressed={filter === 'all'}
-              sx={{ fontWeight: 600 }}
+              sx={{
+                fontWeight: filter === 'all' ? 700 : 600,
+                fontSize: '0.92rem',
+                height: 40,
+                px: 0.5,
+                borderWidth: filter === 'all' ? 1 : 1.5,
+              }}
             />
             {CATEGORY_ORDER.map((cat) => (
               <Chip
@@ -1181,7 +1193,13 @@ export const ReferenceArticlesPage: React.FC = () => {
                 color={filter === cat ? 'primary' : 'default'}
                 variant={filter === cat ? 'filled' : 'outlined'}
                 aria-pressed={filter === cat}
-                sx={{ fontWeight: 600 }}
+                sx={{
+                  fontWeight: filter === cat ? 700 : 600,
+                  fontSize: '0.92rem',
+                  height: 40,
+                  px: 0.5,
+                  borderWidth: filter === cat ? 1 : 1.5,
+                }}
               />
             ))}
           </Box>
