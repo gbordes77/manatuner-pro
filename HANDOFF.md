@@ -1,8 +1,76 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — v2.7.0 Library V3 + v2.7.1 link-rot fix shipped, launch comms prepared
+## Project Status: PRODUCTION — v2.7.1 live · Library filter UX tightened via 3-commit tester loop (2026-04-19)
 
-**Latest Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) follows with a full site-audit sweep (new `scripts/full-site-audit.mjs`) and two link-rot fixes on live Commander content (Command Zone podcast → Apple Podcasts; Game Knights channel renamed `@CommandZone`). Plus `tools/launch-preview.html` — local single-file HTML that previews the 3 launch posts (X EN, Discord FR, FB MTGA fr) with one-click copy. **Tests: 332/332 pass (+17 new in `libraryHelpers.test.ts`). Build: ~9 s clean. Version: `2.7.0`. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+**Latest Session:** 2026-04-19 — Three rapid commits on `/library` driven by external tester Aimdeh (Discord screenshots, non-tech MTG player). First round (`6568c66`) bumped chip sizes; tester said "un peu mieux oui" — creator flagged the plateau. Second round (`c5c621a`, `ux-designer` delegation) shipped a visual-language shift: `ToggleButtonGroup` segmented controls for Level/Language/Format, `Paper elevation={2}` filter container, TOC as card-tiles, `What's new` TOC doublon removed. Tester: "Ah oui bien plus clair comme ça." Third round (`90fc178`) fixed a hierarchy inversion (ToggleButtonGroup h36 out-weighing Category chips h32) by bumping primary Category chips to h40 / 0.92rem. Final tier order: Category (h40) > Level/Lang/Format (h36) > card meta badges (h22) — three tiers, unambiguous. **No semver bump (UI polish). Version stays `2.7.1`. Tests unchanged. A11y net-improved (aria-label on each ToggleButtonGroup — was missing before).**
+
+**Previous Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) follows with a full site-audit sweep (new `scripts/full-site-audit.mjs`) and two link-rot fixes on live Commander content (Command Zone podcast → Apple Podcasts; Game Knights channel renamed `@CommandZone`). Plus `tools/launch-preview.html` — local single-file HTML that previews the 3 launch posts (X EN, Discord FR, FB MTGA fr) with one-click copy. **Tests: 332/332 pass (+17 new in `libraryHelpers.test.ts`). Build: ~9 s clean. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+
+---
+
+## Session 2026-04-19 — Library filter UX: 3-commit tester loop closes on 3-tier hierarchy
+
+External tester Aimdeh (non-tech, Discord) drove a tight feedback loop across three screenshots in a single afternoon. Final state: Category (h40) > Level/Language/Format (h36) > non-clickable card meta badges (h22). Chip vs ToggleButton vs card-tile — three shapes for three interactive roles, parseable at a glance.
+
+### Round 1 → `6568c66` (size bump — plateau)
+
+Tester: "les filtres et raccourcis de section sont un peu petits... de la même taille que article/archived/lost qui ne sont pas des boutons cliquables." Clickable controls leaking affordance because they visually matched non-clickable meta badges on article cards.
+
+Shipped:
+
+- TOC shortcuts: h32 → h38, fontSize 0.85rem, borderWidth 1.5, subtle primary tint at rest
+- Secondary filters (Level/Language/Format): `size="small"` dropped → h30 / 0.8rem / fontWeight 600
+- Primary Category chips: unchanged
+
+Tester reaction: **"Ça me paraît un peu mieux oui."** Creator: "si c est juste 'un peu mieux,' on doit pouvoir ameliorer ca." Signal: size paradigm at diminishing returns. Saved to memory as `feedback_un_peu_mieux_paradigm_shift.md` for future agents — mild tester validation after a size tweak = language-shift signal, not another pixel bump.
+
+### Round 2 → `c5c621a` (language shift — landed)
+
+Delegated to `ux-designer` with an explicit "ban size-only solutions, pick one confident move" brief. Agent shipped, one release:
+
+- **Secondary filters** (Level / Language / Format): outlined chips → `ToggleButtonGroup size="small"` segmented controls. One segment always selected (defaults to "Any"), uppercased row labels at 72 px min-width so all three rows align vertically. Physical-button-bar look = no chip/tag ambiguity.
+- **Filter container**: `Box` with 3 % tint → `Paper elevation={2}` with real shadow. Reads as "control panel", not decor.
+- **TOC shortcuts**: floating chips → CSS grid of card-tiles (emoji on top, label underneath, 2 px primary border, lift-on-hover). Feels like a map of the page.
+- **Dropped "What's new" TOC tile** — the "What's new" section sits directly below the TOC so the shortcut was a no-op doublon. Grid reflow 4 → 3 cols (Start Here · Reading Paths · Browse by Topic).
+
+Tester reaction: **"Ah oui bien plus clair comme ça. Les filtres de section pourraient être aggrandis aussi."** Language shift landed; tester caught a hierarchy inversion in the same sentence.
+
+### Round 3 → `90fc178` (hierarchy restored)
+
+Diagnosis: the new `ToggleButtonGroup` segments (h~36, 0.82rem, py 0.6) had become visually heavier than the primary Category chip row above them (default MUI Chip: h32, 0.8125rem). Primary looked secondary.
+
+Fixed by bumping Category chips, not shrinking the sub-filters:
+
+- height 32 → 40
+- fontSize 0.8125rem → 0.92rem
+- borderWidth 1 → 1.5 px when outlined (selected stays 1)
+- fontWeight 600 → 700 when filled
+- Category caption 0.7 → 0.78rem, icon 18 → 20 px
+
+Saved to memory as `feedback_verify_tier_hierarchy_after_new_control.md` — after any new MUI control lands, manually rank all interactive groups by weight; defaults can invert hierarchy silently.
+
+### Falsifiable axis (next Aimdeh round)
+
+Does he describe the segmented controls as **"boutons" / "barre de boutons"** unprompted (vs "chips" / "tags" / "filtres" generically)? If yes, the visual-language shift landed for good. If not, next move is filter-button + popover for Language / Format (compress low-frequency controls into a `Menu`, keep Level segmented).
+
+### Verification
+
+- Dev server HTTP 200 on `/library` after each of the 3 commits
+- Pre-commit hooks (eslint + prettier) passed cleanly on all 3
+- A11y contracts preserved — `role="toolbar"`, `role="navigation"`, `aria-pressed` on every toggle; `aria-label` added to each `ToggleButtonGroup` (net a11y improvement: screen-reader group labels were missing before)
+- Keyboard nav native via MUI `ToggleButtonGroup`
+
+### Files touched
+
+```
+M src/pages/ReferenceArticlesPage.tsx   (3 commits: 6568c66 size bump → c5c621a language shift → 90fc178 hierarchy restore)
+```
+
+No version bump (pure UI polish, no API/behavior change). Three memory files added (`feedback_un_peu_mieux_paradigm_shift.md`, `feedback_verify_tier_hierarchy_after_new_control.md`, plus `MEMORY.md` index updated).
+
+### Next session priority
+
+Unchanged from 2026-04-18: monitor 48h launch window, creator publishes the 3 launch posts (X locked, Discord + FB may iterate), watch `/library.json` hits from non-browser UA as the Natsuki-grinder-scripted-against-feed signal. C1 Command-zone simulation remains the highest-ROI engine win for Thibault.
 
 ---
 
