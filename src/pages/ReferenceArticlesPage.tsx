@@ -16,9 +16,12 @@ import {
   Container,
   Grid,
   InputAdornment,
+  Paper,
   Snackbar,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useMediaQuery,
   useTheme as useMuiTheme,
@@ -555,83 +558,98 @@ export const ReferenceArticlesPage: React.FC = () => {
             zIndex: 1,
           }}
         >
-          <Stack
-            direction="row"
-            spacing={1}
+          {/* TOC redesign (2026-04-19): tester Aimdeh read the previous chip
+              row as "just more tags", not navigation. This variant uses a
+              card-tile shape (emoji on top, label underneath) so the eye
+              reads it as page navigation — distinct from the article-card
+              meta chips (article/archived/lost, reading time, medium) which
+              are small inline text badges. Desktop: grid of 3 equal tiles
+              ("What's new" dropped 2026-04-19 — the section sits directly
+              below the TOC so the shortcut is a no-op doublon). Mobile:
+              horizontal scroll-snap preserved (Sarah's lunchtime scan on
+              phone). */}
+          <Box
             sx={{
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: 1,
+              width: '100%',
+              maxWidth: 880,
+              display: 'grid',
+              gridTemplateColumns: { xs: 'repeat(3, minmax(140px, 1fr))', sm: 'repeat(3, 1fr)' },
+              gap: { xs: 1, sm: 1.5 },
               ...(isMobile && {
                 overflowX: 'auto',
-                flexWrap: 'nowrap',
-                justifyContent: 'flex-start',
+                gridAutoFlow: 'column',
+                gridAutoColumns: 'minmax(140px, 1fr)',
+                gridTemplateColumns: 'unset',
                 pb: 1,
                 px: 1,
-                width: '100%',
                 scrollSnapType: 'x mandatory',
                 '& > *': { scrollSnapAlign: 'start' },
               }),
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'text.secondary',
-                fontWeight: 700,
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-                alignSelf: 'center',
-                fontSize: '0.7rem',
-                mr: 0.5,
-                flexShrink: 0,
-              }}
-            >
-              On this page →
-            </Typography>
             {[
-              { id: 'whats-new', emoji: '🆕', label: "What's new" },
               { id: 'track-first-fnm', emoji: '🎓', label: 'Start Here' },
               { id: 'reading-tracks', emoji: '📚', label: 'Reading Paths' },
               { id: 'browse-by-topic', emoji: '🔍', label: 'Browse by Topic' },
             ].map((section) => (
-              <Chip
+              <Box
                 key={section.id}
                 component="a"
                 href={`#${section.id}`}
-                clickable
-                variant="outlined"
-                label={
-                  <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <Box component="span" aria-hidden="true" sx={{ mr: 0.5 }}>
-                      {section.emoji}
-                    </Box>
-                    {section.label}
-                  </Box>
-                }
+                aria-label={`Jump to ${section.label}`}
                 sx={{
-                  fontWeight: 700,
-                  height: 38,
-                  fontSize: '0.85rem',
-                  px: 0.5,
-                  textDecoration: 'none',
-                  flexShrink: 0,
-                  borderWidth: 1.5,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 0.5,
+                  px: 1.5,
+                  py: 1.5,
+                  minHeight: 76,
+                  borderRadius: 2,
+                  border: '2px solid',
                   borderColor: 'primary.main',
+                  backgroundColor: isDark ? 'rgba(14,104,171,0.10)' : 'rgba(14,104,171,0.05)',
                   color: 'primary.main',
-                  backgroundColor: isDark ? 'rgba(14,104,171,0.08)' : 'rgba(14,104,171,0.04)',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: isDark
+                    ? '0 1px 0 rgba(255,255,255,0.03) inset, 0 2px 6px rgba(0,0,0,0.3)'
+                    : '0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(14,104,171,0.12)',
                   transition: 'all 0.2s ease',
                   '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
-                  '&:hover': {
+                  '&:hover, &:focus-visible': {
                     backgroundColor: 'primary.main',
                     color: 'white',
-                    transform: 'translateY(-1px)',
-                    borderColor: 'primary.main',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 14px rgba(14,104,171,0.35)',
+                    outline: 'none',
+                  },
+                  '&:focus-visible': {
+                    outline: `2px solid ${muiTheme.palette.primary.main}`,
+                    outlineOffset: 2,
                   },
                 }}
-              />
+              >
+                <Box component="span" aria-hidden="true" sx={{ fontSize: '1.6rem', lineHeight: 1 }}>
+                  {section.emoji}
+                </Box>
+                <Box
+                  component="span"
+                  sx={{
+                    fontSize: { xs: '0.78rem', sm: '0.85rem' },
+                    fontWeight: 700,
+                    letterSpacing: 0.2,
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {section.label}
+                </Box>
+              </Box>
             ))}
-          </Stack>
+          </Box>
         </Box>
       )}
 
@@ -1092,23 +1110,35 @@ export const ReferenceArticlesPage: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Filter toolbar — card-wrapped so it doesn't blur into article
-            grids on fast scroll. Tester feedback (2026-04-19): "les parties
-            filtre pourraient être mises plus en évidence (ceux de Browse by
-            topic ne sont pas très visibles si on scroll trop rapidement)".
-            Gives the chips a clear container without boxing them in heavy
-            chrome — soft border + 3% tint reads as "panel of controls". */}
-        <Box
+        {/* Filter toolbar — redesigned 2026-04-19 after tester Aimdeh said
+            the previous chip rows were only "un peu mieux" than the original.
+            Root cause was visual-language ambiguity: outlined chips for
+            filters read the same as non-clickable meta badges on article
+            cards (article / archived / lost). Fix:
+              1. Elevate the panel to a Paper (shadow) so it reads as "a
+                 control surface", not a tinted background region.
+              2. Keep Chips for the primary Category filter (10+ values,
+                 needs to wrap naturally, and one selected state is already
+                 clear because it flips to filled/primary).
+              3. Swap the 3 secondary filters (Level / Language / Format) to
+                 MUI ToggleButtonGroup segmented controls. A segmented control
+                 always has one selected option, reads as a physical button
+                 bar, and is unmistakeable for a tag. That's the visual-
+                 language shift the tester's eye was missing. */}
+        <Paper
+          elevation={isDark ? 3 : 2}
           sx={{
-            p: { xs: 2, sm: 2.5 },
+            p: { xs: 2, sm: 2.75 },
             mb: 3,
             borderRadius: 3,
             border: '1px solid',
-            borderColor: isDark ? 'rgba(14,104,171,0.35)' : 'rgba(14,104,171,0.18)',
-            backgroundColor: isDark ? 'rgba(14,104,171,0.06)' : 'rgba(14,104,171,0.03)',
+            borderColor: isDark ? 'rgba(14,104,171,0.45)' : 'rgba(14,104,171,0.22)',
+            backgroundColor: isDark ? 'rgba(14,104,171,0.09)' : '#ffffff',
+            backgroundImage: 'none',
           }}
         >
-          {/* Primary filter: category */}
+          {/* Primary filter: category (stays as chips — 10 values, flex-wrap
+              required, already unambiguous with filled selected state) */}
           <Box
             role="toolbar"
             aria-label="Filter articles by category"
@@ -1117,7 +1147,7 @@ export const ReferenceArticlesPage: React.FC = () => {
               gap: 1,
               flexWrap: 'wrap',
               justifyContent: 'center',
-              mb: 2,
+              mb: 2.5,
               alignItems: 'center',
             }}
           >
@@ -1133,7 +1163,7 @@ export const ReferenceArticlesPage: React.FC = () => {
                 mr: 0.5,
               }}
             >
-              Filters
+              Category
             </Typography>
             <Chip
               label="All"
@@ -1156,127 +1186,288 @@ export const ReferenceArticlesPage: React.FC = () => {
             ))}
           </Box>
 
-          {/* Secondary filters: level, language, medium (compact row) */}
+          {/* Secondary filters: segmented controls. Each row is a
+              ToggleButtonGroup with exclusive + required-selection semantics
+              ("Any" is always a valid selected state, not an absence). The
+              physical-button-bar look is the key move: no confusion with
+              article-card meta badges. */}
           <Box
             role="toolbar"
             aria-label="Advanced filters"
             sx={{
               display: 'flex',
-              gap: 0.75,
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: '0.78rem',
+              flexDirection: 'column',
+              gap: 1.25,
+              alignItems: { xs: 'stretch', sm: 'center' },
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            {/* Level */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                justifyContent: { xs: 'flex-start', sm: 'center' },
+              }}
             >
-              Level:
-            </Typography>
-            {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((lvl) => (
-              <Chip
-                key={lvl}
-                label={lvl === 'all' ? 'Any' : LEVEL_LABEL[lvl]}
-                onClick={() => updateParam('level', lvl === 'all' ? null : lvl)}
-                variant={levelFilter === lvl ? 'filled' : 'outlined'}
-                color={levelFilter === lvl ? 'primary' : 'default'}
-                aria-pressed={levelFilter === lvl}
-                sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
-              />
-            ))}
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontSize: '0.7rem',
+                  minWidth: 72,
+                }}
+              >
+                Level
+              </Typography>
+              <ToggleButtonGroup
+                value={levelFilter}
+                exclusive
+                onChange={(_, v: LevelFilter | null) => {
+                  if (v === null) return
+                  updateParam('level', v === 'all' ? null : v)
+                }}
+                size="small"
+                aria-label="Filter by level"
+                sx={{
+                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                  '& .MuiToggleButton-root': {
+                    textTransform: 'none',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    px: 1.75,
+                    py: 0.6,
+                    borderColor: isDark ? 'rgba(14,104,171,0.5)' : 'rgba(14,104,171,0.35)',
+                    color: 'text.primary',
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.main',
+                      color: 'white',
+                      fontWeight: 700,
+                      '&:hover': { backgroundColor: 'primary.dark' },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="all" aria-pressed={levelFilter === 'all'}>
+                  Any
+                </ToggleButton>
+                <ToggleButton value="beginner" aria-pressed={levelFilter === 'beginner'}>
+                  {LEVEL_LABEL.beginner}
+                </ToggleButton>
+                <ToggleButton value="intermediate" aria-pressed={levelFilter === 'intermediate'}>
+                  {LEVEL_LABEL.intermediate}
+                </ToggleButton>
+                <ToggleButton value="advanced" aria-pressed={levelFilter === 'advanced'}>
+                  {LEVEL_LABEL.advanced}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
 
-            <Box sx={{ width: 12 }} />
-
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            {/* Language */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                justifyContent: { xs: 'flex-start', sm: 'center' },
+              }}
             >
-              Language:
-            </Typography>
-            {(['all', 'en', 'fr', 'jp', 'multi'] as const).map((lg) => (
-              <Chip
-                key={lg}
-                label={lg === 'all' ? 'Any' : LANGUAGE_LABEL[lg]}
-                onClick={() => updateParam('lang', lg === 'all' ? null : lg)}
-                variant={langFilter === lg ? 'filled' : 'outlined'}
-                color={langFilter === lg ? 'primary' : 'default'}
-                aria-pressed={langFilter === lg}
-                sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
-              />
-            ))}
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontSize: '0.7rem',
+                  minWidth: 72,
+                }}
+              >
+                Language
+              </Typography>
+              <ToggleButtonGroup
+                value={langFilter}
+                exclusive
+                onChange={(_, v: LanguageFilter | null) => {
+                  if (v === null) return
+                  updateParam('lang', v === 'all' ? null : v)
+                }}
+                size="small"
+                aria-label="Filter by language"
+                sx={{
+                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                  '& .MuiToggleButton-root': {
+                    textTransform: 'none',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    px: 1.75,
+                    py: 0.6,
+                    borderColor: isDark ? 'rgba(14,104,171,0.5)' : 'rgba(14,104,171,0.35)',
+                    color: 'text.primary',
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.main',
+                      color: 'white',
+                      fontWeight: 700,
+                      '&:hover': { backgroundColor: 'primary.dark' },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="all" aria-pressed={langFilter === 'all'}>
+                  Any
+                </ToggleButton>
+                <ToggleButton value="en" aria-pressed={langFilter === 'en'}>
+                  {LANGUAGE_LABEL.en}
+                </ToggleButton>
+                <ToggleButton value="fr" aria-pressed={langFilter === 'fr'}>
+                  {LANGUAGE_LABEL.fr}
+                </ToggleButton>
+                <ToggleButton value="jp" aria-pressed={langFilter === 'jp'}>
+                  {LANGUAGE_LABEL.jp}
+                </ToggleButton>
+                <ToggleButton value="multi" aria-pressed={langFilter === 'multi'}>
+                  {LANGUAGE_LABEL.multi}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
 
-            <Box sx={{ width: 12 }} />
-
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', mr: 0.5, fontWeight: 600 }}
+            {/* Format */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                justifyContent: { xs: 'flex-start', sm: 'center' },
+              }}
             >
-              Format:
-            </Typography>
-            {(['all', 'article', 'article-series', 'video', 'podcast', 'pdf'] as const).map(
-              (md) => (
-                <Chip
-                  key={md}
-                  label={md === 'all' ? 'Any' : MEDIUM_LABEL[md]}
-                  onClick={() => updateParam('medium', md === 'all' ? null : md)}
-                  variant={mediumFilter === md ? 'filled' : 'outlined'}
-                  color={mediumFilter === md ? 'primary' : 'default'}
-                  aria-pressed={mediumFilter === md}
-                  sx={{ height: 30, fontSize: '0.8rem', fontWeight: 600 }}
-                />
-              )
-            )}
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.8,
+                  fontSize: '0.7rem',
+                  minWidth: 72,
+                }}
+              >
+                Format
+              </Typography>
+              <ToggleButtonGroup
+                value={mediumFilter}
+                exclusive
+                onChange={(_, v: MediumFilter | null) => {
+                  if (v === null) return
+                  updateParam('medium', v === 'all' ? null : v)
+                }}
+                size="small"
+                aria-label="Filter by format"
+                sx={{
+                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                  '& .MuiToggleButton-root': {
+                    textTransform: 'none',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    px: 1.75,
+                    py: 0.6,
+                    borderColor: isDark ? 'rgba(14,104,171,0.5)' : 'rgba(14,104,171,0.35)',
+                    color: 'text.primary',
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.main',
+                      color: 'white',
+                      fontWeight: 700,
+                      '&:hover': { backgroundColor: 'primary.dark' },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="all" aria-pressed={mediumFilter === 'all'}>
+                  Any
+                </ToggleButton>
+                <ToggleButton value="article" aria-pressed={mediumFilter === 'article'}>
+                  {MEDIUM_LABEL.article}
+                </ToggleButton>
+                <ToggleButton
+                  value="article-series"
+                  aria-pressed={mediumFilter === 'article-series'}
+                >
+                  {MEDIUM_LABEL['article-series']}
+                </ToggleButton>
+                <ToggleButton value="video" aria-pressed={mediumFilter === 'video'}>
+                  {MEDIUM_LABEL.video}
+                </ToggleButton>
+                <ToggleButton value="podcast" aria-pressed={mediumFilter === 'podcast'}>
+                  {MEDIUM_LABEL.podcast}
+                </ToggleButton>
+                <ToggleButton value="pdf" aria-pressed={mediumFilter === 'pdf'}>
+                  {MEDIUM_LABEL.pdf}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
 
-            {anyFilterActive && (
-              <>
-                <Box sx={{ width: 12 }} />
+            {/* Actions row: Clear filters + Copy as Markdown.
+                Karim ask: paste the current filtered view into Discord /
+                Slack / a pod chat without leaving the tool. Works on the
+                full library when no filter is active. */}
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                mt: 0.5,
+                pt: 1,
+                borderTop: '1px dashed',
+                borderColor: isDark ? 'rgba(14,104,171,0.3)' : 'rgba(14,104,171,0.15)',
+              }}
+            >
+              {anyFilterActive && (
                 <Button
                   size="small"
                   onClick={clearAllFilters}
-                  startIcon={<RestartAltIcon sx={{ fontSize: 14 }} />}
+                  startIcon={<RestartAltIcon sx={{ fontSize: 16 }} />}
                   sx={{
                     textTransform: 'none',
-                    fontSize: '0.72rem',
+                    fontSize: '0.78rem',
                     color: 'text.secondary',
                     '&:hover': { color: 'primary.main' },
                   }}
                 >
                   Clear filters
                 </Button>
-              </>
-            )}
-
-            {/* Copy as Markdown — Karim ask: paste the current filtered view
-              into Discord / Slack / a pod chat without leaving the tool.
-              Works on the full library when no filter is active. */}
-            <Box sx={{ width: 12 }} />
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={copyCurrentAsMarkdown}
-              startIcon={<ContentCopyIcon sx={{ fontSize: 14 }} />}
-              aria-label={
-                anyFilterActive
-                  ? 'Copy filtered articles as Markdown'
-                  : 'Copy full library as Markdown'
-              }
-              sx={{
-                textTransform: 'none',
-                fontSize: '0.72rem',
-                borderColor: 'primary.main',
-                color: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                },
-              }}
-            >
-              Copy as Markdown
-            </Button>
+              )}
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={copyCurrentAsMarkdown}
+                startIcon={<ContentCopyIcon sx={{ fontSize: 16 }} />}
+                aria-label={
+                  anyFilterActive
+                    ? 'Copy filtered articles as Markdown'
+                    : 'Copy full library as Markdown'
+                }
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.78rem',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                  },
+                }}
+              >
+                Copy as Markdown
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        </Paper>
 
         {/* Result count */}
         <Typography
