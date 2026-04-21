@@ -1,12 +1,75 @@
 # ManaTuner - Session Handoff
 
-## Project Status: PRODUCTION — v2.7.1 shipped (commit `2ca4b67`) · 14-agent audit P0 bundle live (2026-04-19 evening)
+## Project Status: PRODUCTION — v2.7.1 live · Homepage V-A Respiration shipped 2026-04-21 (4 commits, `75d8780` HEAD)
 
-**Latest Session:** 2026-04-19 (evening) — Ultra-complete 14-agent audit (1 context + 6 personas whole-site + 6 technical + 2 strategic) + P0 execution + ship. Persona mean **3.63 → 3.99 (+0.36)**; Leo flagged as **-0.12 launch blocker** and treated in-session. 24 files touched, +1 323 / -2 199 lines net (-876, 3 dead hooks = -942 L). Committed + pushed on `main` as `2ca4b67` → Vercel auto-deploy. SSOT_DIVERGENCE explicitly deferred to v2.8 (7 versions open now).
+**Latest Session:** 2026-04-21 — External tester feedback (CharlesW / WickedFridge, Discord) flagged homepage as "bombardé" — 3 Library pitches before fold + two primary CTAs stacked read as "pubés l'un après l'autre". Creator asked if site should be split. 3-agent parallel audit (`product-manager` + `ux-designer` + `project-planner`) unanimously converged on **redesign homepage, don't split**. V-A "Respiration" shipped across 4 commits: Analyzer sample chips removed (`4fb169a`), V-A + OG v4 composite (`cd1be62`), SEO copy MTG-first (`6e0d058`), "Reading" dropped since library is multi-medium (`75d8780`). CharlesW + Leo re-validation pending 48-72h post-deploy. Details in Session 2026-04-21 block below.
+
+**Previous Session:** 2026-04-19 (evening) — Ultra-complete 14-agent audit (1 context + 6 personas whole-site + 6 technical + 2 strategic) + P0 execution + ship. Persona mean **3.63 → 3.99 (+0.36)**; Leo flagged as **-0.12 launch blocker** and treated in-session. 24 files touched, +1 323 / -2 199 lines net (-876, 3 dead hooks = -942 L). Committed + pushed on `main` as `2ca4b67` → Vercel auto-deploy. SSOT_DIVERGENCE explicitly deferred to v2.8 (7 versions open now).
 
 **Previous Session:** 2026-04-19 (afternoon) — Three rapid commits on `/library` driven by external tester Aimdeh (Discord screenshots, non-tech MTG player). First round (`6568c66`) bumped chip sizes; tester said "un peu mieux oui" — creator flagged the plateau. Second round (`c5c621a`, `ux-designer` delegation) shipped a visual-language shift: `ToggleButtonGroup` segmented controls for Level/Language/Format, `Paper elevation={2}` filter container, TOC as card-tiles, `What's new` TOC doublon removed. Tester: "Ah oui bien plus clair comme ça." Third round (`90fc178`) fixed a hierarchy inversion (ToggleButtonGroup h36 out-weighing Category chips h32) by bumping primary Category chips to h40 / 0.92rem. Final tier order: Category (h40) > Level/Lang/Format (h36) > card meta badges (h22). **No semver bump (UI polish). Version stayed `2.7.1` then. Tests unchanged. A11y net-improved.**
 
 **Pre-previous Session:** 2026-04-18 (night, 6th–7th push) — `v2.7.0` closes the 7 deferred items from v2.6.0 HANDOFF in one release (per-article SEO routes, author indexes, Markdown/RSS/BibTeX exports, Commander preset, Start Here hero, sticky progress chip). `v2.7.1` (commit `d8c2e6a`) followed with a full site-audit sweep + link-rot fixes on Commander content. Plus `tools/launch-preview.html`. **Tests: 332/332 pass. Library: 54 entries across 5 tracks + 27 author pages + per-article SEO routes.**
+
+---
+
+## Session 2026-04-21 — Homepage V-A Respiration + OG v4 (4 commits on `main`)
+
+External tester **CharlesW (WickedFridge)** posted on Discord: _"y'a beaucoup beaucoup de trucs sur ta page d'accueil, on est un peu bombardés. Un tool d'analyse de mana c'est cool, des articles c'est cool, les deux en même temps c'est un peu étrange, surtout les deux pubés l'un après l'autre. Je pense qu'il faudrait séparer un peu plus le truc."_ Creator asked whether to split the site into two properties (library.manatuner.com, or new domain).
+
+### Decision phase — 3-agent parallel audit
+
+Parallel briefs to `product-manager` + `ux-designer` + `project-planner`, converged unanimously on **redesign, don't split**:
+
+- **product-manager**: "Séparer un peu plus" = hierarchy/spacing request, not amputation. Splitting would kill the Karsten→Saito thesis (the "canon that grounds the math" is a _spatial_ claim), start library.manatuner.com at DA 0, and break 48 article→Analyzer conversion loops. Cost not justified by one tester's mild wording.
+- **ux-designer** (read HomePage.tsx first): diagnosed **3 Library pitches before fold** (bordered hero block L298-355 + side-by-side primary CTA L459-487 + full Library section L784-1005). F-pattern reader encodes two gold/blue buttons 40px apart as a "buy this / ALSO buy this" ad unit. Recommended one hero CTA (Analyzer) with Library promoted to a dedicated editorially-framed band, not demoted.
+- **project-planner**: Redesign ≈ 12-20h / 2-3 days / fully reversible / SEO-neutral. Subdomain split ≈ 40-60h + SEO 4-12 weeks of ranking loss + localStorage tripwire (origin-scoped, `useLibraryProgress` breaks). Full new domain split ≈ 55-80h + DA 0.
+
+### Implementation — V-A "Respiration" (ui-designer specced A and B, picked A)
+
+Two candidate specs from `ui-designer` after creator chose option 3 ("mocks before code"). **V-A "Respiration"** picked by the agent because it strictly respects the creator's memory constraint "Library CTA is primary-tier, do not demote" while solving CharlesW's rhythm complaint — merges the 3 Library pitches into **one hero caption + one dedicated Canon band + the existing lower Library section**.
+
+Hero changes:
+
+- Deleted bordered Library block inside the hero (`HomePage.tsx:298-355` pre-edit)
+- Deleted side-by-side "Browse the Library" CTA (`HomePage.tsx:459-487` pre-edit) — hero now has **one gold CTA** only
+- Deleted the 4-link row (Try 60-card sample · 40-card Limited pool · 100-card Commander deck · Need help? Guide). Replaced with one non-clickable italic caption _"40-card pools, 60-card lists, 100-card singletons — one engine, same rigor."_ (marketing-writer variant 1, picked over the agent's V3 because "hypergeometric" non-glossed risked Léo accessibility). Guide link removed entirely — already in header nav, duplicate.
+- Sample decks removed from hero per the same logic that removed them from Analyzer empty state in `4fb169a`: tester mistook Mono-Red's Lightning Helix (needs W, no W source in sample) for an analyzer bug. `SAMPLE_DECKS` dict kept in `AnalyzerPage.tsx` so `?sample=1|limited|edh` URLs still work for deep-link sharing — **audit sample decks card-by-card before re-exposing**.
+
+New "Respiration" section between hero and Math Foundations:
+
+- Cinzel italic bridge flanked by thin rule lines: _"The math tells you what to play. The canon tells you why."_
+- Tinted radial-gradient band with `theme.palette.mana.blue` overline "THE CANON", Cinzel H2 _"Competitive MTG, curated."_, Karsten/Saito positioning (bold), blue→purple Library CTA (same gradient as before — primary-tier preserved), credit line "48 articles · 5 curated tracks · Karsten · PVDDR · Saito · Chapin · Budde"
+- Symmetric spacing tuned across 3 visual review rounds: 72/112 → 48/72 → 24/36 → **14/20px** above and below the bridge
+
+OG image v4 (`public/og-image-v4.jpg`, 225 KB):
+
+- Custom 1200×630 composite generated by new `scripts/generate-og.mjs` (Playwright headless Chromium, retina 2×)
+- Structure: WUBRG canonical mana row (Keyrune font via CDN) → H1 gradient → gold Analyzer CTA → bridge thesis → THE CANON overline + "Competitive MTG, curated." + Karsten/Saito desc + blue→purple Library CTA
+- A1 candidate (live hero screenshot) rejected — too dense for thumbnail scan. A2 composite picked (dual-pitch visible at 400px feed width)
+- Ghost WUBRG background letters removed ("ridiculous" per creator)
+- Regenerate command after future homepage changes: `node scripts/generate-og.mjs` → produces A1 + A2 variants, delete the loser, rename winner to `og-image-v4.jpg`
+- `public/og-image-v3.jpg` kept on disk ~30d as fallback for social caches holding old URL
+
+SEO copy iteration (commits `6e0d058` then `75d8780`):
+
+- Title: `"Mana Calculator + Competitive MTG Reading Library"` → `"MTG Mana Calculator + Competitive Library"` (MTG up front disambiguates; "Reading" dropped since library has 28 articles + 9 series + 7 podcasts + 5 videos + 4 ref + 1 spreadsheet — ~24 % non-reading, see new memory `feedback_library_not_just_reading.md`)
+- Description: `"Free mana calculator that counts your dorks & rocks, plus the most complete reading library in competitive Magic — Karsten, PVDDR, Saito, Chapin, Reid Duke."` → `"Magic: The Gathering mana calculator — free, counts your dorks & rocks, plus the competitive MTG library: Karsten, PVDDR, Saito, Chapin, Budde."`
+- Reid Duke → Budde in the 5-HoF list for meta/social (Reid Duke stays cited in the First FNM track on `HomePage.tsx:793` — different context)
+- Hybrid vocabulary rule captured in `feedback_library_social_framing.md` refinement: "canon" kept in rich-context surfaces (homepage band, OG image), "library" in thin-context (meta description, feed scans)
+
+### Validation / checks
+
+- `npx tsc --noEmit` silent pass after each edit batch
+- Dev server `curl -s http://localhost:3000/ = 200` confirmed after each round
+- `lint-staged` pre-commit hooks passed (eslint + prettier) on all 4 commits
+- Vercel auto-deploy triggered on `main` push for each commit
+
+### Deferred explicitly (not ship-blocking, carry forward)
+
+- **CharlesW re-validation** — ask him to re-read homepage 48-72h post-deploy. Target: no longer feels "bombardé".
+- **Léo solo re-audit** — single `ux-designer` pass on homepage scope. Baseline 3.72 after v2.7.1. Target ≥ 4.05 on homepage-only scope.
+- **OG re-scrape tests** — Facebook Sharing Debugger + Discord sample in 1-2h when Vercel cache clears. Validate v4 composite renders at thumbnail.
+- **Sample decks audit** before re-exposure — Mono-Red Lightning Helix (W requirement), Azorius creature density, Atraxa mana base, Limited pool card legality. Needed if we want the sample shortcuts back on homepage or Analyzer.
 
 ---
 
