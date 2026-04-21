@@ -8,7 +8,6 @@ import TerrainIcon from '@mui/icons-material/Terrain'
 import {
   Alert,
   Box,
-  Button,
   Chip,
   Container,
   Grid,
@@ -441,19 +440,6 @@ const AnalyzerPage: React.FC = () => {
     dispatch(setDeckName(SAMPLE_DECKS.midrange.name))
   }, [dispatch])
 
-  // Load a specific archetype by key. Used by the 3 sample chips on the
-  // empty-state right panel (Léo + Sarah persona ask — multiple archetypes
-  // so the first-time visitor can match what they play).
-  const handleLoadSampleKey = useCallback(
-    (key: keyof typeof SAMPLE_DECKS) => {
-      const sample = SAMPLE_DECKS[key]
-      if (!sample) return
-      dispatch(setDeckList(sample.list))
-      dispatch(setDeckName(sample.name))
-    },
-    [dispatch]
-  )
-
   return (
     <>
       <SEO
@@ -782,78 +768,8 @@ const AnalyzerPage: React.FC = () => {
                     color="text.secondary"
                     sx={{ maxWidth: 360 }}
                   >
-                    Paste a decklist and hit <strong>Analyze</strong> — or try one of the sample
-                    archetypes below.
+                    Paste a decklist and hit <strong>Analyze</strong>.
                   </Typography>
-                  {/* Four archetype chips — three 60-card archetypes + a
-                      100-card Commander sample. Thibault persona ask #1:
-                      "don't force me into a 60-card frame; EDH is 40 % of
-                      the paper MTG market". */}
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: isMobile ? 'column' : 'row',
-                      gap: 1.5,
-                      flexWrap: 'wrap',
-                      justifyContent: 'center',
-                      mt: 1,
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      size={isMobile ? 'medium' : 'large'}
-                      onClick={() => handleLoadSampleKey('aggro')}
-                      sx={{ fontWeight: 600, textTransform: 'none', borderWidth: 2 }}
-                    >
-                      Mono-Red Aggro
-                    </Button>
-                    <Button
-                      variant="contained"
-                      size={isMobile ? 'medium' : 'large'}
-                      onClick={() => handleLoadSampleKey('midrange')}
-                      sx={{ fontWeight: 600, textTransform: 'none' }}
-                    >
-                      Gruul Midrange (Nature's Rhythm)
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size={isMobile ? 'medium' : 'large'}
-                      onClick={() => handleLoadSampleKey('control')}
-                      sx={{ fontWeight: 600, textTransform: 'none', borderWidth: 2 }}
-                    >
-                      Azorius Control
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size={isMobile ? 'medium' : 'large'}
-                      onClick={() => handleLoadSampleKey('edh')}
-                      sx={{
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        borderWidth: 2,
-                        borderColor: 'secondary.main',
-                        color: 'secondary.main',
-                        '&:hover': { borderWidth: 2, borderColor: 'secondary.dark' },
-                      }}
-                    >
-                      Atraxa Superfriends (Commander)
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size={isMobile ? 'medium' : 'large'}
-                      onClick={() => handleLoadSampleKey('limited')}
-                      sx={{
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        borderWidth: 2,
-                        borderColor: 'success.main',
-                        color: 'success.main',
-                        '&:hover': { borderWidth: 2, borderColor: 'success.dark' },
-                      }}
-                    >
-                      Limited (Draft)
-                    </Button>
-                  </Box>
                   <Box
                     sx={{
                       display: 'flex',
