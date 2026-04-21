@@ -3,7 +3,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import BookIcon from '@mui/icons-material/Book'
 import CasinoIcon from '@mui/icons-material/Casino'
-import MenuBookIcon from '@mui/icons-material/MenuBook'
 import PsychologyIcon from '@mui/icons-material/Psychology'
 import ShowChartIcon from '@mui/icons-material/ShowChart'
 import {
@@ -295,64 +294,13 @@ export const HomePage: React.FC = () => {
             Standard · Pioneer · Modern · Pauper · Commander · Limited — all supported
           </Typography>
 
-          {/* Dual positioning — ManaTuner as both a calculator AND the
-              competitive reading library. Visually distinct from the
-              calculator pitch above so users immediately understand the
-              site is also a reference destination. */}
-          <Box
-            sx={{
-              maxWidth: 640,
-              mx: 'auto',
-              mb: 2.5,
-              px: 2.5,
-              py: 1.5,
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: isDark ? 'rgba(125, 180, 255, 0.3)' : 'rgba(14, 104, 171, 0.25)',
-              background: isDark
-                ? 'linear-gradient(135deg, rgba(14, 104, 171, 0.15) 0%, rgba(106, 27, 154, 0.12) 100%)'
-                : 'linear-gradient(135deg, rgba(14, 104, 171, 0.06) 0%, rgba(106, 27, 154, 0.05) 100%)',
-              boxShadow: isDark
-                ? '0 4px 24px rgba(14, 104, 171, 0.15)'
-                : '0 4px 16px rgba(14, 104, 171, 0.08)',
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                fontWeight: 600,
-                lineHeight: 1.55,
-                color: isDark ? 'rgba(255,255,255,0.92)' : 'text.primary',
-              }}
-            >
-              <Box
-                component="span"
-                sx={{
-                  fontSize: '1.15em',
-                  mr: 0.75,
-                  verticalAlign: 'middle',
-                }}
-              >
-                📚
-              </Box>
-              Plus a library of must-read articles — from first FNM to Pro Tour.
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mt: 0.5,
-                lineHeight: 1.5,
-                fontSize: '0.88rem',
-              }}
-            >
-              Curated by the pros (Karsten, PVDDR, Saito and more), organized by skill level.{' '}
-              <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                Dead links restored
-              </Box>{' '}
-              via archive.org so nothing is lost.
-            </Typography>
-          </Box>
+          {/* V-A redesign (2026-04-21) — the in-hero dual-positioning
+              block was removed and promoted to a dedicated "The Canon"
+              band below the hero. CharlesW's feedback ("les deux pubés
+              l'un après l'autre") traced to 3 Library pitches before
+              fold; consolidated to 1 band + 1 section. The Library CTA
+              stays primary-tier (blue→purple gradient) in its own band
+              — respects memory/feedback_manatuner_library_cta.md. */}
 
           {/* Tags with mana symbols */}
           <Box
@@ -455,36 +403,6 @@ export const HomePage: React.FC = () => {
                 Analyze My Deck
               </Button>
             </AnimatedContainer>
-
-            <AnimatedContainer animation="slideInLeft" delay={0.4}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate('/library')}
-                startIcon={<AutoStoriesIcon />}
-                sx={{
-                  px: 4,
-                  py: 1.8,
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  // Mana-blue → purple gradient (knowledge tier, matches Header)
-                  background: 'linear-gradient(135deg, #0E68AB 0%, #6A1B9A 100%)',
-                  color: 'white',
-                  boxShadow: '0 8px 28px rgba(14, 104, 171, 0.45)',
-                  border: '1px solid rgba(125, 180, 255, 0.4)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #1976D2 0%, #7B1FA2 100%)',
-                    boxShadow: '0 12px 36px rgba(14, 104, 171, 0.6)',
-                    transform: 'translateY(-3px)',
-                  },
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              >
-                Browse the Library
-              </Button>
-            </AnimatedContainer>
           </Box>
 
           {/* Privacy reassurance line — sits directly under the CTAs so
@@ -510,160 +428,198 @@ export const HomePage: React.FC = () => {
             .
           </Typography>
 
-          {/* Secondary discreet links: sample deck + Guide. Moved below
-              primary CTAs so Library stays primary-tier alongside Analyze
-              My Deck. Sample deck answers Léo's "I don't have a deck to
-              paste" friction — the ?sample=1 query param triggers auto-load
-              in AnalyzerPage. */}
-          <Box
+          {/* Format coverage caption — replaces the 3 sample-deck shortcuts
+              + Guide link (2026-04-21). Samples were pulled after a tester
+              thought Mono-Red's Lightning Helix was an analyzer bug. Plain
+              non-clickable caption now signals "handles 40/60/100 card decks"
+              without pushing any specific sample. Guide link kept separately
+              below (Leo safety net, per marketing-writer recommendation). */}
+          <Typography
+            variant="body2"
             sx={{
               mt: 2,
               textAlign: 'center',
-              display: 'flex',
-              gap: 2,
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              alignItems: 'center',
+              color: 'text.secondary',
+              fontSize: '0.88rem',
+              lineHeight: 1.55,
+              maxWidth: 580,
+              mx: 'auto',
+              fontStyle: 'italic',
+              letterSpacing: '0.01em',
             }}
           >
-            <Box
-              component="a"
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault()
-                navigate('/analyzer?sample=1')
-              }}
-              sx={{
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.85rem',
-                color: 'text.secondary',
-                textDecoration: 'none',
-                borderBottom: '1px dotted',
-                borderColor: 'text.secondary',
-                pb: 0.125,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  color: 'primary.main',
-                  borderColor: 'primary.main',
-                },
-              }}
-            >
-              <AnalyticsIcon sx={{ fontSize: 16 }} />
-              Try a 60-card sample
-            </Box>
-            <Box
-              component="span"
-              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
-              aria-hidden="true"
-            >
-              ·
-            </Box>
-            {/* Limited shortcut — drafters shouldn't feel sidelined by the
-                Constructed / Commander framing. Green accent matches the
-                Selesnya palette of the sample deck. */}
-            <Box
-              component="a"
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault()
-                navigate('/analyzer?sample=limited')
-              }}
-              sx={{
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.85rem',
-                color: '#2e7d32',
-                textDecoration: 'none',
-                borderBottom: '1px dotted',
-                borderColor: '#2e7d32',
-                pb: 0.125,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  color: '#4caf50',
-                  borderColor: '#4caf50',
-                },
-              }}
-            >
-              <AnalyticsIcon sx={{ fontSize: 16 }} />
-              Or a 40-card Limited pool
-            </Box>
-            <Box
-              component="span"
-              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
-              aria-hidden="true"
-            >
-              ·
-            </Box>
-            {/* Commander shortcut — Thibault persona ask: "don't make me
-                scroll to know EDH is supported". The cyan accent hints at
-                the Commander color identity used throughout the Guide. */}
-            <Box
-              component="a"
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault()
-                navigate('/analyzer?sample=edh')
-              }}
-              sx={{
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.85rem',
-                color: '#00838f',
-                textDecoration: 'none',
-                borderBottom: '1px dotted',
-                borderColor: '#00838f',
-                pb: 0.125,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  color: '#00bcd4',
-                  borderColor: '#00bcd4',
-                },
-              }}
-            >
-              <AnalyticsIcon sx={{ fontSize: 16 }} />
-              Or a 100-card Commander deck
-            </Box>
-            <Box
-              component="span"
-              sx={{ color: 'text.disabled', fontSize: '0.75rem' }}
-              aria-hidden="true"
-            >
-              ·
-            </Box>
-            <Box
-              component="a"
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault()
-                navigate('/guide')
-              }}
-              sx={{
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.85rem',
-                color: 'text.secondary',
-                textDecoration: 'none',
-                borderBottom: '1px dotted',
-                borderColor: 'text.secondary',
-                pb: 0.125,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  color: 'primary.main',
-                  borderColor: 'primary.main',
-                },
-              }}
-            >
-              <MenuBookIcon sx={{ fontSize: 16 }} />
-              Need help? Read the Guide
-            </Box>
-          </Box>
+            40-card pools, 60-card lists, 100-card singletons — one engine, same rigor.
+          </Typography>
+
+          {/* Guide link removed 2026-04-21 — already present in the
+              header nav, no need to duplicate in the hero. Leo can
+              still reach it via the top bar. */}
         </Box>
       </AnimatedContainer>
+
+      {/* V-A Respiration — connective thesis + tinted "Canon" band.
+          Sits between the hero (Analyzer CTA alone) and Math Foundations,
+          resolving CharlesW's "pubés l'un après l'autre" complaint by
+          replacing the two-CTA stack with: action (Analyzer) → pause →
+          editorial thesis → Library in its own section. Library stays
+          primary-tier (solid blue→purple gradient CTA) but is no longer
+          a visual peer of the Analyzer hero button. */}
+      <Box sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Breathing room — tuned 2026-04-21 across 3 rounds:
+            72/112 → 48/72 → 24/36 → 14/20 to match the gap below the
+            bridge (symmetric spacing around the thesis). */}
+        <Box sx={{ height: { xs: 14, md: 20 } }} aria-hidden="true" />
+
+        {/* Connective thesis — italic Cinzel, flanked by thin rules
+            so the eye reads "new chapter" rather than "next block". */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: { xs: 2, md: 3 },
+            maxWidth: 720,
+            mx: 'auto',
+            px: 3,
+          }}
+        >
+          <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider', opacity: 0.4 }} />
+          <Typography
+            sx={{
+              fontFamily: '"Cinzel", serif',
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: { xs: '1.02rem', md: '1.25rem' },
+              textAlign: 'center',
+              color: 'text.primary',
+              opacity: 0.78,
+              letterSpacing: '0.01em',
+              lineHeight: 1.55,
+              whiteSpace: { xs: 'normal', md: 'nowrap' },
+            }}
+          >
+            The math tells you what to play.
+            <Box component="span" sx={{ display: { xs: 'block', md: 'inline' }, ml: { md: 1 } }}>
+              The canon tells you why.
+            </Box>
+          </Typography>
+          <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider', opacity: 0.4 }} />
+        </Box>
+
+        {/* Breathing room before the band — tuned 2026-04-21: 40/64 → 28/40 → 14/20.
+            The band's own py:5-7 already provides inner breathing. */}
+        <Box sx={{ height: { xs: 14, md: 20 } }} aria-hidden="true" />
+
+        {/* The Canon band — editorially distinct: overline, Cinzel H2,
+            knowledge-tier blue→purple CTA, and a credit-line listing the
+            pros. Radial-gradient tint cues "this is a room of its own"
+            without a hard section break. */}
+        <Box
+          sx={{
+            position: 'relative',
+            py: { xs: 5, md: 7 },
+            px: 2,
+            mx: { xs: -2, sm: -3 },
+            background: isDark
+              ? 'radial-gradient(ellipse at center, rgba(14, 104, 171, 0.12) 0%, rgba(106, 27, 154, 0.07) 55%, transparent 100%)'
+              : 'radial-gradient(ellipse at center, rgba(14, 104, 171, 0.055) 0%, rgba(106, 27, 154, 0.035) 55%, transparent 100%)',
+            borderTop: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: isDark ? 'rgba(125, 180, 255, 0.12)' : 'rgba(14, 104, 171, 0.1)',
+          }}
+        >
+          <Box sx={{ textAlign: 'center', maxWidth: 680, mx: 'auto' }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: theme.palette.mana.blue,
+                fontWeight: 700,
+                letterSpacing: 2.5,
+                fontSize: '0.85rem',
+                display: 'block',
+                mb: 1,
+              }}
+            >
+              The Canon
+            </Typography>
+            <Typography
+              variant="h4"
+              component="h2"
+              sx={{
+                fontFamily: '"Cinzel", serif',
+                fontWeight: 700,
+                fontSize: { xs: '1.5rem', md: '1.85rem' },
+                mb: 1.5,
+                lineHeight: 1.25,
+              }}
+            >
+              Competitive MTG, curated.
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                maxWidth: 560,
+                mx: 'auto',
+                mb: 3,
+                lineHeight: 1.6,
+                fontSize: { xs: '0.95rem', md: '1rem' },
+              }}
+            >
+              From{' '}
+              <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                Karsten&apos;s
+              </Box>{' '}
+              manabase math to{' '}
+              <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                Saito&apos;s
+              </Box>{' '}
+              tournament mindset — 48 must-read articles organized by skill level. Dead links
+              restored via archive.org.
+            </Typography>
+
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/library')}
+              startIcon={<AutoStoriesIcon />}
+              sx={{
+                px: 4,
+                py: 1.6,
+                fontSize: '1rem',
+                fontWeight: 700,
+                borderRadius: 3,
+                textTransform: 'none',
+                background: 'linear-gradient(135deg, #0E68AB 0%, #6A1B9A 100%)',
+                color: 'white',
+                boxShadow: '0 8px 28px rgba(14, 104, 171, 0.45)',
+                border: '1px solid rgba(125, 180, 255, 0.4)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1976D2 0%, #7B1FA2 100%)',
+                  boxShadow: '0 12px 36px rgba(14, 104, 171, 0.6)',
+                  transform: 'translateY(-3px)',
+                },
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              Browse the Library
+            </Button>
+
+            <Typography
+              variant="caption"
+              sx={{
+                display: 'block',
+                mt: 2,
+                color: 'text.secondary',
+                fontSize: '0.78rem',
+                letterSpacing: '0.03em',
+              }}
+            >
+              48 articles · 5 curated tracks · Karsten · PVDDR · Saito · Chapin · Budde
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
 
       {/* Math Foundations with mana symbols */}
       <Box sx={{ my: 3, position: 'relative', zIndex: 1 }}>

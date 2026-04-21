@@ -58,7 +58,7 @@ export const SEO: React.FC<SEOProps> = ({
   title,
   description,
   path,
-  ogImage = `${BASE_URL}/og-image-v3.jpg`,
+  ogImage = `${BASE_URL}/og-image-v4.jpg`,
   jsonLd,
   noindex = false,
 }) => {
