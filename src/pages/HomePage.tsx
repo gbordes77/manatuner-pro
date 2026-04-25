@@ -421,11 +421,11 @@ export const HomePage: React.FC = () => {
               mx: 'auto',
             }}
           >
-            Free. No signup. 100% local —{' '}
+            Free. No signup.{' '}
             <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
-              decklists never leave your browser
-            </Box>
-            .
+              Decklists stay on your device
+            </Box>{' '}
+            — only card names ping Scryfall to fetch oracle text.
           </Typography>
 
           {/* Format coverage caption — replaces the 3 sample-deck shortcuts
@@ -574,7 +574,7 @@ export const HomePage: React.FC = () => {
               <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
                 Saito&apos;s
               </Box>{' '}
-              tournament mindset — 48 must-read articles organized by skill level. Dead links
+              tournament mindset — 54 must-read articles organized by skill level. Dead links
               restored via archive.org.
             </Typography>
 
@@ -615,7 +615,7 @@ export const HomePage: React.FC = () => {
                 letterSpacing: '0.03em',
               }}
             >
-              48 articles · 5 curated tracks · Karsten · PVDDR · Saito · Chapin · Budde
+              54 articles · 5 curated tracks · Karsten · PVDDR · Saito · Chapin · Budde
             </Typography>
           </Box>
         </Box>

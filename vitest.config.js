@@ -14,6 +14,7 @@ export default defineConfig({
       "tests/e2e/**",
       "tests/mtg-specific/card-types/**", // TODO: rewrite tests — imports private parseDeckList
       "**/node_modules/**",
+      ".claude/**", // claude-code worktrees shadow the main test tree
     ],
     coverage: {
       provider: "v8",
